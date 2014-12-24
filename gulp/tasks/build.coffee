@@ -1,0 +1,16 @@
+gulp = require 'gulp'
+gulp.task 'build', [
+  'clean'
+  'bower_angularjs'
+  'bower_js'
+  'bower_css'
+  'bower_font'
+  'coffee'
+  'coffee_app'
+  'coffee_app_public'
+  'coffee_app_routes'
+  'coffee_lib'
+  'sass'
+  'jade_copy'
+  'images_copy'
+]

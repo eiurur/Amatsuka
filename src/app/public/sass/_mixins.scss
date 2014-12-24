@@ -1,0 +1,31 @@
+@mixin round($radius:4px) {
+  border-radius: $radius;
+}
+
+@mixin balloon-top($size: 6px, $color: #fff, $left: 6px) {
+  position: relative;
+  &:after {
+    position: absolute;
+    content: "";
+    display: block;
+    border: $size solid transparent;
+    border-bottom: $size solid $color;
+    top: -1 * $size * 2;
+    left: $left;
+  }
+}
+
+@mixin balloon-top-border($size: 6px, $color: #fff, $left: 6px, $border_color: #ccc, $border: 1px) {
+  position: relative;
+  $size2: $size + $border;
+  @include balloon-top($size, $color, $left);
+  &:before {
+    position: absolute;
+    content: "";
+    display: block;
+    border: $size2 solid transparent;
+    border-bottom: $size2 solid $border-color;
+    top: -1 * $size2 * 2;
+    left: $left - $border;
+  }
+}

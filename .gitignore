@@ -1,0 +1,10 @@
+node_modules/*
+bower_components/*
+**/lib/*.txt
+**/*.txt
+**/development.*
+*.sass-cache*
+sass/*
+stylesheets/*
+**/common/factories.coffee
+**/common/factories.js

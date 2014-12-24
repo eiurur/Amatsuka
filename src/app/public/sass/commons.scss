@@ -1,0 +1,99 @@
+@charset "utf-8";
+@import "compass/reset";
+@import "compass";
+@import "settings";
+@import "mixins";
+@import "functions";
+
+/**
+ * util的なアレ
+ */
+
+
+/**
+ * zurui font awesome button
+ */
+.form-group {
+  label {
+    font-size: 70%;
+  }
+}
+i {
+  font-size: 130%;
+  margin-right: 5px;
+}
+
+
+/**
+ * Load画面
+ */
+@include keyframes(spinner1){
+  from {
+    @include transform(rotate(0deg));
+  } to {
+    @include transform(rotate(360deg));
+  }
+}
+@include keyframes(spinner2){
+  from {
+    @include transform(rotate(0deg));
+  } to {
+    @include transform(rotate(-360deg));
+  }
+}
+.spinner {
+  position: fixed;
+  width: 34px;
+  height: 34px;
+  top: 50%; left: 50%;
+  margin-left: -17px; margin-top: -17px;
+  &:after, &:before {
+    position: fixed;
+    content: "";
+    border: 2px solid $accent-color;
+    width: 32px;
+    height: 32px;
+  }
+  &:after {
+    @include animation(spinner1 2.5s linear infinite);
+  }
+  &:before {
+    width: 44px;
+    height: 44px;
+    margin-left: -6.5px;  margin-top: -6.5px;
+    @include animation(spinner2 2.5s linear infinite);
+  }
+}
+.intro-container {
+  height: 100%;
+  background: url("../images/login-background.jpg") no-repeat center center;
+  background-size: cover;
+}
+/**
+ * to-top
+ */
+// #page-top {
+//   width: 50px;
+//   height: 50px;
+//   // display: none;
+//   position: fixed;
+//   right: 20px;
+//   bottom: 20px;
+//   background: rgba(0, 0, 0, 0.7);
+//   @include transition(0.3s ease all);
+//   &:hover {
+//     background: rgba(0, 0, 0, 0.5);
+//   }
+//   a {
+//    margin:0;
+//    padding:0;
+//    text-align:center;
+//   }
+//   #move-page-top {
+//    line-height:50px;
+//    text-decoration:none;
+//    display:block;
+//    cursor:pointer;
+//   }
+// }
+

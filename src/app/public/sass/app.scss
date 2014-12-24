@@ -1,0 +1,73 @@
+@charset "utf-8";
+@import "compass/reset";
+@import "compass";
+@import "settings";
+@import "mixins";
+@import "functions";
+
+// lighten(red, 30%);
+// darken(red, 30%);
+
+
+html, body {
+  font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
+  margin-top: 0;
+  font-size: $base-font-size;
+  color: #000;
+  height: 100%;
+  background-attachment: fixed;
+  background-size: cover;
+  background-color: $main-container-color;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+}
+
+a {
+  text-decoration: none;
+  color: $accent-color;
+  @include transition(0.3s ease all);
+
+  &:hover {
+    text-decoration: none;
+    color: lighten($accent-color, 15%);
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $text-color;
+}
+
+// ヘッダーの角は丸めない
+.navbar {
+  @include border-radius(0px);
+}
+
+// .menu-user {
+//   padding: 5px 20px;
+//   display: block;
+// }
+.icon {
+  max-height: 36px;
+  @include border-radius(4px);
+}
+.screenname {
+  // padding-left: 5px;
+}
+
+.container {
+  margin-top: 10px;
+  margin-bottom: -8px;
+}
+
+.dropdown {
+  bottom: 8px;
+}
+
+.dropdown-menu {
+  margin-top: -1px;
+  // @include balloon-top($size: 10px, $color: #292929, $left: 25px);
+}
