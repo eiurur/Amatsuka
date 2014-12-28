@@ -33,6 +33,7 @@ First time
     $ npm i gulp -g
     $ npm i coffee-script -g
     $ npm i
+    $ gulp init
     $ gulp build
     $ gulp
 
