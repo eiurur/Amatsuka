@@ -1,6 +1,5 @@
 gulp = require 'gulp'
 gulp.task 'build', [
-  'clean'
   'bower_angularjs'
   'bower_js'
   'bower_css'
