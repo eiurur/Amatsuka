@@ -8,7 +8,6 @@
 // lighten(red, 30%);
 // darken(red, 30%);
 
-
 html, body {
   font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
   margin-top: 0;
@@ -60,11 +59,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .container {
   margin-top: 10px;
-  margin-bottom: -8px;
+  margin-bottom: 10px;
 }
 
 .dropdown {
-  bottom: 8px;
+  bottom: 10px;
+  max-height: 50px;
 }
 
 .dropdown-menu {

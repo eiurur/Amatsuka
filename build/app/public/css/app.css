@@ -104,11 +104,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .container {
   margin-top: 10px;
-  margin-bottom: -8px;
+  margin-bottom: 10px;
 }
 
 .dropdown {
-  bottom: 8px;
+  bottom: 10px;
+  max-height: 50px;
 }
 
 .dropdown-menu {
