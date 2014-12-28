@@ -1,6 +1,6 @@
-gulp    = require 'gulp'
-bower   = require 'bower'
-$       = do require 'gulp-load-plugins'
+gulp   = require 'gulp'
+bower  = require 'bower'
+$      = do require 'gulp-load-plugins'
 config = require('../config').bower_font
 
 gulp.task 'bower_font', ->

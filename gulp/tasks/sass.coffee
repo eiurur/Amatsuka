@@ -1,6 +1,6 @@
-gulp    = require 'gulp'
-sass    = require 'gulp-ruby-sass'
-$       = do require 'gulp-load-plugins'
+gulp   = require 'gulp'
+sass   = require 'gulp-ruby-sass'
+$      = do require 'gulp-load-plugins'
 config = require('../config').sass
 
 # SASS (src/scss)

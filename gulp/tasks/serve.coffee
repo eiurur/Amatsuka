@@ -1,9 +1,9 @@
-gulp   = require 'gulp'
-path   = require 'path'
-node   = require 'node-dev'
-$      = do require 'gulp-load-plugins'
+gulp      = require 'gulp'
+path      = require 'path'
+node      = require 'node-dev'
+$         = do require 'gulp-load-plugins'
 webserver = require 'gulp-webserver'
-config = require('../config').serve
+config    = require('../config').serve
 
 gulp.task "serve", ->
   serverPath = config.dest + '/app.js'

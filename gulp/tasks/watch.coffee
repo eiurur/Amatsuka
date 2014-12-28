@@ -1,6 +1,7 @@
-gulp = require("gulp")
-watch = require("gulp-watch")
+gulp   = require("gulp")
+watch  = require("gulp-watch")
 config = require("../config").watch
+
 gulp.task "watch", ->
 
   # coffee
