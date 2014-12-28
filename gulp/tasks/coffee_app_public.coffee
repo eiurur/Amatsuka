@@ -1,6 +1,7 @@
-gulp   = require 'gulp'
-$      = do require 'gulp-load-plugins'
-config = require('../config').coffee_app_public
+gulp       = require 'gulp'
+$          = do require 'gulp-load-plugins'
+ngAnnotate = require 'gulp-ng-annotate'
+config     = require('../config').coffee_app_public
 
 gulp.task 'coffee_app_public', ->
   gulp.src config.src
@@ -9,7 +10,7 @@ gulp.task 'coffee_app_public', ->
     .pipe $.coffeelint.reporter()
     .pipe $.coffee(bare: true)
     .pipe $.concat('main.js')
-    .pipe $.ngmin()
+    .pipe ngAnnotate()
     .pipe gulp.dest config.dest
     .pipe $.rename suffix: '.min'
     .pipe $.uglify mangle: false
