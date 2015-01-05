@@ -1,6 +1,6 @@
 {
   "name": "Angular-express-bootstrap-starter",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "eiurur",
   "description": "",
   "private": true,
@@ -61,7 +61,6 @@
     "gulp-express": "^0.1.0",
     "gulp-load-plugins": "^0.6.0",
     "gulp-ng-annotate": "^0.4.3",
-    "gulp-ngmin": "^0.3.0",
     "gulp-notify": "^2.0.0",
     "gulp-open": "^0.3.0",
     "gulp-pleeease": "^1.0.4",
