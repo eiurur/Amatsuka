@@ -1,6 +1,7 @@
 Angular-Express-Starter
 ======
 
+[![Code Climate](https://codeclimate.com/github/eiurur/Angular-express-bootstrap-starter/badges/gpa.svg)](https://codeclimate.com/github/eiurur/Angular-express-bootstrap-starter)
 
 Based on <a href="https://github.com/btford/angular-express-seed" target="_blank">btford/angular-express-seed</a>
 
