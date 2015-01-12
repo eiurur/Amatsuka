@@ -28,7 +28,7 @@ angular.module('myApp', [
       controller: 'IndexCtrl'
     .when "/logout",
       redirectTo: "/"
-    .when "http://127.0.0.1:4321/auth/twitter/callback",
+    .when "http://127.0.0.1:4040/auth/twitter/callback",
       redirectTo: "/"
     # otherwise redirectTo: '/'
   $locationProvider.html5Mode true

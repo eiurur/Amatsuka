@@ -3,7 +3,6 @@ _               = require 'lodash'
 moment          = require 'moment'
 async           = require 'async'
 {my}            = require dir + 'my'
-# {resetTimeline} = require dir + 'manage-cron'
 {serve}         = require './app/serve'
 {settings}      = if process.env.NODE_ENV is "production"
   require dir + 'configs/production'

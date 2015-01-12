@@ -26,7 +26,7 @@
         })
       };
       app = express();
-      app.set('port', process.env.PORT || 4321);
+      app.set('port', process.env.PORT || settings.PORT);
       app.set('views', __dirname + '/views');
       app.set('view engine', 'jade');
       app.use(morgan('dev'));

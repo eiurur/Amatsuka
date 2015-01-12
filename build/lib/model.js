@@ -5,7 +5,7 @@
 
   _ = require('lodash');
 
-  uri = process.env.MONGOHQ_URL || 'mongodb://127.0.0.1/aebs';
+  uri = process.env.MONGOHQ_URL || 'mongodb://127.0.0.1/amatsuka';
 
   db = mongoose.connect(uri);
 

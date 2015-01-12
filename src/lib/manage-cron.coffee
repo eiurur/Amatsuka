@@ -2,8 +2,6 @@ _              = require 'lodash'
 cronJob        = require('cron').CronJob
 {UserProvider} = require './model'
 
-# 毎日AM 2:00にタイムラインのユーザーを更新する
-# @user: twitter.user
 exports.resetTimeline = (user) ->
 
   # cronTime = "*/1 * * * *"

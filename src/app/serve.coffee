@@ -30,7 +30,7 @@ exports.serve = ->
       )
 
     app = express()
-    app.set 'port', process.env.PORT or 4321
+    app.set 'port', process.env.PORT or settings.PORT
     app.set 'views', __dirname + '/views'
     app.set 'view engine', 'jade'
     app.use morgan('dev')
