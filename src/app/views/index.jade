@@ -3,6 +3,7 @@ extends layout
 block body
   span(ng-controller='AdminUserCtrl')
     span(ng-if='isLoaded')
+
       .intro-container(ng-if='!isAuthenticated')
         .login-container
           .container.hero
@@ -14,8 +15,8 @@ block body
               a.btn.btn-lg.btn-login(href='/auth/twitter/callback', target='_self')
                 i.fa.fa-twitter
                 | Login
-      span.header-is-auth(ng-if='isAuthenticated')
 
+      span.header-is-auth(ng-if='isAuthenticated')
         .sidebar
           .logo
             a(href='/')

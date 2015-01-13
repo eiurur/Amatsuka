@@ -209,6 +209,12 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$log", "
   return TweetService.twitterTest(AuthService.user);
 }]);
 
+angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
+  return function(scope, elm, attrs) {
+    elm.text(version);
+  };
+}]);
+
 angular.module("myApp.services").service("AuthService", ["$http", function($http) {
   return {
     findUserById: function(twitterIdStr) {
@@ -321,11 +327,5 @@ angular.module("myApp.services").service("TweetService", ["$http", function($htt
         });
       });
     }
-  };
-}]);
-
-angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
-  return function(scope, elm, attrs) {
-    elm.text(version);
   };
 }]);

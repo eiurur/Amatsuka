@@ -218,6 +218,3 @@ module.exports = class TwitterClient
           return reject
         return resolve data.ids
 
-  getUsersIdsFollowingFollowing: (users) ->
-    return Promise.all _.map users, (user) =>
-      @getUserIds user

@@ -236,14 +236,6 @@
       })(this));
     };
 
-    TwitterClient.prototype.getUsersIdsFollowingFollowing = function(users) {
-      return Promise.all(_.map(users, (function(_this) {
-        return function(user) {
-          return _this.getUserIds(user);
-        };
-      })(this)));
-    };
-
     return TwitterClient;
 
   })();

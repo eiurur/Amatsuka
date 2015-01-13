@@ -13,8 +13,6 @@ exports.twitterTest = (user) ->
   twitterClient = new TwitterCilent(user)
 
   return new Promise (resolve, reject) ->
-
-    # 自分のフォローイングを取得(200人)
     twitterClient.getHomeTimeline()
     .then (homeTimeline) ->
       console.log '\ngetHomeTimeline homeTimeline -> ', homeTimeline[0]
