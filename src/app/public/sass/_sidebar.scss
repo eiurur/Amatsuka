@@ -1,0 +1,45 @@
+.sidebar {
+  background: darken($baseColor, 10%);
+  position: fixed;
+  height: 100%;
+  z-index: 10000;
+  width: $sidebar-width;
+
+  .logo {
+    padding : $sidebar-left-and-right-space;
+    img {
+      max-width: $sidebar-width - ($sidebar-left-and-right-space * 2);
+      @include round(100%);
+    }
+  }
+
+  .main-nav {
+    .nav-text {
+      .divider {
+        color: white;
+        text-transform: uppercase;
+        display: block;
+        padding: 20px $sidebar-left-and-right-space 5px;
+      }
+      .divider:first-child {
+        padding-top: 10px;
+      }
+      li {
+        color: white;
+        font-size: $baseFontSize - 4px;
+      }
+      a {
+        color: #ccc;
+        text-decoration: none;
+        display: block;
+        font-weight: 300;
+        padding: 2px $sidebar-left-and-right-space;
+        font-size: $baseFontSize - 4px;
+
+        &:hover {
+
+        }
+      }
+    }
+  }
+}

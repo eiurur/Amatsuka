@@ -1,69 +1,19 @@
 @charset "UTF-8";
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font: inherit;
-  font-size: 100%;
-  vertical-align: baseline;
-}
-
-html {
-  line-height: 1;
-}
-
-ol, ul {
-  list-style: none;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-caption, th, td {
-  text-align: left;
-  font-weight: normal;
-  vertical-align: middle;
-}
-
-q, blockquote {
-  quotes: none;
-}
-q:before, q:after, blockquote:before, blockquote:after {
-  content: "";
-  content: none;
-}
-
-a img {
-  border: none;
-}
-
-article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
-  display: block;
-}
-
-html, body {
+/**
+ * Sizes
+ */
+/**
+ * Fonts
+ */
+/**
+ * Colors
+ */
+body {
   font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
+  background-color: #fff;
   margin-top: 0;
-  font-size: 24px;
+  font-size: 20px;
   color: #000;
-  height: 100%;
-  background-attachment: fixed;
-  background-size: cover;
-  background-color: #F3F3F3;
 }
 
 ul {
@@ -72,48 +22,48 @@ ul {
   padding-left: 0;
 }
 
-a {
+.sidebar {
+  background: #292929;
+  position: fixed;
+  height: 100%;
+  z-index: 10000;
+  width: 160px;
+}
+.sidebar .logo {
+  padding: 30px;
+}
+.sidebar .logo img {
+  max-width: 100px;
+  border-radius: 100%;
+}
+.sidebar .main-nav .nav-text .divider {
+  color: white;
+  text-transform: uppercase;
+  display: block;
+  padding: 20px 30px 5px;
+}
+.sidebar .main-nav .nav-text .divider:first-child {
+  padding-top: 10px;
+}
+.sidebar .main-nav .nav-text li {
+  color: white;
+  font-size: 16px;
+}
+.sidebar .main-nav .nav-text a {
+  color: #ccc;
   text-decoration: none;
-  color: #3DA1FF;
-  -moz-transition: ease 0.3s all;
-  -o-transition: ease 0.3s all;
-  -webkit-transition: ease 0.3s all;
-  transition: ease 0.3s all;
-}
-a:hover {
-  text-decoration: none;
-  color: #8ac6ff;
+  display: block;
+  font-weight: 300;
+  padding: 2px 30px;
+  font-size: 16px;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color: #000;
-}
-
-.navbar {
-  -moz-border-radius: 0px;
-  -webkit-border-radius: 0px;
-  border-radius: 0px;
-}
-
-.icon {
-  max-height: 36px;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  border-radius: 4px;
-}
-
-.container {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.dropdown {
-  bottom: 10px;
-  max-height: 50px;
-}
-
-.dropdown-menu {
-  margin-top: -1px;
+.site-main {
+  position: relative;
+  padding-left: 200px;
+  padding-bottom: 30px;
+  padding-right: 200px;
+  min-height: 1600px;
 }
 
 /*# sourceMappingURL=app.css.map */

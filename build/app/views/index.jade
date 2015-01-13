@@ -1,51 +1,47 @@
 extends layout
 
 block body
-
   span(ng-controller='AdminUserCtrl')
     span(ng-if='isLoaded')
-      nav.navbar.navbar-inverse(role='navigation')
-        .container
-          .navbar-header
-            button.navbar-toggle(type='button', data-toggle='collapse', data-target='#navbar-collapse')
-              span.sr-only Toggle navigation
-              span.icon-bar
-              span.icon-bar
-              span.icon-bar
-            a.navbar-brand(href='/') Amatsuka
-          #navbar-collapse.collapse.navbar-collapse
-            span(ng-if='!isAuthenticated')
-              a.btn.btn-danger.navbar-btn.pull-right(href='/auth/twitter/callback', target='_self') ログイン
-            span.header-is-auth(ng-if='isAuthenticated')
-              ul.nav.navbar-nav
-                li
-                  a(href='#') Link
-                li
-                  a(href='#') Afford
-              ul.nav.navbar-nav.navbar-right
-                li.dropdown
-                  a.dropdown-toggle(href='#', data-toggle='dropdown')
-                    img.icon(ng-src='{{user._json.profile_image_url_https}}')
-                  ul.dropdown-menu(role='menu')
-                    //- li.dropdown-header Setting
-                    li
-                      a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank')
-                        span.screenname @{{user.username}}
-                    li
-                      a(href='#') Another action
-                    li
-                      a(href='#') Something else here
-                    li.divider
-                    li
-                      a(href='/logout', target='_self') ログアウト
-                    li.divider
-                    li.disabled
-                      a(href='#') One more separated link
+      .intro-container(ng-if='!isAuthenticated')
+        .login-container
+          .container.hero
+            h1
+              span.hlabel.noppading Amatsuka
+            h2
+              span.label Viewer
+            span.btn-wrapper
+              a.btn.btn-lg.btn-login(href='/auth/twitter/callback', target='_self')
+                i.fa.fa-twitter
+                | Login
+      span.header-is-auth(ng-if='isAuthenticated')
+
+        .sidebar
+          .logo
+            a(href='/')
+              img(src='https://avatars0.githubusercontent.com/u/4101830?v=3&s=460')
+          .main-nav
+            ul.nav-text
+              li.divider CONTENTS
+              li
+                a(href='/Home') Home
+              li
+                a(href='/list') List
+              li
+                a(href='/fav') Fav
+              li
+                a(href='/settings') Settings
+              li.divider USER
+              li
+                a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank')
+                  span.screenname @{{user.username}}
+              li
+                a(href='/logout', target='_self') ログアウト
+        .site-main
+          .col-md-12
+            div(ng-view)
 
 
-      .container
-        div(ng-view)
-
-    span(ng-if='!isLoaded')
-      .intro-container
-        .spinner
+  span(ng-if='!isLoaded')
+    .intro-container
+      .spinner
