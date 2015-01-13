@@ -3,13 +3,12 @@ moment           = require 'moment'
 _                = require 'lodash'
 {Promise}        = require 'es6-promise'
 my               = require dir + 'my'
-cron             = require dir + 'manage-cron'
+{twitterTest}    = require dir + 'twitter-test'
 {UserProvider}   = require dir + 'model'
 settings         = if process.env.NODE_ENV is 'production'
   require dir + 'configs/production'
 else
   require dir + 'configs/development'
-
 
 module.exports = (app) ->
 
@@ -42,6 +41,24 @@ module.exports = (app) ->
     UserProvider.findUserById
       twitterIdStr: req.body.twitterIdStr
     , (err, data) ->
+      res.json data: data
+
+  # APIの動作テスト。後で消す
+  app.post '/api/twitterTest', (req, res) ->
+    console.log "\n============> twitterTest in API\n"
+    console.log "req.body.user = ", req.body.user
+    twitterTest(req.body.user)
+    .then (data) ->
+      console.log 'routes data = ', data
+      res.json data: data
+
+  #　まだ動かん
+  app.get '/api/timeline/:type/:id', (req, res) ->
+    console.log "\n============> get/timeline/:type/:id in API\n"
+    PostProvider.findUserById
+      twitterIdStr: req.params.id
+    , (err, data) ->
+      console.log data
       res.json data: data
 
   # redirect all others to the index (HTML5 history)

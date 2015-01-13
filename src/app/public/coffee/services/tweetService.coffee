@@ -63,3 +63,24 @@ angular.module "myApp.services"
         when 'user.url' then t.user.url
         else null
 
+    # まだ動かない
+    getHomeTimeline: (type, twitterIdStr) ->
+      return new Promise (resolve, reject) ->
+        $http.get("/api/timeline/:#{type}/#{twitterIdStr}")
+          .success (data) ->
+            return resolve data.data
+
+    # まだ動かない
+    getUserTimeline: (type, twitterIdStr) ->
+      return new Promise (resolve, reject) ->
+        $http.get("/api/timeline/:#{type}/#{twitterIdStr}")
+          .success (data) ->
+            return resolve data.data
+
+    # TwitterAPI動作テスト用
+    twitterTest: (user) ->
+      return new Promise (resolve, reject) ->
+        $http.post('/api/twitterTest', user: user)
+          .success (data) ->
+            console.log 'twitterTest in service data = ', data
+            return resolve data

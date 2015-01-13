@@ -192,15 +192,21 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
 }]);
 
 angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$log", "AuthService", "TweetService", function($scope, $log, AuthService, TweetService) {
+  var pop, uniq, unshift;
   if (_.isEmpty(AuthService.user)) {
-
+    return;
   }
-}]);
-
-angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
-  return function(scope, elm, attrs) {
-    elm.text(version);
+  pop = function(prop) {
+    return $scope[prop].pop();
   };
+  unshift = function(prop, val) {
+    return $scope[prop].unshift(val);
+  };
+  uniq = function(prop, key) {
+    return $scope[prop] = _.uniq($scope[prop], key);
+  };
+  console.log('Index AuthService.user = ', AuthService.user);
+  return TweetService.twitterTest(AuthService.user);
 }]);
 
 angular.module("myApp.services").service("AuthService", ["$http", function($http) {
@@ -290,6 +296,36 @@ angular.module("myApp.services").service("TweetService", ["$http", function($htt
         default:
           return null;
       }
+    },
+    getHomeTimeline: function(type, twitterIdStr) {
+      return new Promise(function(resolve, reject) {
+        return $http.get("/api/timeline/:" + type + "/" + twitterIdStr).success(function(data) {
+          return resolve(data.data);
+        });
+      });
+    },
+    getUserTimeline: function(type, twitterIdStr) {
+      return new Promise(function(resolve, reject) {
+        return $http.get("/api/timeline/:" + type + "/" + twitterIdStr).success(function(data) {
+          return resolve(data.data);
+        });
+      });
+    },
+    twitterTest: function(user) {
+      return new Promise(function(resolve, reject) {
+        return $http.post('/api/twitterTest', {
+          user: user
+        }).success(function(data) {
+          console.log('twitterTest in service data = ', data);
+          return resolve(data);
+        });
+      });
     }
+  };
+}]);
+
+angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
+  return function(scope, elm, attrs) {
+    elm.text(version);
   };
 }]);

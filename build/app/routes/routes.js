@@ -1,5 +1,5 @@
 (function() {
-  var Promise, UserProvider, cron, dir, moment, my, settings, _;
+  var Promise, UserProvider, dir, moment, my, settings, twitterTest, _;
 
   dir = '../../lib/';
 
@@ -11,7 +11,7 @@
 
   my = require(dir + 'my');
 
-  cron = require(dir + 'manage-cron');
+  twitterTest = require(dir + 'twitter-test').twitterTest;
 
   UserProvider = require(dir + 'model').UserProvider;
 
@@ -49,6 +49,27 @@
       return UserProvider.findUserById({
         twitterIdStr: req.body.twitterIdStr
       }, function(err, data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/twitterTest', function(req, res) {
+      console.log("\n============> twitterTest in API\n");
+      console.log("req.body.user = ", req.body.user);
+      return twitterTest(req.body.user).then(function(data) {
+        console.log('routes data = ', data);
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.get('/api/timeline/:type/:id', function(req, res) {
+      console.log("\n============> get/timeline/:type/:id in API\n");
+      return PostProvider.findUserById({
+        twitterIdStr: req.params.id
+      }, function(err, data) {
+        console.log(data);
         return res.json({
           data: data
         });
