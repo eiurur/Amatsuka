@@ -23,7 +23,7 @@ exports.serve = ->
       saveUninitialized: true
       resave: false
       store: new MongoStore(
-        url: process.env.MONGOHQ_URL or 'mongodb://127.0.0.1/aebs'
+        url: process.env.MONGOHQ_URL or 'mongodb://127.0.0.1/amatsuka'
         collection: 'sessions'
         clear_interval: 3600 * 12
         auto_reconnect: true
@@ -102,6 +102,7 @@ exports.serve = ->
       failureRedirect: '/'
 
     (require './routes/routes')(app)
+    (require './routes/api')(app)
 
 
   do -> #server
