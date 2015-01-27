@@ -44,3 +44,19 @@ module.exports = (app) ->
     , (err, data) ->
       console.log data
       res.json data: data
+
+  # GET リストの情報(公開、非公開)
+
+  # GET リストのタイムラインを取得
+
+  # GET タイムラインの情報(home_timeline, user_timeline)
+
+  # GET アプリ上の仮想的なタイムラインの情報 ( = Amatsuka リスト)
+
+  # GET フォロー状況の取得
+
+  # POST フォロー、アンフォロー機能
+
+  # POST 仮想フォロー、仮想アンフォロー機能( = Amatsukaリストへの追加、削除)
+
+  #
