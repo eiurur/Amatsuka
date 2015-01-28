@@ -1,6 +1,8 @@
 (function() {
-  var NodeCache, Promise, TwitterClient, cheerio, my, request, settings, _,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var NodeCache, Promise, TwitterClient, TwitterClientDefine, cheerio, my, request, settings, _,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   _ = require('lodash');
 
@@ -16,14 +18,12 @@
 
   settings = (process.env.NODE_ENV === "production" ? require('./configs/production') : require('./configs/development')).settings;
 
-  module.exports = TwitterClient = (function() {
-    function TwitterClient(user) {
+  TwitterClientDefine = (function() {
+    function TwitterClientDefine(user) {
       this.user = user;
-      this.getUserIds = __bind(this.getUserIds, this);
-      this.getMyFollowing = __bind(this.getMyFollowing, this);
     }
 
-    TwitterClient.prototype.getViaAPI = function(params) {
+    TwitterClientDefine.prototype.getViaAPI = function(params) {
       return new Promise((function(_this) {
         return function(resolve, reject) {
           return settings.twitterAPI[params.method](params.type, params.params, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
@@ -38,7 +38,7 @@
       })(this));
     };
 
-    TwitterClient.prototype.postViaAPI = function(params) {
+    TwitterClientDefine.prototype.postViaAPI = function(params) {
       return new Promise((function(_this) {
         return function(resolve, reject) {
           return settings.twitterAPI[params.method](params.type, params.params, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
@@ -52,192 +52,130 @@
         };
       })(this));
     };
+
+    return TwitterClientDefine;
+
+  })();
+
+  module.exports = TwitterClient = (function(_super) {
+    __extends(TwitterClient, _super);
+
+    function TwitterClient() {
+      this.getUserIds = __bind(this.getUserIds, this);
+      return TwitterClient.__super__.constructor.apply(this, arguments);
+    }
 
     TwitterClient.prototype.getHomeTimeline = function() {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          return settings.twitterAPI.getTimeline('home_timeline', '', _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data.length);
-            if (error) {
-              console.log('twitter.get.home_timeline error =  ', error);
-              return reject;
-            }
-            return resolve(data);
-          });
-        };
-      })(this));
+      return this.getViaAPI({
+        method: 'getTimeline',
+        type: 'home_timeline',
+        params: ''
+      });
     };
 
     TwitterClient.prototype.getUserTimeline = function(params) {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          return settings.twitterAPI.getTimeline('user_timeline', {
-            user_id: params.twitterIdStr || params.screenName
-          }, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data.length);
-            if (error) {
-              console.log('twitter.get.user_timeline error =  ', error);
-              return reject;
-            }
-            return resolve(data);
-          });
-        };
-      })(this));
+      return this.getViaAPI({
+        method: 'user_timeline',
+        type: 'home_timeline',
+        params: {
+          user_id: params.twitterIdStr || params.screenName
+        }
+      });
     };
 
     TwitterClient.prototype.getListsList = function() {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          return settings.twitterAPI.lists('list', '', _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data.length);
-            if (error) {
-              console.log('twitter.get.lists/list error =  ', error);
-              return reject;
-            }
-            return resolve(data);
-          });
-        };
-      })(this));
+      return this.getViaAPI({
+        method: 'lists',
+        type: 'list',
+        params: ''
+      });
     };
 
     TwitterClient.prototype.getListsStatuses = function(params) {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          return settings.twitterAPI.lists('statuses', {
-            list_id: params.listIdStr
-          }, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data.length);
-            if (error) {
-              console.log('twitter.get.lists/statuses error =  ', error);
-            }
-            return resolve(data);
-          });
-        };
-      })(this));
+      return this.getViaAPI({
+        method: 'lists',
+        type: 'statuses',
+        params: {
+          list_id: params.listIdStr
+        }
+      });
     };
 
     TwitterClient.prototype.getListsShow = function(params) {
-      console.log(params);
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          return settings.twitterAPI.lists('show', {
-            list_id: params.listIdStr
-          }, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data.length);
-            return resolve(data);
-          });
-        };
-      })(this));
+      return this.getViaAPI({
+        method: 'lists',
+        type: 'show',
+        params: {
+          list_id: params.listIdStr
+        }
+      });
     };
 
     TwitterClient.prototype.getListsMembers = function(params) {
-      console.log(params);
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          return settings.twitterAPI.lists('members', {
-            list_id: params.listIdStr
-          }, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data.length);
-            if (error) {
-              console.log('twitter.get.lists/members error =  ', error);
-              return reject;
-            }
-            return resolve(data);
-          });
-        };
-      })(this));
+      return this.getViaAPI({
+        method: 'lists',
+        type: 'members',
+        params: {
+          list_id: params.listIdStr
+        }
+      });
     };
 
     TwitterClient.prototype.createLists = function(params) {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          return settings.twitterAPI.lists('create', {
-            name: params.name,
-            mode: params.mode
-          }, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data);
-            if (error) {
-              console.log('twitter.get.lists/create error =  ', error);
-              return reject;
-            }
-            return resolve(data);
-          });
-        };
-      })(this));
+      return this.postViaAPI({
+        method: 'lists',
+        type: 'create',
+        params: {
+          name: params.name,
+          mode: params.mode
+        }
+      });
     };
 
     TwitterClient.prototype.destroyLists = function(params) {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          return settings.twitterAPI.lists('destroy', {
-            list_id: params.listIdStr
-          }, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data);
-            if (error) {
-              console.log('twitter.get.lists/destroy error =  ', error);
-              return reject;
-            }
-            return resolve(data);
-          });
-        };
-      })(this));
+      return this.postViaAPI({
+        method: 'lists',
+        type: 'destroy',
+        params: {
+          list_id: params.listIdStr
+        }
+      });
     };
 
     TwitterClient.prototype.createMemberList = function(params) {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          return settings.twitterAPI.lists('members/create', {
-            list_id: params.listIdStr,
-            user_id: params.twitterIdStr
-          }, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data);
-            if (error) {
-              console.log('twitter.get.members/create error =  ', error);
-              return reject;
-            }
-            return resolve(data);
-          });
-        };
-      })(this));
+      return this.postViaAPI({
+        method: 'lists',
+        type: 'members/create',
+        params: {
+          list_id: params.listIdStr,
+          user_id: params.twitterIdStr
+        }
+      });
     };
 
     TwitterClient.prototype.getMyFollowing = function() {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          console.log('getMyFollowing @user = ', _this.user.twitter_token);
-          console.log('getMyFollowing @user = ', _this.user.twitter_token_secret);
-          return settings.twitterAPI.friends('list', {
-            user_id: _this.user._json.id_str,
-            count: settings.FRINEDS_LIST_COUNT
-          }, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            if (error) {
-              console.log('twitter.get.myfollowing error =  ', error);
-              return reject;
-            }
-            return resolve(data.users);
-          });
-        };
-      })(this));
+      return this.getViaAPI({
+        method: 'friends',
+        type: 'list',
+        params: {
+          user_id: this.user._json.id_str,
+          count: settings.FRINEDS_LIST_COUNT
+        }
+      });
     };
 
-    TwitterClient.prototype.getUserIds = function(user) {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          return settings.twitterAPI.friends('ids', {
-            user_id: user.id_str
-          }, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            if (error) {
-              console.log('twitter.get.following error =  ', error);
-              return reject;
-            }
-            return resolve(data.ids);
-          });
-        };
-      })(this));
+    TwitterClient.prototype.getUserIds = function(params) {
+      return this.getViaAPI({
+        method: 'friends',
+        type: 'list',
+        params: {
+          user_id: params.user.id_str
+        }
+      });
     };
 
     return TwitterClient;
 
-  })();
+  })(TwitterClientDefine);
 
 }).call(this);

@@ -27,7 +27,7 @@ exports.twitterTest = (user) ->
 
       twitterClient.getListsShow(listIdStr: amatsukaList.id_str)
     .then (list) ->
-      console.log '\getListsShow list -> ', list.name
+      console.log '\ngetListsShow list -> ', list.name
 
       twitterClient.destroyLists(listIdStr: list.id_str)
     .then (data) ->
@@ -38,7 +38,7 @@ exports.twitterTest = (user) ->
     .then (list) ->
       console.log '\ncreateLists lists -> ', list
 
-      twitterClient.createMemberList(listIdStr: list.id_str, twitterIdStr: '898525572')
+      twitterClient.createMemberList(listIdStr: list.id_str, twitterIdStr: '2686409167')
     .then (data) ->
       console.log '\ncreateMemberList data -> ', data
 

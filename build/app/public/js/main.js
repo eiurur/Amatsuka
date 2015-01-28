@@ -168,6 +168,12 @@ angular.module("myApp.services", []).service("CommonService", function() {
   };
 });
 
+angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
+  return function(scope, elm, attrs) {
+    elm.text(version);
+  };
+}]);
+
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
   $scope.isAuthenticated = AuthService.status.isAuthenticated;
@@ -207,12 +213,6 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$log", "
   };
   console.log('Index AuthService.user = ', AuthService.user);
   return TweetService.twitterTest(AuthService.user);
-}]);
-
-angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
-  return function(scope, elm, attrs) {
-    elm.text(version);
-  };
 }]);
 
 angular.module("myApp.services").service("AuthService", ["$http", function($http) {

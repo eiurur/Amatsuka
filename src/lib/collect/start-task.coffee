@@ -19,6 +19,9 @@ exports.startTask = ->
   # A. 全員分のuser_timelineを3200件分取得するメソッドを実行するメソッドです。
   requestAllUserTimeline = ->
     target = targetList.pop()
+    if _.isUndefined(target)
+      clearInterval(requestAllUserTimeline)
+      return
     console.log "======> #{target}"
     saveTweetData(target)
 

@@ -101,8 +101,8 @@ exports.serve = ->
       successRedirect: '/'
       failureRedirect: '/'
 
-    (require './routes/routes')(app)
     (require './routes/api')(app)
+    (require './routes/routes')(app)
 
 
   do -> #server

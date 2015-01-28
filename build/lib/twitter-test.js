@@ -31,7 +31,7 @@
           listIdStr: amatsukaList.id_str
         });
       }).then(function(list) {
-        console.log('\getListsShow list -> ', list.name);
+        console.log('\ngetListsShow list -> ', list.name);
         return twitterClient.destroyLists({
           listIdStr: list.id_str
         });
@@ -45,7 +45,7 @@
         console.log('\ncreateLists lists -> ', list);
         return twitterClient.createMemberList({
           listIdStr: list.id_str,
-          twitterIdStr: '898525572'
+          twitterIdStr: '2686409167'
         });
       }).then(function(data) {
         console.log('\ncreateMemberList data -> ', data);

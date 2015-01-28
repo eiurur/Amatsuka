@@ -15,6 +15,10 @@
     requestAllUserTimeline = function() {
       var target;
       target = targetList.pop();
+      if (_.isUndefined(target)) {
+        clearInterval(requestAllUserTimeline);
+        return;
+      }
       console.log("======> " + target);
       return saveTweetData(target);
     };
