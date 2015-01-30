@@ -56,6 +56,12 @@ module.exports = class TwitterClient extends TwitterClientDefine
       params:
         user_id: params.twitterIdStr || params.screenName
 
+
+  # 自分の指定のリストのツイートから画像だけを表示
+
+  ###
+  List
+  ###
   # 自分のリストを列挙
   getListsList: ->
     @getViaAPI
@@ -71,6 +77,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
       params:
         list_id: params.listIdStr
 
+  # リストの情報を表示
   getListsShow: (params) ->
     @getViaAPI
       method: 'lists'
@@ -78,14 +85,23 @@ module.exports = class TwitterClient extends TwitterClientDefine
       params:
         list_id: params.listIdStr
 
+  # リストからユーザを削除
+  destroyListsMembers: (params) ->
+    @getViaAPI
+      method: 'lists'
+      type: 'show'
+      params:
+        list_id: params.listIdStr
+
+  # リストのメンバーを表示
   getListsMembers: (params) ->
     @getViaAPI
       method: 'lists'
       type: 'members'
       params:
         list_id: params.listIdStr
-
-  # 自分の指定のリストのツイートから画像だけを表示
+        user_id: params.twitterIdStr || ''
+        scren_name: params.screenName || ''
 
   # リストの作成
   createLists: (params) ->
@@ -127,3 +143,29 @@ module.exports = class TwitterClient extends TwitterClientDefine
       type: 'list'
       params:
         user_id: params.user.id_str
+
+  ###
+  fav
+  ###
+  getFavList: (params) ->
+    @getViaAPI
+      method: 'favorites'
+      type: 'list'
+      params:
+        user_id: params.twitterIdStr || params.screenName
+
+  createFav: (params) ->
+    @postViaAPI
+      method: 'favorites'
+      type: 'create'
+      params:
+        id: params.tweetIdStr
+
+  destroyFav: (params) ->
+    @postViaAPI
+      method: 'favorites'
+      type: 'destroy'
+      params:
+        id: params.tweetIdStr
+
+  # RT

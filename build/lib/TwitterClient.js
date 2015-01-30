@@ -83,6 +83,11 @@
       });
     };
 
+
+    /*
+    List
+     */
+
     TwitterClient.prototype.getListsList = function() {
       return this.getViaAPI({
         method: 'lists',
@@ -111,12 +116,24 @@
       });
     };
 
+    TwitterClient.prototype.destroyListsMembers = function(params) {
+      return this.getViaAPI({
+        method: 'lists',
+        type: 'show',
+        params: {
+          list_id: params.listIdStr
+        }
+      });
+    };
+
     TwitterClient.prototype.getListsMembers = function(params) {
       return this.getViaAPI({
         method: 'lists',
         type: 'members',
         params: {
-          list_id: params.listIdStr
+          list_id: params.listIdStr,
+          user_id: params.twitterIdStr || '',
+          scren_name: params.screenName || ''
         }
       });
     };
@@ -170,6 +187,41 @@
         type: 'list',
         params: {
           user_id: params.user.id_str
+        }
+      });
+    };
+
+
+    /*
+    fav
+     */
+
+    TwitterClient.prototype.getFavList = function(params) {
+      return this.getViaAPI({
+        method: 'favorites',
+        type: 'list',
+        params: {
+          user_id: params.twitterIdStr || params.screenName
+        }
+      });
+    };
+
+    TwitterClient.prototype.createFav = function(params) {
+      return this.postViaAPI({
+        method: 'favorites',
+        type: 'create',
+        params: {
+          id: params.tweetIdStr
+        }
+      });
+    };
+
+    TwitterClient.prototype.destroyFav = function(params) {
+      return this.postViaAPI({
+        method: 'favorites',
+        type: 'destroy',
+        params: {
+          id: params.tweetIdStr
         }
       });
     };
