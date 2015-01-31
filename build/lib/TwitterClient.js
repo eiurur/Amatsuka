@@ -116,16 +116,6 @@
       });
     };
 
-    TwitterClient.prototype.destroyListsMembers = function(params) {
-      return this.getViaAPI({
-        method: 'lists',
-        type: 'show',
-        params: {
-          list_id: params.listIdStr
-        }
-      });
-    };
-
     TwitterClient.prototype.getListsMembers = function(params) {
       return this.getViaAPI({
         method: 'lists',
@@ -159,7 +149,7 @@
       });
     };
 
-    TwitterClient.prototype.createMemberList = function(params) {
+    TwitterClient.prototype.createListsMembers = function(params) {
       return this.postViaAPI({
         method: 'lists',
         type: 'members/create',
@@ -169,6 +159,31 @@
         }
       });
     };
+
+    TwitterClient.prototype.destroyListsMembers = function(params) {
+      return this.getViaAPI({
+        method: 'lists',
+        type: 'show',
+        params: {
+          list_id: params.listIdStr
+        }
+      });
+    };
+
+    TwitterClient.prototype.getUserIds = function(params) {
+      return this.getViaAPI({
+        method: 'friends',
+        type: 'list',
+        params: {
+          user_id: params.user.id_str
+        }
+      });
+    };
+
+
+    /*
+    Follow
+     */
 
     TwitterClient.prototype.getMyFollowing = function() {
       return this.getViaAPI({
@@ -181,12 +196,35 @@
       });
     };
 
-    TwitterClient.prototype.getUserIds = function(params) {
+    TwitterClient.prototype.getFollowingList = function() {
       return this.getViaAPI({
         method: 'friends',
         type: 'list',
         params: {
-          user_id: params.user.id_str
+          user_id: params.twitterIdStr || '',
+          scren_name: params.screenName || ''
+        }
+      });
+    };
+
+    TwitterClient.prototype.getMyFollowersList = function() {
+      return this.getViaAPI({
+        method: 'followers',
+        type: 'list',
+        params: {
+          user_id: this.user._json.id_str,
+          count: settings.FRINEDS_LIST_COUNT
+        }
+      });
+    };
+
+    TwitterClient.prototype.getFollowersList = function(params) {
+      return this.getViaAPI({
+        method: 'followers',
+        type: 'list',
+        params: {
+          user_id: params.twitterIdStr || '',
+          scren_name: params.screenName || ''
         }
       });
     };
@@ -219,6 +257,31 @@
     TwitterClient.prototype.destroyFav = function(params) {
       return this.postViaAPI({
         method: 'favorites',
+        type: 'destroy',
+        params: {
+          id: params.tweetIdStr
+        }
+      });
+    };
+
+
+    /*
+    ツイート関連(RTを含む)
+     */
+
+    TwitterClient.prototype.retweetStatus = function(params) {
+      return this.postViaAPI({
+        method: 'statuses',
+        type: 'retweet',
+        params: {
+          id: params.tweetIdStr
+        }
+      });
+    };
+
+    TwitterClient.prototype.destroyStatus = function(params) {
+      return this.postViaAPI({
+        method: 'statuses',
         type: 'destroy',
         params: {
           id: params.tweetIdStr

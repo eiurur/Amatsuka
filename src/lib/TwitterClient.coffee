@@ -84,15 +84,6 @@ module.exports = class TwitterClient extends TwitterClientDefine
       type: 'show'
       params:
         list_id: params.listIdStr
-
-  # リストからユーザを削除
-  destroyListsMembers: (params) ->
-    @getViaAPI
-      method: 'lists'
-      type: 'show'
-      params:
-        list_id: params.listIdStr
-
   # リストのメンバーを表示
   getListsMembers: (params) ->
     @getViaAPI
@@ -120,8 +111,8 @@ module.exports = class TwitterClient extends TwitterClientDefine
       params:
         list_id: params.listIdStr
 
-  # 非公開リストにユーザを追加する(単数)
-  createMemberList: (params) ->
+  # リストにユーザを追加する(単数)
+  createListsMembers: (params) ->
     @postViaAPI
       method: 'lists'
       type: 'members/create'
@@ -129,6 +120,26 @@ module.exports = class TwitterClient extends TwitterClientDefine
         list_id: params.listIdStr
         user_id: params.twitterIdStr
 
+  # リストからユーザを削除
+  destroyListsMembers: (params) ->
+    @getViaAPI
+      method: 'lists'
+      type: 'show'
+      params:
+        list_id: params.listIdStr
+
+
+
+  getUserIds: (params) =>
+    @getViaAPI
+      method: 'friends'
+      type: 'list'
+      params:
+        user_id: params.user.id_str
+
+  ###
+  Follow
+  ###
   getMyFollowing: ->
     @getViaAPI
       method: 'friends'
@@ -137,12 +148,31 @@ module.exports = class TwitterClient extends TwitterClientDefine
         user_id: @user._json.id_str
         count: settings.FRINEDS_LIST_COUNT
 
-  getUserIds: (params) =>
+  getFollowingList: ->
     @getViaAPI
       method: 'friends'
       type: 'list'
       params:
-        user_id: params.user.id_str
+        user_id: params.twitterIdStr || ''
+        scren_name: params.screenName || ''
+
+  getMyFollowersList: ->
+    @getViaAPI
+      method: 'followers'
+      type: 'list'
+      params:
+        user_id: @user._json.id_str
+        count: settings.FRINEDS_LIST_COUNT
+
+  getFollowersList: (params) ->
+    @getViaAPI
+      method: 'followers'
+      type: 'list'
+      params:
+        user_id: params.twitterIdStr || ''
+        scren_name: params.screenName || ''
+
+
 
   ###
   fav
@@ -168,4 +198,21 @@ module.exports = class TwitterClient extends TwitterClientDefine
       params:
         id: params.tweetIdStr
 
-  # RT
+
+  ###
+  ツイート関連(RTを含む)
+  ###
+  retweetStatus: (params) ->
+    @postViaAPI
+      method: 'statuses'
+      type: 'retweet'
+      params:
+        id: params.tweetIdStr
+
+  destroyStatus: (params) ->
+    @postViaAPI
+      method: 'statuses'
+      type: 'destroy'
+      params:
+        id: params.tweetIdStr
+
