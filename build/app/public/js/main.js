@@ -168,12 +168,6 @@ angular.module("myApp.services", []).service("CommonService", function() {
   };
 });
 
-angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
-  return function(scope, elm, attrs) {
-    elm.text(version);
-  };
-}]);
-
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
   $scope.isAuthenticated = AuthService.status.isAuthenticated;
@@ -212,7 +206,13 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$log", "
     return $scope[prop] = _.uniq($scope[prop], key);
   };
   console.log('Index AuthService.user = ', AuthService.user);
-  return TweetService.twitterTest(AuthService.user);
+  TweetService.twitterPostTest(AuthService.user);
+}]);
+
+angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
+  return function(scope, elm, attrs) {
+    elm.text(version);
+  };
 }]);
 
 angular.module("myApp.services").service("AuthService", ["$http", function($http) {
@@ -323,6 +323,16 @@ angular.module("myApp.services").service("TweetService", ["$http", function($htt
           user: user
         }).success(function(data) {
           console.log('twitterTest in service data = ', data);
+          return resolve(data);
+        });
+      });
+    },
+    twitterPostTest: function(user) {
+      return new Promise(function(resolve, reject) {
+        return $http.post('/api/twitterPostTest', {
+          user: user
+        }).success(function(data) {
+          console.log('twitterPostTest in service data = ', data);
           return resolve(data);
         });
       });

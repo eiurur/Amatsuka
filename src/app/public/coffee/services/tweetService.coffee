@@ -84,3 +84,11 @@ angular.module "myApp.services"
           .success (data) ->
             console.log 'twitterTest in service data = ', data
             return resolve data
+
+    # TwitterAPI、投稿動作テスト用
+    twitterPostTest: (user) ->
+      return new Promise (resolve, reject) ->
+        $http.post('/api/twitterPostTest', user: user)
+          .success (data) ->
+            console.log 'twitterPostTest in service data = ', data
+            return resolve data

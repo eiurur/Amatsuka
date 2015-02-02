@@ -27,9 +27,8 @@
       return new Promise((function(_this) {
         return function(resolve, reject) {
           return settings.twitterAPI[params.method](params.type, params.params, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data.length);
             if (error) {
-              console.log("twitter." + params.method + " error =  ", error);
+              console.log("In getViaAPI twitter." + params.method + "." + params.type + " error =  ", error);
               return reject(error);
             }
             return resolve(data);
@@ -42,9 +41,8 @@
       return new Promise((function(_this) {
         return function(resolve, reject) {
           return settings.twitterAPI[params.method](params.type, params.params, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
-            console.log(data.length);
             if (error) {
-              console.log("twitter." + params.method + " error =  ", error);
+              console.log("In getViaAPI twitter." + params.method + "." + params.type + " error =  ", error);
               return reject(error);
             }
             return resolve(data);
@@ -239,7 +237,9 @@
         method: 'favorites',
         type: 'list',
         params: {
-          user_id: params.twitterIdStr || params.screenName
+          user_id: params.twitterIdStr || '',
+          screen_name: params.screenName || '',
+          count: params.count || settings.MAX_NUM_GET_FAV_TWEET_FROM_LIST
         }
       });
     };
@@ -249,7 +249,8 @@
         method: 'favorites',
         type: 'create',
         params: {
-          id: params.tweetIdStr
+          id: params.tweetIdStr,
+          include_entities: true
         }
       });
     };

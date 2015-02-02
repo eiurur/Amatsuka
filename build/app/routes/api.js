@@ -1,5 +1,5 @@
 (function() {
-  var Promise, UserProvider, dir, moment, my, settings, twitterTest, _;
+  var Promise, UserProvider, dir, moment, my, settings, twitterPostTest, twitterTest, _;
 
   dir = '../../lib/';
 
@@ -12,6 +12,8 @@
   my = require(dir + 'my');
 
   twitterTest = require(dir + 'twitter-test').twitterTest;
+
+  twitterPostTest = require(dir + 'twitter-post-test').twitterPostTest;
 
   UserProvider = require(dir + 'model').UserProvider;
 
@@ -40,9 +42,17 @@
     });
     app.post('/api/twitterTest', function(req, res) {
       console.log("\n============> twitterTest in API\n");
-      console.log("req.body.user = ", req.body.user);
       return twitterTest(req.body.user).then(function(data) {
-        console.log('routes data = ', data);
+        console.log('twitterTest data = ', data);
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/twitterPostTest', function(req, res) {
+      console.log("\n============> twitterPostTest in API\n");
+      return twitterPostTest(req.body.user).then(function(data) {
+        console.log('twitterPostTest data = ', data);
         return res.json({
           data: data
         });

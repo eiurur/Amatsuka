@@ -18,8 +18,11 @@ angular.module "myApp.controllers"
   uniq = (prop, key) ->
     $scope[prop] = _.uniq $scope[prop], key
 
+  # 動作テスト用
   console.log 'Index AuthService.user = ', AuthService.user
-  TweetService.twitterTest(AuthService.user)
+  # TweetService.twitterTest(AuthService.user)
+  TweetService.twitterPostTest(AuthService.user)
+  return
 
   # # LightBox
   # $scope.Lightbox = Lightbox

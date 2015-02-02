@@ -19,9 +19,9 @@ class TwitterClientDefine
       , @user.twitter_token
       , @user.twitter_token_secret
       , (error, data, response) ->
-        console.log data.length
+        # console.log data
         if error
-          console.log "twitter.#{params.method} error =  ", error
+          console.log "In getViaAPI twitter.#{params.method}.#{params.type} error =  ", error
           return reject error
         return resolve data
 
@@ -32,9 +32,9 @@ class TwitterClientDefine
       , @user.twitter_token
       , @user.twitter_token_secret
       , (error, data, response) ->
-        console.log data.length
+        # console.log data
         if error
-          console.log "twitter.#{params.method} error =  ", error
+          console.log "In getViaAPI twitter.#{params.method}.#{params.type} error =  ", error
           return reject error
         return resolve data
 
@@ -84,6 +84,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
       type: 'show'
       params:
         list_id: params.listIdStr
+
   # リストのメンバーを表示
   getListsMembers: (params) ->
     @getViaAPI
@@ -127,8 +128,6 @@ module.exports = class TwitterClient extends TwitterClientDefine
       type: 'show'
       params:
         list_id: params.listIdStr
-
-
 
   getUserIds: (params) =>
     @getViaAPI
@@ -182,7 +181,9 @@ module.exports = class TwitterClient extends TwitterClientDefine
       method: 'favorites'
       type: 'list'
       params:
-        user_id: params.twitterIdStr || params.screenName
+        user_id: params.twitterIdStr || ''
+        screen_name: params.screenName || ''
+        count: params.count || settings.MAX_NUM_GET_FAV_TWEET_FROM_LIST
 
   createFav: (params) ->
     @postViaAPI
@@ -190,6 +191,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
       type: 'create'
       params:
         id: params.tweetIdStr
+        include_entities: true
 
   destroyFav: (params) ->
     @postViaAPI
@@ -209,6 +211,9 @@ module.exports = class TwitterClient extends TwitterClientDefine
       params:
         id: params.tweetIdStr
 
+  # Note:
+  # リツイートを解除したいとき
+  # -> このAPIに渡すidはリツイート後のtweet_id。リツイート元ではないよ。
   destroyStatus: (params) ->
     @postViaAPI
       method: 'statuses'

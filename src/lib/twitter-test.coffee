@@ -23,28 +23,29 @@ exports.twitterTest = (user) ->
 
       amatsukaList = _.find lists, 'name': 'Amatsuka'
 
-      console.log 'amatsukaList = ', amatsukaList
+      console.log 'amatsukaList = ', amatsukaList.id_str
 
       twitterClient.getListsShow(listIdStr: amatsukaList.id_str)
     .then (list) ->
-      console.log '\ngetListsShow list -> ', list.name
+      console.log '\ngetListsShow list.id_str -> ', list.id_str
 
       twitterClient.destroyLists(listIdStr: list.id_str)
     .then (data) ->
-      console.log '\ndestroyLists data.length -> ', data
+      console.log '\ndestroyLists data.id_str -> ', data.id_str
 
       # time = my.formatX()
       twitterClient.createLists( name: "Amatsuka", mode: 'private')
     .then (list) ->
-      console.log '\ncreateLists lists -> ', list
+      console.log '\ncreateLists lists -> ', list.id_str
 
-      twitterClient.createMemberList(listIdStr: list.id_str, twitterIdStr: '2686409167')
+      twitterClient.createListsMembers(listIdStr: list.id_str, twitterIdStr: '2686409167')
     .then (data) ->
-      console.log '\ncreateMemberList data -> ', data
+      console.log '\ncreateMemberList data -> ', data.id_str
 
       twitterClient.getListsMembers(listIdStr: data.id_str)
     .then (members) ->
-      console.log '\ngetListsCreate members -> ', members
+      console.log '\ngetListsMembers members.users[0].screen_name -> ',
+        members.users[0].screen_name
 
       return resolve members
 

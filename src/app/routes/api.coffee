@@ -4,6 +4,7 @@ _                = require 'lodash'
 {Promise}        = require 'es6-promise'
 my               = require dir + 'my'
 {twitterTest}    = require dir + 'twitter-test'
+{twitterPostTest}    = require dir + 'twitter-post-test'
 {UserProvider}   = require dir + 'model'
 settings         = if process.env.NODE_ENV is 'production'
   require dir + 'configs/production'
@@ -30,10 +31,19 @@ module.exports = (app) ->
   # APIの動作テスト。後で消す
   app.post '/api/twitterTest', (req, res) ->
     console.log "\n============> twitterTest in API\n"
-    console.log "req.body.user = ", req.body.user
+    # console.log "req.body.user = ", req.body.user
     twitterTest(req.body.user)
     .then (data) ->
-      console.log 'routes data = ', data
+      console.log 'twitterTest data = ', data
+      res.json data: data
+
+  # APIの動作テスト(おもに投稿関連)。後で消す
+  app.post '/api/twitterPostTest', (req, res) ->
+    console.log "\n============> twitterPostTest in API\n"
+    # console.log "req.body.user = ", req.body.user
+    twitterPostTest(req.body.user)
+    .then (data) ->
+      console.log 'twitterPostTest data = ', data
       res.json data: data
 
   #　まだ動かん

@@ -25,6 +25,7 @@
     GRACE_TIME_SERVER: 0,
     GRACE_TIME_CLEAR: 1 * 1000,
     INTERVAL_TIME_CLEAR: 10 * 1000,
+    MAX_NUM_GET_FAV_TWEET_FROM_LIST: 200,
     twitterAPI: new TwitterAPI({
       consumerKey: TW_CK,
       consumerSecret: TW_CS,
