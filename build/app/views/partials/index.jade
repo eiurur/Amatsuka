@@ -1,1 +1,6 @@
 h1 Index
+
+p home
+
+div(ng-repeat='tweet in favs')
+  img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload")

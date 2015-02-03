@@ -205,8 +205,12 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$log", "
   uniq = function(prop, key) {
     return $scope[prop] = _.uniq($scope[prop], key);
   };
+  $scope.favs = null;
   console.log('Index AuthService.user = ', AuthService.user);
-  TweetService.twitterPostTest(AuthService.user);
+  TweetService.twitterPostTest(AuthService.user).then(function(data) {
+    $scope.favs = data.data;
+    return $scope.$apply();
+  });
 }]);
 
 angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
