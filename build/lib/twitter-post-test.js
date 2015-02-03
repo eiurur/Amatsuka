@@ -31,7 +31,6 @@
         });
       }).then(function(data) {
         console.log('\n createFav -> ', data);
-        console.log(retweetIdStr);
         return twitterClient.destroyFav({
           tweetIdStr: retweetIdStr
         });

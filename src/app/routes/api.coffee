@@ -1,12 +1,13 @@
-dir              = '../../lib/'
-moment           = require 'moment'
-_                = require 'lodash'
-{Promise}        = require 'es6-promise'
-my               = require dir + 'my'
-{twitterTest}    = require dir + 'twitter-test'
-{twitterPostTest}    = require dir + 'twitter-post-test'
-{UserProvider}   = require dir + 'model'
-settings         = if process.env.NODE_ENV is 'production'
+dir               = '../../lib/'
+moment            = require 'moment'
+_                 = require 'lodash'
+{Promise}         = require 'es6-promise'
+my                = require "#{dir}my"
+TwitterCilent     = require "#{dir}TwitterClient"
+{twitterTest}     = require "#{dir}twitter-test"
+{twitterPostTest} = require "#{dir}twitter-post-test"
+{UserProvider}    = require "#{dir}model"
+settings          = if process.env.NODE_ENV is 'production'
   require dir + 'configs/production'
 else
   require dir + 'configs/development'
@@ -47,21 +48,57 @@ module.exports = (app) ->
       res.json data: data
 
   #　まだ動かん
-  app.get '/api/timeline/:type/:id', (req, res) ->
-    console.log "\n============> get/timeline/:type/:id in API\n"
-    PostProvider.findUserById
-      twitterIdStr: req.params.id
-    , (err, data) ->
-      console.log data
-      res.json data: data
+  # app.get '/api/timeline/:type/:id', (req, res) ->
+  #   console.log "\n============> get/timeline/:type/:id in API\n"
+  #   PostProvider.findUserById
+  #     twitterIdStr: req.params.id
+  #   , (err, data) ->
+  #     console.log data
+  #     res.json data: data
 
   # GET リストの情報(公開、非公開)
+  app.get '/api/lists/list/:id/:count?', (req, res) ->
+    console.log "\n============> get/lists/list/:id/:count in API\n"
+    return if _.isUndefined(req.session.passport.user)
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.getListsList
+      twitterIdStr: req.params.id
+      count: req.params.count
+    .then (data) ->
+      console.log '/api/lists/list/:id/:count data.length = ', data.length
+      res.json data: data
 
   # GET リストのタイムラインを取得
+  app.get '/api/lists/statuses/:id/:maxId?/:count?', (req, res) ->
+    console.log "\n============> get/lists/statuses/:id/:count in API\n"
+    return if _.isUndefined(req.session.passport.user)
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.getListsStatuses
+      listIdStr: req.params.id
+      maxId: req.params.maxId
+      count: req.params.count
+    .then (data) ->
+      console.log '/api/lists/list/:id/:count data.length = ', data.length
+      res.json data: data
 
   # GET タイムラインの情報(home_timeline, user_timeline)
+  app.get '/api/timeline/:id/:maxId?/:count?', (req, res) ->
+    console.log "\n============> get/timeline/statuses/:id/:count in API\n"
+    return if _.isUndefined(req.session.passport.user)
+    m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient[m]
+      listIdStr: req.params.id
+      maxId: req.params.maxId
+      count: req.params.count
+    .then (data) ->
+      console.log '/api/timeline/list/:id/:count data.length = ', data.length
+      res.json data: data
 
   # GET アプリ上の仮想的なタイムラインの情報 ( = Amatsuka リスト)
+  # まず、Amatsukaリストの存在を確認
+  # あれば、それを返すだけ。
+
 
   # GET フォロー状況の取得
 

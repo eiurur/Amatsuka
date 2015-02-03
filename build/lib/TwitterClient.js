@@ -63,11 +63,21 @@
       return TwitterClient.__super__.constructor.apply(this, arguments);
     }
 
-    TwitterClient.prototype.getHomeTimeline = function() {
+    TwitterClient.prototype.getHomeTimeline = function(params) {
+      var opts;
+      opts = {
+        count: params.count || settings.MAX_NUM_GET_TIMELINE_TWEET,
+        include_entities: true,
+        include_rts: true
+      };
+      if (params.maxId != null) {
+        opts.max_id = params.maxId;
+      }
+      console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'getTimeline',
         type: 'home_timeline',
-        params: ''
+        params: opts
       });
     };
 
@@ -76,7 +86,9 @@
         method: 'getTimeline',
         type: 'user_timeline',
         params: {
-          user_id: params.twitterIdStr || params.screenName
+          user_id: params.twitterIdStr || params.screenName,
+          include_entities: true,
+          include_rts: true
         }
       });
     };
@@ -99,13 +111,21 @@
     };
 
     TwitterClient.prototype.getListsStatuses = function(params) {
+      var opts;
+      opts = {
+        list_id: params.listIdStr,
+        count: params.count || settings.MAX_NUM_GET_LIST_STATUSES,
+        include_entities: true,
+        include_rts: false
+      };
+      if (params.maxId != null) {
+        opts.max_id = params.maxId;
+      }
+      console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'lists',
         type: 'statuses',
-        params: {
-          list_id: params.listIdStr,
-          count: params.count || settings.MAX_NUM_GET_LIST_STATUSES
-        }
+        params: opts
       });
     };
 

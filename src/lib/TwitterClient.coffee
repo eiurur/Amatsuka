@@ -42,11 +42,19 @@ class TwitterClientDefine
 module.exports = class TwitterClient extends TwitterClientDefine
 
   # 自分のTLを表示
-  getHomeTimeline: () ->
+  getHomeTimeline: (params) ->
+    opts =
+      count: params.count || settings.MAX_NUM_GET_TIMELINE_TWEET
+      include_entities: true
+      include_rts: true
+    if params.maxId?
+      opts.max_id = params.maxId
+    console.log "opts = ", opts
+
     @getViaAPI
       method: 'getTimeline'
       type: 'home_timeline'
-      params: ''
+      params: opts
 
   # 他ユーザのTLを表示
   getUserTimeline: (params) ->
@@ -55,6 +63,8 @@ module.exports = class TwitterClient extends TwitterClientDefine
       type: 'user_timeline'
       params:
         user_id: params.twitterIdStr || params.screenName
+        include_entities: true
+        include_rts: true
 
 
   # 自分の指定のリストのツイートから画像だけを表示
@@ -74,12 +84,19 @@ module.exports = class TwitterClient extends TwitterClientDefine
 
   # 自分の指定のリストのツイートを列挙
   getListsStatuses: (params) ->
+    opts =
+      list_id: params.listIdStr
+      count: params.count || settings.MAX_NUM_GET_LIST_STATUSES
+      include_entities: true
+      include_rts: false
+    if params.maxId?
+      opts.max_id = params.maxId
+    console.log "opts = ", opts
+
     @getViaAPI
       method: 'lists'
       type: 'statuses'
-      params:
-        list_id: params.listIdStr
-        count: params.count || settings.MAX_NUM_GET_LIST_STATUSES
+      params: opts
 
   # リストの情報を表示
   getListsShow: (params) ->

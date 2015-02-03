@@ -28,7 +28,6 @@ exports.twitterPostTest = (user) ->
       twitterClient.createFav(tweetIdStr: data.retweeted_status.id_str)
     .then (data) ->
       console.log '\n createFav -> ', data
-      console.log retweetIdStr
 
       twitterClient.destroyFav(tweetIdStr: retweetIdStr)
     .then (data) ->
@@ -40,9 +39,6 @@ exports.twitterPostTest = (user) ->
 
       twitterClient.getFavList(twitterIdStr: TARGET_TWITTER_ID_STR)
     .then (data) ->
-      # console.log data.length
-      # latestTweet =
-      # console.log latestTweet
       latestFavIdStr = data[0].id_str
       console.log '\n getFavList latestFavIdStr -> ', latestFavIdStr
 
