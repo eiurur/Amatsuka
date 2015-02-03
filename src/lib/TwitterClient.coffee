@@ -51,8 +51,8 @@ module.exports = class TwitterClient extends TwitterClientDefine
   # 他ユーザのTLを表示
   getUserTimeline: (params) ->
     @getViaAPI
-      method: 'user_timeline'
-      type: 'home_timeline'
+      method: 'getTimeline'
+      type: 'user_timeline'
       params:
         user_id: params.twitterIdStr || params.screenName
 
@@ -63,11 +63,14 @@ module.exports = class TwitterClient extends TwitterClientDefine
   List
   ###
   # 自分のリストを列挙
-  getListsList: ->
+  getListsList: (params) ->
     @getViaAPI
       method: 'lists'
       type: 'list'
-      params: ''
+      params:
+        user_id: params.twitterIdStr || ''
+        scren_name: params.screenName || ''
+        count: params.count || settings.MAX_NUM_GET_LIST
 
   # 自分の指定のリストのツイートを列挙
   getListsStatuses: (params) ->
@@ -76,6 +79,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
       type: 'statuses'
       params:
         list_id: params.listIdStr
+        count: params.count || settings.MAX_NUM_GET_LIST_STATUSES
 
   # リストの情報を表示
   getListsShow: (params) ->
@@ -139,17 +143,37 @@ module.exports = class TwitterClient extends TwitterClientDefine
   ###
   Follow
   ###
-  getMyFollowing: ->
+  # getFollowing: ->
+  #   @getViaAPI
+  #     method: 'friends'
+  #     type: 'list'
+  #     params:
+  #       user_id: params.twitterIdStr || ''
+  #       scren_name: params.screenName || ''
+  #       count: params.count || settings.FRINEDS_LIST_COUNT
+
+  # フォローイング
+  getFollowingList: ->
+    @getViaAPI
+      method: 'friends'
+      type: 'list'
+      params:
+        user_id: params.twitterIdStr || ''
+        scren_name: params.screenName || ''
+        count: params.count || settings.FRINEDS_LIST_COUNT
+
+  getMyFollowingList: ->
     @getViaAPI
       method: 'friends'
       type: 'list'
       params:
         user_id: @user._json.id_str
-        count: settings.FRINEDS_LIST_COUNT
+        count: params.count || settings.FRINEDS_LIST_COUNT
 
-  getFollowingList: ->
+  # フォロワー
+  getFollowersList: (params) ->
     @getViaAPI
-      method: 'friends'
+      method: 'followers'
       type: 'list'
       params:
         user_id: params.twitterIdStr || ''
@@ -161,16 +185,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
       type: 'list'
       params:
         user_id: @user._json.id_str
-        count: settings.FRINEDS_LIST_COUNT
-
-  getFollowersList: (params) ->
-    @getViaAPI
-      method: 'followers'
-      type: 'list'
-      params:
-        user_id: params.twitterIdStr || ''
-        scren_name: params.screenName || ''
-
+        count: params.count || settings.FRINEDS_LIST_COUNT
 
 
   ###

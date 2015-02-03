@@ -73,8 +73,8 @@
 
     TwitterClient.prototype.getUserTimeline = function(params) {
       return this.getViaAPI({
-        method: 'user_timeline',
-        type: 'home_timeline',
+        method: 'getTimeline',
+        type: 'user_timeline',
         params: {
           user_id: params.twitterIdStr || params.screenName
         }
@@ -86,11 +86,15 @@
     List
      */
 
-    TwitterClient.prototype.getListsList = function() {
+    TwitterClient.prototype.getListsList = function(params) {
       return this.getViaAPI({
         method: 'lists',
         type: 'list',
-        params: ''
+        params: {
+          user_id: params.twitterIdStr || '',
+          scren_name: params.screenName || '',
+          count: params.count || settings.MAX_NUM_GET_LIST
+        }
       });
     };
 
@@ -99,7 +103,8 @@
         method: 'lists',
         type: 'statuses',
         params: {
-          list_id: params.listIdStr
+          list_id: params.listIdStr,
+          count: params.count || settings.MAX_NUM_GET_LIST_STATUSES
         }
       });
     };
@@ -183,20 +188,32 @@
     Follow
      */
 
-    TwitterClient.prototype.getMyFollowing = function() {
+    TwitterClient.prototype.getFollowingList = function() {
+      return this.getViaAPI({
+        method: 'friends',
+        type: 'list',
+        params: {
+          user_id: params.twitterIdStr || '',
+          scren_name: params.screenName || '',
+          count: params.count || settings.FRINEDS_LIST_COUNT
+        }
+      });
+    };
+
+    TwitterClient.prototype.getMyFollowingList = function() {
       return this.getViaAPI({
         method: 'friends',
         type: 'list',
         params: {
           user_id: this.user._json.id_str,
-          count: settings.FRINEDS_LIST_COUNT
+          count: params.count || settings.FRINEDS_LIST_COUNT
         }
       });
     };
 
-    TwitterClient.prototype.getFollowingList = function() {
+    TwitterClient.prototype.getFollowersList = function(params) {
       return this.getViaAPI({
-        method: 'friends',
+        method: 'followers',
         type: 'list',
         params: {
           user_id: params.twitterIdStr || '',
@@ -211,18 +228,7 @@
         type: 'list',
         params: {
           user_id: this.user._json.id_str,
-          count: settings.FRINEDS_LIST_COUNT
-        }
-      });
-    };
-
-    TwitterClient.prototype.getFollowersList = function(params) {
-      return this.getViaAPI({
-        method: 'followers',
-        type: 'list',
-        params: {
-          user_id: params.twitterIdStr || '',
-          scren_name: params.screenName || ''
+          count: params.count || settings.FRINEDS_LIST_COUNT
         }
       });
     };
