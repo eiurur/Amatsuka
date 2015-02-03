@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.directives']).constant('utils', {
+angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).constant('utils', {
   'devices': {
     '0': 'PC',
     '1': 'Smart Phone',
@@ -146,6 +146,46 @@ angular.module("myApp.directives", []).directive('boxLoading', ["$interval", fun
   };
 });
 
+angular.module("myApp.factories", []).factory('Tweets', ["$http", "TweetService", function($http, TweetService) {
+  var Tweets;
+  Tweets = function(list, maxId) {
+    console.log(list);
+    this.list = list;
+    this.items = [];
+    this.busy = false;
+    this.isLast = false;
+    this.maxId = maxId;
+  };
+  Tweets.prototype.nextPage = function() {
+    if (this.busy || this.isLast) {
+      return;
+    }
+    this.busy = true;
+    return TweetService.getListsStatuses({
+      listIdStr: this.list.id_str,
+      maxId: this.maxId
+    }).then((function(_this) {
+      return function(data) {
+        var i, items;
+        _this.maxId = _.last(data.data).id_str;
+        console.log(_this.maxId);
+        items = TweetService.filterIncludeImage(data.data);
+        if (_.isEmpty(items)) {
+          _this.isLast = true;
+        }
+        i = 0;
+        while (i < items.length) {
+          _this.items.push(items[i]);
+          i++;
+          console.table(_this.items);
+        }
+        _this.busy = false;
+      };
+    })(this));
+  };
+  return Tweets;
+}]);
+
 angular.module("myApp.filters", []).filter("interpolate", ["version", function(version) {
   return function(text) {
     return String(text).replace(/\%VERSION\%/g, version);
@@ -191,25 +231,19 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
   });
 }]);
 
-angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$log", "AuthService", "TweetService", function($scope, $log, AuthService, TweetService) {
-  var pop, uniq, unshift;
+angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootScope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $rootScope, $log, AuthService, TweetService, Tweets) {
+  var amatsukaList, maxId;
   if (_.isEmpty(AuthService.user)) {
     return;
   }
-  pop = function(prop) {
-    return $scope[prop].pop();
-  };
-  unshift = function(prop, val) {
-    return $scope[prop].unshift(val);
-  };
-  uniq = function(prop, key) {
-    return $scope[prop] = _.uniq($scope[prop], key);
-  };
-  $scope.favs = null;
   console.log('Index AuthService.user = ', AuthService.user);
-  TweetService.twitterPostTest(AuthService.user).then(function(data) {
-    $scope.favs = data.data;
-    return $scope.$apply();
+  maxId = maxId || 0;
+  amatsukaList = {};
+  return TweetService.getListsList().then(function(data) {
+    amatsukaList = _.findWhere(data.data, {
+      'name': 'Amatsuka'
+    });
+    return $scope.tweets = new Tweets(amatsukaList, maxId);
   });
 }]);
 
@@ -234,9 +268,9 @@ angular.module("myApp.services").service("AuthService", ["$http", function($http
   };
 }]);
 
-angular.module("myApp.services").service("TweetService", ["$http", function($http) {
+angular.module("myApp.services").service("TweetService", ["$http", "$q", function($http, $q) {
   return {
-    textLinkReplace: function() {
+    activateLink: function() {
       return this.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&amp;%@!&#45;\/]))?)/g, "<a href=\"$1\" target=\"_blank\">$1</a>").replace(/(^|\s)(@|＠)(\w+)/g, "$1<a href=\"http://www.twitter.com/$3\" target=\"_blank\">@$3</a>").replace(/(?:^|[^ーー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9&_\/>]+)[#＃]([ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z]+[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*)/g, ' <a href="http://twitter.com/search?q=%23$1" target="_blank">#$1</a>');
     },
     iconBigger: function(url) {
@@ -307,18 +341,9 @@ angular.module("myApp.services").service("TweetService", ["$http", function($htt
           return null;
       }
     },
-    getHomeTimeline: function(type, twitterIdStr) {
-      return new Promise(function(resolve, reject) {
-        return $http.get("/api/timeline/:" + type + "/" + twitterIdStr).success(function(data) {
-          return resolve(data.data);
-        });
-      });
-    },
-    getUserTimeline: function(type, twitterIdStr) {
-      return new Promise(function(resolve, reject) {
-        return $http.get("/api/timeline/:" + type + "/" + twitterIdStr).success(function(data) {
-          return resolve(data.data);
-        });
+    filterIncludeImage: function(tweets) {
+      return _.filter(tweets, function(tweet) {
+        return _.has(tweet, 'extended_entities') && !_.isEmpty(tweet.extended_entities.media);
       });
     },
     twitterTest: function(user) {
@@ -337,6 +362,36 @@ angular.module("myApp.services").service("TweetService", ["$http", function($htt
           user: user
         }).success(function(data) {
           console.log('twitterPostTest in service data = ', data);
+          return resolve(data);
+        });
+      });
+    },
+    getHomeTimeline: function(type, twitterIdStr) {
+      return new Promise(function(resolve, reject) {
+        return $http.get("/api/timeline/:" + type + "/" + twitterIdStr).success(function(data) {
+          return resolve(data.data);
+        });
+      });
+    },
+    getUserTimeline: function(type, twitterIdStr) {
+      return new Promise(function(resolve, reject) {
+        return $http.get("/api/timeline/:" + type + "/" + twitterIdStr).success(function(data) {
+          return resolve(data.data);
+        });
+      });
+    },
+    getListsList: function() {
+      return $q(function(resolve, reject) {
+        return $http.get('/api/lists/list').success(function(data) {
+          console.table(data.data);
+          return resolve(data);
+        });
+      });
+    },
+    getListsStatuses: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId).success(function(data) {
+          console.table(data.data);
           return resolve(data);
         });
       });

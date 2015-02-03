@@ -65,7 +65,7 @@
         });
       });
     });
-    app.get('/api/lists/list/:id/:count?', function(req, res) {
+    app.get('/api/lists/list/:id?/:count?', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterCilent(req.session.passport.user);
       return twitterClient.getListsList({
@@ -94,8 +94,8 @@
     });
     return app.get('/api/timeline/:id/:maxId?/:count?', function(req, res) {
       var m, twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
       m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
+      twitterClient = new TwitterCilent(req.session.passport.user);
       return twitterClient[m]({
         listIdStr: req.params.id,
         maxId: req.params.maxId,

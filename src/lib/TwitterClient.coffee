@@ -21,7 +21,7 @@ class TwitterClientDefine
       , (error, data, response) ->
         # console.log data
         if error
-          console.log "In getViaAPI twitter.#{params.method}.#{params.type} error =  ", error
+          console.log "getViaAPI #{params.method}.#{params.type} e = ", error
           return reject error
         return resolve data
 
@@ -34,7 +34,7 @@ class TwitterClientDefine
       , (error, data, response) ->
         # console.log data
         if error
-          console.log "In getViaAPI twitter.#{params.method}.#{params.type} error =  ", error
+          console.log "getViaAPI #{params.method}.#{params.type} e = ", error
           return reject error
         return resolve data
 
@@ -47,7 +47,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
       count: params.count || settings.MAX_NUM_GET_TIMELINE_TWEET
       include_entities: true
       include_rts: true
-    if params.maxId?
+    unless params.maxId is '0'
       opts.max_id = params.maxId
     console.log "opts = ", opts
 
@@ -89,7 +89,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
       count: params.count || settings.MAX_NUM_GET_LIST_STATUSES
       include_entities: true
       include_rts: false
-    if params.maxId?
+    unless params.maxId is '0'
       opts.max_id = params.maxId
     console.log "opts = ", opts
 

@@ -1,7 +1,7 @@
 angular.module "myApp.services"
-  .service "TweetService", ($http) ->
+  .service "TweetService", ($http, $q) ->
 
-    textLinkReplace: () ->
+    activateLink: () ->
       @.replace(
         ///
         ((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)
@@ -63,19 +63,10 @@ angular.module "myApp.services"
         when 'user.url' then t.user.url
         else null
 
-    # まだ動かない
-    getHomeTimeline: (type, twitterIdStr) ->
-      return new Promise (resolve, reject) ->
-        $http.get("/api/timeline/:#{type}/#{twitterIdStr}")
-          .success (data) ->
-            return resolve data.data
-
-    # まだ動かない
-    getUserTimeline: (type, twitterIdStr) ->
-      return new Promise (resolve, reject) ->
-        $http.get("/api/timeline/:#{type}/#{twitterIdStr}")
-          .success (data) ->
-            return resolve data.data
+    filterIncludeImage: (tweets) ->
+      _.filter tweets, (tweet) ->
+        _.has(tweet, 'extended_entities') and
+        !_.isEmpty(tweet.extended_entities.media)
 
     # TwitterAPI動作テスト用
     twitterTest: (user) ->
@@ -91,4 +82,32 @@ angular.module "myApp.services"
         $http.post('/api/twitterPostTest', user: user)
           .success (data) ->
             console.log 'twitterPostTest in service data = ', data
+            return resolve data
+
+    # まだ動かない
+    getHomeTimeline: (type, twitterIdStr) ->
+      return new Promise (resolve, reject) ->
+        $http.get("/api/timeline/:#{type}/#{twitterIdStr}")
+          .success (data) ->
+            return resolve data.data
+
+    # まだ動かない
+    getUserTimeline: (type, twitterIdStr) ->
+      return new Promise (resolve, reject) ->
+        $http.get("/api/timeline/:#{type}/#{twitterIdStr}")
+          .success (data) ->
+            return resolve data.data
+
+    getListsList: ->
+      return $q (resolve, reject) ->
+        $http.get('/api/lists/list')
+          .success (data) ->
+            console.table data.data
+            return resolve data
+
+    getListsStatuses: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/lists/statuses/#{params.listIdStr}/#{params.maxId}")
+          .success (data) ->
+            console.table data.data
             return resolve data

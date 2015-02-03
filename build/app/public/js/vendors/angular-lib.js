@@ -317,7 +317,7 @@ function f(a,c){g.push("<a ");h.isDefined(b)&&g.push('target="',b,'" ');g.push('
 //# sourceMappingURL=angular-sanitize.min.js.map
 
 /*
- AngularJS v1.3.8
+ AngularJS v1.3.11
  (c) 2010-2014 Google, Inc. http://angularjs.org
  License: MIT
 */

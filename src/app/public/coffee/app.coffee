@@ -2,9 +2,11 @@ angular.module('myApp', [
   'ngRoute'
   'ngAnimate'
   'ngSanitize'
+  'infinite-scroll'
   'myApp.controllers'
   'myApp.filters'
   'myApp.services'
+  'myApp.factories'
   'myApp.directives'
 ])
 # よく使う関数を共通関数として定義し、controller/viewどちらからも使えるようにするには

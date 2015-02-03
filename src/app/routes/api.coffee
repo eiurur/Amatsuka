@@ -57,7 +57,7 @@ module.exports = (app) ->
       res.json data: data
 
   # GET リストの情報(公開、非公開)
-  app.get '/api/lists/list/:id/:count?', (req, res) ->
+  app.get '/api/lists/list/:id?/:count?', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)
     twitterClient.getListsList
       twitterIdStr: req.params.id
@@ -79,8 +79,8 @@ module.exports = (app) ->
 
   # GET タイムラインの情報(home_timeline, user_timeline)
   app.get '/api/timeline/:id/:maxId?/:count?', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
     m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
+    twitterClient = new TwitterCilent(req.session.passport.user)
     twitterClient[m]
       listIdStr: req.params.id
       maxId: req.params.maxId

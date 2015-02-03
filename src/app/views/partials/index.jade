@@ -1,6 +1,5 @@
 h1 Index
-
-p home
-
-div(ng-repeat='tweet in favs')
-  img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload")
+div(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1')
+  div(ng-repeat='tweet in tweets.items')
+    p {{tweet.text}}
+    img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload")

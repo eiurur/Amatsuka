@@ -28,7 +28,7 @@
         return function(resolve, reject) {
           return settings.twitterAPI[params.method](params.type, params.params, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
             if (error) {
-              console.log("In getViaAPI twitter." + params.method + "." + params.type + " error =  ", error);
+              console.log("getViaAPI " + params.method + "." + params.type + " e = ", error);
               return reject(error);
             }
             return resolve(data);
@@ -42,7 +42,7 @@
         return function(resolve, reject) {
           return settings.twitterAPI[params.method](params.type, params.params, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
             if (error) {
-              console.log("In getViaAPI twitter." + params.method + "." + params.type + " error =  ", error);
+              console.log("getViaAPI " + params.method + "." + params.type + " e = ", error);
               return reject(error);
             }
             return resolve(data);
@@ -70,7 +70,7 @@
         include_entities: true,
         include_rts: true
       };
-      if (params.maxId != null) {
+      if (params.maxId !== '0') {
         opts.max_id = params.maxId;
       }
       console.log("opts = ", opts);
@@ -116,9 +116,9 @@
         list_id: params.listIdStr,
         count: params.count || settings.MAX_NUM_GET_LIST_STATUSES,
         include_entities: true,
-        include_rts: false
+        include_rts: truw
       };
-      if (params.maxId != null) {
+      if (params.maxId !== '0') {
         opts.max_id = params.maxId;
       }
       console.log("opts = ", opts);

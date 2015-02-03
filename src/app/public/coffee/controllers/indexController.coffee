@@ -1,34 +1,55 @@
 angular.module "myApp.controllers"
   .controller "IndexCtrl", (
     $scope
+    $rootScope
     $log
     AuthService
     TweetService
+    Tweets
     ) ->
   return if _.isEmpty AuthService.user
-
-  pop = (prop) ->
-    $scope[prop].pop()
-    # StreamService.filters[prop].pop()
-
-  unshift = (prop, val) ->
-    $scope[prop].unshift(val)
-    # StreamService.filters[prop].unshift(val)
-
-  uniq = (prop, key) ->
-    $scope[prop] = _.uniq $scope[prop], key
-
-  $scope.favs = null
-  # 動作テスト用
   console.log 'Index AuthService.user = ', AuthService.user
 
-  TweetService.twitterPostTest(AuthService.user)
-  .then (data) ->
-    $scope.favs = data.data
-    $scope.$apply()
 
-  return
-  # $scope.favs = _.filter $scope.favs,
+  maxId = maxId || 0
+  amatsukaList = {}
+
+  # TweetService.twitterPostTest(AuthService.user)
+  # .then (data) ->
+  #   $scope.favs = data.data
+  #   TweetService.getListsList(AuthService.user)
+  # .then (data) ->
+  #   $scope.lists = data.data
+  #   $scope.$apply()
+
+  # 動くけど次を読み込まない
+  # TweetService.getListsList()
+  # .then (data) ->
+
+  #   amatsukaList = _.findWhere data.data, 'name': 'Amatsuka'
+  # TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId)
+
+  # .then (data) ->
+
+  #   maxId = _.last(data.data).id_str
+  #   $scope.tweets = TweetService.filterIncludeImage data.data
+  #   $scope.$apply()
+
+  TweetService.getListsList()
+  .then (data) ->
+
+    amatsukaList = _.findWhere data.data, 'name': 'Amatsuka'
+
+    $scope.tweets = new Tweets(amatsukaList, maxId)
+
+    #TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId)
+
+  # .then (data) ->
+
+  #   maxId = _.last(data.data).id_str
+  #   $scope.tweets = TweetService.filterIncludeImage data.data
+  #   $scope.$apply()
+
 
   # # LightBox
   # $scope.Lightbox = Lightbox
