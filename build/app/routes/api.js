@@ -42,8 +42,15 @@
         });
       });
     });
+    app.use('/api/?', function(req, res, next) {
+      console.log("======> " + req.originalUrl);
+      if (!_.isUndefined(req.session.passport.user)) {
+        return next();
+      } else {
+        return res.redirect('/');
+      }
+    });
     app.post('/api/twitterTest', function(req, res) {
-      console.log("\n============> twitterTest in API\n");
       return twitterTest(req.body.user).then(function(data) {
         console.log('twitterTest data = ', data);
         return res.json({
@@ -52,9 +59,7 @@
       });
     });
     app.post('/api/twitterPostTest', function(req, res) {
-      console.log("\n============> twitterPostTest in API\n");
       return twitterPostTest(req.body.user).then(function(data) {
-        console.log('twitterPostTest data = ', data);
         return res.json({
           data: data
         });
@@ -62,10 +67,6 @@
     });
     app.get('/api/lists/list/:id/:count?', function(req, res) {
       var twitterClient;
-      console.log("\n============> get/lists/list/:id/:count in API\n");
-      if (_.isUndefined(req.session.passport.user)) {
-        return;
-      }
       twitterClient = new TwitterCilent(req.session.passport.user);
       return twitterClient.getListsList({
         twitterIdStr: req.params.id,
@@ -79,10 +80,6 @@
     });
     app.get('/api/lists/statuses/:id/:maxId?/:count?', function(req, res) {
       var twitterClient;
-      console.log("\n============> get/lists/statuses/:id/:count in API\n");
-      if (_.isUndefined(req.session.passport.user)) {
-        return;
-      }
       twitterClient = new TwitterCilent(req.session.passport.user);
       return twitterClient.getListsStatuses({
         listIdStr: req.params.id,
@@ -97,12 +94,8 @@
     });
     return app.get('/api/timeline/:id/:maxId?/:count?', function(req, res) {
       var m, twitterClient;
-      console.log("\n============> get/timeline/statuses/:id/:count in API\n");
-      if (_.isUndefined(req.session.passport.user)) {
-        return;
-      }
-      m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
       twitterClient = new TwitterCilent(req.session.passport.user);
+      m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
       return twitterClient[m]({
         listIdStr: req.params.id,
         maxId: req.params.maxId,

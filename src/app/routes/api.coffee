@@ -12,10 +12,10 @@ settings          = if process.env.NODE_ENV is 'production'
 else
   require dir + 'configs/development'
 
+
+# JSON API
 module.exports = (app) ->
 
-
-  # JSON API
   app.get '/api/isAuthenticated', (req, res) ->
     sessionUserData = null
     unless _.isUndefined req.session.passport.user
@@ -29,10 +29,21 @@ module.exports = (app) ->
     , (err, data) ->
       res.json data: data
 
+  # ここから下のにだけ適用。
+  # todo? hack?
+  # /api/twitter/~ にするか、
+  # ログインが不要なリクエストから /api を省くか、
+  # どっちかにしたほうが見通しがいい。
+  # 修正して
+  app.use '/api/?', (req, res, next) ->
+    console.log "======> #{req.originalUrl}"
+    unless _.isUndefined(req.session.passport.user)
+      next()
+    else
+      res.redirect '/'
+
   # APIの動作テスト。後で消す
   app.post '/api/twitterTest', (req, res) ->
-    console.log "\n============> twitterTest in API\n"
-    # console.log "req.body.user = ", req.body.user
     twitterTest(req.body.user)
     .then (data) ->
       console.log 'twitterTest data = ', data
@@ -40,26 +51,13 @@ module.exports = (app) ->
 
   # APIの動作テスト(おもに投稿関連)。後で消す
   app.post '/api/twitterPostTest', (req, res) ->
-    console.log "\n============> twitterPostTest in API\n"
-    # console.log "req.body.user = ", req.body.user
     twitterPostTest(req.body.user)
     .then (data) ->
-      console.log 'twitterPostTest data = ', data
+      # console.log 'twitterPostTest data = ', data
       res.json data: data
-
-  #　まだ動かん
-  # app.get '/api/timeline/:type/:id', (req, res) ->
-  #   console.log "\n============> get/timeline/:type/:id in API\n"
-  #   PostProvider.findUserById
-  #     twitterIdStr: req.params.id
-  #   , (err, data) ->
-  #     console.log data
-  #     res.json data: data
 
   # GET リストの情報(公開、非公開)
   app.get '/api/lists/list/:id/:count?', (req, res) ->
-    console.log "\n============> get/lists/list/:id/:count in API\n"
-    return if _.isUndefined(req.session.passport.user)
     twitterClient = new TwitterCilent(req.session.passport.user)
     twitterClient.getListsList
       twitterIdStr: req.params.id
@@ -70,8 +68,6 @@ module.exports = (app) ->
 
   # GET リストのタイムラインを取得
   app.get '/api/lists/statuses/:id/:maxId?/:count?', (req, res) ->
-    console.log "\n============> get/lists/statuses/:id/:count in API\n"
-    return if _.isUndefined(req.session.passport.user)
     twitterClient = new TwitterCilent(req.session.passport.user)
     twitterClient.getListsStatuses
       listIdStr: req.params.id
@@ -83,10 +79,8 @@ module.exports = (app) ->
 
   # GET タイムラインの情報(home_timeline, user_timeline)
   app.get '/api/timeline/:id/:maxId?/:count?', (req, res) ->
-    console.log "\n============> get/timeline/statuses/:id/:count in API\n"
-    return if _.isUndefined(req.session.passport.user)
-    m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
     twitterClient = new TwitterCilent(req.session.passport.user)
+    m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
     twitterClient[m]
       listIdStr: req.params.id
       maxId: req.params.maxId
