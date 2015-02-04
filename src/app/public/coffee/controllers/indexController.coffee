@@ -40,6 +40,10 @@ angular.module "myApp.controllers"
 
     amatsukaList = _.findWhere data.data, 'name': 'Amatsuka'
 
+  #   TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId)
+  # .then (data) ->
+  #   maxId = TweetService.decStrNum(_.last(data.data).id_str)
+  #   $scope.tweets = TweetService.filterIncludeImage data.data
     $scope.tweets = new Tweets(amatsukaList, maxId)
 
     #TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId)

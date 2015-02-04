@@ -116,7 +116,7 @@
         list_id: params.listIdStr,
         count: params.count || settings.MAX_NUM_GET_LIST_STATUSES,
         include_entities: true,
-        include_rts: truw
+        include_rts: true
       };
       if (params.maxId !== '0') {
         opts.max_id = params.maxId;

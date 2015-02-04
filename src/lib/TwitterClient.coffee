@@ -88,7 +88,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
       list_id: params.listIdStr
       count: params.count || settings.MAX_NUM_GET_LIST_STATUSES
       include_entities: true
-      include_rts: false
+      include_rts: true
     unless params.maxId is '0'
       opts.max_id = params.maxId
     console.log "opts = ", opts

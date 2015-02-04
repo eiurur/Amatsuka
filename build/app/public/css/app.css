@@ -8,26 +8,73 @@
 /**
  * Colors
  */
+/*
+明度
+lighten(red, 30%);
+darken(red, 30%);
+
+彩度
+saturate(red, 20%);
+desaturate(red, 20%);
+
+透明度
+transparentize(red, 0.8);
+rgba(red, 0.2);
+
+
+規約は原則 BEM を使用する
+
+BEM
+親の要素となるような要素をBlockとして命名
+.item
+.item-list
+.form
+.form-search
+.form-search-item
+
+ElementはBlockに内包される部品。Elementが集まったものがBlockになるので、ElementはBlock内部に存在します。
+.item__text
+.item-list__btn
+.form__input
+.form-search__title
+.form-search-item__user
+
+Modifierは状態を表すときに使用されます。
+.item--red
+.item-list__btn--type_success
+.form__input--active
+.form-search__title--hover
+.form-search-result__user--following
+
+その他
+
+・CSSプロパティはアルファベット順
+
+*/
 body {
-  font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
-  background-color: #fff;
-  margin-top: 0;
-  font-size: 20px;
+  background: #292929;
   color: #000;
+  font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
+  font-size: 20px;
+  font-weight: 400;
+  margin-top: 0;
+  line-height: 1.4;
 }
 
 ul {
-  list-style: none;
   margin: 0;
+  list-style: none;
   padding-left: 0;
 }
 
 .sidebar {
   background: #292929;
-  position: fixed;
+  border-right: 1px solid #434343;
   height: 100%;
-  z-index: 10000;
+  position: fixed;
+  top: 0px;
   width: 160px;
+  z-index: 10000;
 }
 .sidebar .logo {
   padding: 30px;
@@ -50,7 +97,7 @@ ul {
   font-size: 16px;
 }
 .sidebar .main-nav .nav-text a {
-  color: #ccc;
+  color: #a2a2a2;
   text-decoration: none;
   display: block;
   font-weight: 300;
@@ -59,11 +106,91 @@ ul {
 }
 
 .site-main {
+  min-height: 1080px;
   position: relative;
-  padding-left: 200px;
+  padding-left: 266px;
   padding-bottom: 30px;
   padding-right: 200px;
-  min-height: 1600px;
+}
+
+.timeline {
+  color: #a1a1a1;
+  padding: 30px 0;
+  width: 625px;
+}
+.timeline i {
+  color: #a1a1a1;
+}
+
+.timeline__post {
+  background: #fff;
+  border-radius: 3px;
+  font-size: 14px;
+  margin: 0 0 20px 0;
+  padding: 15px 0;
+  position: relative;
+  width: 540px;
+}
+
+.timeline__post--icon {
+  position: absolute;
+  left: -85px;
+  top: 0px;
+  height: 64px;
+  width: 64px;
+}
+.timeline__post--icon img {
+  border-radius: 3px;
+  max-width: 64px;
+}
+
+.timeline__post--header {
+  padding: 0 20px;
+}
+.timeline__post--header a {
+  color: #a1a1a1;
+  text-decoration: none;
+}
+
+.timeline__post--header--info {
+  display: inline-block;
+}
+
+.timeline__post--header--time {
+  display: inline-block;
+  float: right;
+}
+
+.timeline__post--header--rt_source {
+  padding: 0 5px;
+}
+
+.timeline__post--image {
+  max-width: 100%;
+  padding: 15px 0;
+}
+.timeline__post--image img {
+  width: 540px;
+}
+
+.timeline__post--text {
+  padding: 0 20px;
+  color: #a1a1a1;
+}
+.timeline__post--text a {
+  border-bottom: 1px solid #c7c7c7;
+  color: #a1a1a1;
+  text-decoration: none;
+}
+
+.timeline__post--footer {
+  line-height: 45px;
+}
+
+.timeline__post--footer--controls {
+  height: 45px;
+  text-align: right;
+  white-space: nowrap;
 }
 
 /*# sourceMappingURL=app.css.map */

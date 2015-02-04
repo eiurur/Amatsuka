@@ -8,8 +8,21 @@ $sidebar-left-and-right-space: 30px;
  * Fonts
  */
 $baseFontSize: 20px;
+$post--font-size: 14px;
 
 /**
  * Colors
  */
 $baseColor: #424242;
+// $sidebar-color: #272B33;
+// $sidebar-color: #FE6260;
+$sidebar-color: #292929;
+// $sidebar__line-color: #2ECC71;
+$sidebar__line-color: lighten($sidebar-color, 10%);
+// $sidebar__line-color: #FE6260;
+$link-color: #a1a1a1;
+
+// timeline
+// $body__bg-color: #272B33;
+$body__bg-color: #292929;
+$timeline__post--bg-color: #fff;

@@ -1,5 +1,19 @@
-h1 Index
-div(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1')
-  div(ng-repeat='tweet in tweets.items')
-    p {{tweet.text}}
-    img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload")
+//- h1 Index
+.timeline(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1')
+  .timeline__post(ng-repeat='tweet in tweets.items')
+    .timeline__post--header
+      .timeline__post--header--info
+        .timeline__post--header--link
+          {{tweet.user.screen_name}}
+          span.timeline__post--header--rt_source(ng-if="tweet.retweeted_status")
+            i.fa.fa-retweet
+          a(href="") {{tweet.retweeted_status.user.screen_name}}
+      .timeline__post--header--time
+        {{tweet.time}}
+    .timeline__post--icon
+      img.fade(ng-src="{{tweet.user.profile_image_url}}", img-preload="img-preload")
+    .timeline__post--image
+      img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload")
+    .timeline__post--text(ng-bind-html='tweet.text | newlines')
+  div(ng-show='tweets.busy') Loading data...
+  div(ng-show='tweets.isLast') 終わりです

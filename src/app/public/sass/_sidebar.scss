@@ -1,9 +1,12 @@
 .sidebar {
-  background: darken($baseColor, 10%);
-  position: fixed;
+  // background: darken($baseColor, 10%);
+  background: $sidebar-color;
+  border-right: 1px solid $sidebar__line-color;
   height: 100%;
-  z-index: 10000;
+  position: fixed;
+  top: 0px;
   width: $sidebar-width;
+  z-index: 10000;
 
   .logo {
     padding : $sidebar-left-and-right-space;
@@ -29,7 +32,7 @@
         font-size: $baseFontSize - 4px;
       }
       a {
-        color: #ccc;
+        color: #a2a2a2;
         text-decoration: none;
         display: block;
         font-weight: 300;

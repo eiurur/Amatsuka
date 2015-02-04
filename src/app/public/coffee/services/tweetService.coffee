@@ -1,8 +1,8 @@
 angular.module "myApp.services"
   .service "TweetService", ($http, $q) ->
 
-    activateLink: () ->
-      @.replace(
+    activateLink: (t) ->
+      t.replace(
         ///
         ((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)
         (:[0-9]+)?(\/|\/([\w#!:.?+=&amp;%@!&#45;\/]))?)
@@ -63,6 +63,24 @@ angular.module "myApp.services"
         when 'user.url' then t.user.url
         else null
 
+    # max_idは自分のIDも含むため、1だけデクリメントしないとダメ。
+    # それ用の関数。
+    decStrNum: (n) ->
+      n = n.toString()
+      result = n
+      i = n.length - 1
+      while i > -1
+        if n[i] == '0'
+          result = result.substring(0, i) + '9' + result.substring(i + 1)
+          i--
+        else
+          result = result.substring(0, i) + (parseInt(n[i], 10) - 1).toString() + result.substring(i + 1)
+          return result
+      result
+
+    fromNow: (time) ->
+      moment(time).fromNow(true)
+
     filterIncludeImage: (tweets) ->
       _.filter tweets, (tweet) ->
         _.has(tweet, 'extended_entities') and
@@ -107,7 +125,7 @@ angular.module "myApp.services"
 
     getListsStatuses: (params) ->
       return $q (resolve, reject) ->
-        $http.get("/api/lists/statuses/#{params.listIdStr}/#{params.maxId}")
+        $http.get("/api/lists/statuses/#{params.listIdStr}/#{params.maxId}/#{params.count}")
           .success (data) ->
             console.table data.data
             return resolve data
