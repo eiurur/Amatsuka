@@ -39,6 +39,184 @@ for (i in methods) {
   _fn(methods[i]);
 }
 
+angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
+  return $rootScope.$on('$locationChangeStart', function(event, next, current) {
+    $log.info('location changin to: ' + next);
+  });
+}]);
+
+angular.module("myApp.directives", []).directive('boxLoading', ["$interval", function($interval) {
+  return {
+    restrict: 'E',
+    link: function(scope, element, attrs) {
+      var allocations, animate, count, rotate, tag;
+      tag = '<div class="loader-12day">\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n</div>';
+      element.append(tag);
+      count = 0;
+      allocations = [0, 1, 2, 5, 8, 7, 6, 3];
+      rotate = function() {
+        var bs;
+        bs = element.find('b');
+        _.map(bs, function(elem) {
+          return elem.style.background = 'black';
+        });
+        bs[allocations[count]].style.background = 'white';
+        count++;
+        if (count === 8) {
+          return count = 0;
+        }
+      };
+      return animate = $interval(rotate, 150);
+    }
+  };
+}]).directive("slideable", function() {
+  return {
+    restrict: "C",
+    compile: function(element, attr) {
+      var contents, postLink;
+      contents = element.html();
+      element.html("<div class='slideable_content'\n  style='margin:0 !important; padding:0 !important'>\n  " + contents + "\n</div>");
+      postLink = function(scope, element, attrs) {
+        console.log(attrs);
+        attrs.duration = !attrs.duration ? "0.4s" : attrs.duration;
+        attrs.easing = !attrs.easing ? "ease-in-out" : attrs.easing;
+        return element.css({
+          overflow: "hidden",
+          height: "0px",
+          transitionProperty: "height",
+          transitionDuration: attrs.duration,
+          transitionTimingFunction: attrs.easing
+        });
+      };
+    }
+  };
+}).directive("slideToggle", function() {
+  return {
+    restrict: "A",
+    link: function(scope, element, attrs) {
+      var content, target;
+      target = void 0;
+      content = void 0;
+      attrs.expanded = false;
+      return element.bind("click", function() {
+        var y;
+        if (!target) {
+          target = document.querySelector(attrs.slideToggle);
+        }
+        if (!content) {
+          content = target.querySelector(".slideable_content");
+        }
+        if (!attrs.expanded) {
+          content.style.border = "1px solid rgba(0,0,0,0)";
+          y = content.clientHeight;
+          content.style.border = 0;
+          target.style.height = y + "px";
+        } else {
+          target.style.height = "0px";
+        }
+        return attrs.expanded = !attrs.expanded;
+      });
+    }
+  };
+}).directive("imgPreload", ["$rootScope", function($rootScope) {
+  return {
+    restrict: "A",
+    scope: {
+      ngSrc: "@"
+    },
+    link: function(scope, element, attrs) {
+      return element.on("load", function() {
+        return element.addClass("in");
+      }).on("error", function() {});
+    }
+  };
+}]).directive("scrollOnClick", function() {
+  return {
+    restrict: "A",
+    scope: {
+      scrollTo: "@"
+    },
+    link: function(scope, element, attrs) {
+      return element.on('click', function() {
+        return $('html, body').animate({
+          scrollTop: $(scope.scrollTo).offset().top
+        }, "slow");
+      });
+    }
+  };
+});
+
+angular.module("myApp.factories", []).factory('Tweets', ["$http", "TweetService", function($http, TweetService) {
+  var Tweets;
+  Tweets = (function() {
+    function Tweets(items, list, maxId) {
+      this.busy = false;
+      this.isLast　 = false;
+      this.items = items;
+      this.list = list;
+      this.maxId = maxId;
+    }
+
+    Tweets.prototype.nextPage = function() {
+      console.log(this.busy);
+      console.log(this.isLast);
+      if (this.busy || this.isLast) {
+        return;
+      }
+      this.busy = true;
+      return TweetService.getListsStatuses({
+        listIdStr: this.list.id_str,
+        maxId: this.maxId
+      }).then((function(_this) {
+        return function(data) {
+          var items;
+          console.table(data.data);
+          if (_.isEmpty(data.data)) {
+            _this.isLast = true;
+            _this.busy = false;
+            return;
+          }
+          _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
+          items = TweetService.filterIncludeImage(data.data);
+          _.each(items, function(item) {
+            item.text = TweetService.activateLink(item.text);
+            item.time = TweetService.fromNow(TweetService.get(item, 'tweet.created_at', false));
+            item.user.profile_image_url = TweetService.iconBigger(item.user.profile_image_url);
+            return _this.items.push(item);
+          });
+          return _this.busy = false;
+        };
+      })(this));
+    };
+
+    return Tweets;
+
+  })();
+  return Tweets;
+}]);
+
+angular.module("myApp.filters", []).filter("interpolate", ["version", function(version) {
+  return function(text) {
+    return String(text).replace(/\%VERSION\%/g, version);
+  };
+}]).filter("noHTML", function() {
+  return function(text) {
+    if (text != null) {
+      return text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/, '&amp;');
+    }
+  };
+}).filter('newlines', ["$sce", function($sce) {
+  return function(text) {
+    return $sce.trustAsHtml(text != null ? text.replace(/\n/g, '<br />') : '');
+  };
+}]);
+
+angular.module("myApp.services", []).service("CommonService", function() {
+  return {
+    isLoaded: false
+  };
+});
+
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
   $scope.isAuthenticated = AuthService.status.isAuthenticated;
@@ -62,7 +240,7 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
   });
 }]);
 
-angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootScope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $rootScope, $log, AuthService, TweetService, Tweets) {
+angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $log, AuthService, TweetService, Tweets) {
   var amatsukaList, maxId;
   if (_.isEmpty(AuthService.user)) {
     return;
@@ -70,11 +248,23 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
   console.log('Index AuthService.user = ', AuthService.user);
   maxId = maxId || 0;
   amatsukaList = {};
+  console.time('getListsList');
   return TweetService.getListsList().then(function(data) {
     amatsukaList = _.findWhere(data.data, {
       'name': 'Amatsuka'
     });
-    return $scope.tweets = new Tweets(amatsukaList, maxId);
+    console.timeEnd('getListsList');
+    return TweetService.getListsStatuses({
+      listIdStr: amatsukaList.id_str,
+      maxId: maxId
+    });
+  }).then(function(data) {
+    var tweets;
+    console.time('newTweets');
+    maxId = TweetService.decStrNum(_.last(data.data).id_str);
+    tweets = TweetService.filterIncludeImage(data.data);
+    $scope.tweets = new Tweets(tweets, amatsukaList, maxId);
+    return console.timeEnd('newTweets');
   });
 }]);
 
@@ -84,7 +274,50 @@ angular.module("myApp.directives").directive("appVersion", ["version", function(
   };
 }]);
 
+angular.module("myApp.directives").directive('favoritable', [
+  'TweetService', function(TweetService) {
+    return {
+      restrict: 'A',
+      link: function(scope, element, attrs) {
+        return element.on('click', function(event) {
+          return TweetService.createFavorite(attrs.tweetIdStr).success(function(data) {
+            if (data.data === null) {
 
+            } else {
+
+            }
+          }).error(function(status, data) {
+            console.log(status);
+            return console.log(data);
+          });
+        });
+      }
+    };
+  }
+]).directive('retweetable', [
+  'TweetService', function(TweetService) {
+    return {
+      restrict: 'A',
+      scope: {
+        num: '='
+      },
+      link: function(scope, element, attrs) {
+        return element.on('click', function(event) {
+          if (!window.confirm('リツイートしてもよろしいですか？')) {
+            return;
+          }
+          return TweetService.statusesRetweet(attrs.tweetIdStr).success(function(data) {
+            if (data.data === null) {
+
+            } else {
+              return console.log(data.data.entities.media[0].media_url);
+            }
+          });
+        });
+      }
+    };
+  }
+]);
 
 angular.module("myApp.services").service("AuthService", ["$http", function($http) {
   return {
@@ -250,179 +483,3 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", functio
     }
   };
 }]);
-
-angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
-  return $rootScope.$on('$locationChangeStart', function(event, next, current) {
-    $log.info('location changin to: ' + next);
-  });
-}]);
-
-angular.module("myApp.directives", []).directive('boxLoading', ["$interval", function($interval) {
-  return {
-    restrict: 'E',
-    link: function(scope, element, attrs) {
-      var allocations, animate, count, rotate, tag;
-      tag = '<div class="loader-12day">\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n</div>';
-      element.append(tag);
-      count = 0;
-      allocations = [0, 1, 2, 5, 8, 7, 6, 3];
-      rotate = function() {
-        var bs;
-        bs = element.find('b');
-        _.map(bs, function(elem) {
-          return elem.style.background = 'black';
-        });
-        bs[allocations[count]].style.background = 'white';
-        count++;
-        if (count === 8) {
-          return count = 0;
-        }
-      };
-      return animate = $interval(rotate, 150);
-    }
-  };
-}]).directive("slideable", function() {
-  return {
-    restrict: "C",
-    compile: function(element, attr) {
-      var contents, postLink;
-      contents = element.html();
-      element.html("<div class='slideable_content'\n  style='margin:0 !important; padding:0 !important'>\n  " + contents + "\n</div>");
-      postLink = function(scope, element, attrs) {
-        console.log(attrs);
-        attrs.duration = !attrs.duration ? "0.4s" : attrs.duration;
-        attrs.easing = !attrs.easing ? "ease-in-out" : attrs.easing;
-        return element.css({
-          overflow: "hidden",
-          height: "0px",
-          transitionProperty: "height",
-          transitionDuration: attrs.duration,
-          transitionTimingFunction: attrs.easing
-        });
-      };
-    }
-  };
-}).directive("slideToggle", function() {
-  return {
-    restrict: "A",
-    link: function(scope, element, attrs) {
-      var content, target;
-      target = void 0;
-      content = void 0;
-      attrs.expanded = false;
-      return element.bind("click", function() {
-        var y;
-        if (!target) {
-          target = document.querySelector(attrs.slideToggle);
-        }
-        if (!content) {
-          content = target.querySelector(".slideable_content");
-        }
-        if (!attrs.expanded) {
-          content.style.border = "1px solid rgba(0,0,0,0)";
-          y = content.clientHeight;
-          content.style.border = 0;
-          target.style.height = y + "px";
-        } else {
-          target.style.height = "0px";
-        }
-        return attrs.expanded = !attrs.expanded;
-      });
-    }
-  };
-}).directive("imgPreload", ["$rootScope", function($rootScope) {
-  return {
-    restrict: "A",
-    scope: {
-      ngSrc: "@"
-    },
-    link: function(scope, element, attrs) {
-      return element.on("load", function() {
-        return element.addClass("in");
-      }).on("error", function() {});
-    }
-  };
-}]).directive("scrollOnClick", function() {
-  return {
-    restrict: "A",
-    scope: {
-      scrollTo: "@"
-    },
-    link: function(scope, element, attrs) {
-      return element.on('click', function() {
-        return $('html, body').animate({
-          scrollTop: $(scope.scrollTo).offset().top
-        }, "slow");
-      });
-    }
-  };
-});
-
-angular.module("myApp.factories", []).factory('Tweets', ["$http", "TweetService", function($http, TweetService) {
-  var Tweets;
-  Tweets = function(list, maxId) {
-    console.log(list);
-    this.list = list;
-    this.items = [];
-    this.busy = false;
-    this.isLast = false;
-    return this.maxId = maxId;
-  };
-  Tweets.prototype.nextPage = function() {
-    console.log(this.busy);
-    console.log(this.isLast);
-    if (this.busy || this.isLast) {
-      return;
-    }
-    this.busy = true;
-    return TweetService.getListsStatuses({
-      listIdStr: this.list.id_str,
-      maxId: this.maxId,
-      count: 100
-    }).then((function(_this) {
-      return function(data) {
-        var items;
-        console.table(data.data);
-        if (_.isEmpty(data.data)) {
-          _this.isLast = true;
-          _this.busy = false;
-          return;
-        }
-        _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
-        items = TweetService.filterIncludeImage(data.data);
-        _.each(items, function(item) {
-          var isRT;
-          isRT = _.has(item, 'retweeted_status');
-          item.time = TweetService.fromNow(TweetService.get(item, 'tweet.created_at', false));
-          item.text = TweetService.activateLink(item.text);
-          item.user.profile_image_url = TweetService.iconBigger(item.user.profile_image_url);
-          return _this.items.push(item);
-        });
-        return _this.busy = false;
-      };
-    })(this));
-  };
-  return Tweets;
-}]);
-
-angular.module("myApp.filters", []).filter("interpolate", ["version", function(version) {
-  return function(text) {
-    return String(text).replace(/\%VERSION\%/g, version);
-  };
-}]).filter("noHTML", function() {
-  return function(text) {
-    if (text != null) {
-      return text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/, '&amp;');
-    }
-  };
-}).filter('newlines', ["$sce", function($sce) {
-  return function(text) {
-    return $sce.trustAsHtml(text != null ? text.replace(/\n/g, '<br />') : '');
-  };
-}]);
-
-angular.module("myApp.services", []).service("CommonService", function() {
-  return {
-    isLoaded: false
-  };
-});

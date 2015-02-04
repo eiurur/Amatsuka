@@ -1,7 +1,6 @@
 angular.module "myApp.controllers"
   .controller "IndexCtrl", (
     $scope
-    $rootScope
     $log
     AuthService
     TweetService
@@ -22,40 +21,20 @@ angular.module "myApp.controllers"
   #   $scope.lists = data.data
   #   $scope.$apply()
 
-  # 動くけど次を読み込まない
-  # TweetService.getListsList()
-  # .then (data) ->
-
-  #   amatsukaList = _.findWhere data.data, 'name': 'Amatsuka'
-  # TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId)
-
-  # .then (data) ->
-
-  #   maxId = _.last(data.data).id_str
-  #   $scope.tweets = TweetService.filterIncludeImage data.data
-  #   $scope.$apply()
-
+  console.time 'getListsList'
   TweetService.getListsList()
   .then (data) ->
 
     amatsukaList = _.findWhere data.data, 'name': 'Amatsuka'
+    console.timeEnd 'getListsList'
+    TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId)
 
-  #   TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId)
-  # .then (data) ->
-  #   maxId = TweetService.decStrNum(_.last(data.data).id_str)
-  #   $scope.tweets = TweetService.filterIncludeImage data.data
-    $scope.tweets = new Tweets(amatsukaList, maxId)
+  .then (data) ->
 
-    #TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId)
-
-  # .then (data) ->
-
-  #   maxId = _.last(data.data).id_str
-  #   $scope.tweets = TweetService.filterIncludeImage data.data
-  #   $scope.$apply()
-
-
-  # # LightBox
-  # $scope.Lightbox = Lightbox
-  # $scope.openLightboxModal = (index) ->
-  #   Lightbox.openModal $scope.images, index
+    console.time 'newTweets'
+    # xxx: new Tweets() だけだと一向に読み込みが始まらない
+    # 苦肉の策として、最初のリクエストを明示的に投げて、強制的に起こす手法をとった。
+    maxId = TweetService.decStrNum(_.last(data.data).id_str)
+    tweets = TweetService.filterIncludeImage data.data
+    $scope.tweets = new Tweets(tweets, amatsukaList, maxId)
+    console.timeEnd 'newTweets'
