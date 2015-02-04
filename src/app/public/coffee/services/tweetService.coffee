@@ -27,6 +27,13 @@ angular.module "myApp.services"
       return @.replace 'normal', 'bigger' if _.isUndefined url
       url.replace 'normal', 'bigger'
 
+    nomalize: (tweets) ->
+      _.each tweets, (tweet) =>
+        tweet.text = @activateLink(tweet.text)
+        tweet.time = @fromNow(@get(tweet, 'tweet.created_at', false))
+        tweet.user.profile_image_url =
+          @iconBigger(tweet.user.profile_image_url)
+
     get: (tweet, key, isRT) ->
       t = if isRT then tweet.retweeted_status else tweet
       switch key

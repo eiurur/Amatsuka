@@ -169,7 +169,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "TweetService"
         maxId: this.maxId
       }).then((function(_this) {
         return function(data) {
-          var items;
+          var items, itemsNomalized;
           console.table(data.data);
           if (_.isEmpty(data.data)) {
             _this.isLast = true;
@@ -178,12 +178,8 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "TweetService"
           }
           _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
           items = TweetService.filterIncludeImage(data.data);
-          _.each(items, function(item) {
-            item.text = TweetService.activateLink(item.text);
-            item.time = TweetService.fromNow(TweetService.get(item, 'tweet.created_at', false));
-            item.user.profile_image_url = TweetService.iconBigger(item.user.profile_image_url);
-            return _this.items.push(item);
-          });
+          itemsNomalized = TweetService.nomalize(items);
+          _this.items = _this.items.concat(itemsNomalized);
           return _this.busy = false;
         };
       })(this));
@@ -259,11 +255,12 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$log", "
       maxId: maxId
     });
   }).then(function(data) {
-    var tweets;
+    var tweets, tweetsNomalized;
     console.time('newTweets');
     maxId = TweetService.decStrNum(_.last(data.data).id_str);
     tweets = TweetService.filterIncludeImage(data.data);
-    $scope.tweets = new Tweets(tweets, amatsukaList, maxId);
+    tweetsNomalized = TweetService.nomalize(tweets);
+    $scope.tweets = new Tweets(tweetsNomalized, amatsukaList, maxId);
     return console.timeEnd('newTweets');
   });
 }]);
@@ -344,6 +341,15 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", functio
         return this.replace('normal', 'bigger');
       }
       return url.replace('normal', 'bigger');
+    },
+    nomalize: function(tweets) {
+      return _.each(tweets, (function(_this) {
+        return function(tweet) {
+          tweet.text = _this.activateLink(tweet.text);
+          tweet.time = _this.fromNow(_this.get(tweet, 'tweet.created_at', false));
+          return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
+        };
+      })(this));
     },
     get: function(tweet, key, isRT) {
       var t, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;

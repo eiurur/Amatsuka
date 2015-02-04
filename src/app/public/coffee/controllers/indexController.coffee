@@ -36,5 +36,6 @@ angular.module "myApp.controllers"
     # 苦肉の策として、最初のリクエストを明示的に投げて、強制的に起こす手法をとった。
     maxId = TweetService.decStrNum(_.last(data.data).id_str)
     tweets = TweetService.filterIncludeImage data.data
-    $scope.tweets = new Tweets(tweets, amatsukaList, maxId)
+    tweetsNomalized = TweetService.nomalize(tweets)
+    $scope.tweets = new Tweets(tweetsNomalized, amatsukaList, maxId)
     console.timeEnd 'newTweets'

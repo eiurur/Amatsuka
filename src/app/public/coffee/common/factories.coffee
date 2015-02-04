@@ -25,13 +25,8 @@ angular.module "myApp.factories", []
 
           @maxId = TweetService.decStrNum(_.last(data.data).id_str)
           items = TweetService.filterIncludeImage data.data
-          _.each items, (item) =>
-            item.text = TweetService.activateLink(item.text)
-            item.time =
-              TweetService.fromNow(TweetService.get(item, 'tweet.created_at', false))
-            item.user.profile_image_url =
-              TweetService.iconBigger(item.user.profile_image_url)
-            @items.push item
+          itemsNomalized = TweetService.nomalize(items)
+          @items = @items.concat itemsNomalized
           @busy = false
 
     Tweets
