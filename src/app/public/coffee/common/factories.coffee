@@ -15,7 +15,7 @@ angular.module "myApp.factories", []
         console.log @isLast
         return if @busy or @isLast
         @busy = true
-        TweetService.getListsStatuses(listIdStr: @list.id_str, maxId: @maxId)
+        TweetService.getListsStatuses(listIdStr: @list.id_str, maxId: @maxId, count:100)
         .then (data) =>
           console.table data.data
           if _.isEmpty(data.data)

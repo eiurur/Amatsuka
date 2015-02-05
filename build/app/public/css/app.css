@@ -106,7 +106,6 @@ ul {
 }
 
 .site-main {
-  min-height: 1080px;
   position: relative;
   padding-left: 266px;
   padding-bottom: 30px;
@@ -127,7 +126,7 @@ ul {
   border-radius: 3px;
   font-size: 14px;
   margin: 0 0 20px 0;
-  padding: 15px 0;
+  padding-top: 15px;
   position: relative;
   width: 540px;
 }
@@ -184,13 +183,30 @@ ul {
 }
 
 .timeline__post--footer {
+  padding: 0 20px;
+  display: table;
   line-height: 45px;
+  height: 45px;
+  width: 100%;
 }
 
-.timeline__post--footer--controls {
+.timeline__post--footer--contents {
+  height: 45px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.timeline__post--footer--contents--controls {
+  color: #a1a1a1;
+  font-size: 120%;
+  font-weight: 600;
   height: 45px;
   text-align: right;
   white-space: nowrap;
+  align-items: baseline;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 /*# sourceMappingURL=app.css.map */

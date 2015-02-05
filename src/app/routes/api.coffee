@@ -100,4 +100,6 @@ module.exports = (app) ->
 
   # POST 仮想フォロー、仮想アンフォロー機能( = Amatsukaリストへの追加、削除)
 
-  #
+  # POST ふぁぼ、あんふぁぼ
+
+  # POST リツイート、解除

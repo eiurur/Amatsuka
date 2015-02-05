@@ -1,3 +1,4 @@
+
 .timeline {
   color: $link-color;
   padding: 30px 0;
@@ -12,7 +13,7 @@
   border-radius: 3px;
   font-size: $post--font-size;
   margin: 0 0 20px 0;
-  padding: 15px 0;
+  padding-top: 15px;
   position: relative;
   width:  540px;
 }
@@ -30,7 +31,7 @@
 }
 
 .timeline__post--header {
-  padding: 0 20px;
+  @include post_padding;
   a {
     color: $link-color;
     text-decoration: none;
@@ -59,7 +60,7 @@
 }
 
 .timeline__post--text {
-  padding: 0 20px;
+  @include post_padding;
   color: $link-color;
   a {
     border-bottom: 1px solid lighten($link-color, 15%);
@@ -69,19 +70,29 @@
 }
 
 .timeline__post--footer {
+  @include post_padding;
+  display: table;
   line-height: 45px;
-  // fav_num
-
-  // retweet_num
-
-  // icons
-      // retwet
-      // fav
-      // other
+  height: 45px;
+  width: 100%;
 }
 
-.timeline__post--footer--controls {
+.timeline__post--footer--contents {
   height: 45px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.timeline__post--footer--contents--controls {
+  color: $link-color;
+  font-size: 120%;
+  font-weight: 600;
+  height: 45px;
+
   text-align: right;
   white-space:  nowrap;
+  align-items: baseline;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }

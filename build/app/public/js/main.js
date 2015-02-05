@@ -166,7 +166,8 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "TweetService"
       this.busy = true;
       return TweetService.getListsStatuses({
         listIdStr: this.list.id_str,
-        maxId: this.maxId
+        maxId: this.maxId,
+        count: 100
       }).then((function(_this) {
         return function(data) {
           var items, itemsNomalized;
@@ -252,7 +253,8 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$log", "
     console.timeEnd('getListsList');
     return TweetService.getListsStatuses({
       listIdStr: amatsukaList.id_str,
-      maxId: maxId
+      maxId: maxId,
+      count: 20
     });
   }).then(function(data) {
     var tweets, tweetsNomalized;
@@ -271,50 +273,46 @@ angular.module("myApp.directives").directive("appVersion", ["version", function(
   };
 }]);
 
-angular.module("myApp.directives").directive('favoritable', [
-  'TweetService', function(TweetService) {
-    return {
-      restrict: 'A',
-      link: function(scope, element, attrs) {
-        return element.on('click', function(event) {
-          return TweetService.createFavorite(attrs.tweetIdStr).success(function(data) {
-            if (data.data === null) {
+angular.module("myApp.directives").directive('favoritable', ["TweetService", function(TweetService) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        return TweetService.createFavorite(attrs.tweetIdStr).success(function(data) {
+          if (data.data === null) {
 
-            } else {
+          } else {
 
-            }
-          }).error(function(status, data) {
-            console.log(status);
-            return console.log(data);
-          });
-        });
-      }
-    };
-  }
-]).directive('retweetable', [
-  'TweetService', function(TweetService) {
-    return {
-      restrict: 'A',
-      scope: {
-        num: '='
-      },
-      link: function(scope, element, attrs) {
-        return element.on('click', function(event) {
-          if (!window.confirm('リツイートしてもよろしいですか？')) {
-            return;
           }
-          return TweetService.statusesRetweet(attrs.tweetIdStr).success(function(data) {
-            if (data.data === null) {
-
-            } else {
-              return console.log(data.data.entities.media[0].media_url);
-            }
-          });
+        }).error(function(status, data) {
+          console.log(status);
+          return console.log(data);
         });
-      }
-    };
-  }
-]);
+      });
+    }
+  };
+}]).directive('retweetable', ["TweetService", function(TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      num: '='
+    },
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        if (!window.confirm('リツイートしてもよろしいですか？')) {
+          return;
+        }
+        return TweetService.statusesRetweet(attrs.tweetIdStr).success(function(data) {
+          if (data.data === null) {
+
+          } else {
+            return console.log(data.data.entities.media[0].media_url);
+          }
+        });
+      });
+    }
+  };
+}]);
 
 angular.module("myApp.services").service("AuthService", ["$http", function($http) {
   return {
@@ -345,14 +343,21 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", functio
     nomalize: function(tweets) {
       return _.each(tweets, (function(_this) {
         return function(tweet) {
+          var isRT;
+          isRT = _.has(tweet, 'retweeted_status');
           tweet.text = _this.activateLink(tweet.text);
           tweet.time = _this.fromNow(_this.get(tweet, 'tweet.created_at', false));
+          tweet.retweetNum = _this.get(tweet, 'tweet.retweet_count', isRT);
+          tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);
+          tweet.tweetIdStr = _this.get(tweet, 'tweet.id_str', isRT);
+          tweet.sourceUrl = _this.get(tweet, 'display_url', isRT);
+          tweet.picOrigUrl = _this.get(tweet, 'media_url:orig', isRT);
           return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
         };
       })(this));
     },
     get: function(tweet, key, isRT) {
-      var t, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var t, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
       t = isRT ? tweet.retweeted_status : tweet;
       switch (key) {
         case 'description':
@@ -371,6 +376,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", functio
           return (_ref4 = t.entities) != null ? _ref4.hashtags : void 0;
         case 'media_url':
           return (_ref5 = t.entities) != null ? (_ref6 = _ref5.media) != null ? _ref6[0].media_url : void 0 : void 0;
+        case 'media_url:orig':
+          return ((_ref7 = t.entities) != null ? (_ref8 = _ref7.media) != null ? _ref8[0].media_url : void 0 : void 0) + ':orig';
         case 'name':
           return t.user.name;
         case 'profile_banner_url':
@@ -483,6 +490,16 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", functio
       return $q(function(resolve, reject) {
         return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
           console.table(data.data);
+          return resolve(data);
+        });
+      });
+    },
+    createFav: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.post('/api/createFav', {
+          tweetIdStr: params.tweetIdStr
+        }).success(function(data) {
+          console.table(data);
           return resolve(data);
         });
       });

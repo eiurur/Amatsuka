@@ -27,7 +27,7 @@ angular.module "myApp.controllers"
 
     amatsukaList = _.findWhere data.data, 'name': 'Amatsuka'
     console.timeEnd 'getListsList'
-    TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId)
+    TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId, count: 20)
 
   .then (data) ->
 

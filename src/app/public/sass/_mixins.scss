@@ -1,3 +1,7 @@
 @mixin round($radius:4px) {
   border-radius: $radius;
 }
+
+@mixin post_padding {
+  padding: 0 20px;
+}

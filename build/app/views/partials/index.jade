@@ -1,5 +1,5 @@
 //- h1 Index
-.timeline(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1')
+.timeline(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='10')
   .timeline__post(ng-repeat='tweet in tweets.items')
     .timeline__post--header
       .timeline__post--header--info
@@ -9,11 +9,20 @@
             i.fa.fa-retweet
           a(href="") {{tweet.retweeted_status.user.screen_name}}
       .timeline__post--header--time
-        {{tweet.time}}
+        a(href="https://{{tweet.sourceUrl}}", target="_blank")
+          {{tweet.time}}
     .timeline__post--icon
       img.fade(ng-src="{{tweet.user.profile_image_url}}", img-preload="img-preload")
     .timeline__post--image
       img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload")
     .timeline__post--text(ng-bind-html='tweet.text | newlines')
+    .timeline__post--footer
+      .timeline__post--footer--contents
+        .timeline__post--footer--contents--controls
+          i.fa.fa-retweet.icon-retweet(data-tweet-id-str='{{tweet.tweetIdStr}}', retweetable='retweetable')  {{tweet.retweetNum}}
+          i.fa.fa-star.icon-star(data-tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
+          a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
+            .fa.fa-download
+
   div(ng-show='tweets.busy') Loading data...
   div(ng-show='tweets.isLast') 終わりです
