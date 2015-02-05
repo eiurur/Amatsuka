@@ -37,6 +37,14 @@
     text-decoration: none;
   }
 }
+.timeline__post--header--label {
+  // padding: .1em .3em .1em;
+    cursor: pointer;
+  padding: .1em .3em .3em;
+  position: relative;
+  bottom: 2px;
+  margin-left: 5px;
+}
 
 .timeline__post--header--info {
   display: inline-block;
@@ -62,6 +70,7 @@
 .timeline__post--text {
   @include post_padding;
   color: $link-color;
+  line-height: 1.8;
   a {
     border-bottom: 1px solid lighten($link-color, 15%);
     color: $link-color;

@@ -27,9 +27,17 @@ angular.module "myApp.services"
       return @.replace 'normal', 'bigger' if _.isUndefined url
       url.replace 'normal', 'bigger'
 
-    nomalize: (tweets) ->
+    isFollow:  (tweet, userList) ->
+      # normal, retweet両方に対応できるようなコードに変更。
+      !_.isUndefined _.findWhere(userList, 'id_str': tweet.retweeted_status.user.id_str)
+
+    nomalize: (tweets, list) ->
       _.each tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
+        if isRT
+          tweet.followStatus = @isFollow(tweet, list)
+          console.log tweet.retweeted_status.user.id_str
+          console.log tweet.followStatus
         tweet.text = @activateLink(tweet.text)
         tweet.time = @fromNow(@get(tweet, 'tweet.created_at', false))
         tweet.retweetNum = @get(tweet, 'tweet.retweet_count', isRT)
@@ -138,17 +146,34 @@ angular.module "myApp.services"
             console.table data.data
             return resolve data
 
+    getListsMembers: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/lists/members/#{params.listIdStr}/#{params.count}")
+          .success (data) ->
+            return resolve data
+
     getListsStatuses: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/lists/statuses/#{params.listIdStr}/#{params.maxId}/#{params.count}")
           .success (data) ->
-            console.table data.data
             return resolve data
+
+    createListsMembers: (params) ->
+      return $q (resolve, reject) ->
+        $http.post("/api/lists/members/create", listIdStr: params.listIdStr, twitterIdStr: params.twitterIdStr)
+          .success (data) ->
+            return resolve data
+
+    destroyListsMembers: (params) ->
+      return $q (resolve, reject) ->
+        $http.post("/api/lists/members/destroy", listIdStr: params.listIdStr, twitterIdStr: params.twitterIdStr)
+          .success (data) ->
+            return resolve data
+
 
     createFav: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/createFav', tweetIdStr: params.tweetIdStr)
           .success (data) ->
-            console.table data
             return resolve data
 

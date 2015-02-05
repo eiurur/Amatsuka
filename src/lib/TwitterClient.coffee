@@ -108,13 +108,15 @@ module.exports = class TwitterClient extends TwitterClientDefine
 
   # リストのメンバーを表示
   getListsMembers: (params) ->
+    opts =
+      list_id: params.listIdStr
+      user_id: params.twitterIdStr || ''
+      scren_name: params.screenName || ''
+      count: ~~params.count || settings.MAX_NUM_GET_LIST_MEMBERS
     @getViaAPI
       method: 'lists'
       type: 'members'
-      params:
-        list_id: params.listIdStr
-        user_id: params.twitterIdStr || ''
-        scren_name: params.screenName || ''
+      params: opts
 
   # リストの作成
   createLists: (params) ->
@@ -144,11 +146,12 @@ module.exports = class TwitterClient extends TwitterClientDefine
 
   # リストからユーザを削除
   destroyListsMembers: (params) ->
-    @getViaAPI
+    @postViaAPI
       method: 'lists'
-      type: 'show'
+      type: 'members/destroy'
       params:
         list_id: params.listIdStr
+        user_id: params.twitterIdStr
 
   getUserIds: (params) =>
     @getViaAPI

@@ -140,14 +140,17 @@
     };
 
     TwitterClient.prototype.getListsMembers = function(params) {
+      var opts;
+      opts = {
+        list_id: params.listIdStr,
+        user_id: params.twitterIdStr || '',
+        scren_name: params.screenName || '',
+        count: ~~params.count || settings.MAX_NUM_GET_LIST_MEMBERS
+      };
       return this.getViaAPI({
         method: 'lists',
         type: 'members',
-        params: {
-          list_id: params.listIdStr,
-          user_id: params.twitterIdStr || '',
-          scren_name: params.screenName || ''
-        }
+        params: opts
       });
     };
 
@@ -184,11 +187,12 @@
     };
 
     TwitterClient.prototype.destroyListsMembers = function(params) {
-      return this.getViaAPI({
+      return this.postViaAPI({
         method: 'lists',
-        type: 'show',
+        type: 'members/destroy',
         params: {
-          list_id: params.listIdStr
+          list_id: params.listIdStr,
+          user_id: params.twitterIdStr
         }
       });
     };

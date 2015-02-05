@@ -78,6 +78,19 @@
         });
       });
     });
+    app.get('/api/lists/members/:id?/:count?', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.getListsMembers({
+        listIdStr: req.params.id,
+        count: req.params.count
+      }).then(function(data) {
+        console.log('/api/lists/members/:id/:count data.length = ', data.length);
+        return res.json({
+          data: data
+        });
+      });
+    });
     app.get('/api/lists/statuses/:id/:maxId?/:count?', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterCilent(req.session.passport.user);
@@ -92,7 +105,7 @@
         });
       });
     });
-    return app.get('/api/timeline/:id/:maxId?/:count?', function(req, res) {
+    app.get('/api/timeline/:id/:maxId?/:count?', function(req, res) {
       var m, twitterClient;
       m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
       twitterClient = new TwitterCilent(req.session.passport.user);
@@ -102,6 +115,30 @@
         count: req.params.count
       }).then(function(data) {
         console.log('/api/timeline/list/:id/:count data.length = ', data.length);
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/lists/members/create', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.createListsMembers({
+        listIdStr: req.body.listIdStr,
+        twitterIdStr: req.body.twitterIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    return app.post('/api/lists/members/destroy', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.destroyListsMembers({
+        listIdStr: req.body.listIdStr,
+        twitterIdStr: req.body.twitterIdStr
+      }).then(function(data) {
         return res.json({
           data: data
         });

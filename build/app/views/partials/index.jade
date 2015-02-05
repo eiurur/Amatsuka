@@ -1,4 +1,6 @@
-//- h1 Index
+h1
+  new-load 新着を読み込む
+
 .timeline(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='10')
   .timeline__post(ng-repeat='tweet in tweets.items')
     .timeline__post--header
@@ -7,7 +9,8 @@
           {{tweet.user.screen_name}}
           span.timeline__post--header--rt_source(ng-if="tweet.retweeted_status")
             i.fa.fa-retweet
-          a(href="") {{tweet.retweeted_status.user.screen_name}}
+          a {{tweet.retweeted_status.user.screen_name}}
+          followable(list-id-str="{{listIdStr}}", twitter-id-str="{{tweet.retweeted_status.user.id_str}}", follow-status="tweet.followStatus")
       .timeline__post--header--time
         a(href="https://{{tweet.sourceUrl}}", target="_blank")
           {{tweet.time}}

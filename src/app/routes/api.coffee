@@ -66,6 +66,16 @@ module.exports = (app) ->
       console.log '/api/lists/list/:id/:count data.length = ', data.length
       res.json data: data
 
+  # GET リストのメンバー
+  app.get '/api/lists/members/:id?/:count?', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.getListsMembers
+      listIdStr: req.params.id
+      count: req.params.count
+    .then (data) ->
+      console.log '/api/lists/members/:id/:count data.length = ', data.length
+      res.json data: data
+
   # GET リストのタイムラインを取得
   app.get '/api/lists/statuses/:id/:maxId?/:count?', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)
@@ -99,6 +109,22 @@ module.exports = (app) ->
   # POST フォロー、アンフォロー機能
 
   # POST 仮想フォロー、仮想アンフォロー機能( = Amatsukaリストへの追加、削除)
+  app.post '/api/lists/members/create', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.createListsMembers
+      listIdStr: req.body.listIdStr
+      twitterIdStr: req.body.twitterIdStr
+    .then (data) ->
+      res.json data: data
+
+  app.post '/api/lists/members/destroy', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.destroyListsMembers
+      listIdStr: req.body.listIdStr
+      twitterIdStr: req.body.twitterIdStr
+    .then (data) ->
+      res.json data: data
+
 
   # POST ふぁぼ、あんふぁぼ
 

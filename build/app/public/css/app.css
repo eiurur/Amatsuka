@@ -151,6 +151,14 @@ ul {
   text-decoration: none;
 }
 
+.timeline__post--header--label {
+  cursor: pointer;
+  padding: .1em .3em .3em;
+  position: relative;
+  bottom: 2px;
+  margin-left: 5px;
+}
+
 .timeline__post--header--info {
   display: inline-block;
 }
@@ -175,6 +183,7 @@ ul {
 .timeline__post--text {
   padding: 0 20px;
   color: #a1a1a1;
+  line-height: 1.8;
 }
 .timeline__post--text a {
   border-bottom: 1px solid #c7c7c7;
