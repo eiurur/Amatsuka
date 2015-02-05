@@ -42,7 +42,8 @@ block body
         .site-main
           div(ng-view)
 
-      a.arrow-top(scroll-to='.site-main', scroll-on-click)
+      a.arrow-top(ng-if='isAuthenticated', scroll-to='.site-main', scroll-on-click)
+
     span(ng-if='!isLoaded')
       .intro-container
         .spinner
