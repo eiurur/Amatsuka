@@ -42,7 +42,7 @@ block body
         .site-main
           div(ng-view)
 
-
-  span(ng-if='!isLoaded')
-    .intro-container
-      .spinner
+      a.arrow-top(scroll-to='.site-main', scroll-on-click)
+    span(ng-if='!isLoaded')
+      .intro-container
+        .spinner

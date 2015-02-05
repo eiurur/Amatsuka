@@ -1,14 +1,34 @@
 /**
  * zurui font awesome button
  */
-.form-group {
-  label {
-    font-size: 70%;
-  }
+// .form-group {
+//   label {
+//     font-size: 70%;
+//   }
+// }
+// i {
+//   font-size: 130%;
+//   margin-right: 5px;
+// }
+
+/**
+ * Go to top
+ */
+.arrow-top {
+  cursor: pointer;
+  position: fixed;
+  padding: 25px;
+  border: solid transparent;
+  bottom: 15px;
+  right: 50px;
+  // box-shadow: 2px -1px 0 1px $link-color inset;
+  box-shadow: 1px -1px 0 0px $link-color inset;
+  transform: rotate(135deg);
+  transition: .24s;
 }
-i {
-  font-size: 130%;
-  margin-right: 5px;
+
+.arrow-top:hover {
+  box-shadow: 1px -1px 0 0px lighten($link-color, 10%) inset;
 }
 
 /**

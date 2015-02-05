@@ -42,6 +42,7 @@ angular.module "myApp.directives"
         console.log scope.listIdStr
         console.log scope.twitterIdStr
         if scope.followStatus is false
+          scope.content = 'ok...'
           TweetService.createListsMembers(listIdStr: scope.listIdStr, twitterIdStr: scope.twitterIdStr)
           .then (data) ->
             element.fadeOut(200)

@@ -8,6 +8,136 @@
 /**
  * Colors
  */
+/**
+ * zurui font awesome button
+ */
+/**
+ * Go to top
+ */
+.arrow-top {
+  cursor: pointer;
+  position: fixed;
+  padding: 25px;
+  border: solid transparent;
+  bottom: 15px;
+  right: 50px;
+  box-shadow: 1px -1px 0 0px #a1a1a1 inset;
+  transform: rotate(135deg);
+  transition: .24s;
+}
+
+.arrow-top:hover {
+  box-shadow: 1px -1px 0 0px #bababa inset;
+}
+
+/**
+ * Load逕ｻ髱｢
+ */
+@-moz-keyframes spinner1 {
+  from {
+    -moz-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spinner1 {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes spinner1 {
+  from {
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@-moz-keyframes spinner2 {
+  from {
+    -moz-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(-360deg);
+    transform: rotate(-360deg);
+  }
+}
+@-webkit-keyframes spinner2 {
+  from {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(-360deg);
+    transform: rotate(-360deg);
+  }
+}
+@keyframes spinner2 {
+  from {
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -moz-transform: rotate(-360deg);
+    -ms-transform: rotate(-360deg);
+    -webkit-transform: rotate(-360deg);
+    transform: rotate(-360deg);
+  }
+}
+.spinner {
+  position: fixed;
+  width: 34px;
+  height: 34px;
+  top: 50%;
+  left: 50%;
+  margin-left: -17px;
+  margin-top: -17px;
+}
+.spinner:after, .spinner:before {
+  position: fixed;
+  content: "";
+  border: 2px solid #EEA8B6;
+  width: 32px;
+  height: 32px;
+}
+.spinner:after {
+  -moz-animation: spinner1 2.5s linear infinite;
+  -webkit-animation: spinner1 2.5s linear infinite;
+  animation: spinner1 2.5s linear infinite;
+}
+.spinner:before {
+  width: 44px;
+  height: 44px;
+  margin-left: -6.5px;
+  margin-top: -6.5px;
+  -moz-animation: spinner2 2.5s linear infinite;
+  -webkit-animation: spinner2 2.5s linear infinite;
+  animation: spinner2 2.5s linear infinite;
+}
+
+.intro-container {
+  height: 100%;
+  background: url("../images/login-background.jpg") no-repeat center center;
+  background-size: cover;
+}
+
 /*
 明度
 lighten(red, 30%);
