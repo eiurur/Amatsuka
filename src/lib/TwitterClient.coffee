@@ -84,9 +84,11 @@ module.exports = class TwitterClient extends TwitterClientDefine
 
   # 自分の指定のリストのツイートを列挙
   getListsStatuses: (params) ->
+    console.log params.count?
+    count = unless params.count? then params.count else settings.MAX_NUM_GET_LIST_STATUSES
     opts =
       list_id: params.listIdStr
-      count: params.count || settings.MAX_NUM_GET_LIST_STATUSES
+      count: count
       include_entities: true
       include_rts: true
     unless params.maxId is '0'

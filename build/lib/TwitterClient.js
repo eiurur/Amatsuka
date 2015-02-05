@@ -111,10 +111,12 @@
     };
 
     TwitterClient.prototype.getListsStatuses = function(params) {
-      var opts;
+      var count, opts;
+      console.log(params.count != null);
+      count = params.count == null ? params.count : settings.MAX_NUM_GET_LIST_STATUSES;
       opts = {
         list_id: params.listIdStr,
-        count: params.count || settings.MAX_NUM_GET_LIST_STATUSES,
+        count: count,
         include_entities: true,
         include_rts: true
       };
