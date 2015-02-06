@@ -311,7 +311,7 @@ ul {
 }
 
 .timeline__post--text {
-  padding: 0 20px;
+  padding: 0 20px 10px;
   color: #a1a1a1;
   line-height: 1.8;
 }

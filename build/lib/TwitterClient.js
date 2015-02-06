@@ -118,7 +118,7 @@
         include_entities: true,
         include_rts: true
       };
-      if (params.maxId !== '0') {
+      if (!(params.maxId === '0' || params.maxId === 'undefined')) {
         opts.max_id = params.maxId;
       }
       console.log("opts = ", opts);

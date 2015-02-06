@@ -1,8 +1,8 @@
 h1
-  new-load 新着を読み込む
+  new-tweet-load(list-id-str="{{listIdStr}}")
 
 .timeline(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='10')
-  .timeline__post(ng-repeat='tweet in tweets.items')
+  .timeline__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
     .timeline__post--header
       .timeline__post--header--info
         .timeline__post--header--link

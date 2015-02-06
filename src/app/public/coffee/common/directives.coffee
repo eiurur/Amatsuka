@@ -84,7 +84,6 @@ angular.module "myApp.directives", []
     scope:
       scrollTo: "@"
     link: (scope, element, attrs) ->
-      # (ex) a(scroll-to='#id', scroll-on-click)
       element.on 'click', ->
         $('html, body').animate
           scrollTop: $(scope.scrollTo).offset().top, "slow"

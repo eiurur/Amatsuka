@@ -9,7 +9,6 @@ angular.module "myApp.controllers"
   return if _.isEmpty AuthService.user
   console.log 'Index AuthService.user = ', AuthService.user
 
-
   maxId = maxId || 0
   amatsukaList = {}
   amatsukaFollowList = []
@@ -54,7 +53,18 @@ angular.module "myApp.controllers"
     # 苦肉の策として、最初のリクエストを明示的に投げて、強制的に起こす手法をとった。
     maxId = TweetService.decStrNum(_.last(data.data).id_str)
     tweets = TweetService.filterIncludeImage data.data
+    console.log amatsukaList
+    console.log amatsukaFollowList
     tweetsNomalized = TweetService.nomalize(tweets, amatsukaFollowList)
     $scope.tweets = new Tweets(tweetsNomalized, amatsukaList, maxId)
 
     console.timeEnd 'newTweets'
+
+  $scope.$on 'newTweet', (event, args) ->
+    console.log 'newTweet on ', args
+
+    newTweets = TweetService.filterIncludeImage args
+    console.table newTweets
+
+    tweetsNomalized = TweetService.nomalize(newTweets, amatsukaFollowList)
+    $scope.tweets.items = _.uniq(_.union($scope.tweets.items, tweetsNomalized), 'id_str')
