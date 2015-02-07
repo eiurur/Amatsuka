@@ -49,10 +49,11 @@ angular.module "myApp.directives"
           listIdStr: scope.listIdStr
           twitterIdStr: scope.twitterIdStr
         if scope.followStatus is false
-          scope.content = 'ok ...'
+          element.addClass('label-success')
+          element.fadeOut(200)
           TweetService.createListsMembers(opts)
           .then (data) ->
-            element.fadeOut(100)
+            console.log data
 
   .directive 'followable', (TweetService) ->
     restrict: 'A'
@@ -86,7 +87,7 @@ angular.module "myApp.directives"
 
         scope.followStatus = !scope.followStatus
 
-  .directive 'newTweetLoad', ($rootScope, TweetService) ->
+  .directive 'newTweetLoad', ($rootScope, Tweets, TweetService) ->
     restrict: 'E'
     scope:
       listIdStr: '@'
@@ -95,7 +96,8 @@ angular.module "myApp.directives"
       scope.text = '新着を読み込む'
       element.on 'click', ->
         scope.isProcessing = true
-        TweetService.getListsStatuses listIdStr: scope.listIdStr, count: 50
+        params = listIdStr: scope.listIdStr, count: 50
+        TweetService.getListsStatuses(params)
         .then (data) ->
           console.log 'getListsStatuses', data.data
           $rootScope.$broadcast 'newTweet', data.data

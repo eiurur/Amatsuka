@@ -26,8 +26,16 @@ angular.module "myApp.controllers"
       $scope.listIdStr = amatsukaList.id_str
       $scope.tweets    = new Tweets(tweetsNomalized, amatsukaList, maxId)
 
-      # TODO
-      # ここでAmatsukaListとAmatsukaFollowListを最新に更新する
+      # AmatsukaListとAmatsukaFollowListを最新に更新する
+      TweetService.getListsList()
+    .then (data) ->
+      amatsukaList = _.findWhere data.data, 'name': 'Amatsuka'
+      $scope.listIdStr = amatsukaList.id_str
+      ls.setItem 'amatsukaList', JSON.stringify(amatsukaList)
+      TweetService.getListsMembers(listIdStr: amatsukaList.id_str)
+    .then (data) ->
+      amatsukaFollowList = data.data.users
+      ls.setItem 'amatsukaFollowList', JSON.stringify(amatsukaFollowList)
     return
 
   console.time 'getListsList'
@@ -56,10 +64,10 @@ angular.module "myApp.controllers"
     console.time 'newTweets'
     # xxx: new Tweets() だけだと一向に読み込みが始まらない
     # 苦肉の策として、最初のリクエストを明示的に投げて、強制的に起こす手法をとった。
-    maxId = TweetService.decStrNum(_.last(data.data).id_str)
+    maxId           = TweetService.decStrNum(_.last(data.data).id_str)
     tweetsOnlyImage = TweetService.filterIncludeImage data.data
     tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList)
-    $scope.tweets = new Tweets(tweetsNomalized, amatsukaList, maxId)
+    $scope.tweets   = new Tweets(tweetsNomalized, amatsukaList, maxId)
     console.timeEnd 'newTweets'
   .catch (error) ->
     console.log error
@@ -92,6 +100,8 @@ angular.module "myApp.controllers"
       tweets          = TweetService.filterIncludeImage data.data
       tweetsNomalized = TweetService.nomalizeTweets(tweets, amatsukaFollowList)
       $scope.tweets   = new Tweets(tweetsNomalized, amatsukaList, maxId)
+
+
 
   # 新着読み込みが押されたらツイートを新規に読み込む流れだけど
   # 定期的にsince_id以降のツイートを読み込んで、新着があればボタンに○○件の新着がありますって文面を載せといて
