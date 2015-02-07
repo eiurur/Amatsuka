@@ -10,6 +10,7 @@ angular.module "myApp.directives"
         ).error (status, data) ->
           console.log status
           console.log data
+
   .directive 'retweetable', (TweetService) ->
     restrict: 'A'
     scope: num: '='
@@ -21,6 +22,7 @@ angular.module "myApp.directives"
           if data.data == null
           else
             console.log data.data.entities.media[0].media_url
+
   .directive 'followable', (TweetService) ->
     restrict: 'E'
     replace: true
@@ -43,11 +45,14 @@ angular.module "myApp.directives"
       element.on 'click', ->
         console.log scope.listIdStr
         console.log scope.twitterIdStr
+        opts =
+          listIdStr: scope.listIdStr
+          twitterIdStr: scope.twitterIdStr
         if scope.followStatus is false
           scope.content = 'ok ...'
-          TweetService.createListsMembers(listIdStr: scope.listIdStr, twitterIdStr: scope.twitterIdStr)
+          TweetService.createListsMembers(opts)
           .then (data) ->
-            element.fadeOut(200)
+            element.fadeOut(100)
 
   .directive 'followable', (TweetService) ->
     restrict: 'A'
@@ -56,32 +61,29 @@ angular.module "myApp.directives"
       twitterIdStr: '@'
       followStatus: '='
     link: (scope, element, attrs) ->
-      console.log element
-      console.log scope.followStatus
-
       element[0].innerText = if scope.followStatus then 'フォロー解除' else 'フォロー'
-      # element.on 'mouseover', (e) ->
-      #   if scope.followStatus is true
-      #     element[0].innerText = if scope.followStatus then 'フォロー解除' else 'フォロー'
-      #   # scope.$apply()
-      #   if scope.followStatus is false
-      #     element[0].innerText = 'フォロー'
-      #   # scope.$apply()
 
       element.on 'click', ->
         console.log scope.listIdStr
         console.log scope.twitterIdStr
+
+        opts =
+          listIdStr: scope.listIdStr
+          twitterIdStr: scope.twitterIdStr
+
         scope.isProcessing = true
         if scope.followStatus is true
-          TweetService.destroyListsMembers(listIdStr: scope.listIdStr, twitterIdStr: scope.twitterIdStr)
+          TweetService.destroyListsMembers(opts)
           .then (data) ->
             element[0].innerText = 'フォロー'
             scope.isProcessing = false
+
         if scope.followStatus is false
-          TweetService.createListsMembers(listIdStr: scope.listIdStr, twitterIdStr: scope.twitterIdStr)
+          TweetService.createListsMembers(opts)
           .then (data) ->
             element[0].innerText = 'フォロー解除'
             scope.isProcessing = false
+
         scope.followStatus = !scope.followStatus
 
   .directive 'newTweetLoad', ($rootScope, TweetService) ->
@@ -92,14 +94,6 @@ angular.module "myApp.directives"
     link: (scope, element, attrs) ->
       scope.text = '新着を読み込む'
       element.on 'click', ->
-        # console.log 'newTweetLoad', scope.listIdStr
-        # scope.text = ''
-        # console.log element
-        # element.html """
-        #   <button class="btn btn-primary" ng-disabled="isProcessing">
-        #     <i class="fa fa-spin fa-refresh"></i> 読み込み中
-        #   </button>
-        # """
         scope.isProcessing = true
         TweetService.getListsStatuses listIdStr: scope.listIdStr, count: 50
         .then (data) ->

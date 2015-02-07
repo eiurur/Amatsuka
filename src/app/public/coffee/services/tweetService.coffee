@@ -27,24 +27,23 @@ angular.module "myApp.services"
       return @.replace 'normal', 'bigger' if _.isUndefined url
       url.replace 'normal', 'bigger'
 
-    isFollow:  (tweet, userList) ->
-      # normal, retweet両方に対応できるようなコードに変更。
-      !_.isUndefined _.findWhere(userList, 'id_str': tweet.retweeted_status.user.id_str)
+    isFollow:  (tweet, userList, isRT = true) ->
+      !!_.findWhere(userList, 'id_str': @get(tweet, 'tweet.id_str', isRT))
 
     # TODO: 下のnotmalizeはもっと具体的な関数名に変更
-    nomalize: (tweets, list) ->
+    nomalizeTweets: (tweets, list) ->
       _.each tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
         if isRT
           tweet.followStatus = @isFollow(tweet, list)
-          console.log tweet.retweeted_status.user.id_str
-          console.log tweet.followStatus
-        tweet.text = @activateLink(tweet.text)
-        tweet.time = @fromNow(@get(tweet, 'tweet.created_at', false))
+          # console.log tweet.retweeted_status.user.id_str
+          # console.log tweet.followStatus
+        tweet.text       = @activateLink(tweet.text)
+        tweet.time       = @fromNow(@get(tweet, 'tweet.created_at', false))
         tweet.retweetNum = @get(tweet, 'tweet.retweet_count', isRT)
-        tweet.favNum = @get(tweet, 'tweet.favorite_count', isRT)
+        tweet.favNum     = @get(tweet, 'tweet.favorite_count', isRT)
         tweet.tweetIdStr = @get(tweet, 'tweet.id_str', isRT)
-        tweet.sourceUrl = @get(tweet, 'display_url', isRT)
+        tweet.sourceUrl  = @get(tweet, 'display_url', isRT)
         tweet.picOrigUrl = @get(tweet, 'media_url:orig', isRT)
         tweet.user.profile_image_url =
           @iconBigger(tweet.user.profile_image_url)
@@ -133,20 +132,6 @@ angular.module "myApp.services"
             console.log 'twitterPostTest in service data = ', data
             return resolve data
 
-    # まだ動かない
-    getHomeTimeline: (type, twitterIdStr) ->
-      return new Promise (resolve, reject) ->
-        $http.get("/api/timeline/:#{type}/#{twitterIdStr}")
-          .success (data) ->
-            return resolve data.data
-
-    # まだ動かない
-    getUserTimeline: (type, twitterIdStr) ->
-      return new Promise (resolve, reject) ->
-        $http.get("/api/timeline/:#{type}/#{twitterIdStr}")
-          .success (data) ->
-            return resolve data.data
-
     ###
     List
     ###
@@ -155,6 +140,12 @@ angular.module "myApp.services"
         $http.get('/api/lists/list')
           .success (data) ->
             console.table data.data
+            return resolve data
+
+    createLists: (params) ->
+      return $q (resolve, reject) ->
+        $http.post('/api/lists/create', params)
+          .success (data) ->
             return resolve data
 
     getListsMembers: (params) ->
@@ -171,13 +162,13 @@ angular.module "myApp.services"
 
     createListsMembers: (params) ->
       return $q (resolve, reject) ->
-        $http.post("/api/lists/members/create", listIdStr: params.listIdStr, twitterIdStr: params.twitterIdStr)
+        $http.post("/api/lists/members/create", params)
           .success (data) ->
             return resolve data
 
     destroyListsMembers: (params) ->
       return $q (resolve, reject) ->
-        $http.post("/api/lists/members/destroy", listIdStr: params.listIdStr, twitterIdStr: params.twitterIdStr)
+        $http.post("/api/lists/members/destroy", params)
           .success (data) ->
             return resolve data
 

@@ -1,12 +1,15 @@
 h2
   a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
-     / Amatsuka
-.member
-  div(ng-repeat="member in amatsukaMemberList")
-    .member_profile.col-md-3
-      a(href="https://twitter.com/{{member.screen_name}}", target="_blank")
-        img.member_profile__icon(ng-src="{{member.profile_image_url}}")
-      .member_profile__text
-        .member_profile__text--name {{member.name}}
-        .member_profile__text--screen_name @{{member.screen_name}}
-        //- .member_profile__text--description(ng-bind-html='member.description | newlines')
+    / Amatsuka
+div(ng-repeat="member in amatsukaMemberList")
+  .media
+    a.pull-left(href='https://www.twitter.com/{{member.screen_name}}')
+      img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url}}', img-preload="img-preload")
+    .media-body
+      h4.media-heading
+        span.name {{member.name}}
+        span.screen-name @{{member.screen_name}}
+      span.btn-wrapper
+      a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{member.id_str}}', ng-disabled='isProcessing')
+
+  .member__divider

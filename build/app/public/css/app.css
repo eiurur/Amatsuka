@@ -351,50 +351,48 @@ ul {
 .external-link {
   color: #a1a1a1;
   margin: 15px 0;
+  transition: .15s;
+}
+.external-link:hover {
+  color: white;
+}
+.external-link a {
+  text-decoration: none;
 }
 
-.member {
-  font-size: 16px;
+.btn {
+  background: transparent;
+  border-color: #a1a1a1;
+  color: #a1a1a1;
+  transition: .2s ease;
 }
 
-.member_profile {
-  background: white;
-  border-radius: 5px;
-  margin: 5px;
-  padding: 15px;
+.media .thumbnail-img {
+  max-width: 64px;
+  height: auto;
+  border-radius: 100%;
 }
-
-.member_profile__icon {
-  display: inline-block;
-  border: 1px solid #ddd;
-  max-height: 73px;
-  border-radius: 8px;
+.media .user-icon {
+  position: relative;
 }
-
-.member_profile__text {
-  overflow: hidden;
-  zoom: 1;
-  font-size: 1.2em;
-  line-height: 1.6;
-}
-
-.member_profile__text--name {
-  font-size: 0.9em;
-  vertical-align: top;
-  display: inline-block;
+.media .media-heading .name {
+  color: white;
+  font-size: 0.8em;
   font-weight: bold;
 }
-
-.member_profile__text--screen_name {
+.media .media-heading .screen-name {
+  margin-left: 8px;
   font-size: 0.8em;
-  color: #B3B3B1;
+  color: #a1a1a1;
 }
 
-.member_profile__text--description {
-  font-size: 0.8em;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  min-height: 150px;
+.member__divider {
+  margin: 30px 0;
+  max-width: 33%;
+  border-bottom: 1px solid rgba(161, 161, 161, 0.4);
+  -moz-box-shadow: rgba(255, 255, 255, 0.5) 0 1px 0 inset;
+  -webkit-box-shadow: rgba(255, 255, 255, 0.5) 0 1px 0 inset;
+  box-shadow: rgba(255, 255, 255, 0.5) 0 1px 0 inset;
 }
 
 /*# sourceMappingURL=app.css.map */

@@ -66,6 +66,16 @@ module.exports = (app) ->
       console.log '/api/lists/list/:id/:count data.length = ', data.length
       res.json data: data
 
+  # POST リストの作成
+  app.post '/api/lists/create', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.createLists
+      name: req.body.name
+      mode: req.body.mode
+    .then (data) ->
+      console.log '/api/lists/create', data.length
+      res.json data: data
+
   # GET リストのメンバー
   app.get '/api/lists/members/:id?/:count?', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)

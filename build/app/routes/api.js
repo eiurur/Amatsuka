@@ -78,6 +78,19 @@
         });
       });
     });
+    app.post('/api/lists/create', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.createLists({
+        name: req.body.name,
+        mode: req.body.mode
+      }).then(function(data) {
+        console.log('/api/lists/create', data.length);
+        return res.json({
+          data: data
+        });
+      });
+    });
     app.get('/api/lists/members/:id?/:count?', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterCilent(req.session.passport.user);

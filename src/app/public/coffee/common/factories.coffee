@@ -24,8 +24,8 @@ angular.module "myApp.factories", []
             return
 
           @maxId = TweetService.decStrNum(_.last(data.data).id_str)
-          items = TweetService.filterIncludeImage data.data
-          itemsNomalized = TweetService.nomalize(items)
+          itemsImageOnly = TweetService.filterIncludeImage data.data
+          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly)
           @items = @items.concat itemsNomalized
           @busy = false
 

@@ -1,50 +1,97 @@
 .external-link {
   color: $link-color;
   margin: 15px 0;
+  transition: .15s;
+  &:hover {
+    color: white;
+  }
+  a {
+      text-decoration: none;
+  }
 }
 
-.member {
-  font-size: 16px;
-}
-.member_profile {
-  background: white;
-  border-radius: 5px;
-  margin: 5px;
-  padding: 15px;
-  // min-height: 300px !important;
-  // min-width: 300px !important;
+.btn {
+  background: rgba(0,0,0, 0);
+  border-color: $link-color;
+  color: $link-color;
+  transition: .2s ease;
 }
 
-.member_profile__icon {
-  display: inline-block;
-  border: 1px solid #ddd;;
-  max-height: 73px;
-  @include round(8px);
+.media {
+  .thumbnail-img {
+    max-width: 64px;
+    height: auto;
+    border-radius: 100%;
+  }
+
+  .user-icon {
+    position: relative;
+  }
+
+  .media-heading {
+    .name {
+      color: white;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+    .screen-name {
+      margin-left: 8px;
+      font-size: 0.8em;
+      color: $link-color;
+    }
+  }
 }
 
-.member_profile__text {
-  overflow: hidden;
-  zoom: 1;
-  font-size: 1.2em;
-  line-height: 1.6
-}
-
-.member_profile__text--name {
-  font-size: 0.9em;
-  vertical-align: top;
-  display: inline-block;
-  font-weight: bold;
+.member__divider {
+  margin: 30px 0;
+  max-width: 33%;
+  border-bottom: 1px solid rgba($link-color, .4);
+  @include box-shadow(rgba(255,255,255,.5) 0 1px 0 inset);
 }
 
 
-.member_profile__text--screen_name {
-  font-size: 0.8em;
-  color: #B3B3B1;
-}
+// .member {
+//   font-size: 16px;
+// }
+// .member_profile {
+//   background: white;
+//   border-radius: 5px;
+//   margin: 5px;
+//   padding: 15px;
+//   // min-height: 300px !important;
+//   // min-width: 300px !important;
+// }
 
-.member_profile__text--description {
-  font-size: 0.8em;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  min-height: 150px;
-}
+// .member_profile__icon {
+//   display: inline-block;
+//   border: 1px solid #ddd;;
+//   max-height: 73px;
+//   @include round(8px);
+// }
+
+// .member_profile__text {
+//   overflow: hidden;
+//   zoom: 1;
+//   font-size: 1.2em;
+//   line-height: 1.6
+// }
+
+// .member_profile__text--name {
+//   font-size: 0.9em;
+//   vertical-align: top;
+//   display: inline-block;
+//   font-weight: bold;
+// }
+
+
+// .member_profile__text--screen_name {
+//   font-size: 0.8em;
+//   color: #B3B3B1;
+// }
+
+// .member_profile__text--description {
+//   font-size: 0.8em;
+//   text-overflow: ellipsis;
+//   overflow: hidden;
+//   min-height: 150px;
+// }
