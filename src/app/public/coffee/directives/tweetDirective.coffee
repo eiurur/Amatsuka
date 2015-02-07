@@ -49,11 +49,46 @@ angular.module "myApp.directives"
           .then (data) ->
             element.fadeOut(200)
 
+  .directive 'followable', (TweetService) ->
+    restrict: 'A'
+    scope:
+      listIdStr: '@'
+      twitterIdStr: '@'
+      followStatus: '='
+    link: (scope, element, attrs) ->
+      console.log element
+      console.log scope.followStatus
+
+      element[0].innerText = if scope.followStatus then 'フォロー解除' else 'フォロー'
+      # element.on 'mouseover', (e) ->
+      #   if scope.followStatus is true
+      #     element[0].innerText = if scope.followStatus then 'フォロー解除' else 'フォロー'
+      #   # scope.$apply()
+      #   if scope.followStatus is false
+      #     element[0].innerText = 'フォロー'
+      #   # scope.$apply()
+
+      element.on 'click', ->
+        console.log scope.listIdStr
+        console.log scope.twitterIdStr
+        scope.isProcessing = true
+        if scope.followStatus is true
+          TweetService.destroyListsMembers(listIdStr: scope.listIdStr, twitterIdStr: scope.twitterIdStr)
+          .then (data) ->
+            element[0].innerText = 'フォロー'
+            scope.isProcessing = false
+        if scope.followStatus is false
+          TweetService.createListsMembers(listIdStr: scope.listIdStr, twitterIdStr: scope.twitterIdStr)
+          .then (data) ->
+            element[0].innerText = 'フォロー解除'
+            scope.isProcessing = false
+        scope.followStatus = !scope.followStatus
+
   .directive 'newTweetLoad', ($rootScope, TweetService) ->
     restrict: 'E'
     scope:
       listIdStr: '@'
-    template: '<button class="btn btn-primary" ng-disabled="isProcessing">{{text}}</button>'
+    template: '<a class="btn" ng-disabled="isProcessing">{{text}}</a>'
     link: (scope, element, attrs) ->
       scope.text = '新着を読み込む'
       element.on 'click', ->

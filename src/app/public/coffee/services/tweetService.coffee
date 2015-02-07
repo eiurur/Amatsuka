@@ -31,6 +31,7 @@ angular.module "myApp.services"
       # normal, retweet両方に対応できるようなコードに変更。
       !_.isUndefined _.findWhere(userList, 'id_str': tweet.retweeted_status.user.id_str)
 
+    # TODO: 下のnotmalizeはもっと具体的な関数名に変更
     nomalize: (tweets, list) ->
       _.each tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
@@ -50,6 +51,7 @@ angular.module "myApp.services"
 
     nomarlizeMembers: (members) ->
       _.each members, (member) =>
+        member.followStatus = true
         member.description = @activateLink(member.description)
         member.profile_image_url =
           @iconBigger(member.profile_image_url)
@@ -145,6 +147,9 @@ angular.module "myApp.services"
           .success (data) ->
             return resolve data.data
 
+    ###
+    List
+    ###
     getListsList: ->
       return $q (resolve, reject) ->
         $http.get('/api/lists/list')
@@ -176,10 +181,24 @@ angular.module "myApp.services"
           .success (data) ->
             return resolve data
 
+    ###
+    Timleine
+    ###
+    getUserTimeline: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/timeline/#{params.twitterIdStr}/#{params.maxId}/#{params.count}")
+          .success (data) ->
+            return resolve data
 
+    ###
+    FAV
+    ###
     createFav: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/createFav', tweetIdStr: params.tweetIdStr)
           .success (data) ->
             return resolve data
 
+    ###
+    RT
+    ###
