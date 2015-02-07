@@ -1,3 +1,5 @@
+@charset "utf-8";
+
 .external-link {
   color: $link-color;
   margin: 15px 0;
@@ -15,6 +17,10 @@
   border-color: $link-color;
   color: $link-color;
   transition: .2s ease;
+}
+
+.btn-follow {
+  margin-top: 10px; // iconのサイズが縦64px。 paddibng-top: 10px だと、media-bodyの縦が64pxになる。
 }
 
 .media {
@@ -39,6 +45,10 @@
       font-size: 0.8em;
       color: $link-color;
     }
+  }
+
+  .media-body {
+    padding-left: 8px;
   }
 }
 

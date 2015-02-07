@@ -42,7 +42,7 @@
         return function(resolve, reject) {
           return settings.twitterAPI[params.method](params.type, params.params, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
             if (error) {
-              console.log("getViaAPI " + params.method + "." + params.type + " e = ", error);
+              console.log("postViaAPI " + params.method + "." + params.type + " e = ", error);
               return reject(error);
             }
             return resolve(data);

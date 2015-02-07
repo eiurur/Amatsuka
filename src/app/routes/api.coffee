@@ -137,5 +137,32 @@ module.exports = (app) ->
 
 
   # POST ふぁぼ、あんふぁぼ
+  app.post '/api/favorites/create', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.createFav
+      tweetIdStr: req.body.tweetIdStr
+    .then (data) ->
+      res.json data: data
+
+  app.post '/api/favorites/destroy', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.destroyFav
+      tweetIdStr: req.body.tweetIdStr
+    .then (data) ->
+      res.json data: data
+
 
   # POST リツイート、解除
+  app.post '/api/statuses/retweet', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.retweetStatus
+      tweetIdStr: req.body.tweetIdStr
+    .then (data) ->
+      res.json data: data
+
+  app.post '/api/statuses/destroy', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.destroyStatus
+      tweetIdStr: req.body.tweetIdStr
+    .then (data) ->
+      res.json data: data

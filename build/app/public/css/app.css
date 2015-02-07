@@ -11,6 +11,32 @@
 /**
  * zurui font awesome button
  */
+.fa-retweet {
+  cursor: pointer;
+}
+.fa-retweet:hover {
+  color: #5C913B !important;
+}
+
+.retweeted {
+  color: #5C913B !important;
+}
+
+.fa-star {
+  cursor: pointer;
+}
+.fa-star:hover {
+  color: #FFAC33 !important;
+}
+
+.favorited {
+  color: #FFAC33 !important;
+}
+
+.fa-download:hover {
+  color: #29A7E1 !important;
+}
+
 /**
  * Go to top
  */
@@ -225,6 +251,7 @@ ul {
 .sidebar .main-nav .nav-text li {
   color: white;
   font-size: 16px;
+  line-height: 1.6;
 }
 .sidebar .main-nav .nav-text a {
   color: #a2a2a2;
@@ -233,6 +260,10 @@ ul {
   font-weight: 300;
   padding: 2px 30px;
   font-size: 16px;
+  transition: .2s ease;
+}
+.sidebar .main-nav .nav-text a:hover {
+  color: white;
 }
 
 .site-main {
@@ -367,6 +398,10 @@ ul {
   transition: .2s ease;
 }
 
+.btn-follow {
+  margin-top: 10px;
+}
+
 .media .thumbnail-img {
   max-width: 64px;
   height: auto;
@@ -384,6 +419,9 @@ ul {
   margin-left: 8px;
   font-size: 0.8em;
   color: #a1a1a1;
+}
+.media .media-body {
+  padding-left: 8px;
 }
 
 .member__divider {

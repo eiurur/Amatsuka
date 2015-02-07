@@ -1,27 +1,45 @@
 angular.module "myApp.directives"
   .directive 'favoritable', (TweetService) ->
     restrict: 'A'
+    scope:
+      favNum: '='
+      favorited: '='
+      tweetIdStr: '@'
     link: (scope, element, attrs) ->
+      element.addClass('favorited') if scope.favorited
+
       element.on 'click', (event) ->
-        TweetService.createFavorite(attrs.tweetIdStr).success((data) ->
-          if data.data == null
-          else
-          return
-        ).error (status, data) ->
-          console.log status
-          console.log data
+        if scope.favorited
+          TweetService.destroyFav(tweetIdStr: scope.tweetIdStr)
+            .then (data) ->
+              scope.favNum -= 1
+              element.removeClass('favorited')
+        else
+          TweetService.createFav(tweetIdStr: scope.tweetIdStr)
+            .then (data) ->
+              scope.favNum += 1
+              element.addClass('favorited')
 
   .directive 'retweetable', (TweetService) ->
     restrict: 'A'
-    scope: num: '='
+    scope:
+      retweetNum: '='
+      retweeted: '='
+      tweetIdStr: '@'
     link: (scope, element, attrs) ->
+      element.addClass('retweeted') if scope.retweeted
+
       element.on 'click', (event) ->
-        if !window.confirm('リツイートしてもよろしいですか？')
-          return
-        TweetService.statusesRetweet(attrs.tweetIdStr).success (data) ->
-          if data.data == null
-          else
-            console.log data.data.entities.media[0].media_url
+        if scope.retweeted
+          TweetService.destroyStatus(tweetIdStr: scope.tweetIdStr)
+            .then (data) ->
+              scope.retweetNum -= 1
+              element.removeClass('retweeted')
+        else if !window.confirm('リツイートしてもよろしいですか？')
+          TweetService.retweetStatus(tweetIdStr: scope.tweetIdStr)
+            .then (data) ->
+              scope.retweetNum += 1
+              element.addClass('retweeted')
 
   .directive 'followable', (TweetService) ->
     restrict: 'E'
@@ -87,6 +105,7 @@ angular.module "myApp.directives"
 
         scope.followStatus = !scope.followStatus
 
+  # 動かなくなった。
   .directive 'newTweetLoad', ($rootScope, Tweets, TweetService) ->
     restrict: 'E'
     scope:

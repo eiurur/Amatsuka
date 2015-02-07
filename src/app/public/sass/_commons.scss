@@ -11,6 +11,32 @@
 //   margin-right: 5px;
 // }
 
+.fa-retweet {
+  cursor: pointer;
+  &:hover {
+    color: $retweet-color !important;
+  }
+}
+.retweeted {
+  color: $retweet-color !important;
+}
+
+.fa-star {
+  cursor: pointer;
+  &:hover {
+    color: $favorite-color !important;
+  }
+}
+.favorited {
+  color: $favorite-color !important;
+}
+
+.fa-download {
+  &:hover {
+    color: $download-color !important;
+  }
+}
+
 /**
  * Go to top
  */

@@ -186,10 +186,27 @@ angular.module "myApp.services"
     ###
     createFav: (params) ->
       return $q (resolve, reject) ->
-        $http.post('/api/createFav', tweetIdStr: params.tweetIdStr)
+        $http.post('/api/favorites/create', params)
+          .success (data) ->
+            return resolve data
+
+    destroyFav: (params) ->
+      return $q (resolve, reject) ->
+        $http.post('/api/favorites/destroy', params)
           .success (data) ->
             return resolve data
 
     ###
     RT
     ###
+    retweetStatus: (params) ->
+      return $q (resolve, reject) ->
+        $http.post('/api/statuses/retweet', params)
+          .success (data) ->
+            return resolve data
+
+    destroyStatus: (params) ->
+      return $q (resolve, reject) ->
+        $http.post('/api/statuses/destroy', params)
+          .success (data) ->
+            return resolve data

@@ -30,6 +30,7 @@
       li {
         color: white;
         font-size: $baseFontSize - 4px;
+        line-height: 1.6
       }
       a {
         color: #a2a2a2;
@@ -38,9 +39,9 @@
         font-weight: 300;
         padding: 2px $sidebar-left-and-right-space;
         font-size: $baseFontSize - 4px;
-
+        transition: .2s ease;
         &:hover {
-
+          color: white;
         }
       }
     }

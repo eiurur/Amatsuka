@@ -22,10 +22,10 @@ h1
     .timeline__post--footer
       .timeline__post--footer--contents
         .timeline__post--footer--contents--controls
-          i.fa.fa-retweet.icon-retweet(data-tweet-id-str='{{tweet.tweetIdStr}}', retweetable='retweetable')  {{tweet.retweetNum}}
-          i.fa.fa-star.icon-star(data-tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
+          i.fa.fa-retweet.icon-retweet(retweet-num="tweet.retweetNum", retweeted='tweet.retweeted', tweet-id-str='{{tweet.tweetIdStr}}', retweetable='retweetable')  {{tweet.retweetNum}}
+          i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
           a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
-            .fa.fa-download
+            i.fa.fa-download
 
   div(ng-show='tweets.busy') Loading data...
   div(ng-show='tweets.isLast') 終わりです

@@ -145,12 +145,56 @@
         });
       });
     });
-    return app.post('/api/lists/members/destroy', function(req, res) {
+    app.post('/api/lists/members/destroy', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterCilent(req.session.passport.user);
       return twitterClient.destroyListsMembers({
         listIdStr: req.body.listIdStr,
         twitterIdStr: req.body.twitterIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/favorites/create', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.createFav({
+        tweetIdStr: req.body.tweetIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/favorites/destroy', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.destroyFav({
+        tweetIdStr: req.body.tweetIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/statuses/retweet', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.retweetStatus({
+        tweetIdStr: req.body.tweetIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    return app.post('/api/statuses/destroy', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.destroyStatus({
+        tweetIdStr: req.body.tweetIdStr
       }).then(function(data) {
         return res.json({
           data: data
