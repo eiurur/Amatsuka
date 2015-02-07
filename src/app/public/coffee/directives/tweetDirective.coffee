@@ -57,14 +57,14 @@ angular.module "myApp.directives"
     link: (scope, element, attrs) ->
       scope.text = '新着を読み込む'
       element.on 'click', ->
-        console.log 'newTweetLoad', scope.listIdStr
-        scope.text = ''
-        console.log element
-        element.html """
-          <button class="btn btn-primary" ng-disabled="isProcessing">
-            <i class="fa fa-spin fa-refresh"></i> 読み込み中
-          </button>
-        """
+        # console.log 'newTweetLoad', scope.listIdStr
+        # scope.text = ''
+        # console.log element
+        # element.html """
+        #   <button class="btn btn-primary" ng-disabled="isProcessing">
+        #     <i class="fa fa-spin fa-refresh"></i> 読み込み中
+        #   </button>
+        # """
         scope.isProcessing = true
         TweetService.getListsStatuses listIdStr: scope.listIdStr, count: 50
         .then (data) ->

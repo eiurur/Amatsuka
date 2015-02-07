@@ -48,6 +48,12 @@ angular.module "myApp.services"
         tweet.user.profile_image_url =
           @iconBigger(tweet.user.profile_image_url)
 
+    nomarlizeMembers: (members) ->
+      _.each members, (member) =>
+        member.description = @activateLink(member.description)
+        member.profile_image_url =
+          @iconBigger(member.profile_image_url)
+
     get: (tweet, key, isRT) ->
       t = if isRT then tweet.retweeted_status else tweet
       switch key

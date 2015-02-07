@@ -70,10 +70,17 @@ ul {
 
 .site-main {
   position: relative;
+  // tinelineだけなら下のでよかった。
+  // memberページを設けたところ、左側に大幅な空白ができたため、
+  // timeline.scssで設定することにした。
   padding-left: $sidebar-width + 85px + 21px;
+  // padding-left: $sidebar-width + 40px;
   padding-bottom: 30px;
   padding-right: $sidebar-width + 40px;
 }
 
 // left_col
 @import "timeline";
+
+// member.jade
+@import "member";

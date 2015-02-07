@@ -1,0 +1,12 @@
+h2
+  a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
+     / Amatsuka
+.member
+  div(ng-repeat="member in amatsukaMemberList")
+    .member_profile.col-md-3
+      a(href="https://twitter.com/{{member.screen_name}}", target="_blank")
+        img.member_profile__icon(ng-src="{{member.profile_image_url}}")
+      .member_profile__text
+        .member_profile__text--name {{member.name}}
+        .member_profile__text--screen_name @{{member.screen_name}}
+        //- .member_profile__text--description(ng-bind-html='member.description | newlines')
