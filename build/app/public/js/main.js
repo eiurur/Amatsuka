@@ -149,7 +149,7 @@ angular.module("myApp.directives", []).directive('boxLoading', ["$interval", fun
   };
 });
 
-angular.module("myApp.factories", []).factory('Tweets', ["$http", "TweetService", function($http, TweetService) {
+angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetService", function($http, $q, TweetService) {
   var Tweets;
   Tweets = (function() {
     function Tweets(items, list, maxId) {
@@ -174,7 +174,6 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "TweetService"
       }).then((function(_this) {
         return function(data) {
           var itemsImageOnly, itemsNomalized;
-          console.table(data.data);
           if (_.isEmpty(data.data)) {
             _this.isLast = true;
             _this.busy = false;
@@ -182,11 +181,24 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "TweetService"
           }
           _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
           itemsImageOnly = TweetService.filterIncludeImage(data.data);
-          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly);
-          _this.items = _this.items.concat(itemsNomalized);
-          return _this.busy = false;
+          return itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, _this.list);
+        };
+      })(this)).then((function(_this) {
+        return function(itemsNomalized) {
+          console.log('======> @busy ', _this.busy);
+          return $q.all(itemsNomalized.map(function(item) {
+            return _this.addTweet(item);
+          })).then(function(result) {
+            _this.busy = false;
+            console.log(result);
+            return console.log('@busy ', _this.busy);
+          });
         };
       })(this));
+    };
+
+    Tweets.prototype.addTweet = function(tweet) {
+      return [this.items][0].push(tweet);
     };
 
     return Tweets;

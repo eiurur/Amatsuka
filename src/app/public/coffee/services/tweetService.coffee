@@ -30,7 +30,6 @@ angular.module "myApp.services"
     isFollow:  (tweet, userList, isRT = true) ->
       !!_.findWhere(userList, 'id_str': @get(tweet, 'tweet.id_str', isRT))
 
-    # TODO: 下のnotmalizeはもっと具体的な関数名に変更
     nomalizeTweets: (tweets, list) ->
       _.each tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
