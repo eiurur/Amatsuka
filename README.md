@@ -13,7 +13,7 @@ TODO
 - [x] Filtering with name for list's members
 - [ ] List up own lists
 - [ ] List up tweets in own lists
-- [ ] Show individually user data and tweet
+- [x] Show individually user data and tweet
 - [ ] Zoom up a image
 
 Status
