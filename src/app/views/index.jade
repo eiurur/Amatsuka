@@ -1,7 +1,7 @@
 extends layout
 
 block body
-  span(ng-controller='AdminUserCtrl')
+  .test(ng-controller='AdminUserCtrl')
     span(ng-if='isLoaded')
 
       .intro-container(ng-if='!isAuthenticated')
@@ -17,6 +17,7 @@ block body
                 | Login
 
       span.header-is-auth(ng-if='isAuthenticated')
+        .layer
         .sidebar
           .logo
             a(href='/')
@@ -43,6 +44,52 @@ block body
           div(ng-view)
 
       a.arrow-top(ng-if='isAuthenticated', scroll-to='.site-main', scroll-on-click)
+
+      .user-sidebar(ng-if='isAuthenticated', ng-controller="UserCtrl")
+
+        // code from member.jade
+        .media.user-sidebar__profile(ng-if='user.name')
+          a.pull-left(href='https://www.twitter.com/{{user.screen_name}}', target="_blank")
+            img.media-object.thumbnail-img.fade(ng-src='{{user.profile_image_url}}', img-preload="img-preload")
+          .media-body
+            h4.media-heading
+              span.user-sidebar__profile--name {{user.name}}
+              span.screen-name @{{user.screen_name}}
+            span.btn-wrapper
+            a.btn.btn-sm.btn-follow.user-sidebar__btn-follow(followable, follow-status='user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{user.id_str}}', ng-disabled='isProcessing')
+          .user-sidebar__profile--description(ng-bind-html='user.description | newlines')
+
+        // code from index.jade(少しだけ表示内容がかわってる。)
+        // TODO: (1)
+        // .timeline__post--header--rt_icon, .timeline__post--header--rt_source の割り当て
+        // TODO: (2)
+        // 上がclickされたとき、再読み込みする処理
+        .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1')
+          .timeline__post.user-sidebar__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
+            .timeline__post--header
+              .timeline__post--header--info
+                // あとで下にに直す
+                //- .timeline__post--header--user
+                .timeline__post--header--link
+                  span.timeline__post--header--rt_icon(ng-if="tweet.retweeted_status")
+                    i.fa.fa-retweet
+                  a.timeline__post--header--rt_source
+                   {{tweet.retweeted_status.user.screen_name}}
+                  followable(list-id-str="{{listIdStr}}", twitter-id-str="{{tweet.retweeted_status.user.id_str}}", follow-status="tweet.followStatus")
+              .timeline__post--header--time
+                a(href="https://{{tweet.sourceUrl}}", target="_blank")
+                  {{tweet.time}}
+            .timeline__post--image
+              img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload")
+            .timeline__post--text(ng-bind-html='tweet.text | newlines')
+            .timeline__post--footer
+              .timeline__post--footer--contents
+                .timeline__post--footer--contents--controls
+                  i.fa.fa-retweet.icon-retweet(retweet-num="tweet.retweetNum", retweeted='tweet.retweeted', tweet-id-str='{{tweet.tweetIdStr}}', retweetable='retweetable')  {{tweet.retweetNum}}
+                  i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
+                  a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
+                    i.fa.fa-download
+
 
     span(ng-if='!isLoaded')
       .intro-container

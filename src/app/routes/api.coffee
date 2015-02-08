@@ -102,16 +102,25 @@ module.exports = (app) ->
     m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
     twitterClient = new TwitterCilent(req.session.passport.user)
     twitterClient[m]
-      listIdStr: req.params.id
+      twitterIdStr: req.params.id
       maxId: req.params.maxId
       count: req.params.count
     .then (data) ->
-      console.log '/api/timeline/list/:id/:count data.length = ', data.length
+      console.log '/api/timeline/:id/:count data.length = ', data.length
       res.json data: data
 
   # GET アプリ上の仮想的なタイムラインの情報 ( = Amatsuka リスト)
   # まず、Amatsukaリストの存在を確認
   # あれば、それを返すだけ。
+
+  # user情報を取得
+  app.get '/api/users/show/:id', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.showUsers
+      twitterIdStr: req.params.id
+      # screenName: req.params.screenName
+    .then (data) ->
+      res.json data: data
 
 
   # GET フォロー状況の取得

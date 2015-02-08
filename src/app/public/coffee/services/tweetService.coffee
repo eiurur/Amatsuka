@@ -12,7 +12,7 @@ angular.module "myApp.services"
         ///
         (^|\s)(@|＠)(\w+)
         ///g
-          , "$1<a href=\"http://www.twitter.com/$3\" target=\"_blank\">@$3</a>")
+        , "$1<a href=\"http://www.twitter.com/$3\" target=\"_blank\">@$3</a>")
       .replace(
         ///
         (?:^|[^ーー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9&_/>]+)
@@ -30,13 +30,11 @@ angular.module "myApp.services"
     isFollow:  (tweet, userList, isRT = true) ->
       !!_.findWhere(userList, 'id_str': @get(tweet, 'tweet.id_str', isRT))
 
-    nomalizeTweets: (tweets, list) ->
+    nomalizeTweets: (tweets, followingUserList) ->
       _.each tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
         if isRT
-          tweet.followStatus = @isFollow(tweet, list)
-          # console.log tweet.retweeted_status.user.id_str
-          # console.log tweet.followStatus
+          tweet.followStatus = @isFollow(tweet, followingUserList)
         tweet.text       = @activateLink(tweet.text)
         tweet.time       = @fromNow(@get(tweet, 'tweet.created_at', false))
         tweet.retweetNum = @get(tweet, 'tweet.retweet_count', isRT)
@@ -51,8 +49,13 @@ angular.module "myApp.services"
       _.each members, (member) =>
         member.followStatus = true
         member.description = @activateLink(member.description)
-        member.profile_image_url =
-          @iconBigger(member.profile_image_url)
+        member.profile_image_url = @iconBigger(member.profile_image_url)
+
+    nomarlizeMember: (member) ->
+      member.followStatus = true
+      member.description = @activateLink(member.description)
+      member.profile_image_url = @iconBigger(member.profile_image_url)
+      member
 
     get: (tweet, key, isRT) ->
       t = if isRT then tweet.retweeted_status else tweet
@@ -177,6 +180,17 @@ angular.module "myApp.services"
     getUserTimeline: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/timeline/#{params.twitterIdStr}/#{params.maxId}/#{params.count}")
+          .success (data) ->
+            return resolve data
+
+    ###
+    User
+    ###
+    showUsers: (params) ->
+      # 汎用性は後回し。今はidによるリクエストだけを受け付ける。
+      # id = params.twitterIdStr || params.screenName
+      return $q (resolve, reject) ->
+        $http.get("/api/users/show/#{params.twitterIdStr}")
           .success (data) ->
             return resolve data
 

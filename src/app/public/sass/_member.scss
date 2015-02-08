@@ -25,6 +25,7 @@
 
 .media {
   .thumbnail-img {
+    cursor: pointer; // ここでいいんかな？
     max-width: 64px;
     height: auto;
     border-radius: 100%;

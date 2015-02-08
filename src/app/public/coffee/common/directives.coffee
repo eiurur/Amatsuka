@@ -70,10 +70,8 @@ angular.module "myApp.directives", []
           target.style.height = "0px"
         attrs.expanded = not attrs.expanded
 
-  .directive "imgPreload", ($rootScope) ->
+  .directive "imgPreload", ->
     restrict: "A"
-    scope:
-      ngSrc: "@"
     link: (scope, element, attrs) ->
       element.on("load", ->
         element.addClass "in"

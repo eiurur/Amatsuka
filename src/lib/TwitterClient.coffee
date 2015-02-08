@@ -47,7 +47,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
       count: params.count || settings.MAX_NUM_GET_TIMELINE_TWEET
       include_entities: true
       include_rts: true
-    unless params.maxId is '0'
+    unless params.maxId is '0' || params.maxId is 'undefined'
       opts.max_id = params.maxId
     console.log "opts = ", opts
 
@@ -58,13 +58,33 @@ module.exports = class TwitterClient extends TwitterClientDefine
 
   # 他ユーザのTLを表示
   getUserTimeline: (params) ->
+    opts =
+      user_id: params.twitterIdStr
+      count: params.count
+      include_entities: true
+      include_rts: true
+    unless params.maxId is '0' || params.maxId is 'undefined'
+      opts.max_id = params.maxId
+    if params.count is '0' || params.count is 'undefined'
+      opts.count = settings.MAX_NUM_GET_TIMELINE_TWEET
+    console.log "opts = ", opts
+
     @getViaAPI
       method: 'getTimeline'
       type: 'user_timeline'
+      params: opts
+
+  ###
+  User
+  ###
+  showUsers: (params) ->
+    @getViaAPI
+      method: 'users'
+      type: 'show'
       params:
-        user_id: params.twitterIdStr || params.screenName
+        user_id: params.twitterIdStr || ''
+        # scren_name: params.screenName || ''
         include_entities: true
-        include_rts: true
 
 
   # 自分の指定のリストのツイートから画像だけを表示

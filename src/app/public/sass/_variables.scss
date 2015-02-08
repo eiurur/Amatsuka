@@ -4,6 +4,9 @@
 $sidebar-width: 160px;
 $sidebar-left-and-right-space: 30px;
 
+$timeline__post--width: 540px;
+$timeline__post--padding: 30px;
+
 /**
  * Fonts
  */
@@ -13,7 +16,7 @@ $post--font-size: 14px;
 /**
  * Colors
  */
-$baseColor: #424242;
+$base-color: #424242;
 // $sidebar-color: #272B33;
 // $sidebar-color: #FE6260;
 $sidebar-color: #292929;
@@ -26,6 +29,8 @@ $accent-color: #EEA8B6;
 $retweet-color: #5C913B;
 $favorite-color: #FFAC33;
 $download-color: #29A7E1;
+
+$transparent-color: rgba(0, 0, 0, 0);
 
 // timeline
 // $body__bg-color: #272B33;

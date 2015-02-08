@@ -1,9 +1,9 @@
 @charset "utf-8";
 @import "compass";
 @import "variables";
-@import "commons";
 @import "mixins";
 @import "functions";
+@import "commons";
 
 /*
 明度
@@ -85,3 +85,5 @@ ul {
 
 // member.jade
 @import "member";
+
+@import "user-slidebar";

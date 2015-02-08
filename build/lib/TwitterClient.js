@@ -70,7 +70,7 @@
         include_entities: true,
         include_rts: true
       };
-      if (params.maxId !== '0') {
+      if (!(params.maxId === '0' || params.maxId === 'undefined')) {
         opts.max_id = params.maxId;
       }
       console.log("opts = ", opts);
@@ -82,13 +82,39 @@
     };
 
     TwitterClient.prototype.getUserTimeline = function(params) {
+      var opts;
+      opts = {
+        user_id: params.twitterIdStr,
+        count: params.count,
+        include_entities: true,
+        include_rts: true
+      };
+      if (!(params.maxId === '0' || params.maxId === 'undefined')) {
+        opts.max_id = params.maxId;
+      }
+      if (params.count === '0' || params.count === 'undefined') {
+        opts.count = settings.MAX_NUM_GET_TIMELINE_TWEET;
+      }
+      console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'getTimeline',
         type: 'user_timeline',
+        params: opts
+      });
+    };
+
+
+    /*
+    User
+     */
+
+    TwitterClient.prototype.showUsers = function(params) {
+      return this.getViaAPI({
+        method: 'users',
+        type: 'show',
         params: {
-          user_id: params.twitterIdStr || params.screenName,
-          include_entities: true,
-          include_rts: true
+          user_id: params.twitterIdStr || '',
+          include_entities: true
         }
       });
     };

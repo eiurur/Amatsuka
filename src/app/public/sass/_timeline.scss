@@ -37,6 +37,11 @@
     text-decoration: none;
   }
 }
+
+.timeline__post--header--user {
+  cursor: pointer;
+}
+
 .timeline__post--header--label {
   // padding: .1em .3em .1em;
   cursor: pointer;
@@ -55,8 +60,12 @@
   float: right;
 }
 
-.timeline__post--header--rt_source {
+.timeline__post--header--rt_icon {
   padding: 0 5px;
+}
+
+.timeline__post--header--rt_source {
+  cursor: pointer;
 }
 
 .timeline__post--image {

@@ -10,15 +10,15 @@ angular.module "myApp.directives"
 
       element.on 'click', (event) ->
         if scope.favorited
+          element.removeClass('favorited')
           TweetService.destroyFav(tweetIdStr: scope.tweetIdStr)
             .then (data) ->
               scope.favNum -= 1
-              element.removeClass('favorited')
         else
+          element.addClass('favorited')
           TweetService.createFav(tweetIdStr: scope.tweetIdStr)
             .then (data) ->
               scope.favNum += 1
-              element.addClass('favorited')
 
   .directive 'retweetable', (TweetService) ->
     restrict: 'A'
@@ -31,15 +31,15 @@ angular.module "myApp.directives"
 
       element.on 'click', (event) ->
         if scope.retweeted
+          element.removeClass('retweeted')
           TweetService.destroyStatus(tweetIdStr: scope.tweetIdStr)
             .then (data) ->
               scope.retweetNum -= 1
-              element.removeClass('retweeted')
         else if !window.confirm('リツイートしてもよろしいですか？')
+          element.addClass('retweeted')
           TweetService.retweetStatus(tweetIdStr: scope.tweetIdStr)
             .then (data) ->
               scope.retweetNum += 1
-              element.addClass('retweeted')
 
   .directive 'followable', (TweetService) ->
     restrict: 'E'
@@ -105,8 +105,48 @@ angular.module "myApp.directives"
 
         scope.followStatus = !scope.followStatus
 
+  .directive 'showTweet', ($rootScope, TweetService) ->
+    restrict: 'A'
+    scope:
+      twitterIdStr: '@'
+    link: (scope, element, attrs) ->
+      element.on 'click', ->
+        domUserSidebar = angular.element(document).find('.user-sidebar')
+        # user-sidebarが開かれた状態で呼び出し。
+        # TODO
+        # if domUserSidebar.has .user-sidebar-in
+        #   shousers -> getUserTimeline -> broadcast
+        #   return
+        #
+
+        # 初回
+        domUserSidebar.addClass('user-sidebar-in')
+
+        body = angular.element(document).find('body')
+        body.addClass('scrollbar-y-hidden')
+        layer = angular.element(document).find('.layer')
+        layer.addClass('fullscreen-overlay')
+
+
+        layer.on 'click', ->
+          body.removeClass('scrollbar-y-hidden')
+          layer.removeClass('fullscreen-overlay')
+          domUserSidebar.removeClass('user-sidebar-in')
+          $rootScope.$broadcast 'isClosed', true
+
+        console.log scope.twitterIdStr
+        TweetService.showUsers(twitterIdStr: scope.twitterIdStr)
+        .then (data) ->
+          console.table data
+          $rootScope.$broadcast 'userData', data.data
+          TweetService.getUserTimeline(twitterIdStr: scope.twitterIdStr)
+        .then (data) ->
+          console.table data.data
+          $rootScope.$broadcast 'tweetData', data.data
+
+
   # 動かなくなった。
-  .directive 'newTweetLoad', ($rootScope, Tweets, TweetService) ->
+  .directive 'newTweetLoad', ($rootScope, TweetService) ->
     restrict: 'E'
     scope:
       listIdStr: '@'

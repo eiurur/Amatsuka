@@ -123,11 +123,22 @@
       m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
       twitterClient = new TwitterCilent(req.session.passport.user);
       return twitterClient[m]({
-        listIdStr: req.params.id,
+        twitterIdStr: req.params.id,
         maxId: req.params.maxId,
         count: req.params.count
       }).then(function(data) {
-        console.log('/api/timeline/list/:id/:count data.length = ', data.length);
+        console.log('/api/timeline/:id/:count data.length = ', data.length);
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.get('/api/users/show/:id', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.showUsers({
+        twitterIdStr: req.params.id
+      }).then(function(data) {
         return res.json({
           data: data
         });
