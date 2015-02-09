@@ -11,12 +11,14 @@ angular.module "myApp.controllers"
 
   ls = localStorage
   maxId = maxId || 0
-  amatsukaList       = JSON.parse(ls.getItem 'amatsukaList') || {}
-  amatsukaFollowList = JSON.parse(ls.getItem 'amatsukaFollowList') || []
 
-  unless _.isEmpty(amatsukaList) and _.isEmpty(amatsukaFollowList)
-    $scope.listIdStr = amatsukaList.id_str
-    $scope.amatsukaMemberList = TweetService.nomarlizeMembers(amatsukaFollowList)
+  # amatsukaList       = JSON.parse(ls.getItem 'amatsukaList') || {}
+  # amatsukaFollowList = JSON.parse(ls.getItem 'amatsukaFollowList') || []
+
+  unless _.isEmpty(TweetService.amatsukaList.data) and _.isEmpty(TweetService.amatsukaList.member)
+    $scope.listIdStr = TweetService.amatsukaList.data.id_str
+    console.log TweetService.amatsukaList.member
+    $scope.amatsukaMemberList = TweetService.nomarlizeMembers(TweetService.amatsukaList.member)
     return
 
   console.time 'getListsList'
@@ -28,6 +30,9 @@ angular.module "myApp.controllers"
     $scope.listIdStr = amatsukaList.id_str
     console.timeEnd 'getListsList'
 
+    # 更新
+    TweetService.amatsukaList.data = amatsukaList
+
     console.time 'getListsMembers'
     TweetService.getListsMembers(listIdStr: amatsukaList.id_str)
 
@@ -36,4 +41,8 @@ angular.module "myApp.controllers"
     console.table data.data.users
     membersNormalized = TweetService.nomarlizeMembers(data.data.users)
     $scope.amatsukaMemberList = membersNormalized
+
+    # 更新
+    TweetService.amatsukaList.member = data.data.users
+
     console.timeEnd 'getListsMembers'

@@ -47,6 +47,7 @@ block body
 
       .user-sidebar(ng-if='isAuthenticated', ng-controller="UserCtrl")
 
+
         // code from member.jade
         .media.user-sidebar__profile(ng-if='user.name')
           a.pull-left(href='https://www.twitter.com/{{user.screen_name}}', target="_blank")
@@ -71,11 +72,12 @@ block body
                 // あとで下にに直す
                 //- .timeline__post--header--user
                 .timeline__post--header--link
-                  span.timeline__post--header--rt_icon(ng-if="tweet.retweeted_status")
-                    i.fa.fa-retweet
-                  a.timeline__post--header--rt_source
-                   {{tweet.retweeted_status.user.screen_name}}
-                  followable(list-id-str="{{listIdStr}}", twitter-id-str="{{tweet.retweeted_status.user.id_str}}", follow-status="tweet.followStatus")
+                  div(ng-if="tweet.retweeted_status")
+                    span.timeline__post--header--rt_icon
+                      i.fa.fa-retweet
+                    a.timeline__post--header--rt_source
+                     {{tweet.retweeted_status.user.screen_name}}
+                    followable(list-id-str="{{listIdStr}}", twitter-id-str="{{tweet.retweeted_status.user.id_str}}", follow-status="tweet.followStatus")
               .timeline__post--header--time
                 a(href="https://{{tweet.sourceUrl}}", target="_blank")
                   {{tweet.time}}

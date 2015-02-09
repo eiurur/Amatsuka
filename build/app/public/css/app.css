@@ -340,6 +340,7 @@ ul {
 }
 
 .timeline__post--icon {
+  cursor: pointer;
   position: absolute;
   left: -85px;
   top: 0px;

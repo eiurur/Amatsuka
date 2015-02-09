@@ -1,6 +1,7 @@
 angular.module "myApp.controllers"
   .controller "IndexCtrl", (
     $scope
+    $rootScope
     $log
     AuthService
     TweetService
@@ -14,6 +15,16 @@ angular.module "myApp.controllers"
   amatsukaList       = JSON.parse(ls.getItem 'amatsukaList') || {}
   amatsukaFollowList = JSON.parse(ls.getItem 'amatsukaFollowList') || []
 
+  TweetService.amatsukaList =
+    data: amatsukaList
+    member: amatsukaFollowList
+
+  console.log 'TweetService.amatsukaList = ', TweetService.amatsukaList
+
+  # これあとで消す？
+  $rootScope.amatsukaFollowList = amatsukaFollowList
+
+
   unless _.isEmpty(amatsukaList) or _.isEmpty(amatsukaFollowList)
     params =
       listIdStr: amatsukaList.id_str
@@ -21,10 +32,10 @@ angular.module "myApp.controllers"
     TweetService.getListsStatuses(params)
     .then (data) ->
       maxId            = TweetService.decStrNum(_.last(data.data).id_str)
-      tweets           = TweetService.filterIncludeImage data.data
-      tweetsNomalized  = TweetService.nomalizeTweets(tweets, amatsukaFollowList)
+      tweetsOnlyImage  = TweetService.filterIncludeImage data.data
+      tweetsNomalized  = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList)
       $scope.listIdStr = amatsukaList.id_str
-      $scope.tweets    = new Tweets(tweetsNomalized, amatsukaList, maxId)
+      $scope.tweets    = new Tweets(tweetsNomalized, maxId)
 
       # AmatsukaListとAmatsukaFollowListを最新に更新する
       TweetService.getListsList()
@@ -67,7 +78,7 @@ angular.module "myApp.controllers"
     maxId           = TweetService.decStrNum(_.last(data.data).id_str)
     tweetsOnlyImage = TweetService.filterIncludeImage data.data
     tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList)
-    $scope.tweets   = new Tweets(tweetsNomalized, amatsukaList, maxId)
+    $scope.tweets   = new Tweets(tweetsNomalized, maxId)
     console.timeEnd 'newTweets'
   .catch (error) ->
     console.log error
@@ -99,7 +110,7 @@ angular.module "myApp.controllers"
       maxId           = TweetService.decStrNum(_.last(data.data).id_str)
       tweets          = TweetService.filterIncludeImage data.data
       tweetsNomalized = TweetService.nomalizeTweets(tweets, amatsukaFollowList)
-      $scope.tweets   = new Tweets(tweetsNomalized, amatsukaList, maxId)
+      $scope.tweets   = new Tweets(tweetsNomalized, maxId)
 
 
 

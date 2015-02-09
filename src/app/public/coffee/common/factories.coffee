@@ -3,20 +3,29 @@ angular.module "myApp.factories", []
   .factory 'Tweets', ($http, $q, TweetService) ->
 
     class Tweets
-      constructor: (items, list, maxId) ->
+      constructor: (items, maxId, method, user) ->
         @busy  　= false
         @isLast　= false
         @items 　= items
-        @list  　= list
         @maxId 　= maxId
+        @method = method
+        @user  　= user if @method is 'user_timeline'
 
       nextPage: ->
         console.log @busy
         console.log @isLast
         return if @busy or @isLast
+
+        if @method is 'user_timeline'
+          @method = TweetService.getUserTimeline(twitterIdStr: @user.id_str, maxId: @maxId, count:100)
+        else
+          @method = TweetService.getListsStatuses(listIdStr: TweetService.amatsukaList.data.id_str, maxId: @maxId, count:100)
+
         @busy = true
-        TweetService.getListsStatuses(listIdStr: @list.id_str, maxId: @maxId, count:100)
+        @method
         .then (data) =>
+          console.log data
+          console.log '@method maxId', @maxId
           if _.isEmpty(data.data)
             @isLast = true
             @busy = false
@@ -24,15 +33,8 @@ angular.module "myApp.factories", []
 
           @maxId = TweetService.decStrNum(_.last(data.data).id_str)
           itemsImageOnly = TweetService.filterIncludeImage data.data
-          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, @list)
-          # @items = @items.concat itemsNomalized
+          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, TweetService.amatsukaList.member)
         .then (itemsNomalized) =>
-
-          # concatだとブラウザが固まる上、
-          # busy = falseのタイミングが早くて二回分のリクエストを一気に投げて、concatしてるため
-          # 倍々で負荷がかかっている。
-          # だからallして全部済んでからbusy = falseにしたらうまくいくと思いきやそんなことはなく
-          # 今悩み中
           console.log '======> @busy ', @busy
           $q.all itemsNomalized.map (item) =>
             @addTweet(item)

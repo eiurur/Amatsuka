@@ -71,7 +71,8 @@ angular.module "myApp.directives"
           element.fadeOut(200)
           TweetService.createListsMembers(opts)
           .then (data) ->
-            console.log data
+            TweetService.addMember(scope.twitterIdStr)
+            console.log 'createListsMembers(opts) darta', data
 
   .directive 'followable', (TweetService) ->
     restrict: 'A'
@@ -94,12 +95,14 @@ angular.module "myApp.directives"
         if scope.followStatus is true
           TweetService.destroyListsMembers(opts)
           .then (data) ->
+            TweetService.removeMember(scope.twitterIdStr)
             element[0].innerText = 'フォロー'
             scope.isProcessing = false
 
         if scope.followStatus is false
           TweetService.createListsMembers(opts)
           .then (data) ->
+            TweetService.addMember(scope.twitterIdStr)
             element[0].innerText = 'フォロー解除'
             scope.isProcessing = false
 
@@ -137,11 +140,11 @@ angular.module "myApp.directives"
         console.log scope.twitterIdStr
         TweetService.showUsers(twitterIdStr: scope.twitterIdStr)
         .then (data) ->
-          console.table data
+          console.log data
           $rootScope.$broadcast 'userData', data.data
           TweetService.getUserTimeline(twitterIdStr: scope.twitterIdStr)
         .then (data) ->
-          console.table data.data
+          console.log data.data
           $rootScope.$broadcast 'tweetData', data.data
 
 
