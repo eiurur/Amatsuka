@@ -29,5 +29,5 @@ h1
           a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
             i.fa.fa-download
 
-  div(ng-show='tweets.busy') Loading data...
-  div(ng-show='tweets.isLast') 終わりです
+  .text-center(ng-show='tweets.busy') Loading data...
+  .text-center(ng-show='tweets.isLast') 終わりです

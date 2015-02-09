@@ -550,4 +550,8 @@ ul {
   box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
 }
 
+.user-sidebar__contents--infinitescroll-message {
+  padding: 0 20px 20px;
+}
+
 /*# sourceMappingURL=app.css.map */

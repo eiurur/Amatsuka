@@ -3,20 +3,23 @@ angular.module "myApp.factories", []
   .factory 'Tweets', ($http, $q, TweetService) ->
 
     class Tweets
-      constructor: (items, maxId, method, user) ->
+      constructor: (items, maxId, type, user) ->
         @busy  　= false
         @isLast　= false
+        @method = null
         @items 　= items
         @maxId 　= maxId
-        @method = method
-        @user  　= user if @method is 'user_timeline'
+        @type = type
+        @user  　= user if @type is 'user_timeline'
+        console.log '@items = ', @items
+        console.log '@user = ', @user
 
       nextPage: ->
         console.log @busy
         console.log @isLast
         return if @busy or @isLast
 
-        if @method is 'user_timeline'
+        if @type is 'user_timeline'
           @method = TweetService.getUserTimeline(twitterIdStr: @user.id_str, maxId: @maxId, count:100)
         else
           @method = TweetService.getListsStatuses(listIdStr: TweetService.amatsukaList.data.id_str, maxId: @maxId, count:100)
@@ -37,6 +40,7 @@ angular.module "myApp.factories", []
         .then (itemsNomalized) =>
           console.log '======> @busy ', @busy
           $q.all itemsNomalized.map (item) =>
+            console.log 'item map ', item
             @addTweet(item)
           .then (result) =>
             @busy = false

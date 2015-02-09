@@ -74,6 +74,7 @@ angular.module "myApp.services"
     nomalizeTweets: (tweets) ->
       _.each tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
+        tweet.isRT = isRT
         tweet.followStatus = @isFollow(tweet, isRT)
         tweet.text       = @activateLink(tweet.text)
         tweet.time       = @fromNow(@get(tweet, 'tweet.created_at', false))

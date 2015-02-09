@@ -45,7 +45,7 @@ block body
 
       a.arrow-top(ng-if='isAuthenticated', scroll-to='.site-main', scroll-on-click)
 
-      .user-sidebar(ng-if='isAuthenticated', ng-controller="UserCtrl")
+      #scroll.user-sidebar(ng-if='isAuthenticated', ng-controller="UserCtrl")
 
 
         // code from member.jade
@@ -65,14 +65,12 @@ block body
         // .timeline__post--header--rt_icon, .timeline__post--header--rt_source の割り当て
         // TODO: (2)
         // 上がclickされたとき、再読み込みする処理
-        .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1')
+        .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1', infinite-scroll-container="'#scroll'")
           .timeline__post.user-sidebar__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
             .timeline__post--header
               .timeline__post--header--info
-                // あとで下にに直す
-                //- .timeline__post--header--user
                 .timeline__post--header--link
-                  div(ng-if="tweet.retweeted_status")
+                  div(ng-if="tweet.isRT")
                     span.timeline__post--header--rt_icon
                       i.fa.fa-retweet
                     a.timeline__post--header--rt_source
@@ -91,6 +89,9 @@ block body
                   i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
                   a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
                     i.fa.fa-download
+
+          .user-sidebar__contents--infinitescroll-message.text-center(ng-show='tweets.busy') Loading data...
+          .user-sidebar__contents--infinitescroll-message.text-center(ng-show='tweets.isLast') 終わりです
 
 
     span(ng-if='!isLoaded')
