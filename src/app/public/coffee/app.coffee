@@ -2,9 +2,11 @@ angular.module('myApp', [
   'ngRoute'
   'ngAnimate'
   'ngSanitize'
+  'infinite-scroll'
   'myApp.controllers'
   'myApp.filters'
   'myApp.services'
+  'myApp.factories'
   'myApp.directives'
 ])
 # よく使う関数を共通関数として定義し、controller/viewどちらからも使えるようにするには
@@ -26,6 +28,9 @@ angular.module('myApp', [
     when '/',
       templateUrl: 'partials/index'
       controller: 'IndexCtrl'
+    .when '/member',
+      templateUrl: 'partials/member'
+      controller: 'MemberCtrl'
     .when "/logout",
       redirectTo: "/"
     .when "http://127.0.0.1:4040/auth/twitter/callback",

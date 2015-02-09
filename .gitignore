@@ -6,6 +6,4 @@ bower_components/*
 *.sass-cache*
 sass/*
 stylesheets/*
-**/common/factories.coffee
-**/common/factories.js
 blueprint.md

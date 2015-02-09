@@ -90,8 +90,8 @@
         successRedirect: '/',
         failureRedirect: '/'
       }));
-      (require('./routes/routes'))(app);
-      return (require('./routes/api'))(app);
+      (require('./routes/api'))(app);
+      return (require('./routes/routes'))(app);
     })();
     return (function() {
       var srv;

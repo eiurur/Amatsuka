@@ -2,31 +2,88 @@
 @import "compass";
 @import "variables";
 @import "mixins";
+@import "functions";
+@import "commons";
 
-// lighten(red, 30%);
-// darken(red, 30%);
+/*
+明度
+lighten(red, 30%);
+darken(red, 30%);
+
+彩度
+saturate(red, 20%);
+desaturate(red, 20%);
+
+透明度
+transparentize(red, 0.8);
+rgba(red, 0.2);
+
+
+規約は原則 BEM を使用する
+
+BEM
+親の要素となるような要素をBlockとして命名
+.item
+.item-list
+.form
+.form-search
+.form-search-item
+
+ElementはBlockに内包される部品。Elementが集まったものがBlockになるので、ElementはBlock内部に存在します。
+.item__text
+.item-list__btn
+.form__input
+.form-search__title
+.form-search-item__user
+
+Modifierは状態を表すときに使用されます。
+.item--red
+.item-list__btn--type_success
+.form__input--active
+.form-search__title--hover
+.form-search-result__user--following
+
+その他
+
+・CSSプロパティはアルファベット順
+
+*/
 
 body {
-  font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
-  background-color: #fff;
-  margin-top: 0;
-  font-size: $baseFontSize;
+  background: $body__bg-color;
   color: #000;
+  font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
+  font-size: $baseFontSize;
+  font-weight: 400;
+  margin-top: 0;
+  line-height: 1.4;
 }
 
 ul {
-  list-style: none;
   margin: 0;
+  list-style: none;
   padding-left: 0;
 }
+
 
 // Sidebar
 @import "sidebar";
 
 .site-main {
   position: relative;
-  padding-left: $sidebar-width + 40px;
+  // tinelineだけなら下のでよかった。
+  // memberページを設けたところ、左側に大幅な空白ができたため、
+  // timeline.scssで設定することにした。
+  padding-left: $sidebar-width + 85px + 21px;
+  // padding-left: $sidebar-width + 40px;
   padding-bottom: 30px;
   padding-right: $sidebar-width + 40px;
-  min-height: 1600px;
 }
+
+// left_col
+@import "timeline";
+
+// member.jade
+@import "member";
+
+@import "user-slidebar";

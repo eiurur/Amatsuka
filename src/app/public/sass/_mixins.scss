@@ -1,3 +1,11 @@
 @mixin round($radius:4px) {
   border-radius: $radius;
 }
+
+@mixin post_padding {
+  padding: 0 20px;
+}
+
+@mixin zurui-box($shadow: 0.15) {
+  @include box-shadow(rgba(0, 0, 0, $shadow) 0 0 2px);
+}

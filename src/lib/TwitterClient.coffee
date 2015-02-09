@@ -9,26 +9,8 @@ NodeCache  = require 'node-cache'
 else
   require './configs/development'
 
-
-module.exports = class TwitterClient
-
+class TwitterClientDefine
   constructor: (@user) ->
-
-    # 初ログインのとき用
-    # if _.isUndefined user.accessTokenSecret
-    #   @user = user
-
-    # Cronのときのタイムライン更新用
-    # @user =
-    #   # twitter_token: user.accessToken
-    #   # twitter_token_secret: user.accessTokenSecret
-    #   # _json:
-    #   #   id_str: user.twitterIdStr
-
-    #   twitter_token: user.access_token
-    #   twitter_token_secret: user.access_token_secret
-    #   _json:
-    #     id_str: user.id_str
 
   getViaAPI: (params) ->
     return new Promise (resolve, reject) =>
@@ -37,9 +19,9 @@ module.exports = class TwitterClient
       , @user.twitter_token
       , @user.twitter_token_secret
       , (error, data, response) ->
-        console.log data.length
+        # console.log data
         if error
-          console.log "twitter.#{params.method} error =  ", error
+          console.log "getViaAPI #{params.method}.#{params.type} e = ", error
           return reject error
         return resolve data
 
@@ -50,171 +32,247 @@ module.exports = class TwitterClient
       , @user.twitter_token
       , @user.twitter_token_secret
       , (error, data, response) ->
-        console.log data.length
+        # console.log data
         if error
-          console.log "twitter.#{params.method} error =  ", error
+          console.log "postViaAPI #{params.method}.#{params.type} e = ", error
           return reject error
         return resolve data
 
+
+module.exports = class TwitterClient extends TwitterClientDefine
+
   # 自分のTLを表示
-  getHomeTimeline: () ->
-    return new Promise (resolve, reject) =>
-      settings.twitterAPI.getTimeline 'home_timeline',
-        ''
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        console.log data.length
-        if error
-          console.log 'twitter.get.home_timeline error =  ', error
-          return reject
-        return resolve data
+  getHomeTimeline: (params) ->
+    opts =
+      count: params.count || settings.MAX_NUM_GET_TIMELINE_TWEET
+      include_entities: true
+      include_rts: true
+    unless params.maxId is '0' || params.maxId is 'undefined'
+      opts.max_id = params.maxId
+    console.log "opts = ", opts
+
+    @getViaAPI
+      method: 'getTimeline'
+      type: 'home_timeline'
+      params: opts
 
   # 他ユーザのTLを表示
   getUserTimeline: (params) ->
-    return new Promise (resolve, reject) =>
-      settings.twitterAPI.getTimeline 'user_timeline',
-        user_id: params.twitterIdStr || params.screenName
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        console.log data.length
-        if error
-          console.log 'twitter.get.user_timeline error =  ', error
-          return reject
-        return resolve data
+    opts =
+      user_id: params.twitterIdStr
+      count: params.count
+      include_entities: true
+      include_rts: true
+    unless params.maxId is '0' || params.maxId is 'undefined'
+      opts.max_id = params.maxId
+    if params.count is '0' || params.count is 'undefined'
+      opts.count = settings.MAX_NUM_GET_TIMELINE_TWEET
+    console.log "opts = ", opts
 
-  # 自分のTLから画像だけを表示
+    @getViaAPI
+      method: 'getTimeline'
+      type: 'user_timeline'
+      params: opts
 
-  # 自分のリストを列挙
-  getListsList: () ->
-    return new Promise (resolve, reject) =>
-      settings.twitterAPI.lists  'list',
-        ''
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        console.log data.length
-        if error
-          console.log 'twitter.get.lists/list error =  ', error
-          return reject
-        return resolve data
+  ###
+  User
+  ###
+  showUsers: (params) ->
+    @getViaAPI
+      method: 'users'
+      type: 'show'
+      params:
+        user_id: params.twitterIdStr || ''
+        # scren_name: params.screenName || ''
+        include_entities: true
 
-  # 自分の指定のリストのツイートを列挙
-  getListsStatuses: (params) ->
-    return new Promise (resolve, reject) =>
-      settings.twitterAPI.lists 'statuses',
-        list_id: params.listIdStr
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        console.log data.length
-        if error
-          console.log 'twitter.get.lists/statuses error =  ', error
-          # return reject
-        return resolve data
-
-  getListsShow: (params) ->
-    console.log params
-    return new Promise (resolve, reject) =>
-      settings.twitterAPI.lists  'show',
-        list_id: params.listIdStr
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        console.log data.length
-        # TODO: 後で消す
-        # unless data.name is 'Amatsuka'
-        #   console.log 'twitter.get.lists/show error =  ', error
-        #   return reject err
-        return resolve data
-
-  getListsMembers: (params) ->
-    console.log params
-    return new Promise (resolve, reject) =>
-      settings.twitterAPI.lists  'members',
-        list_id: params.listIdStr
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        console.log data.length
-        if error
-          console.log 'twitter.get.lists/members error =  ', error
-          return reject
-        return resolve data
 
   # 自分の指定のリストのツイートから画像だけを表示
 
+  ###
+  List
+  ###
+  # 自分のリストを列挙
+  getListsList: (params) ->
+    @getViaAPI
+      method: 'lists'
+      type: 'list'
+      params:
+        user_id: params.twitterIdStr || ''
+        scren_name: params.screenName || ''
+        count: params.count || settings.MAX_NUM_GET_LIST
+
+  # 自分の指定のリストのツイートを列挙
+  getListsStatuses: (params) ->
+    opts =
+      list_id: params.listIdStr
+      count: ~~params.count || settings.MAX_NUM_GET_LIST_STATUSES
+      include_entities: true
+      include_rts: true
+    unless params.maxId is '0' || params.maxId is 'undefined'
+      opts.max_id = params.maxId
+    console.log "opts = ", opts
+
+    @getViaAPI
+      method: 'lists'
+      type: 'statuses'
+      params: opts
+
+  # リストの情報を表示
+  getListsShow: (params) ->
+    @getViaAPI
+      method: 'lists'
+      type: 'show'
+      params:
+        list_id: params.listIdStr
+
+  # リストのメンバーを表示
+  getListsMembers: (params) ->
+    opts =
+      list_id: params.listIdStr
+      user_id: params.twitterIdStr || ''
+      scren_name: params.screenName || ''
+      count: ~~params.count || settings.MAX_NUM_GET_LIST_MEMBERS
+    @getViaAPI
+      method: 'lists'
+      type: 'members'
+      params: opts
+
   # リストの作成
   createLists: (params) ->
-    return new Promise (resolve, reject) =>
-      settings.twitterAPI.lists  'create',
+    @postViaAPI
+      method: 'lists'
+      type: 'create'
+      params:
         name: params.name
         mode: params.mode
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        console.log data
-        if error
-          console.log 'twitter.get.lists/create error =  ', error
-          return reject
-        return resolve data
 
   # リストの削除
   destroyLists: (params) ->
-    return new Promise (resolve, reject) =>
-      settings.twitterAPI.lists  'destroy',
+    @postViaAPI
+      method: 'lists'
+      type: 'destroy'
+      params:
         list_id: params.listIdStr
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        console.log data
-        if error
-          console.log 'twitter.get.lists/destroy error =  ', error
-          return reject
-        return resolve data
 
-  # 非公開リストにユーザを追加する(単数)
-  createMemberList: (params) ->
-    return new Promise (resolve, reject) =>
-      settings.twitterAPI.lists  'members/create',
+  # リストにユーザを追加する(単数)
+  createListsMembers: (params) ->
+    @postViaAPI
+      method: 'lists'
+      type: 'members/create'
+      params:
         list_id: params.listIdStr
         user_id: params.twitterIdStr
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        console.log data
-        if error
-          console.log 'twitter.get.members/create error =  ', error
-          return reject
-        return resolve data
 
+  # リストからユーザを削除
+  destroyListsMembers: (params) ->
+    @postViaAPI
+      method: 'lists'
+      type: 'members/destroy'
+      params:
+        list_id: params.listIdStr
+        user_id: params.twitterIdStr
 
+  getUserIds: (params) =>
+    @getViaAPI
+      method: 'friends'
+      type: 'list'
+      params:
+        user_id: params.user.id_str
 
-  getMyFollowing: =>
-    return new Promise (resolve, reject) =>
-      console.log 'getMyFollowing @user = ', @user.twitter_token
-      console.log 'getMyFollowing @user = ', @user.twitter_token_secret
-      settings.twitterAPI.friends 'list',
+  ###
+  Follow
+  ###
+  # getFollowing: ->
+  #   @getViaAPI
+  #     method: 'friends'
+  #     type: 'list'
+  #     params:
+  #       user_id: params.twitterIdStr || ''
+  #       scren_name: params.screenName || ''
+  #       count: params.count || settings.FRINEDS_LIST_COUNT
+
+  # フォローイング
+  getFollowingList: ->
+    @getViaAPI
+      method: 'friends'
+      type: 'list'
+      params:
+        user_id: params.twitterIdStr || ''
+        scren_name: params.screenName || ''
+        count: params.count || settings.FRINEDS_LIST_COUNT
+
+  getMyFollowingList: ->
+    @getViaAPI
+      method: 'friends'
+      type: 'list'
+      params:
         user_id: @user._json.id_str
-        count: settings.FRINEDS_LIST_COUNT
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        if error
-          console.log 'twitter.get.myfollowing error =  ', error
-          return reject
-        return resolve data.users
+        count: params.count || settings.FRINEDS_LIST_COUNT
 
-  getUserIds: (user) =>
-    return new Promise (resolve, reject) =>
-      settings.twitterAPI.friends 'ids',
-        user_id: user.id_str
-      , @user.twitter_token
-      , @user.twitter_token_secret
-      , (error, data, response) ->
-        if error
-          console.log 'twitter.get.following error =  ', error
-          return reject
-        return resolve data.ids
+  # フォロワー
+  getFollowersList: (params) ->
+    @getViaAPI
+      method: 'followers'
+      type: 'list'
+      params:
+        user_id: params.twitterIdStr || ''
+        scren_name: params.screenName || ''
+
+  getMyFollowersList: ->
+    @getViaAPI
+      method: 'followers'
+      type: 'list'
+      params:
+        user_id: @user._json.id_str
+        count: params.count || settings.FRINEDS_LIST_COUNT
+
+
+  ###
+  fav
+  ###
+  getFavList: (params) ->
+    @getViaAPI
+      method: 'favorites'
+      type: 'list'
+      params:
+        user_id: params.twitterIdStr || ''
+        screen_name: params.screenName || ''
+        count: params.count || settings.MAX_NUM_GET_FAV_TWEET_FROM_LIST
+
+  createFav: (params) ->
+    @postViaAPI
+      method: 'favorites'
+      type: 'create'
+      params:
+        id: params.tweetIdStr
+        include_entities: true
+
+  destroyFav: (params) ->
+    @postViaAPI
+      method: 'favorites'
+      type: 'destroy'
+      params:
+        id: params.tweetIdStr
+
+
+  ###
+  ツイート関連(RTを含む)
+  ###
+  retweetStatus: (params) ->
+    @postViaAPI
+      method: 'statuses'
+      type: 'retweet'
+      params:
+        id: params.tweetIdStr
+
+  # Note:
+  # リツイートを解除したいとき
+  # -> このAPIに渡すidはリツイート後のtweet_id。リツイート元ではないよ。
+  destroyStatus: (params) ->
+    @postViaAPI
+      method: 'statuses'
+      type: 'destroy'
+      params:
+        id: params.tweetIdStr
 

@@ -1,90 +1,127 @@
 angular.module "myApp.controllers"
   .controller "IndexCtrl", (
     $scope
+    $rootScope
     $log
     AuthService
     TweetService
+    Tweets
     ) ->
   return if _.isEmpty AuthService.user
+  console.table AuthService.user
 
-  pop = (prop) ->
-    $scope[prop].pop()
-    # StreamService.filters[prop].pop()
+  ls                 = localStorage
+  maxId              = maxId || 0
+  amatsukaList       = JSON.parse(ls.getItem 'amatsukaList') || {}
+  amatsukaFollowList = JSON.parse(ls.getItem 'amatsukaFollowList') || []
 
-  unshift = (prop, val) ->
-    $scope[prop].unshift(val)
-    # StreamService.filters[prop].unshift(val)
+  TweetService.amatsukaList =
+    data: amatsukaList
+    member: amatsukaFollowList
 
-  uniq = (prop, key) ->
-    $scope[prop] = _.uniq $scope[prop], key
+  console.log 'TweetService.amatsukaList = ', TweetService.amatsukaList
 
-  console.log 'Index AuthService.user = ', AuthService.user
-  TweetService.twitterTest(AuthService.user)
-
-  # if _.isEmpty StreamService.filters
-  #   $scope.rts = []
-  #   $scope.tl = []
-  #   $scope.images = []
-  # else
-  #   $scope.rts = StreamService.filters.rts
-  #   $scope.tl = StreamService.filters.tl
-  #   $scope.images = StreamService.filters.images
-
-  # socket.on "tweet", (tweet) ->
-
-  #   String.prototype.iconBigger = TweetService.iconBigger
-  #   String.prototype.textLinkReplace = TweetService.textLinkReplace
-
-  #   # user(monologe?)
-  #   tempTweet =
-  #     isRT: false
-  #     user:
-  #       icon: TweetService.get(tweet, 'profile_image_url', false).iconBigger()
-  #       text: TweetService.get(tweet, 'text', false).textLinkReplace()
-  #       name: TweetService.get(tweet, 'name', false)
-  #       screenName: TweetService.get(tweet, 'screen_name', false)
-
-  #   # RT
-  #   if _.has tweet, 'retweeted_status'
-  #     tempTweet.isRT = true
-  #     tempRTTweet =
-  #       rt:
-  #         tweetIdStr: TweetService.get(tweet, 'tweet.id_str', true)
-  #         icon: TweetService.get(tweet, 'profile_image_url', true).iconBigger()
-  #         text: TweetService.get(tweet, 'text', true).textLinkReplace()
-  #         name: TweetService.get(tweet, 'name', true)
-  #         screenName: TweetService.get(tweet, 'screen_name', true)
-  #     tempTweet = _.assign tempTweet, tempRTTweet
-
-  #     # 同じRTが流れるのは煩わしい
-  #     return if _.contains($scope.rts, tempRTTweet.rt.tweetIdStr)
-  #     # rts.unshift tempRTTweet.rt.tweetIdStr
-  #     unshift 'rts', tempRTTweet.rt.tweetIdStr
+  # これあとで消す？
+  $rootScope.amatsukaFollowList = amatsukaFollowList
 
 
-  #   # assign tweet
-  #   if $scope.tl.length > 100
-  #     pop 'tl'
-  #     # $scope.tl.pop()
-  #   # $scope.tl.unshift tempTweet
-  #   unshift 'tl', tempTweet
+  unless _.isEmpty(amatsukaList) or _.isEmpty(amatsukaFollowList)
+    params =
+      listIdStr: amatsukaList.id_str
+      count: 20
+    TweetService.getListsStatuses(params)
+    .then (data) ->
+      maxId            = TweetService.decStrNum(_.last(data.data).id_str)
+      tweetsOnlyImage  = TweetService.filterIncludeImage data.data
+      tweetsNomalized  = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList)
+      $scope.listIdStr = amatsukaList.id_str
+      $scope.tweets    = new Tweets(tweetsNomalized, maxId)
 
-  #   # assign image
-  #   image =
-  #     url: TweetService.get(tweet, 'media_url', tempTweet.isRT)
-  #     text: TweetService.get(tweet, 'text', tempTweet.isRT).textLinkReplace()
-  #     name: TweetService.get(tweet, 'name', tempTweet.isRT)
-  #     screenName: TweetService.get(tweet, 'screen_name', tempTweet.isRT)
-  #     icon: TweetService.get(
-  #       tweet, 'profile_image_url', tempTweet.isRT
-  #       ).iconBigger()
-  #   return if _.isNull image.url
-  #   pop 'images' if $scope.images.length > 50
-  #   unshift 'images', image
-  #   uniq 'images', 'url'
+      # AmatsukaListとAmatsukaFollowListを最新に更新する
+      TweetService.getListsList()
+    .then (data) ->
+      amatsukaList = _.findWhere data.data, 'name': 'Amatsuka'
+      $scope.listIdStr = amatsukaList.id_str
+      ls.setItem 'amatsukaList', JSON.stringify(amatsukaList)
+      TweetService.getListsMembers(listIdStr: amatsukaList.id_str)
+    .then (data) ->
+      amatsukaFollowList = data.data.users
+      ls.setItem 'amatsukaFollowList', JSON.stringify(amatsukaFollowList)
+    return
+
+  console.time 'getListsList'
+  TweetService.getListsList()
+  .then (data) ->
+
+    amatsukaList = _.findWhere data.data, 'name': 'Amatsuka'
+    $scope.listIdStr = amatsukaList.id_str
+    ls.setItem 'amatsukaList', JSON.stringify(amatsukaList)
+    console.timeEnd 'getListsList'
+
+    console.time 'getListsMembers'
+    TweetService.getListsMembers(listIdStr: amatsukaList.id_str)
+
+  .then (data) ->
+
+    console.table data.data.users
+    amatsukaFollowList = data.data.users
+    ls.setItem 'amatsukaFollowList', JSON.stringify(amatsukaFollowList)
+    console.timeEnd 'getListsMembers'
+
+    TweetService.getListsStatuses(listIdStr: amatsukaList.id_str, maxId: maxId, count: 50)
+
+  .then (data) ->
+
+    console.time 'newTweets'
+    # xxx: new Tweets() だけだと一向に読み込みが始まらない
+    # 苦肉の策として、最初のリクエストを明示的に投げて、強制的に起こす手法をとった。
+    maxId           = TweetService.decStrNum(_.last(data.data).id_str)
+    tweetsOnlyImage = TweetService.filterIncludeImage data.data
+    tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList)
+    $scope.tweets   = new Tweets(tweetsNomalized, maxId)
+    console.timeEnd 'newTweets'
+  .catch (error) ->
+    console.log error
+
+    # Amatsuka Listが存在しない
+    if error.message is "Cannot read property 'id_str' of undefined"
+      console.log 'id_str'
+      init()
+
+  init = ->
+    # Flow:
+    # リスト作成 -> リストに自分を格納 -> リストのメンバを取得 ->　リストのツイートを取得
+    params = name: 'Amatsuka', mode: 'private'
+    TweetService.createLists(params)
+    .then (data) ->
+      amatsukaList =  data.data
+      $scope.listIdStr = amatsukaList.id_str
+      ls.setItem 'amatsukaList', JSON.stringify(amatsukaList)
+      params = listIdStr: amatsukaList.id_str, twitterIdStr: AuthService.user._json.id_str
+      TweetService.createListsMembers(params)
+    .then (data) ->
+      TweetService.getListsMembers(listIdStr: amatsukaList.id_str)
+    .then (data) ->
+      amatsukaFollowList = data.data.users
+      ls.setItem 'amatsukaFollowList', JSON.stringify(amatsukaFollowList)
+      params = listIdStr: amatsukaList.id_str, maxId: maxId, count: 50
+      TweetService.getListsStatuses(params)
+    .then (data) ->
+      maxId           = TweetService.decStrNum(_.last(data.data).id_str)
+      tweets          = TweetService.filterIncludeImage data.data
+      tweetsNomalized = TweetService.nomalizeTweets(tweets, amatsukaFollowList)
+      $scope.tweets   = new Tweets(tweetsNomalized, maxId)
 
 
-  # # LightBox
-  # $scope.Lightbox = Lightbox
-  # $scope.openLightboxModal = (index) ->
-  #   Lightbox.openModal $scope.images, index
+
+  # 新着読み込みが押されたらツイートを新規に読み込む流れだけど
+  # 定期的にsince_id以降のツイートを読み込んで、新着があればボタンに○○件の新着がありますって文面を載せといて
+  # それが押されたら即反映のほうがユーザビリティ的によい。
+  $scope.$on 'newTweet', (event, args) ->
+    console.log 'newTweet on ', args
+
+    newTweetsOnlyImage = TweetService.filterIncludeImage args
+    console.table newTweetsOnlyImage
+
+    tweetsNomalized = TweetService.nomalizeTweets(newTweetsOnlyImage, amatsukaFollowList)
+    $scope.tweets.items = _.uniq(_.union($scope.tweets.items, tweetsNomalized), 'id_str')

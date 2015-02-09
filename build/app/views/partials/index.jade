@@ -1,1 +1,33 @@
-h1 Index
+h1
+  new-tweet-load(list-id-str="{{listIdStr}}")
+
+.timeline(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1')
+  .timeline__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
+    .timeline__post--header
+      .timeline__post--header--info
+        .timeline__post--header--link
+          span.timeline__post--header--user(twitter-id-str="{{tweet.user.id_str}}", show-tweet="show-tweet")
+            {{tweet.user.screen_name}}
+          span.timeline__post--header--rt_icon(ng-if="tweet.retweeted_status")
+            i.fa.fa-retweet
+          a.timeline__post--header--rt_source(twitter-id-str="{{tweet.retweeted_status.user.id_str}}", show-tweet="show-tweet")
+            {{tweet.retweeted_status.user.screen_name}}
+          followable(list-id-str="{{listIdStr}}", twitter-id-str="{{tweet.retweeted_status.user.id_str}}", follow-status="tweet.followStatus")
+      .timeline__post--header--time
+        a(href="https://{{tweet.sourceUrl}}", target="_blank")
+          {{tweet.time}}
+    .timeline__post--icon
+      img.fade(ng-src="{{tweet.user.profile_image_url}}", img-preload="img-preload", show-tweet="show-tweet", twitter-id-str="{{tweet.user.id_str}}")
+    .timeline__post--image
+      img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload")
+    .timeline__post--text(ng-bind-html='tweet.text | newlines')
+    .timeline__post--footer
+      .timeline__post--footer--contents
+        .timeline__post--footer--contents--controls
+          i.fa.fa-retweet.icon-retweet(retweet-num="tweet.retweetNum", retweeted='tweet.retweeted', tweet-id-str='{{tweet.tweetIdStr}}', retweetable='retweetable')  {{tweet.retweetNum}}
+          i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
+          a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
+            i.fa.fa-download
+
+  .text-center(ng-show='tweets.busy') Loading data...
+  .text-center(ng-show='tweets.isLast') 終わりです

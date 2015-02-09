@@ -26,34 +26,34 @@
         amatsukaList = _.find(lists, {
           'name': 'Amatsuka'
         });
-        console.log('amatsukaList = ', amatsukaList);
+        console.log('amatsukaList = ', amatsukaList.id_str);
         return twitterClient.getListsShow({
           listIdStr: amatsukaList.id_str
         });
       }).then(function(list) {
-        console.log('\getListsShow list -> ', list.name);
+        console.log('\ngetListsShow list.id_str -> ', list.id_str);
         return twitterClient.destroyLists({
           listIdStr: list.id_str
         });
       }).then(function(data) {
-        console.log('\ndestroyLists data.length -> ', data);
+        console.log('\ndestroyLists data.id_str -> ', data.id_str);
         return twitterClient.createLists({
           name: "Amatsuka",
           mode: 'private'
         });
       }).then(function(list) {
-        console.log('\ncreateLists lists -> ', list);
-        return twitterClient.createMemberList({
+        console.log('\ncreateLists lists -> ', list.id_str);
+        return twitterClient.createListsMembers({
           listIdStr: list.id_str,
-          twitterIdStr: '898525572'
+          twitterIdStr: '2686409167'
         });
       }).then(function(data) {
-        console.log('\ncreateMemberList data -> ', data);
+        console.log('\ncreateMemberList data -> ', data.id_str);
         return twitterClient.getListsMembers({
           listIdStr: data.id_str
         });
       }).then(function(members) {
-        console.log('\ngetListsCreate members -> ', members);
+        console.log('\ngetListsMembers members.users[0].screen_name -> ', members.users[0].screen_name);
         return resolve(members);
       })["catch"](function(err) {
         console.log('twitter test err =======> ', err);

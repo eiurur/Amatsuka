@@ -1,5 +1,5 @@
 (function() {
-  var Promise, UserProvider, dir, moment, my, settings, twitterTest, _;
+  var Promise, TwitterCilent, UserProvider, dir, moment, my, settings, twitterPostTest, twitterTest, _;
 
   dir = '../../lib/';
 
@@ -9,11 +9,15 @@
 
   Promise = require('es6-promise').Promise;
 
-  my = require(dir + 'my');
+  my = require("" + dir + "my");
 
-  twitterTest = require(dir + 'twitter-test').twitterTest;
+  TwitterCilent = require("" + dir + "TwitterClient");
 
-  UserProvider = require(dir + 'model').UserProvider;
+  twitterTest = require("" + dir + "twitter-test").twitterTest;
+
+  twitterPostTest = require("" + dir + "twitter-post-test").twitterPostTest;
+
+  UserProvider = require("" + dir + "model").UserProvider;
 
   settings = process.env.NODE_ENV === 'production' ? require(dir + 'configs/production') : require(dir + 'configs/development');
 
@@ -38,22 +42,171 @@
         });
       });
     });
+    app.use('/api/?', function(req, res, next) {
+      console.log("======> " + req.originalUrl);
+      if (!_.isUndefined(req.session.passport.user)) {
+        return next();
+      } else {
+        return res.redirect('/');
+      }
+    });
     app.post('/api/twitterTest', function(req, res) {
-      console.log("\n============> twitterTest in API\n");
-      console.log("req.body.user = ", req.body.user);
       return twitterTest(req.body.user).then(function(data) {
-        console.log('routes data = ', data);
+        console.log('twitterTest data = ', data);
         return res.json({
           data: data
         });
       });
     });
-    return app.get('/api/timeline/:type/:id', function(req, res) {
-      console.log("\n============> get/timeline/:type/:id in API\n");
-      return PostProvider.findUserById({
+    app.post('/api/twitterPostTest', function(req, res) {
+      return twitterPostTest(req.body.user).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.get('/api/lists/list/:id?/:count?', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.getListsList({
+        twitterIdStr: req.params.id,
+        count: req.params.count
+      }).then(function(data) {
+        console.log('/api/lists/list/:id/:count data.length = ', data.length);
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/lists/create', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.createLists({
+        name: req.body.name,
+        mode: req.body.mode
+      }).then(function(data) {
+        console.log('/api/lists/create', data.length);
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.get('/api/lists/members/:id?/:count?', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.getListsMembers({
+        listIdStr: req.params.id,
+        count: req.params.count
+      }).then(function(data) {
+        console.log('/api/lists/members/:id/:count data.length = ', data.length);
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.get('/api/lists/statuses/:id/:maxId?/:count?', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.getListsStatuses({
+        listIdStr: req.params.id,
+        maxId: req.params.maxId,
+        count: req.params.count
+      }).then(function(data) {
+        console.log('/api/lists/list/:id/:count data.length = ', data.length);
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.get('/api/timeline/:id/:maxId?/:count?', function(req, res) {
+      var m, twitterClient;
+      m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient[m]({
+        twitterIdStr: req.params.id,
+        maxId: req.params.maxId,
+        count: req.params.count
+      }).then(function(data) {
+        console.log('/api/timeline/:id/:count data.length = ', data.length);
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.get('/api/users/show/:id', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.showUsers({
         twitterIdStr: req.params.id
-      }, function(err, data) {
-        console.log(data);
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/lists/members/create', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.createListsMembers({
+        listIdStr: req.body.listIdStr,
+        twitterIdStr: req.body.twitterIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/lists/members/destroy', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.destroyListsMembers({
+        listIdStr: req.body.listIdStr,
+        twitterIdStr: req.body.twitterIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/favorites/create', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.createFav({
+        tweetIdStr: req.body.tweetIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/favorites/destroy', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.destroyFav({
+        tweetIdStr: req.body.tweetIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    app.post('/api/statuses/retweet', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.retweetStatus({
+        tweetIdStr: req.body.tweetIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+    return app.post('/api/statuses/destroy', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.destroyStatus({
+        tweetIdStr: req.body.tweetIdStr
+      }).then(function(data) {
         return res.json({
           data: data
         });

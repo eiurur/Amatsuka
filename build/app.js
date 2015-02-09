@@ -1,5 +1,5 @@
 (function() {
-  var async, dir, moment, my, serve, settings, tasks4startUp, _;
+  var async, dir, moment, my, serve, settings, startTask, tasks4startUp, _;
 
   dir = './lib/';
 
@@ -13,7 +13,9 @@
 
   serve = require('./app/serve').serve;
 
-  settings = (process.env.NODE_ENV === "production" ? require(dir + 'configs/production') : require(dir + 'configs/development')).settings;
+  startTask = 　require("" + dir + "collect/start-task").startTask;
+
+  settings = (process.env.NODE_ENV === "production" ? require("" + dir + "configs/production") : require("" + dir + "configs/development")).settings;
 
   tasks4startUp = [
     function(callback) {
@@ -21,6 +23,12 @@
       serve(null, "Create Server");
       setTimeout((function() {
         return callback(null, "Serve\n");
+      }), settings.GRACE_TIME_SERVER);
+    }, function(callback) {
+      my.c("■ Cron task start");
+      startTask(null, "Cron");
+      setTimeout((function() {
+        return callback(null, "Cron\n");
       }), settings.GRACE_TIME_SERVER);
     }
   ];

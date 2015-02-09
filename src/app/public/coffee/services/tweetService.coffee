@@ -1,8 +1,39 @@
 angular.module "myApp.services"
-  .service "TweetService", ($http) ->
+  .service "TweetService", ($http, $q) ->
 
-    textLinkReplace: () ->
-      @.replace(
+    ###
+    AmatsukaMember 系
+    TODO:
+      分割したほうがいい。
+    ###
+    amatsukaList:
+      data: []
+      member: {}
+
+    registerMember2LocalStorage: ->
+      ls = localStorage
+      ls.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
+
+    # HACK:
+    # member objectをまま引数にしたかったけど
+    # 大部分のコードがtwitterIdStrになってるので
+    # twitterIdStrを引数とする。
+    addMember: (twitterIdStr) ->
+      @showUsers(twitterIdStr: twitterIdStr)
+      .then (data) =>
+        @amatsukaList.member.push data.data
+        do @registerMember2LocalStorage
+
+    removeMember: (twitterIdStr) ->
+      @amatsukaList.member = _.reject(@amatsukaList.member, 'id_str': twitterIdStr)
+      do @registerMember2LocalStorage
+
+
+    ###
+    Tweet系
+    ####
+    activateLink: (t) ->
+      t.replace(
         ///
         ((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)
         (:[0-9]+)?(\/|\/([\w#!:.?+=&amp;%@!&#45;\/]))?)
@@ -12,7 +43,7 @@ angular.module "myApp.services"
         ///
         (^|\s)(@|＠)(\w+)
         ///g
-          , "$1<a href=\"http://www.twitter.com/$3\" target=\"_blank\">@$3</a>")
+        , "$1<a href=\"http://www.twitter.com/$3\" target=\"_blank\">@$3</a>")
       .replace(
         ///
         (?:^|[^ーー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9&_/>]+)
@@ -26,6 +57,47 @@ angular.module "myApp.services"
     iconBigger:  (url) ->
       return @.replace 'normal', 'bigger' if _.isUndefined url
       url.replace 'normal', 'bigger'
+
+    isFollow: (target, isRT = true) ->
+      if _.has target, 'user'
+        # tweetのデータを基に判定
+        console.log 'target = ', target
+        console.log 'tweet isFollow boolean = ', !!_.findWhere(@amatsukaList.member, 'id_str': @get(target, 'user.id_str', isRT))
+        !!_.findWhere(@amatsukaList.member, 'id_str': @get(target, 'user.id_str', isRT))
+      else
+        # userの～
+        console.log 'target = ', target
+        console.log 'user isFollow boolean = ', !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
+        !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
+
+
+    nomalizeTweets: (tweets) ->
+      _.each tweets, (tweet) =>
+        isRT = _.has tweet, 'retweeted_status'
+        tweet.isRT = isRT
+        tweet.followStatus = @isFollow(tweet, isRT)
+        tweet.text       = @activateLink(tweet.text)
+        tweet.time       = @fromNow(@get(tweet, 'tweet.created_at', false))
+        tweet.retweetNum = @get(tweet, 'tweet.retweet_count', isRT)
+        tweet.favNum     = @get(tweet, 'tweet.favorite_count', isRT)
+        tweet.tweetIdStr = @get(tweet, 'tweet.id_str', isRT)
+        tweet.sourceUrl  = @get(tweet, 'display_url', isRT)
+        tweet.picOrigUrl = @get(tweet, 'media_url:orig', isRT)
+        tweet.user.profile_image_url =
+          @iconBigger(tweet.user.profile_image_url)
+
+    # 今のところ、Member.jadeｄふぇ使う関数なので isFollow を全部　true　にしても構わない
+    nomarlizeMembers: (members) ->
+      _.each members, (member) =>
+        member.followStatus      = true
+        member.description       = @activateLink(member.description)
+        member.profile_image_url = @iconBigger(member.profile_image_url)
+
+    nomarlizeMember: (member) ->
+      member.followStatus      = @isFollow(member)
+      member.description       = @activateLink(member.description)
+      member.profile_image_url = @iconBigger(member.profile_image_url)
+      member
 
     get: (tweet, key, isRT) ->
       t = if isRT then tweet.retweeted_status else tweet
@@ -42,6 +114,8 @@ angular.module "myApp.services"
           t.entities?.hashtags # TODO: 一個しか取れない
         when 'media_url'
           t.entities?.media?[0].media_url # TODO: 一枚しか取れない
+        when 'media_url:orig'
+          t.entities?.media?[0].media_url+':orig' # TODO: 一枚しか取れない
         when 'name' then t.user.name
         when 'profile_banner_url' then t.user.profile_banner_url
         when 'profile_image_url' then t.user.profile_image_url
@@ -63,19 +137,28 @@ angular.module "myApp.services"
         when 'user.url' then t.user.url
         else null
 
-    # まだ動かない
-    getHomeTimeline: (type, twitterIdStr) ->
-      return new Promise (resolve, reject) ->
-        $http.get("/api/timeline/:#{type}/#{twitterIdStr}")
-          .success (data) ->
-            return resolve data.data
+    # max_idは自分のIDも含むため、1だけデクリメントしないとダメ。
+    # それ用の関数。
+    decStrNum: (n) ->
+      n = n.toString()
+      result = n
+      i = n.length - 1
+      while i > -1
+        if n[i] == '0'
+          result = result.substring(0, i) + '9' + result.substring(i + 1)
+          i--
+        else
+          result = result.substring(0, i) + (parseInt(n[i], 10) - 1).toString() + result.substring(i + 1)
+          return result
+      result
 
-    # まだ動かない
-    getUserTimeline: (type, twitterIdStr) ->
-      return new Promise (resolve, reject) ->
-        $http.get("/api/timeline/:#{type}/#{twitterIdStr}")
-          .success (data) ->
-            return resolve data.data
+    fromNow: (time) ->
+      moment(time).fromNow(true)
+
+    filterIncludeImage: (tweets) ->
+      _.filter tweets, (tweet) ->
+        _.has(tweet, 'extended_entities') and
+        !_.isEmpty(tweet.extended_entities.media)
 
     # TwitterAPI動作テスト用
     twitterTest: (user) ->
@@ -83,4 +166,102 @@ angular.module "myApp.services"
         $http.post('/api/twitterTest', user: user)
           .success (data) ->
             console.log 'twitterTest in service data = ', data
+            return resolve data
+
+    # TwitterAPI、投稿動作テスト用
+    twitterPostTest: (user) ->
+      return new Promise (resolve, reject) ->
+        $http.post('/api/twitterPostTest', user: user)
+          .success (data) ->
+            console.log 'twitterPostTest in service data = ', data
+            return resolve data
+
+    ###
+    List
+    ###
+    getListsList: ->
+      return $q (resolve, reject) ->
+        $http.get('/api/lists/list')
+          .success (data) ->
+            console.table data.data
+            return resolve data
+
+    createLists: (params) ->
+      return $q (resolve, reject) ->
+        $http.post('/api/lists/create', params)
+          .success (data) ->
+            return resolve data
+
+    getListsMembers: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/lists/members/#{params.listIdStr}/#{params.count}")
+          .success (data) ->
+            return resolve data
+
+    getListsStatuses: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/lists/statuses/#{params.listIdStr}/#{params.maxId}/#{params.count}")
+          .success (data) ->
+            return resolve data
+
+    createListsMembers: (params) ->
+      return $q (resolve, reject) ->
+        $http.post("/api/lists/members/create", params)
+          .success (data) ->
+            return resolve data
+
+    destroyListsMembers: (params) ->
+      return $q (resolve, reject) ->
+        $http.post("/api/lists/members/destroy", params)
+          .success (data) ->
+            return resolve data
+
+    ###
+    Timleine
+    ###
+    getUserTimeline: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/timeline/#{params.twitterIdStr}/#{params.maxId}/#{params.count}")
+          .success (data) ->
+            return resolve data
+
+    ###
+    User
+    ###
+    showUsers: (params) ->
+      # 汎用性は後回し。今はidによるリクエストだけを受け付ける。
+      # id = params.twitterIdStr || params.screenName
+      return $q (resolve, reject) ->
+        $http.get("/api/users/show/#{params.twitterIdStr}")
+          .success (data) ->
+            return resolve data
+
+    ###
+    FAV
+    ###
+    createFav: (params) ->
+      return $q (resolve, reject) ->
+        $http.post('/api/favorites/create', params)
+          .success (data) ->
+            return resolve data
+
+    destroyFav: (params) ->
+      return $q (resolve, reject) ->
+        $http.post('/api/favorites/destroy', params)
+          .success (data) ->
+            return resolve data
+
+    ###
+    RT
+    ###
+    retweetStatus: (params) ->
+      return $q (resolve, reject) ->
+        $http.post('/api/statuses/retweet', params)
+          .success (data) ->
+            return resolve data
+
+    destroyStatus: (params) ->
+      return $q (resolve, reject) ->
+        $http.post('/api/statuses/destroy', params)
+          .success (data) ->
             return resolve data
