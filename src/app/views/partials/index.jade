@@ -1,5 +1,6 @@
 //- h1
 //-   new-tweet-load(list-id-str="{{listIdStr}}")
+box-loading.user-sidebar__contents--box-loading-init(ng-if='!tweets.items', data-base='#a1a1a1', data-highlight='white')
 
 .timeline(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1')
   .timeline__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
@@ -29,5 +30,5 @@
           a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
             i.fa.fa-download
 
-  box-loading.box-loading-padding-top(ng-show='tweets.busy', data-base='#a1a1a1', data-highlight='#292929')
+  box-loading.box-loading-padding-top(ng-if='tweets.busy', data-base='#a1a1a1', data-highlight='#292929')
   .text-center(ng-show='tweets.isLast') 終わりです

@@ -2,12 +2,13 @@ extends layout
 
 block body
   div(ng-controller='AdminUserCtrl')
+
     .intro-container(ng-if='!isLoaded')
       .spinner
+
     span(ng-if='isLoaded')
       div(ng-if='!isAuthenticated')
         include _login
-
       div(ng-if='isAuthenticated')
         span.header-is-auth
           .layer
@@ -40,8 +41,6 @@ block body
           .site-main
             div(ng-view)
 
-        a.arrow-top(scroll-to='.site-main', scroll-on-click)
-
         #scroll.user-sidebar(ng-controller="UserCtrl")
 
           // code from member.jade
@@ -57,11 +56,8 @@ block body
             .user-sidebar__profile--description(ng-bind-html='user.description | newlines')
 
           // code from index.jade(少しだけ表示内容がかわってる。)
-          // TODO: (1)
-          // .timeline__post--header--rt_icon, .timeline__post--header--rt_source の割り当て
-          // TODO: (2)
-          // 上がclickされたとき、再読み込みする処理
           .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1', infinite-scroll-container="'#scroll'")
+            box-loading.user-sidebar__contents--box-loading-init(ng-if='!tweets.items', data-base='#a1a1a1', data-highlight='white')
             .timeline__post.user-sidebar__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
               .timeline__post--header
                 .timeline__post--header--info
@@ -86,7 +82,7 @@ block body
                     a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
                       i.fa.fa-download
 
-            //- .user-sidebar__contents--infinitescroll-message.text-center(ng-show='tweets.busy') ツイートを読み込み中 ...
-            box-loading.box-loading-padding-top(ng-show='tweets.busy', data-base='#a1a1a1', data-highlight='white')
-
+            box-loading.user-sidebar__contents--infinitescroll-message(ng-if='tweets.busy', data-base='#a1a1a1', data-highlight='white')
             .user-sidebar__contents--infinitescroll-message.text-center(ng-show='tweets.isLast') 終わりです
+
+        a.arrow-top(scroll-to='.site-main', scroll-on-click)

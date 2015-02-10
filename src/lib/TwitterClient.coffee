@@ -176,6 +176,17 @@ module.exports = class TwitterClient extends TwitterClientDefine
         list_id: params.listIdStr
         user_id: params.twitterIdStr
 
+  # リストにユーザを追加する(複数)
+  createAllListsMembers: (params) ->
+    console.log params
+    params.twitterIdStr = params.twitterIdStr || settings.defaultUserIds
+    @postViaAPI
+      method: 'lists'
+      type: 'members/create_all'
+      params:
+        list_id: params.listIdStr
+        user_id: params.twitterIdStr
+
   # リストからユーザを削除
   destroyListsMembers: (params) ->
     @postViaAPI

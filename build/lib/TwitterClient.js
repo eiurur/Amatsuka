@@ -229,6 +229,19 @@
       });
     };
 
+    TwitterClient.prototype.createAllListsMembers = function(params) {
+      console.log(params);
+      params.twitterIdStr = params.twitterIdStr || settings.defaultUserIds;
+      return this.postViaAPI({
+        method: 'lists',
+        type: 'members/create_all',
+        params: {
+          list_id: params.listIdStr,
+          user_id: params.twitterIdStr
+        }
+      });
+    };
+
     TwitterClient.prototype.destroyListsMembers = function(params) {
       return this.postViaAPI({
         method: 'lists',
