@@ -280,11 +280,21 @@ ul {
   z-index: 1000;
 }
 .sidebar .logo {
-  padding: 30px;
+  padding: 30px 30px 20px;
 }
 .sidebar .logo img {
   max-width: 100px;
   border-radius: 100%;
+}
+.sidebar .logo a {
+  color: #a1a1a1;
+  text-decoration: none;
+}
+.sidebar .logo-first {
+  font-size: 48px;
+}
+.sidebar .logo-rest {
+  font-size: 15px;
 }
 .sidebar .main-nav .nav-text .divider {
   color: white;

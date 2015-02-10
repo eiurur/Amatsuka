@@ -9,16 +9,19 @@ angular.module "myApp.directives"
       element.addClass('favorited') if scope.favorited
 
       element.on 'click', (event) ->
+        console.log 'favorited = ', scope.favorited
         if scope.favorited
           element.removeClass('favorited')
           TweetService.destroyFav(tweetIdStr: scope.tweetIdStr)
             .then (data) ->
               scope.favNum -= 1
+              scope.favorited = !scope.favorited
         else
           element.addClass('favorited')
           TweetService.createFav(tweetIdStr: scope.tweetIdStr)
             .then (data) ->
               scope.favNum += 1
+              scope.favorited = !scope.favorited
 
   .directive 'retweetable', (TweetService) ->
     restrict: 'A'
@@ -35,13 +38,16 @@ angular.module "myApp.directives"
           TweetService.destroyStatus(tweetIdStr: scope.tweetIdStr)
             .then (data) ->
               scope.retweetNum -= 1
-        else if !window.confirm('リツイートしてもよろしいですか？')
+              scope.retweeted = !scope.retweeted
+
+        else if window.confirm('リツイートしてもよろしいですか？')
           element.addClass('retweeted')
           TweetService.retweetStatus(tweetIdStr: scope.tweetIdStr)
             .then (data) ->
               scope.retweetNum += 1
+              scope.retweeted = !scope.retweeted
 
-  .directive 'followable', (TweetService) ->
+  .directive 'followable', ($rootScope, TweetService) ->
     restrict: 'E'
     replace: true
     scope:
@@ -72,9 +78,10 @@ angular.module "myApp.directives"
           TweetService.createListsMembers(opts)
           .then (data) ->
             TweetService.addMember(scope.twitterIdStr)
-            console.log 'createListsMembers(opts) darta', data
+            $rootScope.$broadcast 'addMember', scope.twitterIdStr
+            console.log 'E followable createListsMembers data', data
 
-  .directive 'followable', (TweetService) ->
+  .directive 'followable', ($rootScope, TweetService) ->
     restrict: 'A'
     scope:
       listIdStr: '@'
@@ -93,17 +100,18 @@ angular.module "myApp.directives"
 
         scope.isProcessing = true
         if scope.followStatus is true
+          element[0].innerText = 'フォロー'
           TweetService.destroyListsMembers(opts)
           .then (data) ->
             TweetService.removeMember(scope.twitterIdStr)
-            element[0].innerText = 'フォロー'
             scope.isProcessing = false
 
         if scope.followStatus is false
+          element[0].innerText = 'フォロー解除'
           TweetService.createListsMembers(opts)
           .then (data) ->
             TweetService.addMember(scope.twitterIdStr)
-            element[0].innerText = 'フォロー解除'
+            $rootScope.$broadcast 'addMember', scope.twitterIdStr
             scope.isProcessing = false
 
         scope.followStatus = !scope.followStatus

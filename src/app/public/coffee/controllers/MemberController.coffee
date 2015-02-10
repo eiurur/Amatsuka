@@ -17,7 +17,6 @@ angular.module "myApp.controllers"
 
   unless _.isEmpty(TweetService.amatsukaList.data) and _.isEmpty(TweetService.amatsukaList.member)
     $scope.listIdStr = TweetService.amatsukaList.data.id_str
-    console.log TweetService.amatsukaList.member
     $scope.amatsukaMemberList = TweetService.nomarlizeMembers(TweetService.amatsukaList.member)
     return
 
@@ -43,6 +42,6 @@ angular.module "myApp.controllers"
     $scope.amatsukaMemberList = membersNormalized
 
     # 更新
-    TweetService.amatsukaList.member = data.data.users
+    TweetService.amatsukaList.data = amatsukaList
 
     console.timeEnd 'getListsMembers'

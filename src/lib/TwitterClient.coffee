@@ -75,6 +75,18 @@ module.exports = class TwitterClient extends TwitterClientDefine
       params: opts
 
   ###
+  Tweet
+  ###
+  showStatus: (params) ->
+    @getViaAPI
+      method: 'statuses'
+      type: 'show'
+      params:
+        id: params.tweetIdStr
+        include_my_retweet: true
+        include_entities: true
+
+  ###
   User
   ###
   showUsers: (params) ->
@@ -268,11 +280,13 @@ module.exports = class TwitterClient extends TwitterClientDefine
 
   # Note:
   # リツイートを解除したいとき
-  # -> このAPIに渡すidはリツイート後のtweet_id。リツイート元ではないよ。
+  # -> このAPIに渡すidはリツイート後のtweet_id ( = 自分のtweet_id)。
   destroyStatus: (params) ->
-    @postViaAPI
-      method: 'statuses'
-      type: 'destroy'
-      params:
-        id: params.tweetIdStr
+    @showStatus(params)
+    .then (data) =>
+      @postViaAPI
+        method: 'statuses'
+        type: 'destroy'
+        params:
+          id: data.current_user_retweet.id_str
 

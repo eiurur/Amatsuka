@@ -70,6 +70,12 @@ angular.module "myApp.services"
         console.log 'user isFollow boolean = ', !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
         !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
 
+    applyFollowStatusChange: (tweets, twitterIdStr) ->
+      console.log 'applyFollowStatusChange tweets = ', tweets
+      _.map tweets, (tweet) =>
+        isRT = _.has tweet, 'retweeted_status'
+        id_str = @get(tweet, 'user.id_str', isRT)
+        if id_str is twitterIdStr then tweet.followStatus = true
 
     nomalizeTweets: (tweets) ->
       _.each tweets, (tweet) =>
@@ -156,9 +162,9 @@ angular.module "myApp.services"
       moment(time).fromNow(true)
 
     filterIncludeImage: (tweets) ->
-      _.filter tweets, (tweet) ->
-        _.has(tweet, 'extended_entities') and
-        !_.isEmpty(tweet.extended_entities.media)
+      _.reject tweets, (tweet) ->
+        !_.has(tweet, 'extended_entities') or
+        _.isEmpty(tweet.extended_entities.media)
 
     # TwitterAPI動作テスト用
     twitterTest: (user) ->

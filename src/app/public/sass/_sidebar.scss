@@ -9,11 +9,23 @@
   z-index: 1000;
 
   .logo {
-    padding : $sidebar-left-and-right-space;
+    // padding : $sidebar-left-and-right-space;
+    padding : 30px 30px 20px;
     img {
       max-width: $sidebar-width - ($sidebar-left-and-right-space * 2);
       @include round(100%);
     }
+    a {
+      color: $link-color;
+      text-decoration: none;
+    }
+  }
+  .logo-first {
+    font-size: 48px;
+  }
+
+  .logo-rest {
+    font-size: 15px;
   }
 
   .main-nav {
