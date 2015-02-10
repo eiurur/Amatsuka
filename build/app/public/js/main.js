@@ -272,7 +272,6 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
   if (_.isEmpty(AuthService.user)) {
     return;
   }
-  console.table(AuthService.user);
   ls = localStorage;
   maxId = maxId || 0;
   amatsukaList = JSON.parse(ls.getItem('amatsukaList')) || {};
@@ -428,7 +427,7 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$log", 
     console.table(data.data.users);
     membersNormalized = TweetService.nomarlizeMembers(data.data.users);
     $scope.amatsukaMemberList = membersNormalized;
-    TweetService.amatsukaList.data = amatsukaList;
+    TweetService.amatsukaList.member = data.data.users;
     return console.timeEnd('getListsMembers');
   });
 }]);
@@ -437,25 +436,33 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
   if (_.isEmpty(AuthService.user)) {
     return;
   }
+  $scope.isOpened = false;
   $scope.$on('userData', function(event, args) {
-    $scope.user = TweetService.nomarlizeMember(args);
+    if (!$scope.isOpened) {
+      return;
+    }
     console.log(TweetService.amatsukaList);
+    $scope.user = TweetService.nomarlizeMember(args);
     return $scope.listIdStr = TweetService.amatsukaList.data.id_str;
   });
   $scope.$on('tweetData', function(event, args) {
     var maxId, tweetsNomalized, tweetsOnlyImage;
-    console.log('tweetData on ', args);
+    if (!$scope.isOpened) {
+      return;
+    }
     maxId = TweetService.decStrNum(_.last(args).id_str);
     tweetsOnlyImage = TweetService.filterIncludeImage(args);
     tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage);
     console.log('UserCrel tweetsNomalized = ', tweetsNomalized);
     return $scope.tweets = new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user);
   });
+  $scope.$on('isOpened', function(event, args) {
+    $scope.isOpened = true;
+    $scope.user = {};
+    return $scope.tweets = {};
+  });
   $scope.$on('isClosed', function(event, args) {
-    if (args) {
-      $scope.user = {};
-      return $scope.tweets = {};
-    }
+    return $scope.isOpened = false;
   });
   return $scope.$on('addMember', function(event, args) {
     if (_.isUndefined($scope.tweets)) {
@@ -632,21 +639,8 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
       twitterIdStr: '@'
     },
     link: function(scope, element, attrs) {
-      return element.on('click', function() {
-        var body, domUserSidebar, layer;
-        domUserSidebar = angular.element(document).find('.user-sidebar');
-        domUserSidebar.addClass('user-sidebar-in');
-        body = angular.element(document).find('body');
-        body.addClass('scrollbar-y-hidden');
-        layer = angular.element(document).find('.layer');
-        layer.addClass('fullscreen-overlay');
-        layer.on('click', function() {
-          body.removeClass('scrollbar-y-hidden');
-          layer.removeClass('fullscreen-overlay');
-          domUserSidebar.removeClass('user-sidebar-in');
-          return $rootScope.$broadcast('isClosed', true);
-        });
-        console.log(scope.twitterIdStr);
+      var showTweet;
+      showTweet = function() {
         return TweetService.showUsers({
           twitterIdStr: scope.twitterIdStr
         }).then(function(data) {
@@ -658,6 +652,29 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         }).then(function(data) {
           console.log(data.data);
           return $rootScope.$broadcast('tweetData', data.data);
+        });
+      };
+      return element.on('click', function() {
+        var body, domUserSidebar, isOpenedSidebar, layer;
+        $rootScope.$broadcast('isOpened', true);
+        domUserSidebar = angular.element(document).find('.user-sidebar');
+        isOpenedSidebar = domUserSidebar[0].className.indexOf('.user-sidebar-in') !== -1;
+        if (isOpenedSidebar) {
+          console.log('-in もってる');
+          showTweet();
+          return;
+        }
+        domUserSidebar.addClass('user-sidebar-in');
+        body = angular.element(document).find('body');
+        body.addClass('scrollbar-y-hidden');
+        layer = angular.element(document).find('.layer');
+        layer.addClass('fullscreen-overlay');
+        showTweet();
+        return layer.on('click', function() {
+          body.removeClass('scrollbar-y-hidden');
+          layer.removeClass('fullscreen-overlay');
+          domUserSidebar.removeClass('user-sidebar-in');
+          return $rootScope.$broadcast('isClosed', true);
         });
       });
     }
@@ -755,18 +772,10 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", functio
         isRT = true;
       }
       if (_.has(target, 'user')) {
-        console.log('target = ', target);
-        console.log('tweet isFollow boolean = ', !!_.findWhere(this.amatsukaList.member, {
-          'id_str': this.get(target, 'user.id_str', isRT)
-        }));
         return !!_.findWhere(this.amatsukaList.member, {
           'id_str': this.get(target, 'user.id_str', isRT)
         });
       } else {
-        console.log('target = ', target);
-        console.log('user isFollow boolean = ', !!_.findWhere(this.amatsukaList.member, {
-          'id_str': target.id_str
-        }));
         return !!_.findWhere(this.amatsukaList.member, {
           'id_str': target.id_str
         });

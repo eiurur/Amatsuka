@@ -69,7 +69,7 @@ block body
                     div(ng-if="tweet.isRT")
                       span.timeline__post--header--rt_icon
                         i.fa.fa-retweet
-                      a.timeline__post--header--rt_source
+                      a.timeline__post--header--rt_source(twitter-id-str="{{tweet.retweeted_status.user.id_str}}", show-tweet="show-tweet")
                        {{tweet.retweeted_status.user.screen_name}}
                       followable(ng-if='!tweet.followStatus', list-id-str="{{listIdStr}}", twitter-id-str="{{tweet.retweeted_status.user.id_str}}", follow-status="tweet.followStatus")
                 .timeline__post--header--time
