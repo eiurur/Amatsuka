@@ -7,3 +7,4 @@ bower_components/*
 sass/*
 stylesheets/*
 blueprint.md
+build/app/log*

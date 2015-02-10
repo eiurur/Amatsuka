@@ -160,3 +160,23 @@
   background: url("../images/login-background.jpg") no-repeat center center;
   background-size: cover;
 }
+
+// Box-loader
+.box-loader {
+  width: 27px;
+  font-size: 0;
+  position: relative;
+  margin: 0 auto;
+
+  b {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background: $base-color;
+    margin: 2px;
+  }
+}
+
+.box-loading-padding-top {
+  padding-top: 10px;
+}

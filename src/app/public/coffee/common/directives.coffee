@@ -4,7 +4,7 @@ angular.module "myApp.directives", []
     restrict: 'E'
     link: (scope, element, attrs) ->
       tag = '''
-        <div class="loader-12day">
+        <div class="box-loader">
           <b></b>
           <b></b>
           <b></b>
@@ -23,8 +23,8 @@ angular.module "myApp.directives", []
       rotate = ->
         bs = element.find 'b'
         _.map bs, (elem) ->
-          elem.style.background = 'black'
-        bs[allocations[count]].style.background = 'white'
+          elem.style.background = attrs.base
+        bs[allocations[count]].style.background = attrs.highlight
         count++
         if count is 8 then count = 0
       animate = $interval rotate, 150

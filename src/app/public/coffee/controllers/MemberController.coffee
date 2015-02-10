@@ -29,7 +29,7 @@ angular.module "myApp.controllers"
     $scope.listIdStr = amatsukaList.id_str
     console.timeEnd 'getListsList'
 
-    # 更新
+    # 更新(リストデータ)
     TweetService.amatsukaList.data = amatsukaList
 
     console.time 'getListsMembers'
@@ -41,7 +41,7 @@ angular.module "myApp.controllers"
     membersNormalized = TweetService.nomarlizeMembers(data.data.users)
     $scope.amatsukaMemberList = membersNormalized
 
-    # 更新
-    TweetService.amatsukaList.data = amatsukaList
+    # 更新(メンバー)
+    TweetService.amatsukaList.member = data.data.users
 
     console.timeEnd 'getListsMembers'
