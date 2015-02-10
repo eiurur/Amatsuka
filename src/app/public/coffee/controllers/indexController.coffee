@@ -8,7 +8,8 @@ angular.module "myApp.controllers"
     Tweets
     ) ->
   return if _.isEmpty AuthService.user
-  # console.table AuthService.user
+
+  $scope.isLoaded = false
 
   ls                 = localStorage
   maxId              = maxId || 0
@@ -25,7 +26,7 @@ angular.module "myApp.controllers"
   $rootScope.amatsukaFollowList = amatsukaFollowList
 
 
-  unless _.isEmpty(amatsukaList) or _.isEmpty(amatsukaFollowList)
+  unless _.isEmpty(TweetService.amatsukaList.data) or _.isEmpty(TweetService.amatsukaList.member)
     params =
       listIdStr: amatsukaList.id_str
       count: 20
@@ -36,6 +37,7 @@ angular.module "myApp.controllers"
       tweetsNomalized  = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList)
       $scope.listIdStr = amatsukaList.id_str
       $scope.tweets    = new Tweets(tweetsNomalized, maxId)
+      $scope.isLoaded  = true
 
       # AmatsukaListとAmatsukaFollowListを最新に更新する
       TweetService.getListsList()
@@ -111,6 +113,7 @@ angular.module "myApp.controllers"
       tweets          = TweetService.filterIncludeImage data.data
       tweetsNomalized = TweetService.nomalizeTweets(tweets, amatsukaFollowList)
       $scope.tweets   = new Tweets(tweetsNomalized, maxId)
+      $scope.isLoaded = true
 
 
 
