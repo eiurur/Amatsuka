@@ -17,8 +17,8 @@ angular.module "myApp.controllers"
   amatsukaFollowList = JSON.parse(ls.getItem 'amatsukaFollowList') || []
 
   TweetService.amatsukaList =
-    data: amatsukaList
-    member: amatsukaFollowList
+    data: JSON.parse(ls.getItem 'amatsukaList') || {}
+    member: JSON.parse(ls.getItem 'amatsukaFollowList') || []
 
   console.log 'TweetService.amatsukaList = ', TweetService.amatsukaList
 
@@ -34,7 +34,7 @@ angular.module "myApp.controllers"
     .then (data) ->
       maxId            = TweetService.decStrNum(_.last(data.data).id_str)
       tweetsOnlyImage  = TweetService.filterIncludeImage data.data
-      tweetsNomalized  = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList)
+      tweetsNomalized  = TweetService.nomalizeTweets(tweetsOnlyImage)
       $scope.listIdStr = amatsukaList.id_str
       $scope.tweets    = new Tweets(tweetsNomalized, maxId)
       $scope.isLoaded  = true
@@ -85,7 +85,7 @@ angular.module "myApp.controllers"
   .catch (error) ->
     console.log error
 
-    # Amatsuka Listが存在しない
+    # Amatsuka Listが存在しない(ほんとに初ログイン)
     if error.message is "Cannot read property 'id_str' of undefined"
       console.log 'id_str'
       init()
@@ -96,22 +96,22 @@ angular.module "myApp.controllers"
     params = name: 'Amatsuka', mode: 'private'
     TweetService.createLists(params)
     .then (data) ->
-      amatsukaList =  data.data
-      $scope.listIdStr = amatsukaList.id_str
-      ls.setItem 'amatsukaList', JSON.stringify(amatsukaList)
-      params = listIdStr: amatsukaList.id_str, twitterIdStr: AuthService.user._json.id_str
-      TweetService.createListsMembers(params)
+      $scope.listIdStr = data.data.id_str
+      TweetService.amatsukaList.data = data.data
+      ls.setItem 'amatsukaList', JSON.stringify(data.data)
+      params = listIdStr: data.data.id_str, twitterIdStr: undefined
+      TweetService.createAllListsMembers(params)
     .then (data) ->
-      TweetService.getListsMembers(listIdStr: amatsukaList.id_str)
+      TweetService.getListsMembers(listIdStr: data.data.id_str)
     .then (data) ->
-      amatsukaFollowList = data.data.users
-      ls.setItem 'amatsukaFollowList', JSON.stringify(amatsukaFollowList)
-      params = listIdStr: amatsukaList.id_str, maxId: maxId, count: 50
+      TweetService.amatsukaList.member = data.data.users
+      ls.setItem 'amatsukaFollowList', JSON.stringify(data.data.users)
+      params = listIdStr: TweetService.amatsukaList.data.id_str, maxId: maxId, count: 50
       TweetService.getListsStatuses(params)
     .then (data) ->
       maxId           = TweetService.decStrNum(_.last(data.data).id_str)
       tweets          = TweetService.filterIncludeImage data.data
-      tweetsNomalized = TweetService.nomalizeTweets(tweets, amatsukaFollowList)
+      tweetsNomalized = TweetService.nomalizeTweets(tweets)
       $scope.tweets   = new Tweets(tweetsNomalized, maxId)
       $scope.isLoaded = true
 

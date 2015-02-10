@@ -216,6 +216,12 @@ angular.module "myApp.services"
           .success (data) ->
             return resolve data
 
+    createAllListsMembers: (params) ->
+      return $q (resolve, reject) ->
+        $http.post("/api/lists/members/create_all", params)
+          .success (data) ->
+            return resolve data
+
     destroyListsMembers: (params) ->
       return $q (resolve, reject) ->
         $http.post("/api/lists/members/destroy", params)

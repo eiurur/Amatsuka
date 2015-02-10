@@ -57,7 +57,7 @@ block body
 
           // code from index.jade(少しだけ表示内容がかわってる。)
           .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1', infinite-scroll-container="'#scroll'")
-            box-loading.user-sidebar__contents--box-loading-init(ng-hide='tweets.items', data-base='#a1a1a1', data-highlight='white')
+            box-loading.user-sidebar__contents--box-loading-init(ng-if='!tweets.items', data-base='#a1a1a1', data-highlight='white')
             .timeline__post.user-sidebar__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
               .timeline__post--header
                 .timeline__post--header--info
@@ -82,7 +82,7 @@ block body
                     a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
                       i.fa.fa-download
 
-            box-loading.user-sidebar__contents--infinitescroll-message(ng-show='tweets.busy', data-base='#a1a1a1', data-highlight='white')
+            box-loading.user-sidebar__contents--infinitescroll-message(ng-if='tweets.busy', data-base='#a1a1a1', data-highlight='white')
             .user-sidebar__contents--infinitescroll-message.text-center(ng-show='tweets.isLast') 終わりです
 
         a.arrow-top(scroll-to='.site-main', scroll-on-click)

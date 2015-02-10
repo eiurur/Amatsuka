@@ -156,6 +156,18 @@
         });
       });
     });
+    app.post('/api/lists/members/create_all', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.createAllListsMembers({
+        listIdStr: req.body.listIdStr,
+        twitterIdStr: req.body.twitterIdStr
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
     app.post('/api/lists/members/destroy', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterCilent(req.session.passport.user);

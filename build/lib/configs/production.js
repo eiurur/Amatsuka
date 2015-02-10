@@ -36,6 +36,7 @@
       consumerSecret: TW_CS,
       callback: CALLBACK_URL
     }),
+    defaultUserIds: '87658369,123720322,124814283,437523928,2228681658',
     targetList: ['g1un1u', 'kamikannda', 'loliconder', 'nosongang', 'sandworks', 'exit_kureaki', 'yamayo']
   };
 

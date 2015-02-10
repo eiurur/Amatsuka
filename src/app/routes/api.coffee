@@ -136,6 +136,14 @@ module.exports = (app) ->
     .then (data) ->
       res.json data: data
 
+  app.post '/api/lists/members/create_all', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.createAllListsMembers
+      listIdStr: req.body.listIdStr
+      twitterIdStr: req.body.twitterIdStr
+    .then (data) ->
+      res.json data: data
+
   app.post '/api/lists/members/destroy', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)
     twitterClient.destroyListsMembers
