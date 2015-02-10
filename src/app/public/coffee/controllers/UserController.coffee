@@ -31,3 +31,13 @@ angular.module "myApp.controllers"
       # ng-ifにして、要素ごと抹消するとかどうよ？
       $scope.user = {}
       $scope.tweets = {}
+
+  $scope.$on 'addMember', (event, args) ->
+    return if _.isUndefined $scope.tweets
+    # TweetService.applyFollowStatusChange $scope.tweets.items, args
+    # $scope.$broadcast 'addMember2Index', args
+    _.map $scope.tweets.items, (tweet) ->
+      isRT = _.has tweet, 'retweeted_status'
+      id_str = TweetService.get(tweet, 'user.id_str', isRT)
+      if id_str is args then tweet.followStatus = true
+

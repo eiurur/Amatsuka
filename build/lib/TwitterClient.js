@@ -105,6 +105,23 @@
 
 
     /*
+    Tweet
+     */
+
+    TwitterClient.prototype.showStatus = function(params) {
+      return this.getViaAPI({
+        method: 'statuses',
+        type: 'show',
+        params: {
+          id: params.tweetIdStr,
+          include_my_retweet: true,
+          include_entities: true
+        }
+      });
+    };
+
+
+    /*
     User
      */
 
@@ -337,13 +354,17 @@
     };
 
     TwitterClient.prototype.destroyStatus = function(params) {
-      return this.postViaAPI({
-        method: 'statuses',
-        type: 'destroy',
-        params: {
-          id: params.tweetIdStr
-        }
-      });
+      return this.showStatus(params).then((function(_this) {
+        return function(data) {
+          return _this.postViaAPI({
+            method: 'statuses',
+            type: 'destroy',
+            params: {
+              id: data.current_user_retweet.id_str
+            }
+          });
+        };
+      })(this));
     };
 
     return TwitterClient;

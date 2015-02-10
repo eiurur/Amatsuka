@@ -9,10 +9,9 @@ angular.module "myApp.factories", []
         @method = null
         @items 　= items
         @maxId 　= maxId
-        @type = type
-        @user  　= user if @type is 'user_timeline'
-        console.log '@items = ', @items
-        console.log '@user = ', @user
+        @type   = type
+        if @type is 'user_timeline' then @user = user
+
 
       nextPage: ->
         console.log @busy
@@ -38,14 +37,12 @@ angular.module "myApp.factories", []
           itemsImageOnly = TweetService.filterIncludeImage data.data
           itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, TweetService.amatsukaList.member)
         .then (itemsNomalized) =>
-          console.log '======> @busy ', @busy
           $q.all itemsNomalized.map (item) =>
-            console.log 'item map ', item
             @addTweet(item)
           .then (result) =>
             @busy = false
-            console.log result
-            console.log '@busy ', @busy
+            # console.log result
+            # console.log '@busy ', @busy
 
       addTweet: (tweet) ->
         [@items][0].push tweet

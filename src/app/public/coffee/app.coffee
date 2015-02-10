@@ -31,6 +31,12 @@ angular.module('myApp', [
     .when '/member',
       templateUrl: 'partials/member'
       controller: 'MemberCtrl'
+    .when '/list',
+      templateUrl: 'partials/list'
+      controller: 'ListCtrl'
+    .when '/settings',
+      templateUrl: 'partials/settings'
+      controller: 'SettingsCtrl'
     .when "/logout",
       redirectTo: "/"
     .when "http://127.0.0.1:4040/auth/twitter/callback",

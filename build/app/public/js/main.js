@@ -15,6 +15,12 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   }).when('/member', {
     templateUrl: 'partials/member',
     controller: 'MemberCtrl'
+  }).when('/list', {
+    templateUrl: 'partials/list',
+    controller: 'ListCtrl'
+  }).when('/settings', {
+    templateUrl: 'partials/settings',
+    controller: 'SettingsCtrl'
   }).when("/logout", {
     redirectTo: "/"
   }).when("http://127.0.0.1:4040/auth/twitter/callback", {
@@ -159,8 +165,6 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
       if (this.type === 'user_timeline') {
         this.user = user;
       }
-      console.log('@items = ', this.items);
-      console.log('@user = ', this.user);
     }
 
     Tweets.prototype.nextPage = function() {
@@ -199,14 +203,10 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
         };
       })(this)).then((function(_this) {
         return function(itemsNomalized) {
-          console.log('======> @busy ', _this.busy);
           return $q.all(itemsNomalized.map(function(item) {
-            console.log('item map ', item);
             return _this.addTweet(item);
           })).then(function(result) {
-            _this.busy = false;
-            console.log(result);
-            return console.log('@busy ', _this.busy);
+            return _this.busy = false;
           });
         };
       })(this));
@@ -244,6 +244,234 @@ angular.module("myApp.services", []).service("CommonService", function() {
   };
 });
 
+angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
+  $scope.isLoaded = false;
+  $scope.isAuthenticated = AuthService.status.isAuthenticated;
+  if (AuthService.status.isAuthenticated) {
+    $scope.isLoaded = true;
+    return;
+  }
+  return AuthService.isAuthenticated().success(function(data) {
+    if (_.isNull(data.data)) {
+      $scope.isLoaded = true;
+      return;
+    }
+    AuthService.status.isAuthenticated = true;
+    $scope.isAuthenticated = AuthService.status.isAuthenticated;
+    AuthService.user = data.data;
+    $scope.user = data.data;
+    return $scope.isLoaded = true;
+  }).error(function(status, data) {
+    console.log(status);
+    return console.log(data);
+  });
+}]);
+
+angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootScope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $rootScope, $log, AuthService, TweetService, Tweets) {
+  var amatsukaFollowList, amatsukaList, init, ls, maxId, params;
+  if (_.isEmpty(AuthService.user)) {
+    return;
+  }
+  console.table(AuthService.user);
+  ls = localStorage;
+  maxId = maxId || 0;
+  amatsukaList = JSON.parse(ls.getItem('amatsukaList')) || {};
+  amatsukaFollowList = JSON.parse(ls.getItem('amatsukaFollowList')) || [];
+  TweetService.amatsukaList = {
+    data: amatsukaList,
+    member: amatsukaFollowList
+  };
+  console.log('TweetService.amatsukaList = ', TweetService.amatsukaList);
+  $rootScope.amatsukaFollowList = amatsukaFollowList;
+  if (!(_.isEmpty(amatsukaList) || _.isEmpty(amatsukaFollowList))) {
+    params = {
+      listIdStr: amatsukaList.id_str,
+      count: 20
+    };
+    TweetService.getListsStatuses(params).then(function(data) {
+      var tweetsNomalized, tweetsOnlyImage;
+      maxId = TweetService.decStrNum(_.last(data.data).id_str);
+      tweetsOnlyImage = TweetService.filterIncludeImage(data.data);
+      tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList);
+      $scope.listIdStr = amatsukaList.id_str;
+      $scope.tweets = new Tweets(tweetsNomalized, maxId);
+      return TweetService.getListsList();
+    }).then(function(data) {
+      amatsukaList = _.findWhere(data.data, {
+        'name': 'Amatsuka'
+      });
+      $scope.listIdStr = amatsukaList.id_str;
+      ls.setItem('amatsukaList', JSON.stringify(amatsukaList));
+      return TweetService.getListsMembers({
+        listIdStr: amatsukaList.id_str
+      });
+    }).then(function(data) {
+      amatsukaFollowList = data.data.users;
+      return ls.setItem('amatsukaFollowList', JSON.stringify(amatsukaFollowList));
+    });
+    return;
+  }
+  console.time('getListsList');
+  TweetService.getListsList().then(function(data) {
+    amatsukaList = _.findWhere(data.data, {
+      'name': 'Amatsuka'
+    });
+    $scope.listIdStr = amatsukaList.id_str;
+    ls.setItem('amatsukaList', JSON.stringify(amatsukaList));
+    console.timeEnd('getListsList');
+    console.time('getListsMembers');
+    return TweetService.getListsMembers({
+      listIdStr: amatsukaList.id_str
+    });
+  }).then(function(data) {
+    console.table(data.data.users);
+    amatsukaFollowList = data.data.users;
+    ls.setItem('amatsukaFollowList', JSON.stringify(amatsukaFollowList));
+    console.timeEnd('getListsMembers');
+    return TweetService.getListsStatuses({
+      listIdStr: amatsukaList.id_str,
+      maxId: maxId,
+      count: 50
+    });
+  }).then(function(data) {
+    var tweetsNomalized, tweetsOnlyImage;
+    console.time('newTweets');
+    maxId = TweetService.decStrNum(_.last(data.data).id_str);
+    tweetsOnlyImage = TweetService.filterIncludeImage(data.data);
+    tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList);
+    $scope.tweets = new Tweets(tweetsNomalized, maxId);
+    return console.timeEnd('newTweets');
+  })["catch"](function(error) {
+    console.log(error);
+    if (error.message === "Cannot read property 'id_str' of undefined") {
+      console.log('id_str');
+      return init();
+    }
+  });
+  init = function() {
+    params = {
+      name: 'Amatsuka',
+      mode: 'private'
+    };
+    return TweetService.createLists(params).then(function(data) {
+      amatsukaList = data.data;
+      $scope.listIdStr = amatsukaList.id_str;
+      ls.setItem('amatsukaList', JSON.stringify(amatsukaList));
+      params = {
+        listIdStr: amatsukaList.id_str,
+        twitterIdStr: AuthService.user._json.id_str
+      };
+      return TweetService.createListsMembers(params);
+    }).then(function(data) {
+      return TweetService.getListsMembers({
+        listIdStr: amatsukaList.id_str
+      });
+    }).then(function(data) {
+      amatsukaFollowList = data.data.users;
+      ls.setItem('amatsukaFollowList', JSON.stringify(amatsukaFollowList));
+      params = {
+        listIdStr: amatsukaList.id_str,
+        maxId: maxId,
+        count: 50
+      };
+      return TweetService.getListsStatuses(params);
+    }).then(function(data) {
+      var tweets, tweetsNomalized;
+      maxId = TweetService.decStrNum(_.last(data.data).id_str);
+      tweets = TweetService.filterIncludeImage(data.data);
+      tweetsNomalized = TweetService.nomalizeTweets(tweets, amatsukaFollowList);
+      return $scope.tweets = new Tweets(tweetsNomalized, maxId);
+    });
+  };
+  $scope.$on('newTweet', function(event, args) {
+    var newTweetsOnlyImage, tweetsNomalized;
+    console.log('newTweet on ', args);
+    newTweetsOnlyImage = TweetService.filterIncludeImage(args);
+    console.table(newTweetsOnlyImage);
+    tweetsNomalized = TweetService.nomalizeTweets(newTweetsOnlyImage, amatsukaFollowList);
+    return $scope.tweets.items = _.uniq(_.union($scope.tweets.items, tweetsNomalized), 'id_str');
+  });
+  return $scope.$on('addMember2Index', function(event, args) {
+    console.log('addMember2Index on ', args);
+    return TweetService.applyFollowStatusChange($scope.tweets.items, args);
+  });
+}]);
+
+angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $log, AuthService, TweetService, Tweets) {
+  var ls, maxId;
+  if (_.isEmpty(AuthService.user)) {
+    return;
+  }
+  console.log('Member AuthService.user = ', AuthService.user);
+  ls = localStorage;
+  maxId = maxId || 0;
+  if (!(_.isEmpty(TweetService.amatsukaList.data) && _.isEmpty(TweetService.amatsukaList.member))) {
+    $scope.listIdStr = TweetService.amatsukaList.data.id_str;
+    $scope.amatsukaMemberList = TweetService.nomarlizeMembers(TweetService.amatsukaList.member);
+    return;
+  }
+  console.time('getListsList');
+  return TweetService.getListsList().then(function(data) {
+    var amatsukaList;
+    amatsukaList = _.findWhere(data.data, {
+      'name': 'Amatsuka'
+    });
+    $scope.listIdStr = amatsukaList.id_str;
+    console.timeEnd('getListsList');
+    TweetService.amatsukaList.data = amatsukaList;
+    console.time('getListsMembers');
+    return TweetService.getListsMembers({
+      listIdStr: amatsukaList.id_str
+    });
+  }).then(function(data) {
+    var membersNormalized;
+    console.table(data.data.users);
+    membersNormalized = TweetService.nomarlizeMembers(data.data.users);
+    $scope.amatsukaMemberList = membersNormalized;
+    TweetService.amatsukaList.data = amatsukaList;
+    return console.timeEnd('getListsMembers');
+  });
+}]);
+
+angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $rootScope, $log, AuthService, TweetService, Tweets) {
+  if (_.isEmpty(AuthService.user)) {
+    return;
+  }
+  $scope.$on('userData', function(event, args) {
+    $scope.user = TweetService.nomarlizeMember(args);
+    console.log(TweetService.amatsukaList);
+    return $scope.listIdStr = TweetService.amatsukaList.data.id_str;
+  });
+  $scope.$on('tweetData', function(event, args) {
+    var maxId, tweetsNomalized, tweetsOnlyImage;
+    console.log('tweetData on ', args);
+    maxId = TweetService.decStrNum(_.last(args).id_str);
+    tweetsOnlyImage = TweetService.filterIncludeImage(args);
+    tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage);
+    console.log('UserCrel tweetsNomalized = ', tweetsNomalized);
+    return $scope.tweets = new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user);
+  });
+  $scope.$on('isClosed', function(event, args) {
+    if (args) {
+      $scope.user = {};
+      return $scope.tweets = {};
+    }
+  });
+  return $scope.$on('addMember', function(event, args) {
+    if (_.isUndefined($scope.tweets)) {
+      return;
+    }
+    return _.map($scope.tweets.items, function(tweet) {
+      var id_str, isRT;
+      isRT = _.has(tweet, 'retweeted_status');
+      id_str = TweetService.get(tweet, 'user.id_str', isRT);
+      if (id_str === args) {
+        return tweet.followStatus = true;
+      }
+    });
+  });
+}]);
+
 angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
   return function(scope, elm, attrs) {
     elm.text(version);
@@ -263,19 +491,22 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         element.addClass('favorited');
       }
       return element.on('click', function(event) {
+        console.log('favorited = ', scope.favorited);
         if (scope.favorited) {
           element.removeClass('favorited');
           return TweetService.destroyFav({
             tweetIdStr: scope.tweetIdStr
           }).then(function(data) {
-            return scope.favNum -= 1;
+            scope.favNum -= 1;
+            return scope.favorited = !scope.favorited;
           });
         } else {
           element.addClass('favorited');
           return TweetService.createFav({
             tweetIdStr: scope.tweetIdStr
           }).then(function(data) {
-            return scope.favNum += 1;
+            scope.favNum += 1;
+            return scope.favorited = !scope.favorited;
           });
         }
       });
@@ -299,20 +530,22 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
           return TweetService.destroyStatus({
             tweetIdStr: scope.tweetIdStr
           }).then(function(data) {
-            return scope.retweetNum -= 1;
+            scope.retweetNum -= 1;
+            return scope.retweeted = !scope.retweeted;
           });
-        } else if (!window.confirm('リツイートしてもよろしいですか？')) {
+        } else if (window.confirm('リツイートしてもよろしいですか？')) {
           element.addClass('retweeted');
           return TweetService.retweetStatus({
             tweetIdStr: scope.tweetIdStr
           }).then(function(data) {
-            return scope.retweetNum += 1;
+            scope.retweetNum += 1;
+            return scope.retweeted = !scope.retweeted;
           });
         }
       });
     }
   };
-}]).directive('followable', ["TweetService", function(TweetService) {
+}]).directive('followable', ["$rootScope", "TweetService", function($rootScope, TweetService) {
   return {
     restrict: 'E',
     replace: true,
@@ -347,13 +580,14 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
           element.fadeOut(200);
           return TweetService.createListsMembers(opts).then(function(data) {
             TweetService.addMember(scope.twitterIdStr);
-            return console.log('createListsMembers(opts) darta', data);
+            $rootScope.$broadcast('addMember', scope.twitterIdStr);
+            return console.log('E followable createListsMembers data', data);
           });
         }
       });
     }
   };
-}]).directive('followable', ["TweetService", function(TweetService) {
+}]).directive('followable', ["$rootScope", "TweetService", function($rootScope, TweetService) {
   return {
     restrict: 'A',
     scope: {
@@ -373,16 +607,17 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         };
         scope.isProcessing = true;
         if (scope.followStatus === true) {
+          element[0].innerText = 'フォロー';
           TweetService.destroyListsMembers(opts).then(function(data) {
             TweetService.removeMember(scope.twitterIdStr);
-            element[0].innerText = 'フォロー';
             return scope.isProcessing = false;
           });
         }
         if (scope.followStatus === false) {
+          element[0].innerText = 'フォロー解除';
           TweetService.createListsMembers(opts).then(function(data) {
             TweetService.addMember(scope.twitterIdStr);
-            element[0].innerText = 'フォロー解除';
+            $rootScope.$broadcast('addMember', scope.twitterIdStr);
             return scope.isProcessing = false;
           });
         }
@@ -537,6 +772,19 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", functio
         });
       }
     },
+    applyFollowStatusChange: function(tweets, twitterIdStr) {
+      console.log('applyFollowStatusChange tweets = ', tweets);
+      return _.map(tweets, (function(_this) {
+        return function(tweet) {
+          var id_str, isRT;
+          isRT = _.has(tweet, 'retweeted_status');
+          id_str = _this.get(tweet, 'user.id_str', isRT);
+          if (id_str === twitterIdStr) {
+            return tweet.followStatus = true;
+          }
+        };
+      })(this));
+    },
     nomalizeTweets: function(tweets) {
       return _.each(tweets, (function(_this) {
         return function(tweet) {
@@ -654,8 +902,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", functio
       return moment(time).fromNow(true);
     },
     filterIncludeImage: function(tweets) {
-      return _.filter(tweets, function(tweet) {
-        return _.has(tweet, 'extended_entities') && !_.isEmpty(tweet.extended_entities.media);
+      return _.reject(tweets, function(tweet) {
+        return !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
       });
     },
     twitterTest: function(user) {
@@ -784,216 +1032,4 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", functio
       });
     }
   };
-}]);
-
-angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $log, AuthService, TweetService, Tweets) {
-  var ls, maxId;
-  if (_.isEmpty(AuthService.user)) {
-    return;
-  }
-  console.log('Member AuthService.user = ', AuthService.user);
-  ls = localStorage;
-  maxId = maxId || 0;
-  if (!(_.isEmpty(TweetService.amatsukaList.data) && _.isEmpty(TweetService.amatsukaList.member))) {
-    $scope.listIdStr = TweetService.amatsukaList.data.id_str;
-    console.log(TweetService.amatsukaList.member);
-    $scope.amatsukaMemberList = TweetService.nomarlizeMembers(TweetService.amatsukaList.member);
-    return;
-  }
-  console.time('getListsList');
-  return TweetService.getListsList().then(function(data) {
-    var amatsukaList;
-    amatsukaList = _.findWhere(data.data, {
-      'name': 'Amatsuka'
-    });
-    $scope.listIdStr = amatsukaList.id_str;
-    console.timeEnd('getListsList');
-    TweetService.amatsukaList.data = amatsukaList;
-    console.time('getListsMembers');
-    return TweetService.getListsMembers({
-      listIdStr: amatsukaList.id_str
-    });
-  }).then(function(data) {
-    var membersNormalized;
-    console.table(data.data.users);
-    membersNormalized = TweetService.nomarlizeMembers(data.data.users);
-    $scope.amatsukaMemberList = membersNormalized;
-    TweetService.amatsukaList.member = data.data.users;
-    return console.timeEnd('getListsMembers');
-  });
-}]);
-
-angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $rootScope, $log, AuthService, TweetService, Tweets) {
-  if (_.isEmpty(AuthService.user)) {
-    return;
-  }
-  $scope.$on('userData', function(event, args) {
-    $scope.user = TweetService.nomarlizeMember(args);
-    console.log(TweetService.amatsukaList);
-    return $scope.listIdStr = TweetService.amatsukaList.data.id_str;
-  });
-  $scope.$on('tweetData', function(event, args) {
-    var maxId, tweetsNomalized, tweetsOnlyImage;
-    console.log('tweetData on ', args);
-    maxId = TweetService.decStrNum(_.last(args).id_str);
-    tweetsOnlyImage = TweetService.filterIncludeImage(args);
-    tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage);
-    console.log('UserCrel tweetsNomalized = ', tweetsNomalized);
-    return $scope.tweets = new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user);
-  });
-  return $scope.$on('isClosed', function(event, args) {
-    if (args) {
-      $scope.user = {};
-      return $scope.tweets = {};
-    }
-  });
-}]);
-
-angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
-  $scope.isLoaded = false;
-  $scope.isAuthenticated = AuthService.status.isAuthenticated;
-  if (AuthService.status.isAuthenticated) {
-    $scope.isLoaded = true;
-    return;
-  }
-  return AuthService.isAuthenticated().success(function(data) {
-    if (_.isNull(data.data)) {
-      $scope.isLoaded = true;
-      return;
-    }
-    AuthService.status.isAuthenticated = true;
-    $scope.isAuthenticated = AuthService.status.isAuthenticated;
-    AuthService.user = data.data;
-    $scope.user = data.data;
-    return $scope.isLoaded = true;
-  }).error(function(status, data) {
-    console.log(status);
-    return console.log(data);
-  });
-}]);
-
-angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootScope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $rootScope, $log, AuthService, TweetService, Tweets) {
-  var amatsukaFollowList, amatsukaList, init, ls, maxId, params;
-  if (_.isEmpty(AuthService.user)) {
-    return;
-  }
-  console.table(AuthService.user);
-  ls = localStorage;
-  maxId = maxId || 0;
-  amatsukaList = JSON.parse(ls.getItem('amatsukaList')) || {};
-  amatsukaFollowList = JSON.parse(ls.getItem('amatsukaFollowList')) || [];
-  TweetService.amatsukaList = {
-    data: amatsukaList,
-    member: amatsukaFollowList
-  };
-  console.log('TweetService.amatsukaList = ', TweetService.amatsukaList);
-  $rootScope.amatsukaFollowList = amatsukaFollowList;
-  if (!(_.isEmpty(amatsukaList) || _.isEmpty(amatsukaFollowList))) {
-    params = {
-      listIdStr: amatsukaList.id_str,
-      count: 20
-    };
-    TweetService.getListsStatuses(params).then(function(data) {
-      var tweetsNomalized, tweetsOnlyImage;
-      maxId = TweetService.decStrNum(_.last(data.data).id_str);
-      tweetsOnlyImage = TweetService.filterIncludeImage(data.data);
-      tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList);
-      $scope.listIdStr = amatsukaList.id_str;
-      $scope.tweets = new Tweets(tweetsNomalized, maxId);
-      return TweetService.getListsList();
-    }).then(function(data) {
-      amatsukaList = _.findWhere(data.data, {
-        'name': 'Amatsuka'
-      });
-      $scope.listIdStr = amatsukaList.id_str;
-      ls.setItem('amatsukaList', JSON.stringify(amatsukaList));
-      return TweetService.getListsMembers({
-        listIdStr: amatsukaList.id_str
-      });
-    }).then(function(data) {
-      amatsukaFollowList = data.data.users;
-      return ls.setItem('amatsukaFollowList', JSON.stringify(amatsukaFollowList));
-    });
-    return;
-  }
-  console.time('getListsList');
-  TweetService.getListsList().then(function(data) {
-    amatsukaList = _.findWhere(data.data, {
-      'name': 'Amatsuka'
-    });
-    $scope.listIdStr = amatsukaList.id_str;
-    ls.setItem('amatsukaList', JSON.stringify(amatsukaList));
-    console.timeEnd('getListsList');
-    console.time('getListsMembers');
-    return TweetService.getListsMembers({
-      listIdStr: amatsukaList.id_str
-    });
-  }).then(function(data) {
-    console.table(data.data.users);
-    amatsukaFollowList = data.data.users;
-    ls.setItem('amatsukaFollowList', JSON.stringify(amatsukaFollowList));
-    console.timeEnd('getListsMembers');
-    return TweetService.getListsStatuses({
-      listIdStr: amatsukaList.id_str,
-      maxId: maxId,
-      count: 50
-    });
-  }).then(function(data) {
-    var tweetsNomalized, tweetsOnlyImage;
-    console.time('newTweets');
-    maxId = TweetService.decStrNum(_.last(data.data).id_str);
-    tweetsOnlyImage = TweetService.filterIncludeImage(data.data);
-    tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList);
-    $scope.tweets = new Tweets(tweetsNomalized, maxId);
-    return console.timeEnd('newTweets');
-  })["catch"](function(error) {
-    console.log(error);
-    if (error.message === "Cannot read property 'id_str' of undefined") {
-      console.log('id_str');
-      return init();
-    }
-  });
-  init = function() {
-    params = {
-      name: 'Amatsuka',
-      mode: 'private'
-    };
-    return TweetService.createLists(params).then(function(data) {
-      amatsukaList = data.data;
-      $scope.listIdStr = amatsukaList.id_str;
-      ls.setItem('amatsukaList', JSON.stringify(amatsukaList));
-      params = {
-        listIdStr: amatsukaList.id_str,
-        twitterIdStr: AuthService.user._json.id_str
-      };
-      return TweetService.createListsMembers(params);
-    }).then(function(data) {
-      return TweetService.getListsMembers({
-        listIdStr: amatsukaList.id_str
-      });
-    }).then(function(data) {
-      amatsukaFollowList = data.data.users;
-      ls.setItem('amatsukaFollowList', JSON.stringify(amatsukaFollowList));
-      params = {
-        listIdStr: amatsukaList.id_str,
-        maxId: maxId,
-        count: 50
-      };
-      return TweetService.getListsStatuses(params);
-    }).then(function(data) {
-      var tweets, tweetsNomalized;
-      maxId = TweetService.decStrNum(_.last(data.data).id_str);
-      tweets = TweetService.filterIncludeImage(data.data);
-      tweetsNomalized = TweetService.nomalizeTweets(tweets, amatsukaFollowList);
-      return $scope.tweets = new Tweets(tweetsNomalized, maxId);
-    });
-  };
-  return $scope.$on('newTweet', function(event, args) {
-    var newTweetsOnlyImage, tweetsNomalized;
-    console.log('newTweet on ', args);
-    newTweetsOnlyImage = TweetService.filterIncludeImage(args);
-    console.table(newTweetsOnlyImage);
-    tweetsNomalized = TweetService.nomalizeTweets(newTweetsOnlyImage, amatsukaFollowList);
-    return $scope.tweets.items = _.uniq(_.union($scope.tweets.items, tweetsNomalized), 'id_str');
-  });
 }]);
