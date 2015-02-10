@@ -30,11 +30,13 @@
     MAX_NUM_GET_LIST: 10,
     MAX_NUM_GET_FAV_TWEET_FROM_LIST: 200,
     MAX_NUM_GET_LIST_STATUSES: 200,
+    MAX_NUM_GET_LIST_MEMBERS: 5000,
     twitterAPI: new TwitterAPI({
       consumerKey: TW_CK,
       consumerSecret: TW_CS,
       callback: CALLBACK_URL
-    })
+    }),
+    targetList: ['g1un1u', 'kamikannda', 'loliconder', 'nosongang', 'sandworks', 'exit_kureaki', 'yamayo']
   };
 
 }).call(this);
