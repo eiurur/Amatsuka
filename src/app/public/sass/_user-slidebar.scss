@@ -1,72 +1,94 @@
-.user-sidebar {
-  top: 0;
-  right: -$timeline__post--width - ($timeline__post--padding * 2);
-  height: 100%;
-  width: $timeline__post--width + ($timeline__post--padding * 2);
-  background: white;
-  position: fixed;
-  z-index: 10000;
-  transition: .3s ease;
-  overflow-x: hidden;
-  overflow-y: auto;
+.user-sidebar
+{
+    position: fixed;
+    z-index: 10000;
+    top: 0;
+    right: -$timeline__post--width - ($timeline__post--padding * 2);
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    width: $timeline__post--width + ($timeline__post--padding * 2);
+    height: 100%;
+
+    transition: .3s ease;
+
+    background: white;
 }
 
-.user-sidebar-in {
-  right: 0;
+.user-sidebar-in
+{
+    right: 0;
 }
 
-.user-sidebar__btn-follow {
-  &:hover {
-    color: white;
-  }
+.user-sidebar__btn-follow
+{
+    &:hover
+    {
+        color: white;
+    }
 }
 
-.user-sidebar__contents {
-  padding: 0;
-  margin: 0 auto;
-  width:  625px;
+.user-sidebar__contents
+{
+    width: 620px;
+    margin: 0 auto;
+    padding: 0;
 }
 
-.user-sidebar__profile {
-  color: $sidebar-color;
-  padding: 20px;
-  min-height: 150px;
-  width: 100%;
+.user-sidebar__profile
+{
+    width: 100%;
+    min-height: 150px;
+    padding: 20px 30px;
+
+    color: $sidebar-color;
 }
 
-.user-sidebar__profile--name {
-  color: $base-color;
+.user-sidebar__profile--name
+{
+    color: $base-color;
 }
 
-.user-sidebar__profile--screen_name {
 
+
+
+
+.user-sidebar__profile--description
+{
+    font-size: .8em;
+
+    padding-top: 20px;
 }
 
-.user-sidebar__profile--banner {
+.user-sidebar__profile--icon
+{
+    width: 73px;
+    height: 73px;
+    margin: 0 auto;
 
+    @include round(4px);
+    img
+    {
+        max-width: 73px;
+
+        border-radius: 3px;
+    }
 }
 
-.user-sidebar__profile--description {
-  padding-top: 20px;
-  font-size: 0.8em;
+.user-sidebar__post
+{
+    margin: 20px 30px;
+
+    @include zurui-box(.3);
 }
 
-.user-sidebar__profile--icon {
-  margin: 0 auto;
-  @include round(4px);
-  height: 73px;
-  width: 73px;
-  img {
-    border-radius: 3px;
-    max-width: 73px;
-  }
+.user-sidebar__contents--infinitescroll-message
+{
+    padding: 0 20px 20px;
 }
 
-.user-sidebar__post {
-  margin: 20px;
-  @include zurui-box(.3);
-}
-
-.user-sidebar__contents--infinitescroll-message {
-  padding: 0 20px 20px;
+.user-sidebar__contents--box-loading-init
+{
+    padding: 0 20px 20px;
 }

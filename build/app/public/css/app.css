@@ -519,16 +519,16 @@ ul {
 }
 
 .user-sidebar {
-  top: 0;
-  right: -600px;
-  height: 100%;
-  width: 600px;
-  background: white;
   position: fixed;
   z-index: 10000;
-  transition: .3s ease;
+  top: 0;
+  right: -600px;
   overflow-x: hidden;
   overflow-y: auto;
+  width: 600px;
+  height: 100%;
+  transition: .3s ease;
+  background: white;
 }
 
 .user-sidebar-in {
@@ -540,16 +540,16 @@ ul {
 }
 
 .user-sidebar__contents {
-  padding: 0;
+  width: 620px;
   margin: 0 auto;
-  width: 625px;
+  padding: 0;
 }
 
 .user-sidebar__profile {
-  color: #292929;
-  padding: 20px;
-  min-height: 150px;
   width: 100%;
+  min-height: 150px;
+  padding: 20px 30px;
+  color: #292929;
 }
 
 .user-sidebar__profile--name {
@@ -557,29 +557,33 @@ ul {
 }
 
 .user-sidebar__profile--description {
+  font-size: .8em;
   padding-top: 20px;
-  font-size: 0.8em;
 }
 
 .user-sidebar__profile--icon {
+  width: 73px;
+  height: 73px;
   margin: 0 auto;
   border-radius: 4px;
-  height: 73px;
-  width: 73px;
 }
 .user-sidebar__profile--icon img {
-  border-radius: 3px;
   max-width: 73px;
+  border-radius: 3px;
 }
 
 .user-sidebar__post {
-  margin: 20px;
+  margin: 20px 30px;
   -moz-box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
   -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
   box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
 }
 
 .user-sidebar__contents--infinitescroll-message {
+  padding: 0 20px 20px;
+}
+
+.user-sidebar__contents--box-loading-init {
   padding: 0 20px 20px;
 }
 
