@@ -1,5 +1,5 @@
 _               = require 'lodash'
-debug           = require 'debug'
+# debug           = require 'debug'
 {saveTweetData} = require './save-tweet-data'
 {settings}      = if process.env.NODE_ENV is "production"
   require "../configs/production"

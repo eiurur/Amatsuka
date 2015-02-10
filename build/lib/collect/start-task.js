@@ -1,9 +1,7 @@
 (function() {
-  var debug, saveTweetData, settings, _;
+  var saveTweetData, settings, _;
 
   _ = require('lodash');
-
-  debug = require('debug');
 
   saveTweetData = require('./save-tweet-data').saveTweetData;
 
