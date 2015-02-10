@@ -59,7 +59,7 @@ angular.module("myApp.directives", []).directive('boxLoading', ["$interval", fun
     restrict: 'E',
     link: function(scope, element, attrs) {
       var allocations, animate, count, rotate, tag;
-      tag = '<div class="loader-12day">\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n</div>';
+      tag = '<div class="box-loader">\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n</div>';
       element.append(tag);
       count = 0;
       allocations = [0, 1, 2, 5, 8, 7, 6, 3];
@@ -67,9 +67,9 @@ angular.module("myApp.directives", []).directive('boxLoading', ["$interval", fun
         var bs;
         bs = element.find('b');
         _.map(bs, function(elem) {
-          return elem.style.background = 'black';
+          return elem.style.background = attrs.base;
         });
-        bs[allocations[count]].style.background = 'white';
+        bs[allocations[count]].style.background = attrs.highlight;
         count++;
         if (count === 8) {
           return count = 0;
