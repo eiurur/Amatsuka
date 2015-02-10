@@ -9,28 +9,29 @@ angular.module "myApp.controllers"
     ) ->
   return if _.isEmpty AuthService.user
 
+  $scope.isOpened = false
 
   $scope.$on 'userData', (event, args) ->
-    $scope.user = TweetService.nomarlizeMember args
+    return unless $scope.isOpened
     console.log TweetService.amatsukaList
+    $scope.user = TweetService.nomarlizeMember args
     $scope.listIdStr = TweetService.amatsukaList.data.id_str
 
   $scope.$on 'tweetData', (event, args) ->
-    console.log 'tweetData on ', args
+    return unless $scope.isOpened
     maxId           = TweetService.decStrNum(_.last(args).id_str)
     tweetsOnlyImage = TweetService.filterIncludeImage args
     tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage)
     console.log 'UserCrel tweetsNomalized = ', tweetsNomalized
-
     $scope.tweets   = new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user)
 
+  $scope.$on 'isOpened', (event, args) ->
+    $scope.isOpened = true
+    $scope.user = {}
+    $scope.tweets = {}
+
   $scope.$on 'isClosed', (event, args) ->
-    if args
-      # FiXME:
-      # userData, tweetDataのリクエストが終わる前に閉じると、初期化に失敗する
-      # ng-ifにして、要素ごと抹消するとかどうよ？
-      $scope.user = {}
-      $scope.tweets = {}
+    $scope.isOpened = false
 
   $scope.$on 'addMember', (event, args) ->
     return if _.isUndefined $scope.tweets

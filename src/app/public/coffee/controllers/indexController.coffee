@@ -8,7 +8,7 @@ angular.module "myApp.controllers"
     Tweets
     ) ->
   return if _.isEmpty AuthService.user
-  console.table AuthService.user
+  # console.table AuthService.user
 
   ls                 = localStorage
   maxId              = maxId || 0

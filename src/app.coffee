@@ -20,13 +20,13 @@ tasks4startUp = [
     setTimeout (-> callback(null, "Serve\n")), settings.GRACE_TIME_SERVER
     return
 
-  , (callback) ->
+  # , (callback) ->
 
-    # Cron Server
-    my.c "■ Cron task start"
-    startTask null, "Cron"
-    setTimeout (-> callback(null, "Cron\n")), settings.GRACE_TIME_SERVER
-    return
+  #   # Cron Server
+  #   my.c "■ Cron task start"
+  #   startTask null, "Cron"
+  #   setTimeout (-> callback(null, "Cron\n")), settings.GRACE_TIME_SERVER
+  #   return
 
 ]
 

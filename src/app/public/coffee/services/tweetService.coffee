@@ -61,13 +61,13 @@ angular.module "myApp.services"
     isFollow: (target, isRT = true) ->
       if _.has target, 'user'
         # tweetのデータを基に判定
-        console.log 'target = ', target
-        console.log 'tweet isFollow boolean = ', !!_.findWhere(@amatsukaList.member, 'id_str': @get(target, 'user.id_str', isRT))
+        # console.log 'target = ', target
+        # console.log 'tweet isFollow boolean = ', !!_.findWhere(@amatsukaList.member, 'id_str': @get(target, 'user.id_str', isRT))
         !!_.findWhere(@amatsukaList.member, 'id_str': @get(target, 'user.id_str', isRT))
       else
         # userの～
-        console.log 'target = ', target
-        console.log 'user isFollow boolean = ', !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
+        # console.log 'target = ', target
+        # console.log 'user isFollow boolean = ', !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
         !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
 
     applyFollowStatusChange: (tweets, twitterIdStr) ->

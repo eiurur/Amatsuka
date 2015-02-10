@@ -47,6 +47,10 @@ exports.serve = ->
 
     # development only
     if env is 'development'
+      fs = require('fs')
+      stream = fs.createWriteStream(__dirname + '/log.txt', flags: 'a')
+      # app.use morgan(stream: stream)
+
       app.locals.pretty = true
       app.use (err, req, res, next) ->
         res.status err.status or 500

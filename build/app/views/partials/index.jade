@@ -29,5 +29,5 @@
           a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
             i.fa.fa-download
 
-  .text-center(ng-show='tweets.busy') ツイートを読み込み中 ...
+  box-loading.box-loading-padding-top(ng-show='tweets.busy', data-base='#a1a1a1', data-highlight='#292929')
   .text-center(ng-show='tweets.isLast') 終わりです

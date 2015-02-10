@@ -24,12 +24,6 @@
       setTimeout((function() {
         return callback(null, "Serve\n");
       }), settings.GRACE_TIME_SERVER);
-    }, function(callback) {
-      my.c("■ Cron task start");
-      startTask(null, "Cron");
-      setTimeout((function() {
-        return callback(null, "Cron\n");
-      }), settings.GRACE_TIME_SERVER);
     }
   ];
 

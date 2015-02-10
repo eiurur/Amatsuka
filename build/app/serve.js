@@ -5,7 +5,7 @@
     path = require('path');
     settings = (process.env.NODE_ENV === 'production' ? require('../lib/configs/production') : require('../lib/configs/development')).settings;
     app = module.exports = (function() {
-      var MongoStore, bodyParser, cookieParser, env, express, methodOverride, morgan, options, passport, session;
+      var MongoStore, bodyParser, cookieParser, env, express, fs, methodOverride, morgan, options, passport, session, stream;
       express = require('express');
       bodyParser = require('body-parser');
       cookieParser = require('cookie-parser');
@@ -42,6 +42,10 @@
       app.use(express["static"](path.join(__dirname, 'public')));
       env = process.env.NODE_ENV || 'development';
       if (env === 'development') {
+        fs = require('fs');
+        stream = fs.createWriteStream(__dirname + '/log.txt', {
+          flags: 'a'
+        });
         app.locals.pretty = true;
         app.use(function(err, req, res, next) {
           res.status(err.status || 500);

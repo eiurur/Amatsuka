@@ -121,31 +121,8 @@ angular.module "myApp.directives"
     scope:
       twitterIdStr: '@'
     link: (scope, element, attrs) ->
-      element.on 'click', ->
-        domUserSidebar = angular.element(document).find('.user-sidebar')
-        # user-sidebarが開かれた状態で呼び出し。
-        # TODO
-        # if domUserSidebar.has .user-sidebar-in
-        #   shousers -> getUserTimeline -> broadcast
-        #   return
-        #
 
-        # 初回
-        domUserSidebar.addClass('user-sidebar-in')
-
-        body = angular.element(document).find('body')
-        body.addClass('scrollbar-y-hidden')
-        layer = angular.element(document).find('.layer')
-        layer.addClass('fullscreen-overlay')
-
-
-        layer.on 'click', ->
-          body.removeClass('scrollbar-y-hidden')
-          layer.removeClass('fullscreen-overlay')
-          domUserSidebar.removeClass('user-sidebar-in')
-          $rootScope.$broadcast 'isClosed', true
-
-        console.log scope.twitterIdStr
+      showTweet = ->
         TweetService.showUsers(twitterIdStr: scope.twitterIdStr)
         .then (data) ->
           console.log data
@@ -154,6 +131,39 @@ angular.module "myApp.directives"
         .then (data) ->
           console.log data.data
           $rootScope.$broadcast 'tweetData', data.data
+
+
+      element.on 'click', ->
+        $rootScope.$broadcast 'isOpened', true
+
+        domUserSidebar = angular.element(document).find('.user-sidebar')
+        # user-sidebarが開かれた状態で呼び出し。
+        # TODO
+        # console.log domUserSidebar[0].className.indexOf '.user-sidebar-in'
+        isOpenedSidebar = domUserSidebar[0].className.indexOf('.user-sidebar-in') isnt -1
+        if isOpenedSidebar
+          console.log '-in もってる'
+          do showTweet
+          return
+
+
+        # 初回(サイドバーは見えない状態が初期状態)
+        domUserSidebar.addClass('user-sidebar-in')
+        body = angular.element(document).find('body')
+        body.addClass('scrollbar-y-hidden')
+        layer = angular.element(document).find('.layer')
+        layer.addClass('fullscreen-overlay')
+
+        do showTweet
+
+        # サイドバーを閉じる
+        layer.on 'click', ->
+          body.removeClass('scrollbar-y-hidden')
+          layer.removeClass('fullscreen-overlay')
+          domUserSidebar.removeClass('user-sidebar-in')
+          $rootScope.$broadcast 'isClosed', true
+
+
 
 
   # 動かなくなった。
