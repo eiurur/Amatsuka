@@ -1,5 +1,5 @@
-h1
-  new-tweet-load(list-id-str="{{listIdStr}}")
+//- h1
+//-   new-tweet-load(list-id-str="{{listIdStr}}")
 
 .timeline(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1')
   .timeline__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
@@ -29,5 +29,5 @@ h1
           a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
             i.fa.fa-download
 
-  .text-center(ng-show='tweets.busy') Loading data...
+  .text-center(ng-show='tweets.busy') ツイートを読み込み中 ...
   .text-center(ng-show='tweets.isLast') 終わりです
