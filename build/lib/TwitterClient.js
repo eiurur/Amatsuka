@@ -318,15 +318,21 @@
     fav
      */
 
-    TwitterClient.prototype.getFavList = function(params) {
+    TwitterClient.prototype.getFavLists = function(params) {
+      var opts;
+      opts = {
+        user_id: params.twitterIdStr,
+        count: ~~params.count || settings.MAX_NUM_GET_FAV_TWEET_FROM_LIST,
+        include_entities: true
+      };
+      if (!(params.maxId === '0' || params.maxId === 'undefined')) {
+        opts.max_id = params.maxId;
+      }
+      console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'favorites',
         type: 'list',
-        params: {
-          user_id: params.twitterIdStr || '',
-          screen_name: params.screenName || '',
-          count: params.count || settings.MAX_NUM_GET_FAV_TWEET_FROM_LIST
-        }
+        params: opts
       });
     };
 

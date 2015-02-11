@@ -180,6 +180,23 @@
         });
       });
     });
+
+    /*
+    Fav
+     */
+    app.get('/api/favorites/lists/:id/:maxId?/:count?', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterCilent(req.session.passport.user);
+      return twitterClient.getFavLists({
+        twitterIdStr: req.params.id,
+        maxId: req.params.maxId,
+        count: req.params.count
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
     app.post('/api/favorites/create', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterCilent(req.session.passport.user);

@@ -70,27 +70,34 @@ angular.module "myApp.services"
         # console.log 'user isFollow boolean = ', !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
         !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
 
+
+    hasOrigParameter: (tweet) ->
+      console.log tweet
+
     applyFollowStatusChange: (tweets, twitterIdStr) ->
-      console.log 'applyFollowStatusChange tweets = ', tweets
-      _.map tweets, (tweet) =>
-        isRT = _.has tweet, 'retweeted_status'
-        id_str = @get(tweet, 'user.id_str', isRT)
-        if id_str is twitterIdStr then tweet.followStatus = true
+      do =>
+        console.log 'applyFollowStatusChange tweets = ', tweets
+        _.map tweets, (tweet) =>
+          isRT = _.has tweet, 'retweeted_status'
+          id_str = @get(tweet, 'user.id_str', isRT)
+          tweet.followStatus = if id_str is twitterIdStr then true else false
 
     nomalizeTweets: (tweets) ->
-      _.each tweets, (tweet) =>
-        isRT = _.has tweet, 'retweeted_status'
-        tweet.isRT = isRT
-        tweet.followStatus = @isFollow(tweet, isRT)
-        tweet.text       = @activateLink(tweet.text)
-        tweet.time       = @fromNow(@get(tweet, 'tweet.created_at', false))
-        tweet.retweetNum = @get(tweet, 'tweet.retweet_count', isRT)
-        tweet.favNum     = @get(tweet, 'tweet.favorite_count', isRT)
-        tweet.tweetIdStr = @get(tweet, 'tweet.id_str', isRT)
-        tweet.sourceUrl  = @get(tweet, 'display_url', isRT)
-        tweet.picOrigUrl = @get(tweet, 'media_url:orig', isRT)
-        tweet.user.profile_image_url =
-          @iconBigger(tweet.user.profile_image_url)
+      do =>
+        _.each tweets, (tweet) =>
+          isRT = _.has tweet, 'retweeted_status'
+          # @hasOrigParameter tweet
+          tweet.isRT = isRT
+          tweet.followStatus = @isFollow(tweet, isRT)
+          tweet.text       = @activateLink(tweet.text)
+          tweet.time       = @fromNow(@get(tweet, 'tweet.created_at', false))
+          tweet.retweetNum = @get(tweet, 'tweet.retweet_count', isRT)
+          tweet.favNum     = @get(tweet, 'tweet.favorite_count', isRT)
+          tweet.tweetIdStr = @get(tweet, 'tweet.id_str', isRT)
+          tweet.sourceUrl  = @get(tweet, 'display_url', isRT)
+          tweet.picOrigUrl = @get(tweet, 'media_url:orig', isRT)
+          tweet.user.profile_image_url =
+            @iconBigger(tweet.user.profile_image_url)
 
     # 今のところ、Member.jadeｄふぇ使う関数なので isFollow を全部　true　にしても構わない
     nomarlizeMembers: (members) ->
@@ -251,6 +258,12 @@ angular.module "myApp.services"
     ###
     FAV
     ###
+    getFavLists: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/favorites/lists/#{params.twitterIdStr}/#{params.maxId}/#{params.count}")
+          .success (data) ->
+            return resolve data
+
     createFav: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/favorites/create', params)

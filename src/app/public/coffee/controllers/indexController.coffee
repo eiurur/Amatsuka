@@ -129,6 +129,6 @@ angular.module "myApp.controllers"
     tweetsNomalized = TweetService.nomalizeTweets(newTweetsOnlyImage, amatsukaFollowList)
     $scope.tweets.items = _.uniq(_.union($scope.tweets.items, tweetsNomalized), 'id_str')
 
-  $scope.$on 'addMember2Index', (event, args) ->
-    console.log 'addMember2Index on ', args
+  $scope.$on 'addMember', (event, args) ->
+    console.log 'addMember on ', args
     TweetService.applyFollowStatusChange $scope.tweets.items, args

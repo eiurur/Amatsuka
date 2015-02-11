@@ -1,5 +1,3 @@
-//- h1
-//-   new-tweet-load(list-id-str="{{listIdStr}}")
 box-loading.user-sidebar__contents--box-loading-init(ng-if='!tweets.items', data-base='#a1a1a1', data-highlight='white')
 
 .timeline(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1')
@@ -9,11 +7,7 @@ box-loading.user-sidebar__contents--box-loading-init(ng-if='!tweets.items', data
         .timeline__post--header--link
           span.timeline__post--header--user(twitter-id-str="{{tweet.user.id_str}}", show-tweet="show-tweet")
             {{tweet.user.screen_name}}
-          span.timeline__post--header--rt_icon(ng-if="tweet.retweeted_status")
-            i.fa.fa-retweet
-          a.timeline__post--header--rt_source(twitter-id-str="{{tweet.retweeted_status.user.id_str}}", show-tweet="show-tweet")
-            {{tweet.retweeted_status.user.screen_name}}
-          followable(ng-if='!tweet.followStatus', list-id-str="{{listIdStr}}", twitter-id-str="{{tweet.retweeted_status.user.id_str}}", follow-status="tweet.followStatus")
+          followable(ng-if='!tweet.followStatus', list-id-str="{{listIdStr}}", twitter-id-str="{{tweet.user.id_str}}", follow-status="tweet.followStatus")
       .timeline__post--header--time
         a(href="https://{{tweet.sourceUrl}}", target="_blank")
           {{tweet.time}}

@@ -3,25 +3,30 @@ angular.module "myApp.factories", []
   .factory 'Tweets', ($http, $q, TweetService) ->
 
     class Tweets
-      constructor: (items, maxId, type, user) ->
+
+    class Tweets
+      constructor: (items, maxId, type, twitterIdStr) ->
         @busy  　= false
         @isLast　= false
         @method = null
+        @count  = 50
         @items 　= items
         @maxId 　= maxId
         @type   = type
-        if @type is 'user_timeline' then @user = user
+        @twitterIdStr = twitterIdStr || null
 
+      addTweet: (tweet) ->
+        [@items][0].push tweet
 
       nextPage: ->
-        console.log @busy
-        console.log @isLast
         return if @busy or @isLast
 
         if @type is 'user_timeline'
-          @method = TweetService.getUserTimeline(twitterIdStr: @user.id_str, maxId: @maxId, count:100)
+          @method = TweetService.getUserTimeline(twitterIdStr: @twitterIdStr, maxId: @maxId, count: @count)
+        else if @type is 'fav'
+          @method = TweetService.getFavLists(twitterIdStr: @twitterIdStr, maxId: @maxId, count: @count)
         else
-          @method = TweetService.getListsStatuses(listIdStr: TweetService.amatsukaList.data.id_str, maxId: @maxId, count:100)
+          @method = TweetService.getListsStatuses(listIdStr: TweetService.amatsukaList.data.id_str, maxId: @maxId, count: @count)
 
         @busy = true
         console.time 'get'
@@ -45,17 +50,12 @@ angular.module "myApp.factories", []
           console.timeEnd 'nomalizeTweets'
           itemsNomalized
         .then (itemsNomalized) =>
-          console.time '$q.all '
-          $q.all itemsNomalized.map (item) =>
-            @addTweet(item)
-          .then (result) =>
-            @busy = false
-            console.timeEnd '$q.all '
-
-            # console.log result
-            # console.log '@busy ', @busy
-
-      addTweet: (tweet) ->
-        [@items][0].push tweet
+          do =>
+            console.time '$q.all '
+            $q.all itemsNomalized.map (item) =>
+              @addTweet(item)
+            .then (result) =>
+              @busy = false
+              console.timeEnd '$q.all '
 
     Tweets

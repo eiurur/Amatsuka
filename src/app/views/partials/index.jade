@@ -20,7 +20,7 @@ box-loading.user-sidebar__contents--box-loading-init(ng-if='!tweets.items', data
     .timeline__post--icon
       img.fade(ng-src="{{tweet.user.profile_image_url}}", img-preload="img-preload", show-tweet="show-tweet", twitter-id-str="{{tweet.user.id_str}}")
     .timeline__post--image
-      img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload")
+      img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{tweet.extended_entities.media[0].media_url}}")
     .timeline__post--text(ng-bind-html='tweet.text | newlines')
     .timeline__post--footer
       .timeline__post--footer--contents
