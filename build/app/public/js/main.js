@@ -32,6 +32,25 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   return $locationProvider.html5Mode(true);
 }]);
 
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
+
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
     $log.info('location changin to: ' + next);
@@ -140,18 +159,25 @@ angular.module("myApp.directives", []).directive('boxLoading', ["$interval", fun
     link: function(scope, element, attrs) {
       var html;
       html = '';
-      element.on('mouseover', function() {
+      element.on('mouseenter', function() {
         var imageLayer;
         imageLayer = angular.element(document).find('.image-layer');
         html = "<img src=\"" + attrs.imgSrc + ":orig\" class=\"image-layer__img image-layer__img--hidden\" />";
         return imageLayer.html(html);
       });
       return element.on('click', function() {
-        var imageLayer, imageLayerImg;
+        var dirction, h, imageLayer, imageLayerImg, w;
         imageLayer = angular.element(document).find('.image-layer');
         imageLayer.addClass('image-layer__overlay');
         imageLayerImg = angular.element(document).find('.image-layer__img');
         imageLayerImg.removeClass('image-layer__img--hidden');
+        if (imageLayerImg[0].naturalHeight == null) {
+          return;
+        }
+        h = imageLayerImg[0].naturalHeight;
+        w = imageLayerImg[0].naturalWidth;
+        dirction = h > w ? 'h' : 'w';
+        imageLayerImg.addClass("image-layer__img-" + dirction + "-wide");
         return imageLayer.on('click', function() {
           imageLayer.html('');
           return imageLayer.removeClass('image-layer__overlay');
@@ -274,25 +300,6 @@ angular.module("myApp.services", []).service("CommonService", function() {
     isLoaded: false
   };
 });
-
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
 
 angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "Tweets", function($scope, $location, AuthService, TweetService, Tweets) {
   var ls, maxId, params;

@@ -9,3 +9,9 @@
 @mixin zurui-box($shadow: 0.15) {
   @include box-shadow(rgba(0, 0, 0, $shadow) 0 0 2px);
 }
+
+@mixin vertical-middle($deg: -50%) {
+  @include translateY($deg);
+  position: relative;
+  top: 50%;
+}
