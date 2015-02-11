@@ -85,3 +85,27 @@ angular.module "myApp.directives", []
       element.on 'click', ->
         $('html, body').animate
           scrollTop: $(scope.scrollTo).offset().top, "slow"
+
+  .directive "zoomImage", ($rootScope, TweetService) ->
+    restrict: 'A'
+    link: (scope, element, attrs) ->
+      html =  ''
+
+      # 画像プリロード(押してから表示するより体感速度的に高速)
+      element.on 'mouseover', ->
+        imageLayer = angular.element(document).find('.image-layer')
+        html = """
+          <img src="#{attrs.imgSrc}:orig" class="image-layer__img image-layer__img--hidden" />
+          """
+        imageLayer.html html
+
+      element.on 'click', ->
+        imageLayer = angular.element(document).find('.image-layer')
+        imageLayer.addClass('image-layer__overlay')
+
+        imageLayerImg = angular.element(document).find('.image-layer__img')
+        imageLayerImg.removeClass('image-layer__img--hidden')
+
+        imageLayer.on 'click', ->
+          imageLayer.html ''
+          imageLayer.removeClass('image-layer__overlay')

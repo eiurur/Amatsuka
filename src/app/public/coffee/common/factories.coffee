@@ -3,6 +3,8 @@ angular.module "myApp.factories", []
   .factory 'Tweets', ($http, $q, TweetService) ->
 
     class Tweets
+
+    class Tweets
       constructor: (items, maxId, type, twitterIdStr) ->
         @busy  　= false
         @isLast　= false
