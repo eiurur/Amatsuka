@@ -254,14 +254,18 @@ module.exports = class TwitterClient extends TwitterClientDefine
   ###
   fav
   ###
-  getFavList: (params) ->
+  getFavLists: (params) ->
+    opts =
+      user_id: params.twitterIdStr
+      count: ~~params.count || settings.MAX_NUM_GET_FAV_TWEET_FROM_LIST
+      include_entities: true
+    unless params.maxId is '0' || params.maxId is 'undefined'
+      opts.max_id = params.maxId
+    console.log "opts = ", opts
     @getViaAPI
       method: 'favorites'
       type: 'list'
-      params:
-        user_id: params.twitterIdStr || ''
-        screen_name: params.screenName || ''
-        count: params.count || settings.MAX_NUM_GET_FAV_TWEET_FROM_LIST
+      params: opts
 
   createFav: (params) ->
     @postViaAPI

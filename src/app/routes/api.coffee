@@ -153,7 +153,18 @@ module.exports = (app) ->
       res.json data: data
 
 
-  # POST ふぁぼ、あんふぁぼ
+  ###
+  Fav
+  ###
+  app.get '/api/favorites/lists/:id/:maxId?/:count?', (req, res) ->
+    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient.getFavLists
+      twitterIdStr: req.params.id
+      maxId: req.params.maxId
+      count: req.params.count
+    .then (data) ->
+      res.json data: data
+
   app.post '/api/favorites/create', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)
     twitterClient.createFav
