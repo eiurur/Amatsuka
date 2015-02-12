@@ -32,25 +32,6 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   return $locationProvider.html5Mode(true);
 }]);
 
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
-
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
     $log.info('location changin to: ' + next);
@@ -262,7 +243,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
         return function(itemsNomalized) {
           return (function() {
             console.time('$q.all ');
-            return $q.all(itemsNomalized.map(function(item) {
+            $q.all(itemsNomalized.map(function(item) {
               return _this.addTweet(item);
             })).then(function(result) {
               _this.busy = false;
@@ -301,6 +282,25 @@ angular.module("myApp.services", []).service("CommonService", function() {
   };
 });
 
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
+
 angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "Tweets", function($scope, $location, AuthService, TweetService, Tweets) {
   var ls, maxId, params;
   if (_.isEmpty(AuthService.user)) {
@@ -335,6 +335,13 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
     console.log('addMember on ', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
+}]);
+
+angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthService", "TweetService", "Tweets", function($scope, AuthService, TweetService, Tweets) {
+  if (_.isEmpty(AuthService.user)) {
+    return;
+  }
+  return console.log('List AuthService.user = ', AuthService.user);
 }]);
 
 angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $log, AuthService, TweetService, Tweets) {
@@ -879,37 +886,33 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", functio
       return console.log(tweet);
     },
     applyFollowStatusChange: function(tweets, twitterIdStr) {
-      return (function(_this) {
-        return function() {
-          console.log('applyFollowStatusChange tweets = ', tweets);
-          return _.map(tweets, function(tweet) {
-            var id_str, isRT;
-            isRT = _.has(tweet, 'retweeted_status');
-            id_str = _this.get(tweet, 'user.id_str', isRT);
-            return tweet.followStatus = id_str === twitterIdStr ? true : false;
-          });
+      console.log('applyFollowStatusChange tweets = ', tweets);
+      return _.map(tweets, (function(_this) {
+        return function(tweet) {
+          var id_str, isRT;
+          isRT = _.has(tweet, 'retweeted_status');
+          id_str = _this.get(tweet, 'user.id_str', isRT);
+          return tweet.followStatus = id_str === twitterIdStr ? true : false;
         };
-      })(this)();
+      })(this));
     },
     nomalizeTweets: function(tweets) {
-      return (function(_this) {
-        return function() {
-          return _.each(tweets, function(tweet) {
-            var isRT;
-            isRT = _.has(tweet, 'retweeted_status');
-            tweet.isRT = isRT;
-            tweet.followStatus = _this.isFollow(tweet, isRT);
-            tweet.text = _this.activateLink(tweet.text);
-            tweet.time = _this.fromNow(_this.get(tweet, 'tweet.created_at', false));
-            tweet.retweetNum = _this.get(tweet, 'tweet.retweet_count', isRT);
-            tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);
-            tweet.tweetIdStr = _this.get(tweet, 'tweet.id_str', isRT);
-            tweet.sourceUrl = _this.get(tweet, 'display_url', isRT);
-            tweet.picOrigUrl = _this.get(tweet, 'media_url:orig', isRT);
-            return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
-          });
+      return _.each(tweets, (function(_this) {
+        return function(tweet) {
+          var isRT;
+          isRT = _.has(tweet, 'retweeted_status');
+          tweet.isRT = isRT;
+          tweet.followStatus = _this.isFollow(tweet, isRT);
+          tweet.text = _this.activateLink(tweet.text);
+          tweet.time = _this.fromNow(_this.get(tweet, 'tweet.created_at', false));
+          tweet.retweetNum = _this.get(tweet, 'tweet.retweet_count', isRT);
+          tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);
+          tweet.tweetIdStr = _this.get(tweet, 'tweet.id_str', isRT);
+          tweet.sourceUrl = _this.get(tweet, 'display_url', isRT);
+          tweet.picOrigUrl = _this.get(tweet, 'media_url:orig', isRT);
+          return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
         };
-      })(this)();
+      })(this));
     },
     nomarlizeMembers: function(members) {
       return _.each(members, (function(_this) {
