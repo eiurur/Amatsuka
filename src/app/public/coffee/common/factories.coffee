@@ -57,5 +57,6 @@ angular.module "myApp.factories", []
             .then (result) =>
               @busy = false
               console.timeEnd '$q.all '
+            return
 
     Tweets
