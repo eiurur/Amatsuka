@@ -2,7 +2,6 @@ angular.module "myApp.controllers"
   .controller "IndexCtrl", (
     $scope
     $rootScope
-    $log
     AuthService
     TweetService
     Tweets

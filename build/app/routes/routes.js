@@ -26,6 +26,16 @@
       req.session.destroy();
       res.redirect("/");
     });
+    app.get('/isAuthenticated', function(req, res) {
+      var sessionUserData;
+      sessionUserData = null;
+      if (!_.isUndefined(req.session.passport.user)) {
+        sessionUserData = req.session.passport.user;
+      }
+      res.json({
+        data: sessionUserData
+      });
+    });
     app.get('/', function(req, res) {
       res.render("index");
     });

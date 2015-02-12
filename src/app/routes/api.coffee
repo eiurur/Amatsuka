@@ -16,25 +16,6 @@ else
 # JSON API
 module.exports = (app) ->
 
-  app.get '/api/isAuthenticated', (req, res) ->
-    sessionUserData = null
-    unless _.isUndefined req.session.passport.user
-      sessionUserData = req.session.passport.user
-    res.json data: sessionUserData
-
-  app.post '/api/findUserById', (req, res) ->
-    console.log "\n============> findUserById in API\n"
-    UserProvider.findUserById
-      twitterIdStr: req.body.twitterIdStr
-    , (err, data) ->
-      res.json data: data
-
-  # ここから下のにだけ適用。
-  # todo? hack?
-  # /api/twitter/~ にするか、
-  # ログインが不要なリクエストから /api を省くか、
-  # どっちかにしたほうが見通しがいい。
-  # 修正して
   app.use '/api/?', (req, res, next) ->
     console.log "======> #{req.originalUrl}"
     unless _.isUndefined(req.session.passport.user)
@@ -42,18 +23,26 @@ module.exports = (app) ->
     else
       res.redirect '/'
 
-  # APIの動作テスト。後で消す
-  app.post '/api/twitterTest', (req, res) ->
-    twitterTest(req.body.user)
-    .then (data) ->
-      console.log 'twitterTest data = ', data
-      res.json data: data
+  # # APIの動作テスト。後で消す
+  # app.post '/api/twitterTest', (req, res) ->
+  #   twitterTest(req.body.user)
+  #   .then (data) ->
+  #     console.log 'twitterTest data = ', data
+  #     res.json data: data
 
-  # APIの動作テスト(おもに投稿関連)。後で消す
-  app.post '/api/twitterPostTest', (req, res) ->
-    twitterPostTest(req.body.user)
-    .then (data) ->
-      # console.log 'twitterPostTest data = ', data
+  # # APIの動作テスト(おもに投稿関連)。後で消す
+  # app.post '/api/twitterPostTest', (req, res) ->
+  #   twitterPostTest(req.body.user)
+  #   .then (data) ->
+  #     # console.log 'twitterPostTest data = ', data
+  #     res.json data: data
+
+  app.post '/api/findUserById', (req, res) ->
+    console.log "\n============> findUserById in API\n"
+    UserProvider.findUserById
+      # twitterIdStr: req.body.twitterIdStr
+      twitterIdStr: req.session.passport.user._json.id_str
+    , (err, data) ->
       res.json data: data
 
   # GET リストの情報(公開、非公開)
@@ -109,16 +98,11 @@ module.exports = (app) ->
       console.log '/api/timeline/:id/:count data.length = ', data.length
       res.json data: data
 
-  # GET アプリ上の仮想的なタイムラインの情報 ( = Amatsuka リスト)
-  # まず、Amatsukaリストの存在を確認
-  # あれば、それを返すだけ。
-
   # user情報を取得
   app.get '/api/users/show/:id', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)
     twitterClient.showUsers
       twitterIdStr: req.params.id
-      # screenName: req.params.screenName
     .then (data) ->
       res.json data: data
 

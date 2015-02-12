@@ -19,6 +19,13 @@ module.exports = (app) ->
     res.redirect "/"
     return
 
+  app.get '/isAuthenticated', (req, res) ->
+    sessionUserData = null
+    unless _.isUndefined req.session.passport.user
+      sessionUserData = req.session.passport.user
+    res.json data: sessionUserData
+    return
+
   # serve index and view partials
   app.get '/', (req, res) ->
     res.render "index"

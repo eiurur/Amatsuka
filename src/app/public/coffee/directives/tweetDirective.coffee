@@ -137,15 +137,13 @@ angular.module "myApp.directives"
         $rootScope.$broadcast 'isOpened', true
 
         domUserSidebar = angular.element(document).find('.user-sidebar')
+
         # user-sidebarが開かれた状態で呼び出し。
-        # TODO
-        # console.log domUserSidebar[0].className.indexOf '.user-sidebar-in'
         isOpenedSidebar = domUserSidebar[0].className.indexOf('.user-sidebar-in') isnt -1
         if isOpenedSidebar
           console.log '-in もってる'
           do showTweet
           return
-
 
         # 初回(サイドバーは見えない状態が初期状態)
         domUserSidebar.addClass('user-sidebar-in')
@@ -153,7 +151,6 @@ angular.module "myApp.directives"
         body.addClass('scrollbar-y-hidden')
         layer = angular.element(document).find('.layer')
         layer.addClass('fullscreen-overlay')
-
         do showTweet
 
         # サイドバーを閉じる
@@ -162,8 +159,6 @@ angular.module "myApp.directives"
           layer.removeClass('fullscreen-overlay')
           domUserSidebar.removeClass('user-sidebar-in')
           $rootScope.$broadcast 'isClosed', true
-
-
 
 
   # 動かなくなった。

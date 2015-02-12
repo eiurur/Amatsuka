@@ -162,7 +162,7 @@ angular.module("myApp.directives", []).directive('boxLoading', ["$interval", fun
       element.on('mouseenter', function() {
         var imageLayer;
         imageLayer = angular.element(document).find('.image-layer');
-        html = "<img src=\"" + attrs.imgSrc + ":orig\" class=\"image-layer__img image-layer__img--hidden\" />";
+        html = "<img\n  src=\"" + attrs.imgSrc + ":orig\"\n  class=\"image-layer__img image-layer__img--hidden\" />";
         return imageLayer.html(html);
       });
       return element.on('click', function() {
@@ -343,21 +343,19 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$log", 
     return;
   }
   console.log('Member AuthService.user = ', AuthService.user);
-  ls = localStorage;
-  maxId = maxId || 0;
   $scope.limitNum = 10;
-  $scope.listIdStr = JSON.parse(ls.getItem('amatsukaList')) || {};
-  $scope.amatsukaMemberList = JSON.parse(ls.getItem('amatsukaFollowList')) || [];
+  $scope.listIdStr = null;
+  $scope.amatsukaMemberList = null;
   if (!(_.isEmpty(TweetService.amatsukaList.data) || _.isEmpty(TweetService.amatsukaList.member))) {
-    console.time('TweetService.amatsukaList.data.id_str');
     $scope.listIdStr = TweetService.amatsukaList.data.id_str;
-    console.timeEnd('TweetService.amatsukaList.data.id_str');
-    console.time('nomarlizeMembers');
     $scope.amatsukaMemberList = TweetService.nomarlizeMembers(TweetService.amatsukaList.member);
-    console.timeEnd('nomarlizeMembers');
-    $scope.limitNum = 100000;
+    $scope.limitNum = 10000;
     return;
   }
+  maxId = maxId || 0;
+  ls = localStorage;
+  $scope.listIdStr = JSON.parse(ls.getItem('amatsukaList')) || {};
+  $scope.amatsukaMemberList = JSON.parse(ls.getItem('amatsukaFollowList')) || [];
   console.time('getListsList');
   return TweetService.getListsList().then(function(data) {
     var amatsukaList;
@@ -372,9 +370,7 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$log", 
       listIdStr: amatsukaList.id_str
     });
   }).then(function(data) {
-    var membersNormalized;
-    membersNormalized = TweetService.nomarlizeMembers(data.data.users);
-    $scope.amatsukaMemberList = membersNormalized;
+    $scope.amatsukaMemberList = TweetService.nomarlizeMembers(data.data.users);
     TweetService.amatsukaList.member = data.data.users;
     console.timeEnd('getListsMembers');
     return $scope.limitNum = 100000;
@@ -445,7 +441,7 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
   });
 }]);
 
-angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootScope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $rootScope, $log, AuthService, TweetService, Tweets) {
+angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootScope", "AuthService", "TweetService", "Tweets", function($scope, $rootScope, AuthService, TweetService, Tweets) {
   var amatsukaFollowList, amatsukaList, init, ls, maxId, params;
   if (_.isEmpty(AuthService.user)) {
     return;
@@ -806,11 +802,11 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
 
 angular.module("myApp.services").service("AuthService", ["$http", function($http) {
   return {
+    isAuthenticated: function() {
+      return $http.get("/isAuthenticated");
+    },
     findUserById: function(twitterIdStr) {
       return $http.post("/api/findUserById", twitterIdStr);
-    },
-    isAuthenticated: function() {
-      return $http.get("/api/isAuthenticated");
     },
     status: {
       isAuthenticated: false

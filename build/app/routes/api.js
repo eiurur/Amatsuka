@@ -22,26 +22,6 @@
   settings = process.env.NODE_ENV === 'production' ? require(dir + 'configs/production') : require(dir + 'configs/development');
 
   module.exports = function(app) {
-    app.get('/api/isAuthenticated', function(req, res) {
-      var sessionUserData;
-      sessionUserData = null;
-      if (!_.isUndefined(req.session.passport.user)) {
-        sessionUserData = req.session.passport.user;
-      }
-      return res.json({
-        data: sessionUserData
-      });
-    });
-    app.post('/api/findUserById', function(req, res) {
-      console.log("\n============> findUserById in API\n");
-      return UserProvider.findUserById({
-        twitterIdStr: req.body.twitterIdStr
-      }, function(err, data) {
-        return res.json({
-          data: data
-        });
-      });
-    });
     app.use('/api/?', function(req, res, next) {
       console.log("======> " + req.originalUrl);
       if (!_.isUndefined(req.session.passport.user)) {
@@ -50,16 +30,11 @@
         return res.redirect('/');
       }
     });
-    app.post('/api/twitterTest', function(req, res) {
-      return twitterTest(req.body.user).then(function(data) {
-        console.log('twitterTest data = ', data);
-        return res.json({
-          data: data
-        });
-      });
-    });
-    app.post('/api/twitterPostTest', function(req, res) {
-      return twitterPostTest(req.body.user).then(function(data) {
+    app.post('/api/findUserById', function(req, res) {
+      console.log("\n============> findUserById in API\n");
+      return UserProvider.findUserById({
+        twitterIdStr: req.session.passport.user._json.id_str
+      }, function(err, data) {
         return res.json({
           data: data
         });

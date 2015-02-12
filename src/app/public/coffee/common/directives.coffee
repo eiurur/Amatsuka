@@ -95,7 +95,9 @@ angular.module "myApp.directives", []
       element.on 'mouseenter', ->
         imageLayer = angular.element(document).find('.image-layer')
         html = """
-          <img src="#{attrs.imgSrc}:orig" class="image-layer__img image-layer__img--hidden" />
+          <img
+            src="#{attrs.imgSrc}:orig"
+            class="image-layer__img image-layer__img--hidden" />
           """
         imageLayer.html html
         # console.log 'imageLayer', imageLayer
