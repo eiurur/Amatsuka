@@ -32,6 +32,25 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   return $locationProvider.html5Mode(true);
 }]);
 
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
+
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
     $log.info('location changin to: ' + next);
@@ -282,25 +301,6 @@ angular.module("myApp.services", []).service("CommonService", function() {
   };
 });
 
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
-
 angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "Tweets", function($scope, $location, AuthService, TweetService, Tweets) {
   var ls, maxId, params;
   if (_.isEmpty(AuthService.user)) {
@@ -341,7 +341,10 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthServi
   if (_.isEmpty(AuthService.user)) {
     return;
   }
-  return console.log('List AuthService.user = ', AuthService.user);
+  console.log('List AuthService.user = ', AuthService.user);
+  return TweetService.getListsList().then(function(data) {
+    return $scope.lists = data.data;
+  }).then(data);
 }]);
 
 angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $log, AuthService, TweetService, Tweets) {
