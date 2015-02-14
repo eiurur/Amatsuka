@@ -16,6 +16,7 @@ exports.serve = ->
     morgan         = require 'morgan'
     passport       = require 'passport'
     session        = require 'express-session'
+    compression    = require 'compression'
     MongoStore     = require('connect-mongo')(session)
 
     options =
@@ -30,6 +31,7 @@ exports.serve = ->
       )
 
     app = express()
+    app.disable 'x-powered-by'
     app.set 'port', process.env.PORT or settings.PORT
     app.set 'views', __dirname + '/views'
     app.set 'view engine', 'jade'
@@ -39,6 +41,7 @@ exports.serve = ->
     app.use bodyParser.urlencoded(extended: true)
     app.use methodOverride()
     app.use session(options)
+    app.use compression()
     app.use passport.initialize()
     app.use passport.session()
     app.use express.static(path.join(__dirname, 'public'))
@@ -72,7 +75,6 @@ exports.serve = ->
     TwitterStrategy = require('passport-twitter').Strategy
     {UserProvider}  = require '../lib/model'
 
-    # Passport sessionのセットアップ
     passport.serializeUser (user, done) ->
       done null, user
       return
@@ -81,7 +83,6 @@ exports.serve = ->
       done null, obj
       return
 
-    # PassportでTwitterStrategyを使うための設定
     passport.use new TwitterStrategy
       consumerKey: settings.TW_CK
       consumerSecret: settings.TW_CS
@@ -97,10 +98,8 @@ exports.serve = ->
         done null, profile
       return
 
-    # Twitterの認証
     app.get '/auth/twitter', passport.authenticate('twitter')
 
-    # Twitterからのcallback
     app.get '/auth/twitter/callback', passport.authenticate 'twitter',
       successRedirect: '/'
       failureRedirect: '/'

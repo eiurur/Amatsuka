@@ -83,10 +83,6 @@ module.exports =
       'bower_components/angular-route/angular-route.min.js'
       'bower_components/angular-animate/angular-animate.min.js'
       'bower_components/angular-sanitize/angular-sanitize.min.js'
-      'bower_components/angular-touch/angular-touch.min.js'
-      'bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js'
-      'bower_components/angular-loading-bar/build/loading-bar.min.js'
-      'bower_components/angular-bootstrap-lightbox/dist/angular-bootstrap-lightbox.min.js'
     ]
     dest: dest + app_public + "/js/vendors/"
 
