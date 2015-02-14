@@ -1,11 +1,12 @@
 {
   "name": "Amatsuka",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "eiurur",
   "description": "",
   "private": true,
   "main": "app.js",
   "scripts": {
+    "clean": "gulp clean",
     "build": "gulp build",
     "run": "gulp",
     "start": "nodemon build/app.js"
@@ -15,6 +16,7 @@
     "body-parser": "^1.0.2",
     "bunyan": "^1.0.0",
     "cheerio": "^0.18.0",
+    "compression": "^1.4.0",
     "connect-cache-manifest": "^0.2.0",
     "connect-mongo": "^0.4.1",
     "connect-redis": "^2.1.0",
