@@ -30,6 +30,22 @@ exports.serve = ->
         auto_reconnect: true
       )
 
+    cacheOptions =
+      dotfiles: 'ignore'
+      etag: false
+      extensions: [
+        'htm'
+        'html'
+        'css'
+        'js'
+      ]
+      index: false
+      maxAge: 0
+      redirect: false
+      setHeaders: (res, path, stat) ->
+        res.set 'x-timestamp': Date.now()
+        return
+
     app = express()
     app.disable 'x-powered-by'
     app.set 'port', process.env.PORT or settings.PORT
@@ -44,7 +60,7 @@ exports.serve = ->
     app.use compression()
     app.use passport.initialize()
     app.use passport.session()
-    app.use express.static(path.join(__dirname, 'public'))
+    app.use express.static(path.join(__dirname, 'public'), cacheOptions)
 
     env = process.env.NODE_ENV or 'development'
 
