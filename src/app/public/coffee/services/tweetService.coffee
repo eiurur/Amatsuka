@@ -1,37 +1,6 @@
 angular.module "myApp.services"
-  .service "TweetService", ($http, $q) ->
+  .service "TweetService", ($http, $q, $injector) ->
 
-    ###
-    AmatsukaMember 系
-    TODO:
-      分割したほうがいい。
-    ###
-    amatsukaList:
-      data: []
-      member: {}
-
-    registerMember2LocalStorage: ->
-      ls = localStorage
-      ls.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
-
-    # HACK:
-    # member objectをまま引数にしたかったけど
-    # 大部分のコードがtwitterIdStrになってるので
-    # twitterIdStrを引数とする。
-    addMember: (twitterIdStr) ->
-      @showUsers(twitterIdStr: twitterIdStr)
-      .then (data) =>
-        @amatsukaList.member.push data.data
-        do @registerMember2LocalStorage
-
-    removeMember: (twitterIdStr) ->
-      @amatsukaList.member = _.reject(@amatsukaList.member, 'id_str': twitterIdStr)
-      do @registerMember2LocalStorage
-
-
-    ###
-    Tweet系
-    ####
     activateLink: (t) ->
       t.replace(
         ///
@@ -58,18 +27,6 @@ angular.module "myApp.services"
       return @.replace 'normal', 'bigger' if _.isUndefined url
       url.replace 'normal', 'bigger'
 
-    isFollow: (target, isRT = true) ->
-      if _.has target, 'user'
-        # tweetのデータを基に判定
-        # console.log 'target = ', target
-        # console.log 'tweet isFollow boolean = ', !!_.findWhere(@amatsukaList.member, 'id_str': @get(target, 'user.id_str', isRT))
-        !!_.findWhere(@amatsukaList.member, 'id_str': @get(target, 'user.id_str', isRT))
-      else
-        # userの～
-        # console.log 'target = ', target
-        # console.log 'user isFollow boolean = ', !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
-        !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
-
 
     hasOrigParameter: (tweet) ->
       console.log tweet
@@ -85,11 +42,12 @@ angular.module "myApp.services"
 
     nomalizeTweets: (tweets) ->
       # do =>
+      ListService = $injector.get 'ListService'
       _.each tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
         # @hasOrigParameter tweet
         tweet.isRT = isRT
-        tweet.followStatus = @isFollow(tweet, isRT)
+        tweet.followStatus = ListService.isFollow(tweet, isRT)
         tweet.text       = @activateLink(tweet.text)
         tweet.time       = @fromNow(@get(tweet, 'tweet.created_at', false))
         tweet.retweetNum = @get(tweet, 'tweet.retweet_count', isRT)
@@ -99,19 +57,6 @@ angular.module "myApp.services"
         tweet.picOrigUrl = @get(tweet, 'media_url:orig', isRT)
         tweet.user.profile_image_url =
           @iconBigger(tweet.user.profile_image_url)
-
-    # 今のところ、Member.jadeｄふぇ使う関数なので isFollow を全部　true　にしても構わない
-    nomarlizeMembers: (members) ->
-      _.each members, (member) =>
-        member.followStatus      = true
-        member.description       = @activateLink(member.description)
-        member.profile_image_url = @iconBigger(member.profile_image_url)
-
-    nomarlizeMember: (member) ->
-      member.followStatus      = @isFollow(member)
-      member.description       = @activateLink(member.description)
-      member.profile_image_url = @iconBigger(member.profile_image_url)
-      member
 
     get: (tweet, key, isRT) ->
       t = if isRT then tweet.retweeted_status else tweet
@@ -128,8 +73,12 @@ angular.module "myApp.services"
           t.entities?.hashtags # TODO: 一個しか取れない
         when 'media_url'
           t.entities?.media?[0].media_url # TODO: 一枚しか取れない
+        when 'media_url_https'
+          t.entities?.media?[0].media_url_https # TODO: 一枚しか取れない
         when 'media_url:orig'
           t.entities?.media?[0].media_url+':orig' # TODO: 一枚しか取れない
+        when 'media_url_https:orig'
+          t.entities?.media?[0].media_url_https+':orig' # TODO: 一枚しか取れない
         when 'name' then t.user.name
         when 'profile_banner_url' then t.user.profile_banner_url
         when 'profile_image_url' then t.user.profile_image_url

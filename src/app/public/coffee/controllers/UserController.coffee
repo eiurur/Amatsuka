@@ -2,9 +2,9 @@ angular.module "myApp.controllers"
   .controller "UserCtrl", (
     $scope
     $rootScope
-    $log
     AuthService
     TweetService
+    ListService
     Tweets
     ) ->
   return if _.isEmpty AuthService.user
@@ -13,9 +13,9 @@ angular.module "myApp.controllers"
 
   $scope.$on 'userData', (event, args) ->
     return unless $scope.isOpened
-    console.log TweetService.amatsukaList
-    $scope.user = TweetService.nomarlizeMember args
-    $scope.listIdStr = TweetService.amatsukaList.data.id_str
+    console.log ListService.amatsukaList
+    $scope.user = ListService.nomarlizeMember args
+    $scope.listIdStr = ListService.amatsukaList.data.id_str
 
   $scope.$on 'tweetData', (event, args) ->
     return unless $scope.isOpened

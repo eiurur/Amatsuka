@@ -1,11 +1,9 @@
 # Factories
 angular.module "myApp.factories", []
-  .factory 'Tweets', ($http, $q, TweetService) ->
+  .factory 'Tweets', ($http, $q, TweetService, ListService) ->
 
     class Tweets
-
-    class Tweets
-      constructor: (items, maxId, type, twitterIdStr) ->
+      constructor: (items, maxId = undefined, type, twitterIdStr) ->
         @busy  　= false
         @isLast　= false
         @method = null
@@ -26,7 +24,7 @@ angular.module "myApp.factories", []
         else if @type is 'fav'
           @method = TweetService.getFavLists(twitterIdStr: @twitterIdStr, maxId: @maxId, count: @count)
         else
-          @method = TweetService.getListsStatuses(listIdStr: TweetService.amatsukaList.data.id_str, maxId: @maxId, count: @count)
+          @method = TweetService.getListsStatuses(listIdStr: ListService.amatsukaList.data.id_str, maxId: @maxId, count: @count)
 
         @busy = true
         console.time 'get'
@@ -46,7 +44,7 @@ angular.module "myApp.factories", []
           itemsImageOnly = TweetService.filterIncludeImage data.data
           console.timeEnd 'filterIncludeImage'
           console.time 'nomalizeTweets'
-          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, TweetService.amatsukaList.member)
+          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member)
           console.timeEnd 'nomalizeTweets'
           itemsNomalized
         .then (itemsNomalized) =>
