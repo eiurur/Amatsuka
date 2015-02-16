@@ -11,9 +11,9 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   }).when('/fav', {
     templateUrl: 'partials/fav',
     controller: 'FavCtrl'
-  }).when('/settings', {
-    templateUrl: 'partials/settings',
-    controller: 'SettingsCtrl'
+  }).when('/config', {
+    templateUrl: 'partials/config',
+    controller: 'ConfigCtrl'
   }).when("/logout", {
     redirectTo: "/"
   }).when("http://127.0.0.1:4040/auth/twitter/callback", {
@@ -177,16 +177,13 @@ angular.module("myApp.directives", []).directive('boxLoading', ["$interval", fun
   };
 }]);
 
-angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetService", function($http, $q, TweetService) {
+angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetService", "ListService", function($http, $q, TweetService, ListService) {
   var Tweets;
   Tweets = (function() {
-    function Tweets() {}
-
-    return Tweets;
-
-  })();
-  Tweets = (function() {
     function Tweets(items, maxId, type, twitterIdStr) {
+      if (maxId == null) {
+        maxId = void 0;
+      }
       this.busy = false;
       this.isLast　 = false;
       this.method = null;
@@ -219,7 +216,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
         });
       } else {
         this.method = TweetService.getListsStatuses({
-          listIdStr: TweetService.amatsukaList.data.id_str,
+          listIdStr: ListService.amatsukaList.data.id_str,
           maxId: this.maxId,
           count: this.count
         });
@@ -244,7 +241,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
           itemsImageOnly = TweetService.filterIncludeImage(data.data);
           console.timeEnd('filterIncludeImage');
           console.time('nomalizeTweets');
-          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, TweetService.amatsukaList.member);
+          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member);
           console.timeEnd('nomalizeTweets');
           return itemsNomalized;
         };
@@ -291,36 +288,30 @@ angular.module("myApp.services", []).service("CommonService", function() {
   };
 });
 
-angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "Tweets", function($scope, $location, AuthService, TweetService, Tweets) {
-  var ls, maxId, params;
+angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "AuthService", "TweetService", "ConfigService", "Tweets", function($scope, AuthService, TweetService, ConfigService, Tweets) {
+  if (_.isEmpty(AuthService.user)) {
+    return;
+  }
+  return $scope.toggleDisplayFormat = ConfigService.toggleDisplayFormat;
+}]);
+
+angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, Tweets) {
+  var ls;
   if (_.isEmpty(AuthService.user)) {
     return;
   }
   ls = localStorage;
-  maxId = maxId || 0;
   $scope.isLoaded = false;
-  TweetService.amatsukaList = {
+  ListService.amatsukaList = {
     data: JSON.parse(ls.getItem('amatsukaList')) || {},
     member: JSON.parse(ls.getItem('amatsukaFollowList')) || []
   };
-  console.log('TweetService.amatsukaList = ', TweetService.amatsukaList);
-  if (_.isEmpty(TweetService.amatsukaList.data) && _.isEmpty(TweetService.amatsukaList.member)) {
+  if (!ListService.hasListData()) {
     console.log('Go /fav to /');
     $location.path('/');
   }
-  params = {
-    twitterIdStr: AuthService.user._json.id_str,
-    count: 20
-  };
-  TweetService.getFavLists(params).then(function(data) {
-    var tweetsNomalized, tweetsOnlyImage;
-    maxId = TweetService.decStrNum(_.last(data.data).id_str);
-    tweetsOnlyImage = TweetService.filterIncludeImage(data.data);
-    tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage);
-    $scope.listIdStr = TweetService.amatsukaList.data.id_str;
-    $scope.tweets = new Tweets(tweetsNomalized, maxId, 'fav', AuthService.user._json.id_str);
-    return $scope.isLoaded = true;
-  });
+  $scope.tweets = new Tweets([], void 0, 'fav', AuthService.user._json.id_str);
+  $scope.isLoaded = true;
   return $scope.$on('addMember', function(event, args) {
     console.log('addMember on ', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
@@ -337,47 +328,32 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthServi
   }).then(data);
 }]);
 
-angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $log, AuthService, TweetService, Tweets) {
-  var ls, maxId;
+angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthService", "TweetService", "ListService", function($scope, AuthService, TweetService, ListService) {
+  var ls;
   if (_.isEmpty(AuthService.user)) {
     return;
   }
-  console.log('Member AuthService.user = ', AuthService.user);
   $scope.limitNum = 10;
   $scope.listIdStr = null;
   $scope.amatsukaMemberList = null;
-  if (!(_.isEmpty(TweetService.amatsukaList.data) || _.isEmpty(TweetService.amatsukaList.member))) {
-    $scope.listIdStr = TweetService.amatsukaList.data.id_str;
-    $scope.amatsukaMemberList = TweetService.nomarlizeMembers(TweetService.amatsukaList.member);
+  if (ListService.hasListData()) {
+    $scope.listIdStr = ListService.amatsukaList.data.id_str;
+    $scope.amatsukaMemberList = ListService.nomarlizeMembers(ListService.amatsukaList.member);
     $scope.limitNum = 10000;
     return;
   }
-  maxId = maxId || 0;
   ls = localStorage;
   $scope.listIdStr = JSON.parse(ls.getItem('amatsukaList')) || {};
   $scope.amatsukaMemberList = JSON.parse(ls.getItem('amatsukaFollowList')) || [];
-  console.time('getListsList');
-  return TweetService.getListsList().then(function(data) {
-    var amatsukaList;
-    amatsukaList = _.findWhere(data.data, {
-      'name': 'Amatsuka'
-    });
-    $scope.listIdStr = amatsukaList.id_str;
-    console.timeEnd('getListsList');
-    TweetService.amatsukaList.data = amatsukaList;
-    console.time('getListsMembers');
-    return TweetService.getListsMembers({
-      listIdStr: amatsukaList.id_str
-    });
-  }).then(function(data) {
-    $scope.amatsukaMemberList = TweetService.nomarlizeMembers(data.data.users);
-    TweetService.amatsukaList.member = data.data.users;
-    console.timeEnd('getListsMembers');
+  return ListService.update().then(function(users) {
+    console.log(users);
+    $scope.listIdStr = ListService.amatsukaList.data.id_str;
+    $scope.amatsukaMemberList = ListService.nomarlizeMembers(users);
     return $scope.limitNum = 100000;
   });
 }]);
 
-angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "$log", "AuthService", "TweetService", "Tweets", function($scope, $rootScope, $log, AuthService, TweetService, Tweets) {
+angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, AuthService, TweetService, ListService, Tweets) {
   if (_.isEmpty(AuthService.user)) {
     return;
   }
@@ -386,9 +362,9 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     if (!$scope.isOpened) {
       return;
     }
-    console.log(TweetService.amatsukaList);
-    $scope.user = TweetService.nomarlizeMember(args);
-    return $scope.listIdStr = TweetService.amatsukaList.data.id_str;
+    console.log(ListService.amatsukaList);
+    $scope.user = ListService.nomarlizeMember(args);
+    return $scope.listIdStr = ListService.amatsukaList.data.id_str;
   });
   $scope.$on('tweetData', function(event, args) {
     var maxId, tweetsNomalized, tweetsOnlyImage;
@@ -441,488 +417,37 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
   });
 }]);
 
-angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootScope", "AuthService", "TweetService", "Tweets", function($scope, $rootScope, AuthService, TweetService, Tweets) {
-  var amatsukaFollowList, amatsukaList, init, ls, maxId, params;
+angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootScope", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, AuthService, TweetService, ListService, Tweets) {
+  var ls;
   if (_.isEmpty(AuthService.user)) {
     return;
   }
-  $scope.isLoaded = false;
   ls = localStorage;
-  maxId = maxId || 0;
-  amatsukaList = JSON.parse(ls.getItem('amatsukaList')) || {};
-  amatsukaFollowList = JSON.parse(ls.getItem('amatsukaFollowList')) || [];
-  TweetService.amatsukaList = {
+  $scope.isLoaded = false;
+  ListService.amatsukaList = {
     data: JSON.parse(ls.getItem('amatsukaList')) || {},
     member: JSON.parse(ls.getItem('amatsukaFollowList')) || []
   };
-  console.log('TweetService.amatsukaList = ', TweetService.amatsukaList);
-  $rootScope.amatsukaFollowList = amatsukaFollowList;
-  if (!(_.isEmpty(TweetService.amatsukaList.data) || _.isEmpty(TweetService.amatsukaList.member))) {
-    params = {
-      listIdStr: amatsukaList.id_str,
-      count: 20
-    };
-    TweetService.getListsStatuses(params).then(function(data) {
-      var tweetsNomalized, tweetsOnlyImage;
-      maxId = TweetService.decStrNum(_.last(data.data).id_str);
-      tweetsOnlyImage = TweetService.filterIncludeImage(data.data);
-      tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage);
-      $scope.listIdStr = amatsukaList.id_str;
-      $scope.tweets = new Tweets(tweetsNomalized, maxId);
-      $scope.isLoaded = true;
-      return TweetService.getListsList();
-    }).then(function(data) {
-      amatsukaList = _.findWhere(data.data, {
-        'name': 'Amatsuka'
-      });
-      $scope.listIdStr = amatsukaList.id_str;
-      ls.setItem('amatsukaList', JSON.stringify(amatsukaList));
-      return TweetService.getListsMembers({
-        listIdStr: amatsukaList.id_str
-      });
-    }).then(function(data) {
-      amatsukaFollowList = data.data.users;
-      return ls.setItem('amatsukaFollowList', JSON.stringify(amatsukaFollowList));
-    });
+  if (ListService.hasListData()) {
+    $scope.tweets = new Tweets([]);
+    ListService.update();
+    $scope.listIdStr = ListService.amatsukaList.data.id_str;
+    $scope.isLoaded = true;
     return;
   }
-  console.time('getListsList');
-  TweetService.getListsList().then(function(data) {
-    amatsukaList = _.findWhere(data.data, {
-      'name': 'Amatsuka'
-    });
-    $scope.listIdStr = amatsukaList.id_str;
-    ls.setItem('amatsukaList', JSON.stringify(amatsukaList));
-    console.timeEnd('getListsList');
-    console.time('getListsMembers');
-    return TweetService.getListsMembers({
-      listIdStr: amatsukaList.id_str
-    });
-  }).then(function(data) {
-    console.table(data.data.users);
-    amatsukaFollowList = data.data.users;
-    ls.setItem('amatsukaFollowList', JSON.stringify(amatsukaFollowList));
-    console.timeEnd('getListsMembers');
-    return TweetService.getListsStatuses({
-      listIdStr: amatsukaList.id_str,
-      maxId: maxId,
-      count: 50
-    });
-  }).then(function(data) {
-    var tweetsNomalized, tweetsOnlyImage;
-    console.time('newTweets');
-    maxId = TweetService.decStrNum(_.last(data.data).id_str);
-    tweetsOnlyImage = TweetService.filterIncludeImage(data.data);
-    tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage, amatsukaFollowList);
-    $scope.tweets = new Tweets(tweetsNomalized, maxId);
-    return console.timeEnd('newTweets');
+  ListService.update().then(function(data) {
+    return $scope.tweets = new Tweets([]);
   })["catch"](function(error) {
     console.log(error);
-    if (error.message === "Cannot read property 'id_str' of undefined") {
-      console.log('id_str');
-      return init();
-    }
-  });
-  init = function() {
-    params = {
-      name: 'Amatsuka',
-      mode: 'private'
-    };
-    return TweetService.createLists(params).then(function(data) {
-      $scope.listIdStr = data.data.id_str;
-      TweetService.amatsukaList.data = data.data;
-      ls.setItem('amatsukaList', JSON.stringify(data.data));
-      params = {
-        listIdStr: data.data.id_str,
-        twitterIdStr: void 0
-      };
-      return TweetService.createAllListsMembers(params);
-    }).then(function(data) {
-      return TweetService.getListsMembers({
-        listIdStr: data.data.id_str
-      });
-    }).then(function(data) {
-      TweetService.amatsukaList.member = data.data.users;
-      ls.setItem('amatsukaFollowList', JSON.stringify(data.data.users));
-      params = {
-        listIdStr: TweetService.amatsukaList.data.id_str,
-        maxId: maxId,
-        count: 50
-      };
-      return TweetService.getListsStatuses(params);
-    }).then(function(data) {
-      var tweets, tweetsNomalized;
-      maxId = TweetService.decStrNum(_.last(data.data).id_str);
-      tweets = TweetService.filterIncludeImage(data.data);
-      tweetsNomalized = TweetService.nomalizeTweets(tweets);
-      $scope.tweets = new Tweets(tweetsNomalized, maxId);
+    return ListService.init().then(function(data) {
+      $scope.tweets = new Tweets([]);
       return $scope.isLoaded = true;
     });
-  };
-  $scope.$on('newTweet', function(event, args) {
-    var newTweetsOnlyImage, tweetsNomalized;
-    console.log('newTweet on ', args);
-    newTweetsOnlyImage = TweetService.filterIncludeImage(args);
-    console.table(newTweetsOnlyImage);
-    tweetsNomalized = TweetService.nomalizeTweets(newTweetsOnlyImage, amatsukaFollowList);
-    return $scope.tweets.items = _.uniq(_.union($scope.tweets.items, tweetsNomalized), 'id_str');
   });
   return $scope.$on('addMember', function(event, args) {
     console.log('addMember on ', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
-}]);
-
-angular.module("myApp.services").service("AuthService", ["$http", function($http) {
-  return {
-    isAuthenticated: function() {
-      return $http.get("/isAuthenticated");
-    },
-    findUserById: function(twitterIdStr) {
-      return $http.post("/api/findUserById", twitterIdStr);
-    },
-    status: {
-      isAuthenticated: false
-    },
-    user: {}
-  };
-}]);
-
-angular.module("myApp.services").service("TweetService", ["$http", "$q", function($http, $q) {
-  return {
-
-    /*
-    AmatsukaMember 系
-    TODO:
-      分割したほうがいい。
-     */
-    amatsukaList: {
-      data: [],
-      member: {}
-    },
-    registerMember2LocalStorage: function() {
-      var ls;
-      ls = localStorage;
-      return ls.setItem('amatsukaFollowList', JSON.stringify(this.amatsukaList.member));
-    },
-    addMember: function(twitterIdStr) {
-      return this.showUsers({
-        twitterIdStr: twitterIdStr
-      }).then((function(_this) {
-        return function(data) {
-          _this.amatsukaList.member.push(data.data);
-          return _this.registerMember2LocalStorage();
-        };
-      })(this));
-    },
-    removeMember: function(twitterIdStr) {
-      this.amatsukaList.member = _.reject(this.amatsukaList.member, {
-        'id_str': twitterIdStr
-      });
-      return this.registerMember2LocalStorage();
-    },
-
-    /*
-    Tweet系
-     */
-    activateLink: function(t) {
-      return t.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&amp;%@!&#45;\/]))?)/g, "<a href=\"$1\" target=\"_blank\">$1</a>").replace(/(^|\s)(@|＠)(\w+)/g, "$1<a href=\"http://www.twitter.com/$3\" target=\"_blank\">@$3</a>").replace(/(?:^|[^ーー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9&_\/>]+)[#＃]([ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z]+[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*)/g, ' <a href="http://twitter.com/search?q=%23$1" target="_blank">#$1</a>');
-    },
-    iconBigger: function(url) {
-      if (_.isUndefined(url)) {
-        return this.replace('normal', 'bigger');
-      }
-      return url.replace('normal', 'bigger');
-    },
-    isFollow: function(target, isRT) {
-      if (isRT == null) {
-        isRT = true;
-      }
-      if (_.has(target, 'user')) {
-        return !!_.findWhere(this.amatsukaList.member, {
-          'id_str': this.get(target, 'user.id_str', isRT)
-        });
-      } else {
-        return !!_.findWhere(this.amatsukaList.member, {
-          'id_str': target.id_str
-        });
-      }
-    },
-    hasOrigParameter: function(tweet) {
-      return console.log(tweet);
-    },
-    applyFollowStatusChange: function(tweets, twitterIdStr) {
-      console.log('applyFollowStatusChange tweets = ', tweets);
-      return _.map(tweets, (function(_this) {
-        return function(tweet) {
-          var id_str, isRT;
-          isRT = _.has(tweet, 'retweeted_status');
-          id_str = _this.get(tweet, 'user.id_str', isRT);
-          return tweet.followStatus = id_str === twitterIdStr ? true : false;
-        };
-      })(this));
-    },
-    nomalizeTweets: function(tweets) {
-      return _.each(tweets, (function(_this) {
-        return function(tweet) {
-          var isRT;
-          isRT = _.has(tweet, 'retweeted_status');
-          tweet.isRT = isRT;
-          tweet.followStatus = _this.isFollow(tweet, isRT);
-          tweet.text = _this.activateLink(tweet.text);
-          tweet.time = _this.fromNow(_this.get(tweet, 'tweet.created_at', false));
-          tweet.retweetNum = _this.get(tweet, 'tweet.retweet_count', isRT);
-          tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);
-          tweet.tweetIdStr = _this.get(tweet, 'tweet.id_str', isRT);
-          tweet.sourceUrl = _this.get(tweet, 'display_url', isRT);
-          tweet.picOrigUrl = _this.get(tweet, 'media_url:orig', isRT);
-          return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
-        };
-      })(this));
-    },
-    nomarlizeMembers: function(members) {
-      return _.each(members, (function(_this) {
-        return function(member) {
-          member.followStatus = true;
-          member.description = _this.activateLink(member.description);
-          return member.profile_image_url = _this.iconBigger(member.profile_image_url);
-        };
-      })(this));
-    },
-    nomarlizeMember: function(member) {
-      member.followStatus = this.isFollow(member);
-      member.description = this.activateLink(member.description);
-      member.profile_image_url = this.iconBigger(member.profile_image_url);
-      return member;
-    },
-    get: function(tweet, key, isRT) {
-      var t, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
-      t = isRT ? tweet.retweeted_status : tweet;
-      switch (key) {
-        case 'description':
-          return t.user.description;
-        case 'display_url':
-          return (_ref = t.entities) != null ? (_ref1 = _ref.media) != null ? _ref1[0].display_url : void 0 : void 0;
-        case 'entities':
-          return t.entities;
-        case 'expanded_url':
-          return (_ref2 = t.entities) != null ? (_ref3 = _ref2.media) != null ? _ref3[0].expanded_url : void 0 : void 0;
-        case 'followers_count':
-          return t.user.followers_count;
-        case 'friends_count':
-          return t.user.friends_count;
-        case 'hashtags':
-          return (_ref4 = t.entities) != null ? _ref4.hashtags : void 0;
-        case 'media_url':
-          return (_ref5 = t.entities) != null ? (_ref6 = _ref5.media) != null ? _ref6[0].media_url : void 0 : void 0;
-        case 'media_url:orig':
-          return ((_ref7 = t.entities) != null ? (_ref8 = _ref7.media) != null ? _ref8[0].media_url : void 0 : void 0) + ':orig';
-        case 'name':
-          return t.user.name;
-        case 'profile_banner_url':
-          return t.user.profile_banner_url;
-        case 'profile_image_url':
-          return t.user.profile_image_url;
-        case 'statuses_count':
-          return t.user.statuses_count;
-        case 'screen_name':
-          return t.user.screen_name;
-        case 'source':
-          return t.source;
-        case 'text':
-          return t.text;
-        case 'timestamp_ms':
-          return t.timestamp_ms;
-        case 'tweet.created_at':
-          return t.created_at;
-        case 'tweet.favorite_count':
-          return t.favorite_count;
-        case 'tweet.retweet_count':
-          return t.retweet_count;
-        case 'tweet.id_str':
-          return t.id_str;
-        case 'tweet.lang':
-          return t.lang;
-        case 'user.created_at':
-          return t.user.created_at;
-        case 'user.id_str':
-          return t.user.id_str;
-        case 'user.favorite_count':
-          return t.favorite_count;
-        case 'user.retweet_count':
-          return t.retweet_count;
-        case 'user.lang':
-          return t.user.lang;
-        case 'user.url':
-          return t.user.url;
-        default:
-          return null;
-      }
-    },
-    decStrNum: function(n) {
-      var i, result;
-      n = n.toString();
-      result = n;
-      i = n.length - 1;
-      while (i > -1) {
-        if (n[i] === '0') {
-          result = result.substring(0, i) + '9' + result.substring(i + 1);
-          i--;
-        } else {
-          result = result.substring(0, i) + (parseInt(n[i], 10) - 1).toString() + result.substring(i + 1);
-          return result;
-        }
-      }
-      return result;
-    },
-    fromNow: function(time) {
-      return moment(time).fromNow(true);
-    },
-    filterIncludeImage: function(tweets) {
-      return _.reject(tweets, function(tweet) {
-        return !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
-      });
-    },
-    twitterTest: function(user) {
-      return new Promise(function(resolve, reject) {
-        return $http.post('/api/twitterTest', {
-          user: user
-        }).success(function(data) {
-          console.log('twitterTest in service data = ', data);
-          return resolve(data);
-        });
-      });
-    },
-    twitterPostTest: function(user) {
-      return new Promise(function(resolve, reject) {
-        return $http.post('/api/twitterPostTest', {
-          user: user
-        }).success(function(data) {
-          console.log('twitterPostTest in service data = ', data);
-          return resolve(data);
-        });
-      });
-    },
-
-    /*
-    List
-     */
-    getListsList: function() {
-      return $q(function(resolve, reject) {
-        return $http.get('/api/lists/list').success(function(data) {
-          console.table(data.data);
-          return resolve(data);
-        });
-      });
-    },
-    createLists: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.post('/api/lists/create', params).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-    getListsMembers: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.get("/api/lists/members/" + params.listIdStr + "/" + params.count).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-    getListsStatuses: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-    createListsMembers: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/create", params).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-    createAllListsMembers: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/create_all", params).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-    destroyListsMembers: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/destroy", params).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-
-    /*
-    Timleine
-     */
-    getUserTimeline: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-
-    /*
-    User
-     */
-    showUsers: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.get("/api/users/show/" + params.twitterIdStr).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-
-    /*
-    FAV
-     */
-    getFavLists: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.get("/api/favorites/lists/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-    createFav: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.post('/api/favorites/create', params).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-    destroyFav: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.post('/api/favorites/destroy', params).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-
-    /*
-    RT
-     */
-    retweetStatus: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.post('/api/statuses/retweet', params).success(function(data) {
-          return resolve(data);
-        });
-      });
-    },
-    destroyStatus: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.post('/api/statuses/destroy', params).success(function(data) {
-          return resolve(data);
-        });
-      });
-    }
-  };
 }]);
 
 angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
@@ -1146,6 +671,441 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
           $rootScope.$broadcast('newTweet', data.data);
           scope.text = '新着を読み込む';
           return scope.isProcessing = false;
+        });
+      });
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("AuthService", ["$http", function($http) {
+  return {
+    isAuthenticated: function() {
+      return $http.get("/isAuthenticated");
+    },
+    findUserById: function(twitterIdStr) {
+      return $http.post("/api/findUserById", twitterIdStr);
+    },
+    status: {
+      isAuthenticated: false
+    },
+    user: {}
+  };
+}]);
+
+angular.module("myApp.services").service("ConfigService", ["$http", function($http) {
+  return {
+    getDisplayFormat: (function(_this) {
+      return function() {
+        var ls;
+        ls = localStorage;
+        return _this.displayFormat = JSON.parse(ls.getItem('displayFormat')) || 'list';
+      };
+    })(this),
+    setDisplayFormat: (function(_this) {
+      return function() {
+        var ls;
+        ls = localStorage;
+        return ls.setItem('displayFormat', _this.displayFormat);
+      };
+    })(this),
+    toggleDisplayFormat: (function(_this) {
+      return function() {
+        return _this.displayFormat = _this.displayFormat === 'list' ? 'grid' : 'list';
+      };
+    })(this),
+    toggleIncludeRetweet: (function(_this) {
+      return function() {
+        return _this.isIncludeRetweet = !_this.isIncludeRetweet;
+      };
+    })(this),
+    displayFormat: 'list',
+    isIncludeRetweet: true
+  };
+}]);
+
+angular.module("myApp.services").service("ListService", ["$http", "$q", "TweetService", function($http, $q, TweetService) {
+  return {
+    amatsukaList: {
+      data: [],
+      member: {}
+    },
+    registerMember2LocalStorage: function() {
+      var ls;
+      ls = localStorage;
+      return ls.setItem('amatsukaFollowList', JSON.stringify(this.amatsukaList.member));
+    },
+    addMember: function(twitterIdStr) {
+      return TweetService.showUsers({
+        twitterIdStr: twitterIdStr
+      }).then((function(_this) {
+        return function(data) {
+          _this.amatsukaList.member.push(data.data);
+          return _this.registerMember2LocalStorage();
+        };
+      })(this));
+    },
+    removeMember: function(twitterIdStr) {
+      this.amatsukaList.member = _.reject(this.amatsukaList.member, {
+        'id_str': twitterIdStr
+      });
+      return this.registerMember2LocalStorage();
+    },
+    isFollow: function(target, isRT) {
+      if (isRT == null) {
+        isRT = true;
+      }
+      if (_.has(target, 'user')) {
+        return !!_.findWhere(this.amatsukaList.member, {
+          'id_str': TweetService.get(target, 'user.id_str', isRT)
+        });
+      } else {
+        return !!_.findWhere(this.amatsukaList.member, {
+          'id_str': target.id_str
+        });
+      }
+    },
+    nomarlizeMembers: function(members) {
+      return _.each(members, function(member) {
+        member.followStatus = true;
+        member.description = TweetService.activateLink(member.description);
+        return member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
+      });
+    },
+    nomarlizeMember: function(member) {
+      member.followStatus = this.isFollow(member);
+      member.description = TweetService.activateLink(member.description);
+      member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
+      return member;
+    },
+    update: function() {
+      var ls;
+      ls = localStorage;
+      return TweetService.getListsList().then((function(_this) {
+        return function(data) {
+          _this.amatsukaList.data = _.findWhere(data.data, {
+            'name': 'Amatsuka'
+          });
+          ls.setItem('amatsukaList', JSON.stringify(_this.amatsukaList.data));
+          return TweetService.getListsMembers({
+            listIdStr: _this.amatsukaList.data.id_str
+          });
+        };
+      })(this)).then((function(_this) {
+        return function(data) {
+          _this.amatsukaList.member = data.data.users;
+          ls.setItem('amatsukaFollowList', JSON.stringify(_this.amatsukaList.member));
+          return data.data.users;
+        };
+      })(this));
+    },
+    init: function() {
+      var ls, params;
+      ls = localStorage;
+      params = {
+        name: 'Amatsuka',
+        mode: 'private'
+      };
+      return TweetService.createLists(params).then((function(_this) {
+        return function(data) {
+          _this.amatsukaList.data = data.data;
+          ls.setItem('amatsukaList', JSON.stringify(data.data));
+          params = {
+            listIdStr: data.data.id_str,
+            twitterIdStr: void 0
+          };
+          return TweetService.createAllListsMembers(params);
+        };
+      })(this)).then(function(data) {
+        return TweetService.getListsMembers({
+          listIdStr: data.data.id_str
+        });
+      }).then((function(_this) {
+        return function(data) {
+          _this.amatsukaList.member = data.data.users;
+          ls.setItem('amatsukaFollowList', JSON.stringify(data.data.users));
+          return data.data.users;
+        };
+      })(this));
+    },
+    hasListData: function() {
+      return !(_.isEmpty(this.amatsukaList.data) && _.isEmpty(this.amatsukaList.member));
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injector", function($http, $q, $injector) {
+  return {
+    activateLink: function(t) {
+      return t.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&amp;%@!&#45;\/]))?)/g, "<a href=\"$1\" target=\"_blank\">$1</a>").replace(/(^|\s)(@|＠)(\w+)/g, "$1<a href=\"http://www.twitter.com/$3\" target=\"_blank\">@$3</a>").replace(/(?:^|[^ーー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9&_\/>]+)[#＃]([ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z]+[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*)/g, ' <a href="http://twitter.com/search?q=%23$1" target="_blank">#$1</a>');
+    },
+    iconBigger: function(url) {
+      if (_.isUndefined(url)) {
+        return this.replace('normal', 'bigger');
+      }
+      return url.replace('normal', 'bigger');
+    },
+    hasOrigParameter: function(tweet) {
+      return console.log(tweet);
+    },
+    applyFollowStatusChange: function(tweets, twitterIdStr) {
+      console.log('applyFollowStatusChange tweets = ', tweets);
+      return _.map(tweets, (function(_this) {
+        return function(tweet) {
+          var id_str, isRT;
+          isRT = _.has(tweet, 'retweeted_status');
+          id_str = _this.get(tweet, 'user.id_str', isRT);
+          return tweet.followStatus = id_str === twitterIdStr ? true : false;
+        };
+      })(this));
+    },
+    nomalizeTweets: function(tweets) {
+      var ListService;
+      ListService = $injector.get('ListService');
+      return _.each(tweets, (function(_this) {
+        return function(tweet) {
+          var isRT;
+          isRT = _.has(tweet, 'retweeted_status');
+          tweet.isRT = isRT;
+          tweet.followStatus = ListService.isFollow(tweet, isRT);
+          tweet.text = _this.activateLink(tweet.text);
+          tweet.time = _this.fromNow(_this.get(tweet, 'tweet.created_at', false));
+          tweet.retweetNum = _this.get(tweet, 'tweet.retweet_count', isRT);
+          tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);
+          tweet.tweetIdStr = _this.get(tweet, 'tweet.id_str', isRT);
+          tweet.sourceUrl = _this.get(tweet, 'display_url', isRT);
+          tweet.picOrigUrl = _this.get(tweet, 'media_url:orig', isRT);
+          return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
+        };
+      })(this));
+    },
+    get: function(tweet, key, isRT) {
+      var t, _ref, _ref1, _ref10, _ref11, _ref12, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+      t = isRT ? tweet.retweeted_status : tweet;
+      switch (key) {
+        case 'description':
+          return t.user.description;
+        case 'display_url':
+          return (_ref = t.entities) != null ? (_ref1 = _ref.media) != null ? _ref1[0].display_url : void 0 : void 0;
+        case 'entities':
+          return t.entities;
+        case 'expanded_url':
+          return (_ref2 = t.entities) != null ? (_ref3 = _ref2.media) != null ? _ref3[0].expanded_url : void 0 : void 0;
+        case 'followers_count':
+          return t.user.followers_count;
+        case 'friends_count':
+          return t.user.friends_count;
+        case 'hashtags':
+          return (_ref4 = t.entities) != null ? _ref4.hashtags : void 0;
+        case 'media_url':
+          return (_ref5 = t.entities) != null ? (_ref6 = _ref5.media) != null ? _ref6[0].media_url : void 0 : void 0;
+        case 'media_url_https':
+          return (_ref7 = t.entities) != null ? (_ref8 = _ref7.media) != null ? _ref8[0].media_url_https : void 0 : void 0;
+        case 'media_url:orig':
+          return ((_ref9 = t.entities) != null ? (_ref10 = _ref9.media) != null ? _ref10[0].media_url : void 0 : void 0) + ':orig';
+        case 'media_url_https:orig':
+          return ((_ref11 = t.entities) != null ? (_ref12 = _ref11.media) != null ? _ref12[0].media_url_https : void 0 : void 0) + ':orig';
+        case 'name':
+          return t.user.name;
+        case 'profile_banner_url':
+          return t.user.profile_banner_url;
+        case 'profile_image_url':
+          return t.user.profile_image_url;
+        case 'statuses_count':
+          return t.user.statuses_count;
+        case 'screen_name':
+          return t.user.screen_name;
+        case 'source':
+          return t.source;
+        case 'text':
+          return t.text;
+        case 'timestamp_ms':
+          return t.timestamp_ms;
+        case 'tweet.created_at':
+          return t.created_at;
+        case 'tweet.favorite_count':
+          return t.favorite_count;
+        case 'tweet.retweet_count':
+          return t.retweet_count;
+        case 'tweet.id_str':
+          return t.id_str;
+        case 'tweet.lang':
+          return t.lang;
+        case 'user.created_at':
+          return t.user.created_at;
+        case 'user.id_str':
+          return t.user.id_str;
+        case 'user.favorite_count':
+          return t.favorite_count;
+        case 'user.retweet_count':
+          return t.retweet_count;
+        case 'user.lang':
+          return t.user.lang;
+        case 'user.url':
+          return t.user.url;
+        default:
+          return null;
+      }
+    },
+    decStrNum: function(n) {
+      var i, result;
+      n = n.toString();
+      result = n;
+      i = n.length - 1;
+      while (i > -1) {
+        if (n[i] === '0') {
+          result = result.substring(0, i) + '9' + result.substring(i + 1);
+          i--;
+        } else {
+          result = result.substring(0, i) + (parseInt(n[i], 10) - 1).toString() + result.substring(i + 1);
+          return result;
+        }
+      }
+      return result;
+    },
+    fromNow: function(time) {
+      return moment(time).fromNow(true);
+    },
+    filterIncludeImage: function(tweets) {
+      return _.reject(tweets, function(tweet) {
+        return !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
+      });
+    },
+    twitterTest: function(user) {
+      return new Promise(function(resolve, reject) {
+        return $http.post('/api/twitterTest', {
+          user: user
+        }).success(function(data) {
+          console.log('twitterTest in service data = ', data);
+          return resolve(data);
+        });
+      });
+    },
+    twitterPostTest: function(user) {
+      return new Promise(function(resolve, reject) {
+        return $http.post('/api/twitterPostTest', {
+          user: user
+        }).success(function(data) {
+          console.log('twitterPostTest in service data = ', data);
+          return resolve(data);
+        });
+      });
+    },
+
+    /*
+    List
+     */
+    getListsList: function() {
+      return $q(function(resolve, reject) {
+        return $http.get('/api/lists/list').success(function(data) {
+          console.table(data.data);
+          return resolve(data);
+        });
+      });
+    },
+    createLists: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.post('/api/lists/create', params).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+    getListsMembers: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.get("/api/lists/members/" + params.listIdStr + "/" + params.count).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+    getListsStatuses: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+    createListsMembers: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.post("/api/lists/members/create", params).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+    createAllListsMembers: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.post("/api/lists/members/create_all", params).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+    destroyListsMembers: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.post("/api/lists/members/destroy", params).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+
+    /*
+    Timleine
+     */
+    getUserTimeline: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+
+    /*
+    User
+     */
+    showUsers: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.get("/api/users/show/" + params.twitterIdStr).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+
+    /*
+    FAV
+     */
+    getFavLists: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.get("/api/favorites/lists/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+    createFav: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.post('/api/favorites/create', params).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+    destroyFav: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.post('/api/favorites/destroy', params).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+
+    /*
+    RT
+     */
+    retweetStatus: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.post('/api/statuses/retweet', params).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+    destroyStatus: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.post('/api/statuses/destroy', params).success(function(data) {
+          return resolve(data);
         });
       });
     }

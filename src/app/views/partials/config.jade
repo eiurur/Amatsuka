@@ -1,0 +1,6 @@
+ul
+  li(ng-repeat='displayFormat in displayFormats')
+    label
+      | {{displayFormat}}
+      input(type='radio', ng-model='$parent.name', name='name', value='{{displayFormat}}', ng-change='toggleShowMode()')
+      //- input#showswitch(type='checkbox', name='showModeSwitch', ng-model="isOneDrawShow", ng-change="toggleShowMode()")

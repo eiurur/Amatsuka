@@ -23,9 +23,9 @@ angular.module('myApp', [
     .when '/fav',
       templateUrl: 'partials/fav'
       controller: 'FavCtrl'
-    .when '/settings',
-      templateUrl: 'partials/settings'
-      controller: 'SettingsCtrl'
+    .when '/config',
+      templateUrl: 'partials/config'
+      controller: 'ConfigCtrl'
     .when "/logout",
       redirectTo: "/"
     .when "http://127.0.0.1:4040/auth/twitter/callback",
