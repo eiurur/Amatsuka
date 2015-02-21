@@ -22,9 +22,11 @@ angular.module "myApp.controllers"
     if isSame
       console.log '同じ！１'
       $scope.tweets = new Tweets([])
-      ListService.update()
-      .then (data) ->
-        console.log 'ok'
+      do ->
+        ListService.update()
+        .then (data) ->
+          console.log 'ok'
+        return
       return
 
     console.log '違う'
@@ -37,7 +39,7 @@ angular.module "myApp.controllers"
       $scope.tweets = new Tweets([])
     .catch (error) ->
       console.info '2.2'
-      console.log error
+      console.error error
 
       # ログインユーザはAmatsuka Listを未作成(初ログイン)
       ListService.init()

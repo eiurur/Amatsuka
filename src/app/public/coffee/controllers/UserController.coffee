@@ -22,8 +22,8 @@ angular.module "myApp.controllers"
     maxId           = TweetService.decStrNum(_.last(args).id_str)
     tweetsOnlyImage = TweetService.filterIncludeImage args
     tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage)
-    console.log 'UserCrel tweetsNomalized = ', tweetsNomalized
-    $scope.tweets   = new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user.id_str)
+    $scope.tweets   =
+      new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user.id_str)
 
   $scope.$on 'isOpened', (event, args) ->
     $scope.isOpened = true

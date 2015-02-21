@@ -54,8 +54,7 @@ angular.module "myApp.directives"
       listIdStr: '@'
       twitterIdStr: '@'
       followStatus: '='
-    template:
-      '<span class="label label-default timeline__post--header--label">{{content}}</span>'
+    template: '<span class="label label-default timeline__post--header--label">{{content}}</span>'
     link: (scope, element, attrs) ->
       if scope.followStatus is false then scope.content = '+'
 

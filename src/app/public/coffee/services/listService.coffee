@@ -25,38 +25,39 @@ angular.module "myApp.services"
       do @registerMember2LocalStorage
 
     isFollow: (target, isRT = true) ->
+      targetIdStr = target.id_str
       if _.has target, 'user'
-        !!_.findWhere(@amatsukaList.member, 'id_str': TweetService.get(target, 'user.id_str', isRT))
-      else
-        !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
+        targetIdStr = TweetService.get(target, 'user.id_str', isRT)
+      !!_.findWhere(@amatsukaList.member, 'id_str': targetIdStr)
 
     # 今のところ、Member.jadeｄふぇ使う関数なので isFollow を全部　true　にしても構わない
     nomarlizeMembers: (members) ->
       _.each members, (member) ->
         member.followStatus      = true
         member.description       = TweetService.activateLink(member.description)
-        member.profile_image_url = TweetService.iconBigger(member.profile_image_url)
+        member.profile_image_url =
+         TweetService.iconBigger(member.profile_image_url)
 
     nomarlizeMember: (member) ->
       member.followStatus      = @isFollow(member)
       member.description       = TweetService.activateLink(member.description)
-      member.profile_image_url = TweetService.iconBigger(member.profile_image_url)
+      member.profile_image_url =
+        TweetService.iconBigger(member.profile_image_url)
       member
 
     update: ->
       ls = localStorage
-      console.log AuthService.user
       params = twitterIdStr: AuthService.user._json.id_str
       TweetService.getListsList(params)
       .then (data) =>
         @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
-        console.log @amatsukaList.data
         ls.setItem 'amatsukaList', JSON.stringify(@amatsukaList.data)
         TweetService.getListsMembers(listIdStr: @amatsukaList.data.id_str)
       .then (data) =>
         @amatsukaList.member = data.data.users
         ls.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
         data.data.users
+
     init: ->
       ls = localStorage
       # Flow:
@@ -82,14 +83,7 @@ angular.module "myApp.services"
       .then (data) ->
         oldList = JSON.parse(ls.getItem 'amatsukaList') || {}
         newList = _.findWhere(data.data, 'name': 'Amatsuka') || id_str: null
-
-        console.log oldList
-        console.log newList
-        console.log oldList.id_str is newList.id_str
         oldList.id_str is newList.id_str
-      # .catch (error) ->
-      #   console.log 'isReturnSameUser error '
-      #   reject false
 
     hasListData: ->
       !(_.isEmpty(@amatsukaList.data) and _.isEmpty(@amatsukaList.member))

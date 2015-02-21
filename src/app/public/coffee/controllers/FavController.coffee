@@ -9,8 +9,9 @@ angular.module "myApp.controllers"
     ) ->
   return if _.isEmpty AuthService.user
 
-  ls              = localStorage
   $scope.isLoaded = false
+
+  ls              = localStorage
   ListService.amatsukaList =
     data: JSON.parse(ls.getItem 'amatsukaList') || {}
     member: JSON.parse(ls.getItem 'amatsukaFollowList') || []
@@ -20,7 +21,8 @@ angular.module "myApp.controllers"
     console.log 'Go /fav to /'
     $location.path '/'
 
-  $scope.tweets    = new Tweets([], undefined, 'fav', AuthService.user._json.id_str)
+  $scope.tweets =
+   new Tweets([], undefined, 'fav', AuthService.user._json.id_str)
   $scope.isLoaded  = true
 
   $scope.$on 'addMember', (event, args) ->

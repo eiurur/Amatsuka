@@ -325,8 +325,8 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   if (_.isEmpty(AuthService.user)) {
     return;
   }
-  ls = localStorage;
   $scope.isLoaded = false;
+  ls = localStorage;
   ListService.amatsukaList = {
     data: JSON.parse(ls.getItem('amatsukaList')) || {},
     member: JSON.parse(ls.getItem('amatsukaFollowList')) || []
@@ -359,9 +359,11 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
     if (isSame) {
       console.log('同じ！１');
       $scope.tweets = new Tweets([]);
-      ListService.update().then(function(data) {
-        return console.log('ok');
-      });
+      (function() {
+        ListService.update().then(function(data) {
+          return console.log('ok');
+        });
+      })();
       return;
     }
     console.log('違う');
@@ -371,7 +373,7 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
       return $scope.tweets = new Tweets([]);
     })["catch"](function(error) {
       console.info('2.2');
-      console.log(error);
+      console.error(error);
       return ListService.init().then(function(data) {
         console.info('3');
         console.log('init');
@@ -447,7 +449,6 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     maxId = TweetService.decStrNum(_.last(args).id_str);
     tweetsOnlyImage = TweetService.filterIncludeImage(args);
     tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage);
-    console.log('UserCrel tweetsNomalized = ', tweetsNomalized);
     return $scope.tweets = new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user.id_str);
   });
   $scope.$on('isOpened', function(event, args) {
@@ -768,18 +769,17 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       return this.registerMember2LocalStorage();
     },
     isFollow: function(target, isRT) {
+      var targetIdStr;
       if (isRT == null) {
         isRT = true;
       }
+      targetIdStr = target.id_str;
       if (_.has(target, 'user')) {
-        return !!_.findWhere(this.amatsukaList.member, {
-          'id_str': TweetService.get(target, 'user.id_str', isRT)
-        });
-      } else {
-        return !!_.findWhere(this.amatsukaList.member, {
-          'id_str': target.id_str
-        });
+        targetIdStr = TweetService.get(target, 'user.id_str', isRT);
       }
+      return !!_.findWhere(this.amatsukaList.member, {
+        'id_str': targetIdStr
+      });
     },
     nomarlizeMembers: function(members) {
       return _.each(members, function(member) {
@@ -797,7 +797,6 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
     update: function() {
       var ls, params;
       ls = localStorage;
-      console.log(AuthService.user);
       params = {
         twitterIdStr: AuthService.user._json.id_str
       };
@@ -806,7 +805,6 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
           _this.amatsukaList.data = _.findWhere(data.data, {
             'name': 'Amatsuka'
           });
-          console.log(_this.amatsukaList.data);
           ls.setItem('amatsukaList', JSON.stringify(_this.amatsukaList.data));
           return TweetService.getListsMembers({
             listIdStr: _this.amatsukaList.data.id_str
@@ -863,9 +861,6 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
         }) || {
           id_str: null
         };
-        console.log(oldList);
-        console.log(newList);
-        console.log(oldList.id_str === newList.id_str);
         return oldList.id_str === newList.id_str;
       });
     },
