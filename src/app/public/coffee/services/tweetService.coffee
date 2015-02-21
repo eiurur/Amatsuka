@@ -111,7 +111,10 @@ angular.module "myApp.services"
           result = result.substring(0, i) + '9' + result.substring(i + 1)
           i--
         else
-          result = result.substring(0, i) + (parseInt(n[i], 10) - 1).toString() + result.substring(i + 1)
+          result =
+            result.substring(0, i) +
+            (parseInt(n[i], 10) - 1).toString() +
+            result.substring(i + 1)
           return result
       result
 
@@ -142,9 +145,9 @@ angular.module "myApp.services"
     ###
     List
     ###
-    getListsList: ->
+    getListsList: (params) ->
       return $q (resolve, reject) ->
-        $http.get('/api/lists/list')
+        $http.get("/api/lists/list/#{params.twitterIdStr}")
           .success (data) ->
             console.table data.data
             return resolve data

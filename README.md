@@ -37,7 +37,7 @@ Site
 
 <a href="http://amatsuka.herokuapp.com/" target="_blank">Amatsuka - heroku</a>
 
-TODO
+Feature
 ======
 
 - [x] Login with Twitter

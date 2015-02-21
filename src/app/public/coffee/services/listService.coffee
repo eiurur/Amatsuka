@@ -1,5 +1,5 @@
 angular.module "myApp.services"
-  .service "ListService", ($http, $q, TweetService) ->
+  .service "ListService", ($http, $q, AuthService, TweetService) ->
 
     amatsukaList:
       data: []
@@ -20,31 +20,35 @@ angular.module "myApp.services"
         do @registerMember2LocalStorage
 
     removeMember: (twitterIdStr) ->
-      @amatsukaList.member = _.reject(@amatsukaList.member, 'id_str': twitterIdStr)
+      @amatsukaList.member =
+        _.reject(@amatsukaList.member, 'id_str': twitterIdStr)
       do @registerMember2LocalStorage
 
     isFollow: (target, isRT = true) ->
+      targetIdStr = target.id_str
       if _.has target, 'user'
-        !!_.findWhere(@amatsukaList.member, 'id_str': TweetService.get(target, 'user.id_str', isRT))
-      else
-        !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
+        targetIdStr = TweetService.get(target, 'user.id_str', isRT)
+      !!_.findWhere(@amatsukaList.member, 'id_str': targetIdStr)
 
     # 今のところ、Member.jadeｄふぇ使う関数なので isFollow を全部　true　にしても構わない
     nomarlizeMembers: (members) ->
       _.each members, (member) ->
         member.followStatus      = true
         member.description       = TweetService.activateLink(member.description)
-        member.profile_image_url = TweetService.iconBigger(member.profile_image_url)
+        member.profile_image_url =
+         TweetService.iconBigger(member.profile_image_url)
 
     nomarlizeMember: (member) ->
       member.followStatus      = @isFollow(member)
       member.description       = TweetService.activateLink(member.description)
-      member.profile_image_url = TweetService.iconBigger(member.profile_image_url)
+      member.profile_image_url =
+        TweetService.iconBigger(member.profile_image_url)
       member
 
     update: ->
       ls = localStorage
-      TweetService.getListsList()
+      params = twitterIdStr: AuthService.user._json.id_str
+      TweetService.getListsList(params)
       .then (data) =>
         @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
         ls.setItem 'amatsukaList', JSON.stringify(@amatsukaList.data)
@@ -71,6 +75,15 @@ angular.module "myApp.services"
         @amatsukaList.member = data.data.users
         ls.setItem 'amatsukaFollowList', JSON.stringify(data.data.users)
         data.data.users
+
+    isReturnSameUser: ->
+      ls = localStorage
+      params = twitterIdStr: AuthService.user._json.id_str
+      TweetService.getListsList(params)
+      .then (data) ->
+        oldList = JSON.parse(ls.getItem 'amatsukaList') || {}
+        newList = _.findWhere(data.data, 'name': 'Amatsuka') || id_str: null
+        oldList.id_str is newList.id_str
 
     hasListData: ->
       !(_.isEmpty(@amatsukaList.data) and _.isEmpty(@amatsukaList.member))

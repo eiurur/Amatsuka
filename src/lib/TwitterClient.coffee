@@ -111,8 +111,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
       type: 'list'
       params:
         user_id: params.twitterIdStr || ''
-        scren_name: params.screenName || ''
-        count: params.count || settings.MAX_NUM_GET_LIST
+        count: ~~params.count || settings.MAX_NUM_GET_LIST
 
   # 自分の指定のリストのツイートを列挙
   getListsStatuses: (params) ->
