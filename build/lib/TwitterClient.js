@@ -147,8 +147,7 @@
         type: 'list',
         params: {
           user_id: params.twitterIdStr || '',
-          scren_name: params.screenName || '',
-          count: params.count || settings.MAX_NUM_GET_LIST
+          count: ~~params.count || settings.MAX_NUM_GET_LIST
         }
       });
     };

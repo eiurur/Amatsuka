@@ -54,7 +54,8 @@ angular.module "myApp.directives"
       listIdStr: '@'
       twitterIdStr: '@'
       followStatus: '='
-    template: '<span class="label label-default timeline__post--header--label">{{content}}</span>'
+    template:
+      '<span class="label label-default timeline__post--header--label">{{content}}</span>'
     link: (scope, element, attrs) ->
       if scope.followStatus is false then scope.content = '+'
 
@@ -139,7 +140,8 @@ angular.module "myApp.directives"
         domUserSidebar = angular.element(document).find('.user-sidebar')
 
         # user-sidebarが開かれた状態で呼び出し。
-        isOpenedSidebar = domUserSidebar[0].className.indexOf('.user-sidebar-in') isnt -1
+        isOpenedSidebar =
+          domUserSidebar[0].className.indexOf('.user-sidebar-in') isnt -1
         if isOpenedSidebar
           console.log '-in もってる'
           do showTweet

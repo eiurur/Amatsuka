@@ -142,9 +142,9 @@ angular.module "myApp.services"
     ###
     List
     ###
-    getListsList: ->
+    getListsList: (params) ->
       return $q (resolve, reject) ->
-        $http.get('/api/lists/list')
+        $http.get("/api/lists/list/#{params.twitterIdStr}")
           .success (data) ->
             console.table data.data
             return resolve data

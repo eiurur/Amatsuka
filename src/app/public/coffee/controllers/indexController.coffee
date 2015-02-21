@@ -9,42 +9,50 @@ angular.module "myApp.controllers"
     ) ->
   return if _.isEmpty AuthService.user
 
-  ls = localStorage
-  $scope.isLoaded = false
+  $scope.listIdStr = ''
+  $scope.isLoaded  = false
+
+  ls               = localStorage
   ListService.amatsukaList =
     data: JSON.parse(ls.getItem 'amatsukaList') || {}
     member: JSON.parse(ls.getItem 'amatsukaFollowList') || []
 
-  # 二回目以降のログイン
-  if ListService.hasListData()
-    $scope.tweets    = new Tweets([])
-    do ListService.update
+  ListService.isReturnSameUser()
+  .then (isSame) ->
+    if isSame
+      console.log '同じ！１'
+      $scope.tweets = new Tweets([])
+      ListService.update()
+      .then (data) ->
+        console.log 'ok'
+      return
+
+    console.log '違う'
+    ListService.update()
+    .then (data) ->
+      console.info '2.1'
+      console.log 'nnn data = ', data
+
+      # 別のユーザ再でログイン
+      $scope.tweets = new Tweets([])
+    .catch (error) ->
+      console.info '2.2'
+      console.log error
+
+      # ログインユーザはAmatsuka Listを未作成(初ログイン)
+      ListService.init()
+      .then (data) ->
+        console.info '3'
+        console.log 'init'
+        $scope.tweets = new Tweets([])
+
+  .finally ->
+    console.info '10'
+    console.log $scope.tweets
     $scope.listIdStr = ListService.amatsukaList.data.id_str
     $scope.isLoaded  = true
-    return
+    console.log '終わり'
 
-  ListService.update()
-  .then (data) ->
-    $scope.tweets = new Tweets([])
-  .catch (error) ->
-    console.log error
-    ListService.init()
-    .then (data) ->
-      $scope.tweets   = new Tweets([])
-      $scope.isLoaded = true
-
-
-  # 新着読み込みが押されたらツイートを新規に読み込む流れだけど
-  # 定期的にsince_id以降のツイートを読み込んで、新着があればボタンに○○件の新着がありますって文面を載せといて
-  # それが押されたら即反映のほうがユーザビリティ的によい。
-  # $scope.$on 'newTweet', (event, args) ->
-  #   console.log 'newTweet on ', args
-
-  #   newTweetsOnlyImage = TweetService.filterIncludeImage args
-  #   console.table newTweetsOnlyImage
-
-  #   tweetsNomalized = TweetService.nomalizeTweets(newTweetsOnlyImage, amatsukaFollowList)
-  #   $scope.tweets.items = _.uniq(_.union($scope.tweets.items, tweetsNomalized), 'id_str')
 
   $scope.$on 'addMember', (event, args) ->
     console.log 'addMember on ', args

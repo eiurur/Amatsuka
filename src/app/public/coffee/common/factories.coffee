@@ -17,6 +17,8 @@ angular.module "myApp.factories", []
         [@items][0].push tweet
 
       nextPage: ->
+        console.log @busy
+        console.log @isLast
         return if @busy or @isLast
 
         if @type is 'user_timeline'

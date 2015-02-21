@@ -1,5 +1,5 @@
 angular.module "myApp.services"
-  .service "ListService", ($http, $q, TweetService) ->
+  .service "ListService", ($http, $q, AuthService, TweetService) ->
 
     amatsukaList:
       data: []
@@ -20,7 +20,8 @@ angular.module "myApp.services"
         do @registerMember2LocalStorage
 
     removeMember: (twitterIdStr) ->
-      @amatsukaList.member = _.reject(@amatsukaList.member, 'id_str': twitterIdStr)
+      @amatsukaList.member =
+        _.reject(@amatsukaList.member, 'id_str': twitterIdStr)
       do @registerMember2LocalStorage
 
     isFollow: (target, isRT = true) ->
@@ -44,16 +45,18 @@ angular.module "myApp.services"
 
     update: ->
       ls = localStorage
-      TweetService.getListsList()
+      console.log AuthService.user
+      params = twitterIdStr: AuthService.user._json.id_str
+      TweetService.getListsList(params)
       .then (data) =>
         @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
+        console.log @amatsukaList.data
         ls.setItem 'amatsukaList', JSON.stringify(@amatsukaList.data)
         TweetService.getListsMembers(listIdStr: @amatsukaList.data.id_str)
       .then (data) =>
         @amatsukaList.member = data.data.users
         ls.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
         data.data.users
-
     init: ->
       ls = localStorage
       # Flow:
@@ -71,6 +74,22 @@ angular.module "myApp.services"
         @amatsukaList.member = data.data.users
         ls.setItem 'amatsukaFollowList', JSON.stringify(data.data.users)
         data.data.users
+
+    isReturnSameUser: ->
+      ls = localStorage
+      params = twitterIdStr: AuthService.user._json.id_str
+      TweetService.getListsList(params)
+      .then (data) ->
+        oldList = JSON.parse(ls.getItem 'amatsukaList') || {}
+        newList = _.findWhere(data.data, 'name': 'Amatsuka') || id_str: null
+
+        console.log oldList
+        console.log newList
+        console.log oldList.id_str is newList.id_str
+        oldList.id_str is newList.id_str
+      # .catch (error) ->
+      #   console.log 'isReturnSameUser error '
+      #   reject false
 
     hasListData: ->
       !(_.isEmpty(@amatsukaList.data) and _.isEmpty(@amatsukaList.member))
