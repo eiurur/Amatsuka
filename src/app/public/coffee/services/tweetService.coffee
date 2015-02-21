@@ -37,8 +37,8 @@ angular.module "myApp.services"
       _.map tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
         id_str = @get(tweet, 'user.id_str', isRT)
-        tweet.followStatus = if id_str is twitterIdStr then true else false
-
+        if id_str is twitterIdStr
+          tweet.followStatus = true
 
     nomalizeTweets: (tweets) ->
       # do =>

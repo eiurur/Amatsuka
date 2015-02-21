@@ -57,5 +57,5 @@ angular.module "myApp.controllers"
 
 
   $scope.$on 'addMember', (event, args) ->
-    console.log 'addMember on ', args
+    console.log 'index addMember on ', args
     TweetService.applyFollowStatusChange $scope.tweets.items, args

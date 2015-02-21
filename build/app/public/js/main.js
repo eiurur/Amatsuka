@@ -338,7 +338,7 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   $scope.tweets = new Tweets([], void 0, 'fav', AuthService.user._json.id_str);
   $scope.isLoaded = true;
   return $scope.$on('addMember', function(event, args) {
-    console.log('addMember on ', args);
+    console.log('fav addMember on ', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
 }]);
@@ -388,7 +388,7 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
     return console.log('終わり');
   });
   return $scope.$on('addMember', function(event, args) {
-    console.log('addMember on ', args);
+    console.log('index addMember on ', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
 }]);
@@ -437,7 +437,6 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     if (!$scope.isOpened) {
       return;
     }
-    console.log(ListService.amatsukaList);
     $scope.user = ListService.nomarlizeMember(args);
     return $scope.listIdStr = ListService.amatsukaList.data.id_str;
   });
@@ -463,7 +462,7 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     if (_.isUndefined($scope.tweets)) {
       return;
     }
-    console.log('addMember on', args);
+    console.log('user addMember on', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
 }]);
@@ -605,7 +604,7 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         if (scope.followStatus === true) {
           element[0].innerText = 'フォロー';
           TweetService.destroyListsMembers(opts).then(function(data) {
-            TweetService.removeMember(scope.twitterIdStr);
+            ListService.removeMember(scope.twitterIdStr);
             return scope.isProcessing = false;
           });
         }
@@ -891,7 +890,9 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           var id_str, isRT;
           isRT = _.has(tweet, 'retweeted_status');
           id_str = _this.get(tweet, 'user.id_str', isRT);
-          return tweet.followStatus = id_str === twitterIdStr ? true : false;
+          if (id_str === twitterIdStr) {
+            return tweet.followStatus = true;
+          }
         };
       })(this));
     },
