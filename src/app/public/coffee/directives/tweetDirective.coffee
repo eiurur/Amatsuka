@@ -47,7 +47,7 @@ angular.module "myApp.directives"
               scope.retweetNum += 1
               scope.retweeted = !scope.retweeted
 
-  .directive 'followable', ($rootScope, TweetService) ->
+  .directive 'followable', ($rootScope, ListService, TweetService) ->
     restrict: 'E'
     replace: true
     scope:
@@ -77,11 +77,11 @@ angular.module "myApp.directives"
           element.fadeOut(200)
           TweetService.createListsMembers(opts)
           .then (data) ->
-            TweetService.addMember(scope.twitterIdStr)
+            ListService.addMember(scope.twitterIdStr)
             $rootScope.$broadcast 'addMember', scope.twitterIdStr
             console.log 'E followable createListsMembers data', data
 
-  .directive 'followable', ($rootScope, TweetService) ->
+  .directive 'followable', ($rootScope, ListService, TweetService) ->
     restrict: 'A'
     scope:
       listIdStr: '@'
@@ -110,7 +110,7 @@ angular.module "myApp.directives"
           element[0].innerText = 'フォロー解除'
           TweetService.createListsMembers(opts)
           .then (data) ->
-            TweetService.addMember(scope.twitterIdStr)
+            ListService.addMember(scope.twitterIdStr)
             $rootScope.$broadcast 'addMember', scope.twitterIdStr
             scope.isProcessing = false
 
