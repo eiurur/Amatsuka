@@ -355,9 +355,8 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
     data: JSON.parse(ls.getItem('amatsukaList')) || {},
     member: JSON.parse(ls.getItem('amatsukaFollowList')) || []
   };
-  ListService.isReturnSameUser().then(function(isSame) {
+  ListService.isSameUser().then(function(isSame) {
     if (isSame) {
-      console.log('同じ！１');
       $scope.tweets = new Tweets([]);
       (function() {
         ListService.update().then(function(data) {
@@ -366,23 +365,15 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
       })();
       return;
     }
-    console.log('違う');
     return ListService.update().then(function(data) {
-      console.info('2.1');
-      console.log('nnn data = ', data);
       return $scope.tweets = new Tweets([]);
     })["catch"](function(error) {
-      console.info('2.2');
-      console.error(error);
       return ListService.init().then(function(data) {
-        console.info('3');
-        console.log('init');
         return $scope.tweets = new Tweets([]);
       });
     });
   })["finally"](function() {
     console.info('10');
-    console.log($scope.tweets);
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
     $scope.isLoaded = true;
     return console.log('終わり');
@@ -846,7 +837,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
         };
       })(this));
     },
-    isReturnSameUser: function() {
+    isSameUser: function() {
       var ls, params;
       ls = localStorage;
       params = {

@@ -17,10 +17,9 @@ angular.module "myApp.controllers"
     data: JSON.parse(ls.getItem 'amatsukaList') || {}
     member: JSON.parse(ls.getItem 'amatsukaFollowList') || []
 
-  ListService.isReturnSameUser()
+  ListService.isSameUser()
   .then (isSame) ->
     if isSame
-      console.log '同じ！１'
       $scope.tweets = new Tweets([])
       do ->
         ListService.update()
@@ -29,28 +28,20 @@ angular.module "myApp.controllers"
         return
       return
 
-    console.log '違う'
     ListService.update()
     .then (data) ->
-      console.info '2.1'
-      console.log 'nnn data = ', data
 
-      # 別のユーザ再でログイン
+      # 別のユーザで再ログインしたとき
       $scope.tweets = new Tweets([])
     .catch (error) ->
-      console.info '2.2'
-      console.error error
 
-      # ログインユーザはAmatsuka Listを未作成(初ログイン)
+      # ログインユーザはAmatsuka Listを未作成(初ログイン)のとき
       ListService.init()
       .then (data) ->
-        console.info '3'
-        console.log 'init'
         $scope.tweets = new Tweets([])
 
   .finally ->
     console.info '10'
-    console.log $scope.tweets
     $scope.listIdStr = ListService.amatsukaList.data.id_str
     $scope.isLoaded  = true
     console.log '終わり'
