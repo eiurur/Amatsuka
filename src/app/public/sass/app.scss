@@ -57,6 +57,7 @@ body {
   font-weight: 400;
   margin-top: 0;
   line-height: 1.4;
+  padding-top: 70px;
 }
 
 ul {
@@ -68,8 +69,13 @@ ul {
 a {
   cursor: pointer;
 }
+
+
 // login
 @import "login";
+
+// Header
+@import "header";
 
 // Sidebar
 @import "sidebar";
@@ -79,7 +85,8 @@ a {
   // tinelineだけなら下のでよかった。
   // memberページを設けたところ、左側に大幅な空白ができたため、
   // timeline.scssで設定することにした。
-  padding-left: $sidebar-width + 85px + 21px;
+  // padding-left: $sidebar-width + 85px + 21px;
+
   // padding-left: $sidebar-width + 40px;
   padding-bottom: 30px;
   // padding-right: $sidebar-width + 40px;

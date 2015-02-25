@@ -3,22 +3,25 @@
     position: fixed;
     z-index: 10000;
     top: 0;
-    right: -$timeline__post--width - ($timeline__post--padding * 2);
+    right: 0;
+    // right: -$timeline__post--width - ($timeline__post--padding * 2);
 
     overflow-x: hidden;
     overflow-y: auto;
 
-    width: $timeline__post--width + ($timeline__post--padding * 2);
+    width: 80%;
+    max-width: 600px;
     height: 100%;
 
     transition: .3s ease;
+    transform: translate3d(100%, 0, 0);
 
     background: white;
 }
 
 .user-sidebar-in
 {
-    right: 0;
+    transform: translate3d(0, 0, 0);
 }
 
 .user-sidebar__btn-follow
@@ -31,7 +34,8 @@
 
 .user-sidebar__contents
 {
-    width: 620px;
+    // width: 620px;
+    width: 100%;
     margin: 0 auto;
     padding: 0;
 }
@@ -51,12 +55,10 @@
 }
 
 
-
-
-
 .user-sidebar__profile--description
 {
     font-size: .8em;
+    line-height: 1.8;
 
     padding-top: 20px;
 }
@@ -91,4 +93,13 @@
 .user-sidebar__contents--box-loading-init
 {
     padding: 0 20px 20px;
+}
+
+
+@media(max-width:480px)
+{
+    .user-sidebar
+    {
+        font-size: $font-size-percent-smartphone;
+    }
 }

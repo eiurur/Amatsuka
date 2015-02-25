@@ -29,3 +29,14 @@
     cursor: pointer;
   }
 }
+
+@mixin link {
+  a {
+    color: $link-color !important;
+    transition: .2s ease;
+    &:hover
+    {
+      color: white !important;
+    }
+  }
+}

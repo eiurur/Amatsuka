@@ -36,5 +36,6 @@ box-loading.user-sidebar__contents--box-loading-init(ng-if='!tweets.items', data
           a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
             i.fa.fa-download
 
-  box-loading.box-loading-padding-top(ng-if='tweets.busy', data-base='#a1a1a1', data-highlight='#292929')
-  .text-center(ng-show='tweets.isLast') 終わりです
+  .loading-bar
+    box-loading.box-loading-padding-top(ng-if='tweets.busy', data-base='#a1a1a1', data-highlight='#292929')
+    .text-center(ng-show='tweets.isLast') 終わりです
