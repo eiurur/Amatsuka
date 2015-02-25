@@ -896,7 +896,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           isRT = _.has(tweet, 'retweeted_status');
           tweet.isRT = isRT;
           tweet.followStatus = ListService.isFollow(tweet, isRT);
-          tweet.text = _this.activateLink(tweet.text);
+          tweet.text = _this.activateLink(_this.get(tweet, 'text', isRT));
           tweet.time = _this.fromNow(_this.get(tweet, 'tweet.created_at', false));
           tweet.retweetNum = _this.get(tweet, 'tweet.retweet_count', isRT);
           tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);

@@ -48,7 +48,7 @@ angular.module "myApp.services"
         # @hasOrigParameter tweet
         tweet.isRT = isRT
         tweet.followStatus = ListService.isFollow(tweet, isRT)
-        tweet.text       = @activateLink(tweet.text)
+        tweet.text       = @activateLink(@get(tweet, 'text', isRT))
         tweet.time       = @fromNow(@get(tweet, 'tweet.created_at', false))
         tweet.retweetNum = @get(tweet, 'tweet.retweet_count', isRT)
         tweet.favNum     = @get(tweet, 'tweet.favorite_count', isRT)
