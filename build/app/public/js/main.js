@@ -338,7 +338,7 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   $scope.tweets = new Tweets([], void 0, 'fav', AuthService.user._json.id_str);
   $scope.isLoaded = true;
   return $scope.$on('addMember', function(event, args) {
-    console.log('addMember on ', args);
+    console.log('fav addMember on ', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
 }]);
@@ -355,9 +355,8 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
     data: JSON.parse(ls.getItem('amatsukaList')) || {},
     member: JSON.parse(ls.getItem('amatsukaFollowList')) || []
   };
-  ListService.isReturnSameUser().then(function(isSame) {
+  ListService.isSameUser().then(function(isSame) {
     if (isSame) {
-      console.log('同じ！１');
       $scope.tweets = new Tweets([]);
       (function() {
         ListService.update().then(function(data) {
@@ -366,29 +365,21 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
       })();
       return;
     }
-    console.log('違う');
     return ListService.update().then(function(data) {
-      console.info('2.1');
-      console.log('nnn data = ', data);
       return $scope.tweets = new Tweets([]);
     })["catch"](function(error) {
-      console.info('2.2');
-      console.error(error);
       return ListService.init().then(function(data) {
-        console.info('3');
-        console.log('init');
         return $scope.tweets = new Tweets([]);
       });
     });
   })["finally"](function() {
     console.info('10');
-    console.log($scope.tweets);
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
     $scope.isLoaded = true;
     return console.log('終わり');
   });
   return $scope.$on('addMember', function(event, args) {
-    console.log('addMember on ', args);
+    console.log('index addMember on ', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
 }]);
@@ -437,7 +428,6 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     if (!$scope.isOpened) {
       return;
     }
-    console.log(ListService.amatsukaList);
     $scope.user = ListService.nomarlizeMember(args);
     return $scope.listIdStr = ListService.amatsukaList.data.id_str;
   });
@@ -463,7 +453,7 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     if (_.isUndefined($scope.tweets)) {
       return;
     }
-    console.log('addMember on', args);
+    console.log('user addMember on', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
 }]);
@@ -605,7 +595,7 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         if (scope.followStatus === true) {
           element[0].innerText = 'フォロー';
           TweetService.destroyListsMembers(opts).then(function(data) {
-            TweetService.removeMember(scope.twitterIdStr);
+            ListService.removeMember(scope.twitterIdStr);
             return scope.isProcessing = false;
           });
         }
@@ -847,7 +837,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
         };
       })(this));
     },
-    isReturnSameUser: function() {
+    isSameUser: function() {
       var ls, params;
       ls = localStorage;
       params = {
@@ -891,7 +881,9 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           var id_str, isRT;
           isRT = _.has(tweet, 'retweeted_status');
           id_str = _this.get(tweet, 'user.id_str', isRT);
-          return tweet.followStatus = id_str === twitterIdStr ? true : false;
+          if (id_str === twitterIdStr) {
+            return tweet.followStatus = true;
+          }
         };
       })(this));
     },
@@ -904,7 +896,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           isRT = _.has(tweet, 'retweeted_status');
           tweet.isRT = isRT;
           tweet.followStatus = ListService.isFollow(tweet, isRT);
-          tweet.text = _this.activateLink(tweet.text);
+          tweet.text = _this.activateLink(_this.get(tweet, 'text', isRT));
           tweet.time = _this.fromNow(_this.get(tweet, 'tweet.created_at', false));
           tweet.retweetNum = _this.get(tweet, 'tweet.retweet_count', isRT);
           tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);

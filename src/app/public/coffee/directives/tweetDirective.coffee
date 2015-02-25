@@ -103,7 +103,7 @@ angular.module "myApp.directives"
           element[0].innerText = 'フォロー'
           TweetService.destroyListsMembers(opts)
           .then (data) ->
-            TweetService.removeMember(scope.twitterIdStr)
+            ListService.removeMember(scope.twitterIdStr)
             scope.isProcessing = false
 
         if scope.followStatus is false

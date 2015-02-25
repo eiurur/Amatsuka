@@ -76,7 +76,7 @@ angular.module "myApp.services"
         ls.setItem 'amatsukaFollowList', JSON.stringify(data.data.users)
         data.data.users
 
-    isReturnSameUser: ->
+    isSameUser: ->
       ls = localStorage
       params = twitterIdStr: AuthService.user._json.id_str
       TweetService.getListsList(params)

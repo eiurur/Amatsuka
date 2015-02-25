@@ -1,195 +1,292 @@
-.timeline {
-  color: $link-color;
-  padding: 30px 0;
-  // padding: 30px 0 30px 66px;
-  width:  540px;
-  i {
+.timeline
+{
+    //width:  540px;
+    width: 100%;
+    // padding: 30px 0;
+    padding: 0 0 30px 85px; // icon 64px +  ixonとpostとのpadding 21 = 85px
+
     color: $link-color;
-  }
+    i
+    {
+        color: $link-color;
+    }
 }
 
-.timeline__post {
-  background: $timeline__post--bg-color;
-  border-radius: 3px;
-  font-size: $post--font-size;
-  margin: 0 0 20px 0;
-  padding-top: 15px;
-  position: relative;
-  width:  540px;
-}
+.timeline__post
+{
+    font-size: $post--font-size;
 
-.timeline__post--icon {
-  cursor: pointer;
-  position: absolute;
-  left: -85px;
-  top: 0px;
-  height: 64px;
-  width: 64px;
-  img {
+    position: relative;
+
+    max-width: $timeline__post--width;
+    margin: 0 0 20px 0;
+    padding-top: 15px;
+
     border-radius: 3px;
-    max-width: 64px;
-  }
+    background: $timeline__post--bg-color;
 }
 
-.timeline__post--header {
-  @include post_padding;
-  a {
+.timeline__post--icon
+{
+    position: absolute;
+    top: 0;
+    left: -$timeline__post--icon--left;
+
+    width: 64px;
+    height: 64px;
+
+    cursor: pointer;
+    img
+    {
+        max-width: 64px;
+
+        border-radius: 3px;
+    }
+}
+
+.timeline__post--header
+{
+    @include post_padding;
+    a
+    {
+        text-decoration: none;
+
+        color: $link-color;
+    }
+}
+
+.timeline__post--header--user
+{
+    cursor: pointer;
+}
+
+.timeline__post--header--label
+{
+    position: relative;
+    bottom: 2px;
+
+    margin-left: 5px;
+    padding: .1em .3em .3em;
+    // padding: .1em .3em .1em;
+
+    cursor: pointer;
+}
+
+.timeline__post--header--info
+{
+    display: inline-block;
+}
+
+.timeline__post--header--time
+{
+    display: inline-block;
+    float: right;
+}
+
+.timeline__post--header--rt_icon
+{
+    padding: 0 5px;
+}
+
+.timeline__post--header--rt_source
+{
+    cursor: pointer;
+}
+
+.timeline__post--image
+{
+    max-width: 100%;
+    padding: 15px 0;
+    img
+    {
+        width: $timeline__img--width;
+    }
+}
+
+.timeline__post--text
+{
+    // @include post_padding;
+    @include tweet-text;
+}
+
+.timeline__post--blockquote
+{
+    @include tweet-text;
+    blockquote
+    {
+        margin: 0;
+        padding: 0;
+
+        border-left: solid 4px rgba(0,0,0,.12);
+    }
+}
+
+.timeline__post--footer
+{
+    line-height: 45px;
+
+    display: table;
+
+    width: 100%;
+    height: 45px;
+
+    @include post_padding;
+}
+
+.timeline__post--footer--contents
+{
+    display: table-cell;
+
+    height: 45px;
+
+    vertical-align: middle;
+}
+
+.timeline__post--footer--contents--controls
+{
+    font-size: 120%;
+    font-weight: 600;
+
+    display: flex;
+    flex-direction: row;
+
+    height: 45px;
+
+    text-align: right;
+    white-space: nowrap;
+
     color: $link-color;
-    text-decoration: none;
-  }
-}
 
-.timeline__post--header--user {
-  cursor: pointer;
-}
-
-.timeline__post--header--label {
-  // padding: .1em .3em .1em;
-  cursor: pointer;
-  padding: .1em .3em .3em;
-  position: relative;
-  bottom: 2px;
-  margin-left: 5px;
-}
-
-.timeline__post--header--info {
-  display: inline-block;
-}
-
-.timeline__post--header--time {
-  display: inline-block;
-  float: right;
-}
-
-.timeline__post--header--rt_icon {
-  padding: 0 5px;
-}
-
-.timeline__post--header--rt_source {
-  cursor: pointer;
-}
-
-.timeline__post--image {
-  max-width: 100%;
-  padding: 15px 0;
-  img {
-    width: 540px;
-  }
-}
-
-.timeline__post--text {
-  // @include post_padding;
-  padding: 0 20px 10px;
-  color: $link-color;
-  line-height: 1.8;
-  a {
-    border-bottom: 1px solid lighten($link-color, 15%);
-    color: $link-color;
-    text-decoration: none;
-  }
-}
-
-.timeline__post--footer {
-  @include post_padding;
-  display: table;
-  line-height: 45px;
-  height: 45px;
-  width: 100%;
-}
-
-.timeline__post--footer--contents {
-  height: 45px;
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.timeline__post--footer--contents--controls {
-  color: $link-color;
-  font-size: 120%;
-  font-weight: 600;
-  height: 45px;
-
-  text-align: right;
-  white-space:  nowrap;
-  align-items: baseline;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+    align-items: baseline;
+    justify-content: space-between;
 }
 
 /**
  * Grid表示
  */
-.grid-container {
-  margin-left: -90px; // site-mainのmaegin-leftを相殺
+.grid-container
+{
+    margin-left: -90px; // site-mainのmaegin-leftを相殺
 }
 
-.grid-container__post {
-  display: inline-block;
+.grid-container__post
+{
+    display: inline-block;
 }
 
-.grid-container__post--header {
-  position: absolute;
-  height: 50px;
-  top: 0;
-  left: 0;
-  transition: 0.2s ease;
+.grid-container__post--header
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    height: 50px;
+
+    transition: .2s ease;
 }
 
-.cover {
-  cursor: pointer;
-  display: inline-block;
-  background-color: #ccc;
-  background-position: center center;
-  background-repeat: no-repeat;
-  margin: 3px;
-  width: 200px;
-  height: 200px;
-  background-size: cover;
+.cover
+{
+    display: inline-block;
+
+    width: 200px;
+    height: 200px;
+    margin: 3px;
+
+    cursor: pointer;
+
+    background-color: #ccc;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
 }
 
-figure {
-  position: relative;
-  overflow: hidden;
-  width: 200px;
+figure
+{
+    position: relative;
+
+    overflow: hidden;
+
+    width: 200px;
 }
 figcaption h3,
-figcaption .grid-container__post--footer--contents--controls {
-  position: absolute;
-  left: 0;
-  z-index: 2;
-  width: 100%;
-  height: 30px;
-  line-height: 30px;
-  background: rgba(0,0,0,.6);
-  -webkit-transition: .3s;
-  transition: .3s;
+figcaption .grid-container__post--footer--contents--controls
+{
+    line-height: 30px;
+
+    position: absolute;
+    z-index: 2;
+    left: 0;
+
+    width: 100%;
+    height: 30px;
+
+    -webkit-transition: .3s;
+            transition: .3s;
+
+    background: rgba(0,0,0,.6);
 }
-figcaption h3 {
-  top: -60px;
+figcaption h3
+{
+    top: -60px;
 }
 
-.grid-container__post--footer--contents {
-  display: table-cell;
-  vertical-align: middle;
-}
-.grid-container__post--footer--contents--controls {
-  bottom: -60px;
-  font-size: 80%;
-  padding: 0 10px;
+.grid-container__post--footer--contents
+{
+    display: table-cell;
 
-  color: $link-color;
-  font-weight: 600;
-  text-align: right;
-  white-space:  nowrap;
-  align-items: baseline;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+    vertical-align: middle;
 }
-figure:hover figcaption h3 {
-  top: -20px;
+.grid-container__post--footer--contents--controls
+{
+    font-size: 80%;
+    font-weight: 600;
+
+    bottom: -60px;
+
+    display: flex;
+    flex-direction: row;
+
+    padding: 0 10px;
+
+    text-align: right;
+    white-space: nowrap;
+
+    color: $link-color;
+
+    align-items: baseline;
+    justify-content: space-between;
 }
-figure:hover figcaption .grid-container__post--footer--contents--controls {
-  bottom: 0;
+figure:hover figcaption h3
+{
+    top: -20px;
+}
+figure:hover figcaption .grid-container__post--footer--contents--controls
+{
+    bottom: 0;
+}
+
+
+@media(max-width:480px)
+{
+    .timeline {
+      padding: 0 0 30px $timeline__post--icon--left - $timeline__post--icon--width-smartphone;
+    }
+
+    .timeline > .timeline__post *
+    {
+        font-size: $font-size-percent-smartphone;
+    }
+
+    .timeline__post--icon
+    {
+        left: -$timeline__post--icon--left + $timeline__post--icon--width-smartphone;
+
+        width: $timeline__post--icon--width-smartphone;
+        height: $timeline__post--icon--width-smartphone;
+        img
+        {
+            max-width: $timeline__post--icon--width-smartphone;
+        }
+    }
 }

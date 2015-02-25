@@ -15,3 +15,28 @@
   position: relative;
   top: 50%;
 }
+
+@mixin tweet-text {
+  padding: 0 20px 10px;
+  color: $link-color;
+  font-size: $post--font-size;
+  font-style: normal;
+  line-height: 1.8;
+  a {
+    border-bottom: 1px solid lighten($link-color, 15%);
+    color: $link-color;
+    text-decoration: none;
+    cursor: pointer;
+  }
+}
+
+@mixin link {
+  a {
+    color: $link-color !important;
+    transition: .2s ease;
+    &:hover
+    {
+      color: white !important;
+    }
+  }
+}
