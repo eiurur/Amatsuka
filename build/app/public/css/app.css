@@ -615,7 +615,9 @@ i {
 .timeline__post--footer--contents--controls {
   font-size: 120%;
   font-weight: 600;
+  display: -webkit-flex;
   display: flex;
+  -webkit-flex-direction: row;
   flex-direction: row;
   height: 45px;
   text-align: right;
@@ -790,11 +792,17 @@ figure:hover figcaption .grid-container__post--footer--contents--controls {
   max-width: 600px;
   height: 100%;
   transition: .3s ease;
+  -moz-transform: translate3d(100%, 0, 0);
+  -ms-transform: translate3d(100%, 0, 0);
+  -webkit-transform: translate3d(100%, 0, 0);
   transform: translate3d(100%, 0, 0);
   background: white;
 }
 
 .user-sidebar-in {
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
 }
 

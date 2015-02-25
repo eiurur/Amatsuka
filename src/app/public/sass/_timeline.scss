@@ -147,8 +147,8 @@
     font-size: 120%;
     font-weight: 600;
 
-    display: flex;
-    flex-direction: row;
+    @include display-flex;
+    @include flex-direction(row);
 
     height: 45px;
 

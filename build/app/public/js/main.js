@@ -1026,7 +1026,6 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
     getListsList: function(params) {
       return $q(function(resolve, reject) {
         return $http.get("/api/lists/list/" + params.twitterIdStr).success(function(data) {
-          console.table(data.data);
           return resolve(data);
         });
       });
