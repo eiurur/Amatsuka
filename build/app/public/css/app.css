@@ -154,6 +154,9 @@
   padding: 25px;
   cursor: pointer;
   transition: .24s;
+  -moz-transform: rotate(135deg);
+  -ms-transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
   transform: rotate(135deg);
   border: solid transparent;
   box-shadow: 1px -1px 0 0 #a1a1a1 inset;
@@ -425,6 +428,18 @@ a {
   border-radius: 100%;
 }
 
+.brand-name {
+  margin-right: 5px;
+}
+
+.logo-first {
+  font-size: 32px;
+}
+
+.logo-rest {
+  font-size: 15px;
+}
+
 i {
   font-size: 130%;
   margin-right: 5px;
@@ -571,6 +586,7 @@ i {
   font-size: 14px;
   font-style: normal;
   line-height: 1.8;
+  word-wrap: break-word;
 }
 .timeline__post--text a {
   border-bottom: 1px solid #c7c7c7;
@@ -585,6 +601,7 @@ i {
   font-size: 14px;
   font-style: normal;
   line-height: 1.8;
+  word-wrap: break-word;
 }
 .timeline__post--blockquote a {
   border-bottom: 1px solid #c7c7c7;

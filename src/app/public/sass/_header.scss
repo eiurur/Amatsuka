@@ -1,27 +1,48 @@
-.navbar-default {
-  background: transparentize($sidebar-color, .5);
-  @include link;
+.navbar-default
+{
+    background: transparentize($sidebar-color, .5);
+
+    @include link;
 }
 
-.navbar-nav-default {
-  @include link;
+.navbar-nav-default
+{
+    @include link;
 }
 
-.navbar-default .navbar-toggle {
-  background-color: $sidebar-color;
-  &:hover {
-
-  }
+.navbar-default .navbar-toggle
+{
+    background-color: $sidebar-color;
 }
 
-.menu-user {
-  img {
-    max-width: 20px;
-    @include round(100%);
-  }
+.menu-user
+{
+    img
+    {
+        max-width: 20px;
+
+        @include round(100%);
+    }
 }
 
-i {
-  font-size: 130%;
-  margin-right: 5px;
+.brand-name
+{
+    margin-right: 5px;
+}
+
+.logo-first
+{
+    font-size: 32px;
+}
+
+.logo-rest
+{
+    font-size: 15px;
+}
+
+i
+{
+    font-size: 130%;
+
+    margin-right: 5px;
 }

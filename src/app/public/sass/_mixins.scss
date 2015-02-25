@@ -22,6 +22,7 @@
   font-size: $post--font-size;
   font-style: normal;
   line-height: 1.8;
+  word-wrap: break-word;
   a {
     border-bottom: 1px solid lighten($link-color, 15%);
     color: $link-color;
