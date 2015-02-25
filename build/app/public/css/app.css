@@ -713,10 +713,6 @@ figure:hover figcaption .grid-container__post--footer--contents--controls {
     padding: 0 0 30px 53px;
   }
 
-  .timeline > .timeline__post * {
-    font-size: 70%;
-  }
-
   .timeline__post--icon {
     left: -53px;
     width: 32px;
