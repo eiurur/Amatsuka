@@ -142,13 +142,15 @@
      */
 
     TwitterClient.prototype.getListsList = function(params) {
+      var opts;
+      opts = {
+        user_id: params.twitterIdStr || '',
+        count: ~~params.count || settings.MAX_NUM_GET_LISTS_LIST
+      };
       return this.getViaAPI({
         method: 'lists',
         type: 'list',
-        params: {
-          user_id: params.twitterIdStr || '',
-          count: ~~params.count || settings.MAX_NUM_GET_LIST
-        }
+        params: opts
       });
     };
 
