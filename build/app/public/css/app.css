@@ -645,91 +645,15 @@ i {
   display: flex;
   -webkit-flex-direction: row;
   flex-direction: row;
+  -webkit-align-items: baseline;
   align-items: baseline;
+  -webkit-justify-content: space-between;
   justify-content: space-between;
 }
 
 /**
  * Grid表示
  */
-.grid-container {
-  margin-left: -90px;
-}
-
-.grid-container__post {
-  display: inline-block;
-}
-
-.grid-container__post--header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 50px;
-  transition: .2s ease;
-}
-
-.cover {
-  display: inline-block;
-  width: 200px;
-  height: 200px;
-  margin: 3px;
-  cursor: pointer;
-  background-color: #ccc;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
-}
-
-figure {
-  position: relative;
-  overflow: hidden;
-  width: 200px;
-}
-
-figcaption h3,
-figcaption .grid-container__post--footer--contents--controls {
-  line-height: 30px;
-  position: absolute;
-  z-index: 2;
-  left: 0;
-  width: 100%;
-  height: 30px;
-  -webkit-transition: .3s;
-  transition: .3s;
-  background: rgba(0, 0, 0, 0.6);
-}
-
-figcaption h3 {
-  top: -60px;
-}
-
-.grid-container__post--footer--contents {
-  display: table-cell;
-  vertical-align: middle;
-}
-
-.grid-container__post--footer--contents--controls {
-  font-size: 80%;
-  font-weight: 600;
-  bottom: -60px;
-  display: flex;
-  flex-direction: row;
-  padding: 0 10px;
-  text-align: right;
-  white-space: nowrap;
-  color: #a1a1a1;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-figure:hover figcaption h3 {
-  top: -20px;
-}
-
-figure:hover figcaption .grid-container__post--footer--contents--controls {
-  bottom: 0;
-}
-
 @media (max-width: 480px) {
   .timeline {
     padding: 0 0 30px 0;
