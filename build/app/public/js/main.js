@@ -399,13 +399,12 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthSer
   if (_.isEmpty(AuthService.user)) {
     return;
   }
-  $scope.limitNum = 10;
+  $scope.limitNum = 20;
   $scope.listIdStr = null;
   $scope.amatsukaMemberList = null;
   if (ListService.hasListData()) {
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
     $scope.amatsukaMemberList = ListService.nomarlizeMembers(ListService.amatsukaList.member);
-    $scope.limitNum = 10000;
     return;
   }
   ls = localStorage;
@@ -414,8 +413,7 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthSer
   return ListService.update().then(function(users) {
     console.log(users);
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
-    $scope.amatsukaMemberList = ListService.nomarlizeMembers(users);
-    return $scope.limitNum = 100000;
+    return $scope.amatsukaMemberList = ListService.nomarlizeMembers(users);
   });
 }]);
 
@@ -1026,6 +1024,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
     getListsList: function(params) {
       return $q(function(resolve, reject) {
         return $http.get("/api/lists/list/" + params.twitterIdStr).success(function(data) {
+          console.table(data.data);
           return resolve(data);
         });
       });

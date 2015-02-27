@@ -1,3 +1,5 @@
+@charset "utf-8";
+
 .timeline
 {
     //width:  540px;
@@ -117,7 +119,7 @@
         margin: 0;
         padding: 0;
 
-        border-left: solid 4px rgba(0,0,0,.12);
+        border-left: solid 2px rgba(0,0,0,.12);
     }
 }
 
@@ -147,9 +149,6 @@
     font-size: 120%;
     font-weight: 600;
 
-    @include display-flex;
-    @include flex-direction(row);
-
     height: 45px;
 
     text-align: right;
@@ -157,6 +156,8 @@
 
     color: $link-color;
 
+    @include display-flex;
+    @include flex-direction(row);
     align-items: baseline;
     justify-content: space-between;
 }
@@ -269,8 +270,16 @@ figure:hover figcaption .grid-container__post--footer--contents--controls
 
 @media(max-width:480px)
 {
-    .timeline {
-      padding: 0 0 30px $timeline__post--icon--left - $timeline__post--icon--width-smartphone;
+    .timeline
+    {
+        // アイコン表示するならこっち
+        // padding: 0 0 30px $timeline__post--icon--left - $timeline__post--icon--width-smartphone;
+        padding: 0 0 30px 0;
+    }
+
+    .timeline__post
+    {
+        padding-top: $timeline__post--padding-vertical;
     }
 
     // .timeline > .timeline__post *
@@ -278,9 +287,47 @@ figure:hover figcaption .grid-container__post--footer--contents--controls
     //     font-size: $font-size-percent-smartphone;
     // }
 
+    // スマホ用のtumblrっぽいレイアウトにするならこれ
+    .timeline__post--header
+    {
+        line-height: $timeline__post--icon--width-smartphone;
+
+        padding: 0 $timeline__post--padding-horizontal-smartphone;
+    }
+
+    .timeline__post--header--info
+    {
+        line-height: 30px;
+    }
+
+    .timeline__post--header--link
+    {
+        // 8 + 32 + 4 = 44px
+        margin-left: $timeline__post--padding-horizontal-smartphone + $timeline__post--icon--width-smartphone + 4px;
+    }
+
+    .timeline__post--header--rt_source {
+        line-height: 12px;
+    }
+
+    .timeline__post--header--user
+    {
+        line-height: 12px;
+
+        display: block;
+    }
+
+    .timeline__post--header--rt_icon
+    {
+        padding: 0;
+    }
+
     .timeline__post--icon
     {
-        left: -$timeline__post--icon--left + $timeline__post--icon--width-smartphone;
+        top: $timeline__post--padding-vertical;
+        // 横にアイコン表示するならこっち
+        // left: -$timeline__post--icon--left + $timeline__post--icon--width-smartphone;
+        left: $timeline__post--padding-horizontal-smartphone;
 
         width: $timeline__post--icon--width-smartphone;
         height: $timeline__post--icon--width-smartphone;
@@ -288,5 +335,26 @@ figure:hover figcaption .grid-container__post--footer--contents--controls
         {
             max-width: $timeline__post--icon--width-smartphone;
         }
+    }
+
+    .timeline__post--text
+    {
+        padding: 0 $timeline__post--padding-horizontal-smartphone;
+    }
+
+    .timeline__post--blockquote
+    {
+        padding: 0 $timeline__post--padding-horizontal-smartphone;
+    }
+
+    .timeline__post--footer
+    {
+        padding: 0 $timeline__post--padding-horizontal-smartphone;
+    }
+
+    // これ謎
+    .col-xs-12
+    {
+        padding: 0;
     }
 }

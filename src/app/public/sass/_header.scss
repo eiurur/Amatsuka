@@ -13,6 +13,11 @@
 .navbar-default .navbar-toggle
 {
     background-color: $sidebar-color;
+    border-color: $link-color;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: $link-color;
 }
 
 .menu-user

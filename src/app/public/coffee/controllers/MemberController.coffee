@@ -7,7 +7,7 @@ angular.module "myApp.controllers"
     ) ->
   return if _.isEmpty AuthService.user
 
-  $scope.limitNum = 10
+  $scope.limitNum = 20
   $scope.listIdStr = null
   $scope.amatsukaMemberList = null
 
@@ -15,7 +15,7 @@ angular.module "myApp.controllers"
     $scope.listIdStr = ListService.amatsukaList.data.id_str
     $scope.amatsukaMemberList =
       ListService.nomarlizeMembers(ListService.amatsukaList.member)
-    $scope.limitNum = 10000
+    # $scope.limitNum = 10000
     return
 
 
@@ -27,4 +27,4 @@ angular.module "myApp.controllers"
     console.log users
     $scope.listIdStr = ListService.amatsukaList.data.id_str
     $scope.amatsukaMemberList = ListService.nomarlizeMembers(users)
-    $scope.limitNum = 100000
+    # $scope.limitNum = 100000
