@@ -46,7 +46,7 @@ angular.module "myApp.services"
       _.each tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
         # @hasOrigParameter tweet
-        tweet.isRT = isRT
+        tweet.isRT           = isRT
         tweet.followStatus   = ListService.isFollow(tweet, isRT)
         tweet.text           = @activateLink(@get(tweet, 'text', isRT))
         tweet.time           = @fromNow(@get(tweet, 'tweet.created_at', false))
@@ -56,7 +56,6 @@ angular.module "myApp.services"
         tweet.sourceUrl      = @get(tweet, 'display_url', isRT)
         tweet.picUrlList     = @get(tweet, 'media_url', isRT)
         tweet.picOrigUrlList = @get(tweet, 'media_url:orig', isRT)
-        console.log tweet
         tweet.user.profile_image_url =
           @iconBigger(tweet.user.profile_image_url)
 

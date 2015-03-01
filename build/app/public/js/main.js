@@ -906,7 +906,6 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           tweet.sourceUrl = _this.get(tweet, 'display_url', isRT);
           tweet.picUrlList = _this.get(tweet, 'media_url', isRT);
           tweet.picOrigUrlList = _this.get(tweet, 'media_url:orig', isRT);
-          console.log(tweet);
           return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
         };
       })(this));

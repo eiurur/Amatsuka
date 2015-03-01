@@ -3,107 +3,19 @@ extends layout
 block body
   div(ng-controller='AdminUserCtrl')
 
-    .intro-container(ng-if='!isLoaded')
+    .cover-until-authenticated(ng-if='!isLoaded')
       .spinner
 
     span(ng-if='isLoaded')
       div(ng-if='!isAuthenticated')
-        include _login
+        include parts/_login
       div(ng-if='isAuthenticated')
-        span.header-is-auth
-          .layer
-          .image-layer
-          nav.navbar-default.navbar-fixed-top
-            .container-fluid
-              .navbar-header
-                button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
-                  span.sr-only Toggle navigation
-                  span.icon-bar
-                  span.icon-bar
-                  span.icon-bar
-                a.navbar-brand(href='/') Amatsuka
-              #bs-example-navbar-collapse-1.collapse.navbar-collapse
-                ul.nav.navbar-nav.navbar-link
-                  //- li.active
-                  //-   a(href='#')
-                  //-     | Link
-                  //-     span.sr-only (current)
+        include parts/_layer
+        include parts/_nav
 
-                //- form.navbar-form.navbar-left(role='search')
-                //-   .form-group
-                //-     input.form-control(type='text', placeholder='Search')
-                //-   button.btn.btn-default(type='submit') Submit
-                ul.nav.navbar-nav.navbar-right
-                  li
-                    a(href="/")
-                      i.fa.fa-home
-                      | Home
-                  //- li
-                  //-   a(href='/list') List
-                  li
-                    a(href='/member')
-                      i.fa.fa-users
-                      | Member
-                  li
-                    a(href='/fav')
-                      i.fa.fa-heart
-                      | Fav
-                  li
-                    a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank')
-                      i.fa.fa-twitter
-                      | @{{user.username}}
-                  //- li
-                  //-   a(href='/config') config
-                  li
-                    a(href='/logout', target='_self')
-                      i.fa.fa-power-off
-                      | Logout
+        .site-main.col-md-12
+          .col-md-12(ng-view)
 
-          .site-main.col-md-12
-            .col-md-12(ng-view)
-
-        #scroll.user-sidebar(ng-controller="UserCtrl")
-
-          // code from member.jade
-          .media.user-sidebar__profile(ng-if='user.name')
-            a.pull-left(href='https://www.twitter.com/{{user.screen_name}}', target="_blank")
-              img.media-object.thumbnail-img.fade(ng-src='{{user.profile_image_url}}', img-preload="img-preload")
-            .media-body
-              h4.media-heading
-                span.user-sidebar__profile--name {{user.name}}
-                span.screen-name @{{user.screen_name}}
-              span.btn-wrapper
-              a.btn.btn-sm.btn-follow.user-sidebar__btn-follow(followable, follow-status='user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{user.id_str}}', ng-disabled='isProcessing')
-            .user-sidebar__profile--description(ng-bind-html='user.description | newlines')
-
-          // code from index.jade(少しだけ表示内容がかわってる。)
-          .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1', infinite-scroll-container="'#scroll'")
-            box-loading.user-sidebar__contents--box-loading-init(ng-if='!tweets.items', data-base='#a1a1a1', data-highlight='white')
-            .timeline__post.user-sidebar__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
-              .timeline__post--header
-                .timeline__post--header--info
-                  .timeline__post--header--link
-                    div(ng-if="tweet.isRT")
-                      span.timeline__post--header--rt_icon
-                        i.fa.fa-retweet
-                      a.timeline__post--header--rt_source(twitter-id-str="{{tweet.retweeted_status.user.id_str}}", show-tweet="show-tweet")
-                       {{tweet.retweeted_status.user.screen_name}}
-                      followable(ng-if='!tweet.followStatus', list-id-str="{{listIdStr}}", twitter-id-str="{{tweet.retweeted_status.user.id_str}}", follow-status="tweet.followStatus")
-                .timeline__post--header--time
-                  a(href="https://{{tweet.sourceUrl}}", target="_blank")
-                    {{tweet.time}}
-              .timeline__post--image(ng-repeat='picUrl in tweet.picUrlList')
-                img.fade(ng-src="{{picUrl}}", img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{picUrl}}")
-              .timeline__post--text(ng-bind-html='tweet.text | newlines')
-              .timeline__post--footer
-                .timeline__post--footer--contents
-                  .timeline__post--footer--contents--controls
-                    i.fa.fa-retweet.icon-retweet(retweet-num="tweet.retweetNum", retweeted='tweet.retweeted', tweet-id-str='{{tweet.tweetIdStr}}', retweetable='retweetable')  {{tweet.retweetNum}}
-                    i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
-                    a(href='{{tweet.extended_entities.media[0].media_url}}:orig?.jpg', download='download')
-                      i.fa.fa-download
-
-            box-loading.user-sidebar__contents--infinitescroll-message(ng-if='tweets.busy', data-base='#a1a1a1', data-highlight='white')
-            .user-sidebar__contents--infinitescroll-message.text-center(ng-show='tweets.isLast') 終わりです
+        include parts/_user_sidebar
 
         a.arrow-top(scroll-to='.site-main', scroll-on-click)
