@@ -268,7 +268,7 @@
   animation: spinner2 2.5s linear infinite;
 }
 
-.intro-container {
+.cover-until-authenticated {
   height: 100%;
   background: url("../images/login-background.jpg") no-repeat center center;
   background-size: cover;

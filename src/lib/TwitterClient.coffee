@@ -109,7 +109,6 @@ module.exports = class TwitterClient extends TwitterClientDefine
     opts =
       user_id: params.twitterIdStr || ''
       count: ~~params.count || settings.MAX_NUM_GET_LISTS_LIST
-
     @getViaAPI
       method: 'lists'
       type: 'list'

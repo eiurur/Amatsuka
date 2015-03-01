@@ -243,7 +243,9 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
           itemsImageOnly = TweetService.filterIncludeImage(data.data);
           console.timeEnd('filterIncludeImage');
           console.time('nomalizeTweets');
+          console.log('tweets b = ', itemsImageOnly);
           itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member);
+          console.log('tweets a = ', itemsImageOnly);
           console.timeEnd('nomalizeTweets');
           return itemsNomalized;
         };
@@ -900,13 +902,14 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);
           tweet.tweetIdStr = _this.get(tweet, 'tweet.id_str', isRT);
           tweet.sourceUrl = _this.get(tweet, 'display_url', isRT);
-          tweet.picOrigUrl = _this.get(tweet, 'media_url:orig', isRT);
+          tweet.picUrlList = _this.get(tweet, 'media_url', isRT);
+          tweet.picOrigUrlList = _this.get(tweet, 'media_url:orig', isRT);
           return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
         };
       })(this));
     },
     get: function(tweet, key, isRT) {
-      var t, _ref, _ref1, _ref10, _ref11, _ref12, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+      var t, _ref, _ref1, _ref2, _ref3, _ref4;
       t = isRT ? tweet.retweeted_status : tweet;
       switch (key) {
         case 'description':
@@ -924,13 +927,21 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
         case 'hashtags':
           return (_ref4 = t.entities) != null ? _ref4.hashtags : void 0;
         case 'media_url':
-          return (_ref5 = t.entities) != null ? (_ref6 = _ref5.media) != null ? _ref6[0].media_url : void 0 : void 0;
+          return _.map(t.extended_entities.media, function(media) {
+            return media.media_url;
+          });
         case 'media_url_https':
-          return (_ref7 = t.entities) != null ? (_ref8 = _ref7.media) != null ? _ref8[0].media_url_https : void 0 : void 0;
+          return _.map(t.extended_entities.media, function(media) {
+            return media.media_url_https;
+          });
         case 'media_url:orig':
-          return ((_ref9 = t.entities) != null ? (_ref10 = _ref9.media) != null ? _ref10[0].media_url : void 0 : void 0) + ':orig';
+          return _.map(t.extended_entities.media, function(media) {
+            return media.media_url + ':orig';
+          });
         case 'media_url_https:orig':
-          return ((_ref11 = t.entities) != null ? (_ref12 = _ref11.media) != null ? _ref12[0].media_url_https : void 0 : void 0) + ':orig';
+          return _.map(t.extended_entities.media, function(media) {
+            return media.media_url_https + ':orig';
+          });
         case 'name':
           return t.user.name;
         case 'profile_banner_url':
