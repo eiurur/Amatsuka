@@ -1,10 +1,10 @@
-TwitterAPI   = require 'node-twitter-api'
-TW_CK        = process.env.TW_CK
-TW_CS        = process.env.TW_CS
-TW_AT        = process.env.TW_AT
-TW_AS        = process.env.TW_AS
-CALLBACK_URL = process.env.CALLBACK_URL
-COOKIE_SECRET =  process.env.COOKIE_SECRET
+TwitterAPI    = require 'node-twitter-api'
+TW_CK         = process.env.TW_CK
+TW_CS         = process.env.TW_CS
+TW_AT         = process.env.TW_AT
+TW_AS         = process.env.TW_AS
+CALLBACK_URL  = process.env.CALLBACK_URL
+COOKIE_SECRET = process.env.COOKIE_SECRET
 
 exports.settings =
   TW_CK: TW_CK

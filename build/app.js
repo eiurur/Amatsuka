@@ -1,15 +1,9 @@
 (function() {
-  var async, dir, moment, my, serve, settings, startTask, tasks4startUp, _;
+  var async, dir, serve, settings, startTask, tasks4startUp;
 
   dir = './lib/';
 
-  _ = require('lodash');
-
-  moment = require('moment');
-
   async = require('async');
-
-  my = require(dir + 'my').my;
 
   serve = require('./app/serve').serve;
 
@@ -19,7 +13,7 @@
 
   tasks4startUp = [
     function(callback) {
-      my.c("■ Server task start");
+      console.log("■ Server task start");
       serve(null, "Create Server");
       setTimeout((function() {
         return callback(null, "Serve\n");

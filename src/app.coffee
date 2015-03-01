@@ -1,8 +1,5 @@
 dir         = './lib/'
-_           = require 'lodash'
-moment      = require 'moment'
 async       = require 'async'
-{my}        = require dir + 'my'
 {serve}     = require './app/serve'
 {startTask} =　require "#{dir}collect/start-task"
 {settings}  = if process.env.NODE_ENV is "production"
@@ -15,7 +12,7 @@ tasks4startUp = [
   (callback) ->
 
     # Start Server
-    my.c "■ Server task start"
+    console.log "■ Server task start"
     serve null, "Create Server"
     setTimeout (-> callback(null, "Serve\n")), settings.GRACE_TIME_SERVER
     return
@@ -31,9 +28,5 @@ tasks4startUp = [
 ]
 
 async.series tasks4startUp, (err, results) ->
-  if err
-    console.error err
-  else
-    console.log  "\nall done... Start!!!!\n"
+  if err then console.error err else console.log "\nall done... Start!!!!\n"
   return
-
