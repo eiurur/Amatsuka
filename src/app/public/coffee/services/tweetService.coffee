@@ -47,14 +47,16 @@ angular.module "myApp.services"
         isRT = _.has tweet, 'retweeted_status'
         # @hasOrigParameter tweet
         tweet.isRT = isRT
-        tweet.followStatus = ListService.isFollow(tweet, isRT)
-        tweet.text       = @activateLink(@get(tweet, 'text', isRT))
-        tweet.time       = @fromNow(@get(tweet, 'tweet.created_at', false))
-        tweet.retweetNum = @get(tweet, 'tweet.retweet_count', isRT)
-        tweet.favNum     = @get(tweet, 'tweet.favorite_count', isRT)
-        tweet.tweetIdStr = @get(tweet, 'tweet.id_str', isRT)
-        tweet.sourceUrl  = @get(tweet, 'display_url', isRT)
-        tweet.picOrigUrl = @get(tweet, 'media_url:orig', isRT)
+        tweet.followStatus   = ListService.isFollow(tweet, isRT)
+        tweet.text           = @activateLink(@get(tweet, 'text', isRT))
+        tweet.time           = @fromNow(@get(tweet, 'tweet.created_at', false))
+        tweet.retweetNum     = @get(tweet, 'tweet.retweet_count', isRT)
+        tweet.favNum         = @get(tweet, 'tweet.favorite_count', isRT)
+        tweet.tweetIdStr     = @get(tweet, 'tweet.id_str', isRT)
+        tweet.sourceUrl      = @get(tweet, 'display_url', isRT)
+        tweet.picUrlList     = @get(tweet, 'media_url', isRT)
+        tweet.picOrigUrlList = @get(tweet, 'media_url:orig', isRT)
+        console.log tweet
         tweet.user.profile_image_url =
           @iconBigger(tweet.user.profile_image_url)
 
@@ -62,23 +64,21 @@ angular.module "myApp.services"
       t = if isRT then tweet.retweeted_status else tweet
       switch key
         when 'description' then t.user.description
-        when 'display_url'
-          t.entities?.media?[0].display_url # TODO: 一枚しか取れない
+        when 'display_url' then t.entities?.media?[0].display_url
         when 'entities' then t.entities
-        when 'expanded_url'
-          t.entities?.media?[0].expanded_url # TODO: 一枚しか取れない
+        when 'expanded_url' then t.entities?.media?[0].expanded_url
         when 'followers_count' then t.user.followers_count
         when 'friends_count' then t.user.friends_count
         when 'hashtags'
           t.entities?.hashtags # TODO: 一個しか取れない
         when 'media_url'
-          t.entities?.media?[0].media_url # TODO: 一枚しか取れない
+          _.map t.extended_entities.media, (media) -> media.media_url
         when 'media_url_https'
-          t.entities?.media?[0].media_url_https # TODO: 一枚しか取れない
+          _.map t.extended_entities.media, (media) -> media.media_url_https
         when 'media_url:orig'
-          t.entities?.media?[0].media_url+':orig' # TODO: 一枚しか取れない
+          _.map t.extended_entities.media, (media) -> media.media_url+':orig'
         when 'media_url_https:orig'
-          t.entities?.media?[0].media_url_https+':orig' # TODO: 一枚しか取れない
+          _.map t.extended_entities.media, (media) -> media.media_url_https+':orig'
         when 'name' then t.user.name
         when 'profile_banner_url' then t.user.profile_banner_url
         when 'profile_image_url' then t.user.profile_image_url

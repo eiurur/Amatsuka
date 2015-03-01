@@ -92,15 +92,15 @@ block body
                 .timeline__post--header--time
                   a(href="https://{{tweet.sourceUrl}}", target="_blank")
                     {{tweet.time}}
-              .timeline__post--image
-                img.fade(ng-src="{{tweet.extended_entities.media[0].media_url}}", img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{tweet.extended_entities.media[0].media_url}}")
+              .timeline__post--image(ng-repeat='picUrl in tweet.picUrlList')
+                img.fade(ng-src="{{picUrl}}", img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{picUrl}}")
               .timeline__post--text(ng-bind-html='tweet.text | newlines')
               .timeline__post--footer
                 .timeline__post--footer--contents
                   .timeline__post--footer--contents--controls
                     i.fa.fa-retweet.icon-retweet(retweet-num="tweet.retweetNum", retweeted='tweet.retweeted', tweet-id-str='{{tweet.tweetIdStr}}', retweetable='retweetable')  {{tweet.retweetNum}}
                     i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
-                    a(href='{{tweet.picOrigUrl}}?.jpg', download='download')
+                    a(href='{{tweet.extended_entities.media[0].media_url}}:orig?.jpg', download='download')
                       i.fa.fa-download
 
             box-loading.user-sidebar__contents--infinitescroll-message(ng-if='tweets.busy', data-base='#a1a1a1', data-highlight='white')
