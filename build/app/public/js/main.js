@@ -243,7 +243,9 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
           itemsImageOnly = TweetService.filterIncludeImage(data.data);
           console.timeEnd('filterIncludeImage');
           console.time('nomalizeTweets');
+          console.log('tweets b = ', itemsImageOnly);
           itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member);
+          console.log('tweets a = ', itemsImageOnly);
           console.timeEnd('nomalizeTweets');
           return itemsNomalized;
         };
