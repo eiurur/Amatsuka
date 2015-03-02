@@ -18,7 +18,7 @@
     .timeline__post.user-sidebar__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
       .timeline__post--header
         .timeline__post--header--info
-          .timeline__post--header--link
+          .timeline__post--header--link.user-sidebar__post--header--link
             div(ng-if="tweet.isRT")
               span.timeline__post--header--rt_icon
                 i.fa.fa-retweet
