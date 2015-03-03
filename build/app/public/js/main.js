@@ -338,6 +338,7 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
     $location.path('/');
   }
   $scope.tweets = new Tweets([], void 0, 'fav', AuthService.user._json.id_str);
+  $scope.listIdStr = ListService.amatsukaList.data.id_str;
   $scope.isLoaded = true;
   return $scope.$on('addMember', function(event, args) {
     console.log('fav addMember on ', args);
@@ -537,11 +538,15 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
     replace: true,
     scope: {
       listIdStr: '@',
-      twitterIdStr: '@',
+      tweet: '@',
       followStatus: '='
     },
     template: '<span class="label label-default timeline__post--header--label">{{content}}</span>',
     link: function(scope, element, attrs) {
+      var isRT, tweetParsed, twitterIdStr;
+      tweetParsed = JSON.parse(scope.tweet);
+      isRT = TweetService.isRT(tweetParsed);
+      twitterIdStr = TweetService.get(tweetParsed, 'user.id_str', isRT);
       if (scope.followStatus === false) {
         scope.content = '+';
       }
@@ -556,17 +561,17 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
       return element.on('click', function() {
         var opts;
         console.log(scope.listIdStr);
-        console.log(scope.twitterIdStr);
+        console.log(twitterIdStr);
         opts = {
           listIdStr: scope.listIdStr,
-          twitterIdStr: scope.twitterIdStr
+          twitterIdStr: twitterIdStr
         };
         if (scope.followStatus === false) {
           element.addClass('label-success');
           element.fadeOut(200);
           return TweetService.createListsMembers(opts).then(function(data) {
-            ListService.addMember(scope.twitterIdStr);
-            $rootScope.$broadcast('addMember', scope.twitterIdStr);
+            ListService.addMember(twitterIdStr);
+            $rootScope.$broadcast('addMember', twitterIdStr);
             return console.log('E followable createListsMembers data', data);
           });
         }
@@ -907,6 +912,9 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
         };
       })(this));
+    },
+    isRT: function(tweet) {
+      return _.has(tweet, 'retweeted_status');
     },
     get: function(tweet, key, isRT) {
       var t, _ref, _ref1, _ref2, _ref3, _ref4;

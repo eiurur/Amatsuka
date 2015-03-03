@@ -11,7 +11,7 @@ angular.module "myApp.controllers"
 
   $scope.isLoaded = false
 
-  ls              = localStorage
+  ls = localStorage
   ListService.amatsukaList =
     data: JSON.parse(ls.getItem 'amatsukaList') || {}
     member: JSON.parse(ls.getItem 'amatsukaFollowList') || []
@@ -23,6 +23,7 @@ angular.module "myApp.controllers"
 
   $scope.tweets =
    new Tweets([], undefined, 'fav', AuthService.user._json.id_str)
+　 $scope.listIdStr = ListService.amatsukaList.data.id_str
   $scope.isLoaded  = true
 
   $scope.$on 'addMember', (event, args) ->

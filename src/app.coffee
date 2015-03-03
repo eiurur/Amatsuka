@@ -1,7 +1,7 @@
 dir         = './lib/'
 async       = require 'async'
 {serve}     = require './app/serve'
-{startTask} =　require "#{dir}collect/start-task"
+{startTask} = require "#{dir}collect/start-task"
 {settings}  = if process.env.NODE_ENV is "production"
   require "#{dir}configs/production"
 else

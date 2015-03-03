@@ -59,6 +59,9 @@ angular.module "myApp.services"
         tweet.user.profile_image_url =
           @iconBigger(tweet.user.profile_image_url)
 
+    isRT: (tweet) ->
+      _.has tweet, 'retweeted_status'
+
     get: (tweet, key, isRT) ->
       t = if isRT then tweet.retweeted_status else tweet
       switch key

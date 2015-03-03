@@ -52,10 +52,14 @@ angular.module "myApp.directives"
     replace: true
     scope:
       listIdStr: '@'
-      twitterIdStr: '@'
+      tweet: '@'
       followStatus: '='
     template: '<span class="label label-default timeline__post--header--label">{{content}}</span>'
     link: (scope, element, attrs) ->
+      tweetParsed  = JSON.parse scope.tweet
+      isRT         = TweetService.isRT tweetParsed
+      twitterIdStr = TweetService.get(tweetParsed, 'user.id_str', isRT)
+
       if scope.followStatus is false then scope.content = '+'
 
       element.on 'mouseover', (e) ->
@@ -68,17 +72,17 @@ angular.module "myApp.directives"
 
       element.on 'click', ->
         console.log scope.listIdStr
-        console.log scope.twitterIdStr
+        console.log twitterIdStr
         opts =
           listIdStr: scope.listIdStr
-          twitterIdStr: scope.twitterIdStr
+          twitterIdStr: twitterIdStr
         if scope.followStatus is false
           element.addClass('label-success')
           element.fadeOut(200)
           TweetService.createListsMembers(opts)
           .then (data) ->
-            ListService.addMember(scope.twitterIdStr)
-            $rootScope.$broadcast 'addMember', scope.twitterIdStr
+            ListService.addMember(twitterIdStr)
+            $rootScope.$broadcast 'addMember', twitterIdStr
             console.log 'E followable createListsMembers data', data
 
   .directive 'followable', ($rootScope, ListService, TweetService) ->
