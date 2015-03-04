@@ -9,7 +9,7 @@ include _loading_init
             {{tweet.user.screen_name}}
           span.timeline__post--header--rt_icon(ng-if="tweet.retweeted_status")
             i.fa.fa-retweet
-          a.timeline__post--header--rt_source(twitter-id-str="{{tweet.user.id_str}}", show-tweet="show-tweet")
+          a.timeline__post--header--rt_source(twitter-id-str="{{tweet.retweeted_status.user.id_str}}", show-tweet="show-tweet")
             {{tweet.retweeted_status.user.screen_name}}
           followable(ng-if='!tweet.followStatus', list-id-str="{{listIdStr}}", tweet="{{tweet}}", follow-status="tweet.followStatus")
       .timeline__post--header--time
