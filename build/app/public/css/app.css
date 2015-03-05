@@ -584,6 +584,9 @@ i {
 .timeline__post--image img {
   width: 100%;
 }
+.timeline__post--image video {
+  width: 100%;
+}
 
 .timeline__post--text {
   padding: 0 20px 10px;
