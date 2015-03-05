@@ -284,6 +284,10 @@ angular.module("myApp.filters", []).filter("interpolate", ["version", function(v
   return function(text) {
     return $sce.trustAsHtml(text != null ? text.replace(/\n/g, '<br />') : '');
   };
+}]).filter('trusted', ["$sce", function($sce) {
+  return function(url) {
+    return $sce.trustAsResourceUrl(url);
+  };
 }]);
 
 angular.module("myApp.services", []).service("CommonService", function() {
@@ -421,9 +425,11 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthSer
 }]);
 
 angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, AuthService, TweetService, ListService, Tweets) {
+  var history;
   if (_.isEmpty(AuthService.user)) {
     return;
   }
+  history = 0;
   $scope.isOpened = false;
   $scope.$on('userData', function(event, args) {
     if (!$scope.isOpened) {
@@ -445,10 +451,12 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
   $scope.$on('isOpened', function(event, args) {
     $scope.isOpened = true;
     $scope.user = {};
-    return $scope.tweets = {};
+    $scope.tweets = {};
+    return history += 1;
   });
   $scope.$on('isClosed', function(event, args) {
-    return $scope.isOpened = false;
+    $scope.isOpened = false;
+    return history = 0;
   });
   return $scope.$on('addMember', function(event, args) {
     if (_.isUndefined($scope.tweets)) {
@@ -909,6 +917,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           tweet.sourceUrl = _this.get(tweet, 'display_url', isRT);
           tweet.picUrlList = _this.get(tweet, 'media_url', isRT);
           tweet.picOrigUrlList = _this.get(tweet, 'media_url:orig', isRT);
+          tweet.video_url = _this.get(tweet, 'video_url', isRT);
           return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
         };
       })(this));
@@ -917,7 +926,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
       return _.has(tweet, 'retweeted_status');
     },
     get: function(tweet, key, isRT) {
-      var t, _ref, _ref1, _ref2, _ref3, _ref4;
+      var t, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
       t = isRT ? tweet.retweeted_status : tweet;
       switch (key) {
         case 'description':
@@ -950,6 +959,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           return _.map(t.extended_entities.media, function(media) {
             return media.media_url_https + ':orig';
           });
+        case 'video_url':
+          return (_ref5 = t.extended_entities) != null ? (_ref6 = _ref5.media[0]) != null ? (_ref7 = _ref6.video_info) != null ? _ref7.variants[0].url : void 0 : void 0 : void 0;
         case 'name':
           return t.user.name;
         case 'profile_banner_url':

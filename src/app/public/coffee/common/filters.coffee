@@ -12,3 +12,7 @@ angular.module("myApp.filters", [])
   .filter 'newlines', ($sce) ->
     (text) ->
       $sce.trustAsHtml(if text? then text.replace(/\n/g, '<br />') else '')
+
+  .filter 'trusted', ($sce) ->
+    (url) ->
+      $sce.trustAsResourceUrl url
