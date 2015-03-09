@@ -10,7 +10,7 @@ angular.module "myApp.controllers"
   return if _.isEmpty AuthService.user
 
   #
-  history = 0
+  # history = 0
 
 
   $scope.isOpened = false
@@ -19,8 +19,9 @@ angular.module "myApp.controllers"
     return unless $scope.isOpened
     $scope.user      = ListService.nomarlizeMember args
     $scope.listIdStr = ListService.amatsukaList.data.id_str
-    ListService.history[history].user = ListService.nomarlizeMember args
-    ListService.history[history].listIdStr = ListService.amatsukaList.data.id_str
+    # ListService.history[history].user = ListService.nomarlizeMember args
+    # ListService.history[history].listIdStr = ListService.amatsukaList.data.id_str
+    return
 
   $scope.$on 'tweetData', (event, args) ->
     return unless $scope.isOpened
@@ -31,23 +32,27 @@ angular.module "myApp.controllers"
       new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user.id_str)
 
     # ここ要確認
-    TweetService.history[history] = $scope.tweets
+    # TweetService.history[history] = $scope.tweets
+    return
 
   $scope.$on 'isOpened', (event, args) ->
     $scope.isOpened = true
     $scope.user     = {}
     $scope.tweets   = {}
-    history += 1
+    return
+    # history += 1
 
   $scope.$on 'isClosed', (event, args) ->
     $scope.isOpened = false
-    history = 0
+    return
+    # history = 0
 
-  $scope.$on 'pop', (event, args) ->
-    history -= 1
+  # $scope.$on 'pop', (event, args) ->
+  #   history -= 1
 
   $scope.$on 'addMember', (event, args) ->
     return if _.isUndefined $scope.tweets
     console.log 'user addMember on', args
     TweetService.applyFollowStatusChange $scope.tweets.items, args
+    return
 

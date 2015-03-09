@@ -59,6 +59,7 @@ angular.module "myApp.services"
         tweet.video_url      = @get(tweet, 'video_url', isRT)
         tweet.user.profile_image_url =
           @iconBigger(tweet.user.profile_image_url)
+        return
 
     isRT: (tweet) ->
       _.has tweet, 'retweeted_status'

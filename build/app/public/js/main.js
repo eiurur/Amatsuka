@@ -425,18 +425,16 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthSer
 }]);
 
 angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, AuthService, TweetService, ListService, Tweets) {
-  var history;
   if (_.isEmpty(AuthService.user)) {
     return;
   }
-  history = 0;
   $scope.isOpened = false;
   $scope.$on('userData', function(event, args) {
     if (!$scope.isOpened) {
       return;
     }
     $scope.user = ListService.nomarlizeMember(args);
-    return $scope.listIdStr = ListService.amatsukaList.data.id_str;
+    $scope.listIdStr = ListService.amatsukaList.data.id_str;
   });
   $scope.$on('tweetData', function(event, args) {
     var maxId, tweetsNomalized, tweetsOnlyImage;
@@ -446,24 +444,22 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     maxId = TweetService.decStrNum(_.last(args).id_str);
     tweetsOnlyImage = TweetService.filterIncludeImage(args);
     tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage);
-    return $scope.tweets = new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user.id_str);
+    $scope.tweets = new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user.id_str);
   });
   $scope.$on('isOpened', function(event, args) {
     $scope.isOpened = true;
     $scope.user = {};
     $scope.tweets = {};
-    return history += 1;
   });
   $scope.$on('isClosed', function(event, args) {
     $scope.isOpened = false;
-    return history = 0;
   });
   return $scope.$on('addMember', function(event, args) {
     if (_.isUndefined($scope.tweets)) {
       return;
     }
     console.log('user addMember on', args);
-    return TweetService.applyFollowStatusChange($scope.tweets.items, args);
+    TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
 }]);
 
@@ -918,7 +914,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           tweet.picUrlList = _this.get(tweet, 'media_url', isRT);
           tweet.picOrigUrlList = _this.get(tweet, 'media_url:orig', isRT);
           tweet.video_url = _this.get(tweet, 'video_url', isRT);
-          return tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
+          tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
         };
       })(this));
     },
