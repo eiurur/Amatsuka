@@ -7,9 +7,10 @@ angular.module "myApp.controllers"
     Tweets
     ) ->
   return if _.isEmpty AuthService.user
-  # $scope.displayFormats = ['list', 'grid']
+  # [WIP]
 
-  $scope.toggleDisplayFormat = ConfigService.toggleDisplayFormat
+  # $scope.displayFormats = ['list', 'grid']
+  # $scope.toggleDisplayFormat = ConfigService.toggleDisplayFormat
 
   # Listwo上部に並べる
 

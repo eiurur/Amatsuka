@@ -47,85 +47,12 @@ angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "
   });
 }]);
 
-angular.module("myApp.directives", []).directive('boxLoading', ["$interval", function($interval) {
-  return {
-    restrict: 'E',
-    link: function(scope, element, attrs) {
-      var allocations, animate, count, rotate, tag;
-      tag = '<div class="box-loader">\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n  <b></b>\n</div>';
-      element.append(tag);
-      count = 0;
-      allocations = [0, 1, 2, 5, 8, 7, 6, 3];
-      rotate = function() {
-        var bs;
-        bs = element.find('b');
-        _.map(bs, function(elem) {
-          return elem.style.background = attrs.base;
-        });
-        bs[allocations[count]].style.background = attrs.highlight;
-        count++;
-        if (count === 8) {
-          return count = 0;
-        }
-      };
-      return animate = $interval(rotate, 150);
-    }
-  };
-}]).directive("slideable", function() {
-  return {
-    restrict: "C",
-    compile: function(element, attr) {
-      var contents, postLink;
-      contents = element.html();
-      element.html("<div class='slideable_content'\n  style='margin:0 !important; padding:0 !important'>\n  " + contents + "\n</div>");
-      postLink = function(scope, element, attrs) {
-        console.log(attrs);
-        attrs.duration = !attrs.duration ? "0.4s" : attrs.duration;
-        attrs.easing = !attrs.easing ? "ease-in-out" : attrs.easing;
-        return element.css({
-          overflow: "hidden",
-          height: "0px",
-          transitionProperty: "height",
-          transitionDuration: attrs.duration,
-          transitionTimingFunction: attrs.easing
-        });
-      };
-    }
-  };
-}).directive("slideToggle", function() {
+angular.module("myApp.directives", []).directive("imgPreload", function() {
   return {
     restrict: "A",
     link: function(scope, element, attrs) {
-      var content, target;
-      target = void 0;
-      content = void 0;
-      attrs.expanded = false;
-      return element.bind("click", function() {
-        var y;
-        if (!target) {
-          target = document.querySelector(attrs.slideToggle);
-        }
-        if (!content) {
-          content = target.querySelector(".slideable_content");
-        }
-        if (!attrs.expanded) {
-          content.style.border = "1px solid rgba(0,0,0,0)";
-          y = content.clientHeight;
-          content.style.border = 0;
-          target.style.height = y + "px";
-        } else {
-          target.style.height = "0px";
-        }
-        return attrs.expanded = !attrs.expanded;
-      });
-    }
-  };
-}).directive("imgPreload", function() {
-  return {
-    restrict: "A",
-    link: function(scope, element, attrs) {
-      return element.on("load", function() {
-        return element.addClass("in");
+      element.on("load", function() {
+        element.addClass("in");
       }).on("error", function() {});
     }
   };
@@ -236,29 +163,19 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
             _this.busy = false;
             return;
           }
-          console.time('decStrNum');
           _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
-          console.timeEnd('decStrNum');
-          console.time('filterIncludeImage');
           itemsImageOnly = TweetService.filterIncludeImage(data.data);
-          console.timeEnd('filterIncludeImage');
-          console.time('nomalizeTweets');
-          console.log('tweets b = ', itemsImageOnly);
           itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member);
-          console.log('tweets a = ', itemsImageOnly);
-          console.timeEnd('nomalizeTweets');
+          console.log(itemsNomalized);
           return itemsNomalized;
         };
       })(this)).then((function(_this) {
         return function(itemsNomalized) {
           return (function() {
-            console.time('$q.all ');
-            $q.all(itemsNomalized.map(function(item) {
-              return _this.addTweet(item);
-            })).then(function(result) {
-              _this.busy = false;
-              return console.timeEnd('$q.all ');
+            _.each(itemsNomalized, function(item) {
+              return [_this.items][0].push(item);
             });
+            _this.busy = false;
           })();
         };
       })(this));
@@ -321,9 +238,8 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
 
 angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "AuthService", "TweetService", "ConfigService", "Tweets", function($scope, AuthService, TweetService, ConfigService, Tweets) {
   if (_.isEmpty(AuthService.user)) {
-    return;
+
   }
-  return $scope.toggleDisplayFormat = ConfigService.toggleDisplayFormat;
 }]);
 
 angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, Tweets) {
@@ -360,7 +276,8 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
   ls = localStorage;
   ListService.amatsukaList = {
     data: JSON.parse(ls.getItem('amatsukaList')) || {},
-    member: JSON.parse(ls.getItem('amatsukaFollowList')) || []
+    member: JSON.parse(ls.getItem('amatsukaFollowList')) || [],
+    member: []
   };
   ListService.isSameUser().then(function(isSame) {
     if (isSame) {
@@ -372,18 +289,18 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
       })();
       return;
     }
-    return ListService.update().then(function(data) {
-      return $scope.tweets = new Tweets([]);
+    ListService.update().then(function(data) {
+      $scope.tweets = new Tweets([]);
     })["catch"](function(error) {
-      return ListService.init().then(function(data) {
-        return $scope.tweets = new Tweets([]);
+      ListService.init().then(function(data) {
+        $scope.tweets = new Tweets([]);
       });
     });
   })["finally"](function() {
     console.info('10');
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
     $scope.isLoaded = true;
-    return console.log('終わり');
+    console.log('終わり');
   });
   return $scope.$on('addMember', function(event, args) {
     console.log('index addMember on ', args);
@@ -453,6 +370,8 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
   });
   $scope.$on('isClosed', function(event, args) {
     $scope.isOpened = false;
+    $scope.user = null;
+    $scope.tweets = null;
   });
   return $scope.$on('addMember', function(event, args) {
     if (_.isUndefined($scope.tweets)) {
@@ -749,7 +668,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
     registerMember2LocalStorage: function() {
       var ls;
       ls = localStorage;
-      return ls.setItem('amatsukaFollowList', JSON.stringify(this.amatsukaList.member));
+      ls.setItem('amatsukaFollowList', JSON.stringify(this.amatsukaList.member));
     },
     addMember: function(twitterIdStr) {
       return TweetService.showUsers({
@@ -765,7 +684,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       this.amatsukaList.member = _.reject(this.amatsukaList.member, {
         'id_str': twitterIdStr
       });
-      return this.registerMember2LocalStorage();
+      this.registerMember2LocalStorage();
     },
     isFollow: function(target, isRT) {
       var targetIdStr;
@@ -784,7 +703,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       return _.each(members, function(member) {
         member.followStatus = true;
         member.description = TweetService.activateLink(member.description);
-        return member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
+        member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
       });
     },
     nomarlizeMember: function(member) {
