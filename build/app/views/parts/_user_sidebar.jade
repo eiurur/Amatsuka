@@ -14,10 +14,7 @@
 
   // code from index.jade(少しだけ表示内容がかわってる。)
   .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1', infinite-scroll-container="'#scroll'")
-    .wrapper.user-sidebar__contents--box-loading-init(ng-if='!tweets.items')
-      .dot
-      .dot
-      .dot
+    dot-loader.user-sidebar__contents--box-loading-init(ng-if='!tweets.items')
     .timeline__post.user-sidebar__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
       .timeline__post--header
         .timeline__post--header--info
@@ -50,8 +47,5 @@
             a(href='{{tweet.extended_entities.media[0].media_url}}:orig?.jpg', download='download')
               i.fa.fa-download
 
-    .wrapper.user-sidebar__contents--infinitescroll-message(ng-if='tweets.busy')
-      .dot
-      .dot
-      .dot
-    .user-sidebar__contents--infinitescroll-message.text-center(ng-show='tweets.isLast') 終わりです
+    dot-loader.user-sidebar__contents--infinitescroll-message(ng-if='tweets.busy')
+    .text-center.user-sidebar__contents--infinitescroll-message(ng-show='tweets.isLast') 終わりです

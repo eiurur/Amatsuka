@@ -47,7 +47,12 @@ angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "
   });
 }]);
 
-angular.module("myApp.directives", []).directive("imgPreload", function() {
+angular.module("myApp.directives", []).directive('dotLoader', function() {
+  return {
+    restrict: 'E',
+    template: '<div class="wrapper">\n  <div class="dot"></div>\n  <div class="dot"></div>\n  <div class="dot"></div>\n</div>'
+  };
+}).directive("imgPreload", function() {
   return {
     restrict: "A",
     link: function(scope, element, attrs) {

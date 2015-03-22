@@ -1,5 +1,14 @@
 # Directives
 angular.module "myApp.directives", []
+  .directive 'dotLoader', () ->
+      restrict: 'E'
+      template: '''
+        <div class="wrapper">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      '''
   # .directive 'boxLoading', ($interval) ->
   #   restrict: 'E'
   #   link: (scope, element, attrs) ->
