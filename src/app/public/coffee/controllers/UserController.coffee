@@ -44,6 +44,8 @@ angular.module "myApp.controllers"
 
   $scope.$on 'isClosed', (event, args) ->
     $scope.isOpened = false
+    $scope.user     = null
+    $scope.tweets   = null
     return
     # history = 0
 

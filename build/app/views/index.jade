@@ -7,8 +7,10 @@ block body
       .spinner
 
     span(ng-if='isLoaded')
+
       div(ng-if='!isAuthenticated')
         include parts/_login
+
       div(ng-if='isAuthenticated')
         include parts/_layer
         include parts/_nav

@@ -33,18 +33,23 @@ angular.module "myApp.controllers"
 
       # 別のユーザで再ログインしたとき
       $scope.tweets = new Tweets([])
+      return
     .catch (error) ->
 
       # ログインユーザはAmatsuka Listを未作成(初ログイン)のとき
       ListService.init()
       .then (data) ->
         $scope.tweets = new Tweets([])
+        return
+      return
+    return
 
   .finally ->
     console.info '10'
     $scope.listIdStr = ListService.amatsukaList.data.id_str
     $scope.isLoaded  = true
     console.log '終わり'
+    return
 
 
   $scope.$on 'addMember', (event, args) ->

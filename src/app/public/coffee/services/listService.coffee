@@ -8,6 +8,7 @@ angular.module "myApp.services"
     registerMember2LocalStorage: ->
       ls = localStorage
       ls.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
+      return
 
     # HACK:
     # member objectをまま引数にしたかったけど
@@ -23,6 +24,7 @@ angular.module "myApp.services"
       @amatsukaList.member =
         _.reject(@amatsukaList.member, 'id_str': twitterIdStr)
       do @registerMember2LocalStorage
+      return
 
     isFollow: (target, isRT = true) ->
       targetIdStr = target.id_str
@@ -37,6 +39,7 @@ angular.module "myApp.services"
         member.description       = TweetService.activateLink(member.description)
         member.profile_image_url =
          TweetService.iconBigger(member.profile_image_url)
+        return
 
     nomarlizeMember: (member) ->
       member.followStatus      = @isFollow(member)

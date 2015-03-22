@@ -242,7 +242,7 @@
 
         content: '';
 
-        border: 2px solid $accent-color;
+        border: 2px solid $amatsuka-color;
     }
     &:after
     {
@@ -288,9 +288,9 @@
     }
 }
 
-.box-loading-padding-top
+.box-loading-padding-vertical
 {
-  padding-top: 10px;
+  padding: 10px 0;
 }
 
 .loading-bar {
@@ -298,3 +298,122 @@
   width: 100%;
   max-width: $timeline__post--width;
 }
+
+/**
+ * Loader
+ */
+
+.wrapper {
+  width: 3em;
+  margin: 3em auto;
+}
+.dot:nth-child(1) {
+  margin: 0.3em;
+  position: absolute;
+  height: 1em;
+  width: 1em;
+  background: $amatsuka-color;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot:nth-child(2) {
+  position: absolute;
+  margin: 0.3em 2em;
+  height: 1em;
+  width: 1em;
+  background: $amatsuka-color;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot:nth-child(3) {
+  position: absolute;
+  margin: 0.3em 3.7em;
+  height: 1em;
+  width: 1em;
+  background: $amatsuka-color;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot:nth-child(1) {
+  -webkit-animation: load 1.8s linear infinite;
+     -moz-animation: load 1.8s linear infinite;
+       -o-animation: load 1.8s linear infinite;
+          animation: load 1.8s linear infinite;
+  -webkit-animation-delay: 0.4s;
+     -moz-animation-delay: 0.4s;
+       -o-animation-delay: 0.4s;
+          animation-delay: 0.4s;
+}
+
+.dot:nth-child(2) {
+  -webkit-animation: load 1.8s linear infinite;
+     -moz-animation: load 1.8s linear infinite;
+       -o-animation: load 1.8s linear infinite;
+          animation: load 1.8s linear infinite;
+  -webkit-animation-delay: 0.8s;
+     -moz-animation-delay: 0.8s;
+       -o-animation-delay: 0.8s;
+          animation-delay: 0.8s;
+}
+
+.dot:nth-child(3) {
+  -webkit-animation: load 1.8s linear infinite;
+     -moz-animation: load 1.8s linear infinite;
+       -o-animation: load 1.8s linear infinite;
+          animation: load 1.8s linear infinite;
+  -webkit-animation-delay: 1.2s;
+     -moz-animation-delay: 1.2s;
+       -o-animation-delay: 1.2s;
+          animation-delay: 1.2s;
+}
+
+@-webkit-keyframes load
+{
+  5% {
+    margin-top: -2em;
+    position: absolute;
+  }
+  100% {
+    margin-top: 0;
+  }
+}
+
+@-moz-keyframes load
+{
+  5% {
+    margin-top: -2em;
+    position: absolute;
+  }
+  100% {
+    margin-top: 0;
+  }
+}
+
+@-o-keyframes load
+{
+  5% {
+    margin-top: -2em;
+    position: absolute;
+  }
+  100% {
+    margin-top: 0;
+  }
+}
+
+@keyframes load
+{
+  5% {
+    margin-top: -2em;
+    position: absolute;
+  }
+  100% {
+    margin-top: 0;
+  }
+}
+
