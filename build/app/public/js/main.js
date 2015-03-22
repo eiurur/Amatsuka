@@ -171,16 +171,16 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
           _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
           itemsImageOnly = TweetService.filterIncludeImage(data.data);
           itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member);
-          console.log(itemsNomalized);
           return itemsNomalized;
         };
       })(this)).then((function(_this) {
         return function(itemsNomalized) {
-          return (function() {
-            _.each(itemsNomalized, function(item) {
-              return [_this.items][0].push(item);
+          (function() {
+            $q.all(itemsNomalized.map(function(item) {
+              return _this.addTweet(item);
+            })).then(function(result) {
+              return _this.busy = false;
             });
-            _this.busy = false;
           })();
         };
       })(this));
@@ -281,8 +281,7 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
   ls = localStorage;
   ListService.amatsukaList = {
     data: JSON.parse(ls.getItem('amatsukaList')) || {},
-    member: JSON.parse(ls.getItem('amatsukaFollowList')) || [],
-    member: []
+    member: JSON.parse(ls.getItem('amatsukaFollowList')) || []
   };
   ListService.isSameUser().then(function(isSame) {
     if (isSame) {
@@ -315,12 +314,8 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
 
 angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthService", "TweetService", "Tweets", function($scope, AuthService, TweetService, Tweets) {
   if (_.isEmpty(AuthService.user)) {
-    return;
+
   }
-  console.log('List AuthService.user = ', AuthService.user);
-  return TweetService.getListsList().then(function(data) {
-    return $scope.lists = data.data;
-  }).then(data);
 }]);
 
 angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthService", "TweetService", "ListService", function($scope, AuthService, TweetService, ListService) {

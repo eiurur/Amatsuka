@@ -22,7 +22,7 @@ angular.module "myApp.controllers"
     $location.path '/'
 
   $scope.tweets =
-   new Tweets([], undefined, 'fav', AuthService.user._json.id_str)
+    new Tweets([], undefined, 'fav', AuthService.user._json.id_str)
 　 $scope.listIdStr = ListService.amatsukaList.data.id_str
   $scope.isLoaded  = true
 

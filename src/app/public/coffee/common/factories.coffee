@@ -41,35 +41,17 @@ angular.module "myApp.factories", []
             @busy = false
             return
 
-          # console.time 'decStrNum'
-          @maxId = TweetService.decStrNum(_.last(data.data).id_str)
-          # console.timeEnd 'decStrNum'
-
-          # console.time 'filterIncludeImage'
+          @maxId         = TweetService.decStrNum(_.last(data.data).id_str)
           itemsImageOnly = TweetService.filterIncludeImage data.data
-          # console.timeEnd 'filterIncludeImage'
-
-          # console.time 'nomalizeTweets'
-          # console.log 'tweets b = ', itemsImageOnly
           itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member)
-          # # itemsNomalized = itemsImageOnly
-          # console.log 'tweets a = ', itemsImageOnly
-          # console.timeEnd 'nomalizeTweets'
-          console.log itemsNomalized
           itemsNomalized
         .then (itemsNomalized) =>
           do =>
-            _.each itemsNomalized, (item) =>
-              [@items][0].push item
-            @busy = false
+            $q.all itemsNomalized.map (item) =>
+              @addTweet(item)
+            .then (result) =>
+              @busy = false
             return
-            # console.time '$q.all '
-            # $q.all itemsNomalized.map (item) =>
-            #   @addTweet(item)
-            # .then (result) =>
-            #   @busy = false
-            #   console.timeEnd '$q.all '
-            # return
-          # return
+          return
 
     Tweets
