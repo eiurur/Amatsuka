@@ -5,7 +5,7 @@
     path = require('path');
     settings = (process.env.NODE_ENV === 'production' ? require('../lib/configs/production') : require('../lib/configs/development')).settings;
     app = module.exports = (function() {
-      var MongoStore, bodyParser, cookieParser, env, express, fs, methodOverride, morgan, options, passport, session, stream;
+      var MongoStore, bodyParser, cacheOptions, compression, cookieParser, env, express, fs, methodOverride, morgan, options, passport, session, stream;
       express = require('express');
       bodyParser = require('body-parser');
       cookieParser = require('cookie-parser');
@@ -13,6 +13,7 @@
       morgan = require('morgan');
       passport = require('passport');
       session = require('express-session');
+      compression = require('compression');
       MongoStore = require('connect-mongo')(session);
       options = {
         secret: settings.COOKIE_SECRET,
@@ -25,7 +26,21 @@
           auto_reconnect: true
         })
       };
+      cacheOptions = {
+        dotfiles: 'ignore',
+        etag: false,
+        extensions: ['htm', 'html', 'css', 'js'],
+        index: false,
+        maxAge: 0,
+        redirect: false,
+        setHeaders: function(res, path, stat) {
+          res.set({
+            'x-timestamp': Date.now()
+          });
+        }
+      };
       app = express();
+      app.disable('x-powered-by');
       app.set('port', process.env.PORT || settings.PORT);
       app.set('views', __dirname + '/views');
       app.set('view engine', 'jade');
@@ -37,9 +52,10 @@
       }));
       app.use(methodOverride());
       app.use(session(options));
+      app.use(compression());
       app.use(passport.initialize());
       app.use(passport.session());
-      app.use(express["static"](path.join(__dirname, 'public')));
+      app.use(express["static"](path.join(__dirname, 'public'), cacheOptions));
       env = process.env.NODE_ENV || 'development';
       if (env === 'development') {
         fs = require('fs');

@@ -13,5 +13,6 @@ gulp.task "sass", ->
     .pipe gulp.dest config.dest
     .pipe $.rename suffix: '.min'
     .pipe $.cssmin()
+    .pipe $.gzip()
     .pipe gulp.dest config.dest
     .pipe $.notify 'CSS task complete'

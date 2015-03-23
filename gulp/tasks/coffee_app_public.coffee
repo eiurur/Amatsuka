@@ -15,5 +15,6 @@ gulp.task 'coffee_app_public', ->
     .pipe $.stripDebug()
     .pipe $.rename suffix: '.min'
     .pipe $.uglify mangle: false
+    .pipe $.gzip()
     .pipe gulp.dest config.dest
     .pipe $.notify 'coffee_app_public task complete'

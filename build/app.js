@@ -7,7 +7,7 @@
 
   serve = require('./app/serve').serve;
 
-  startTask = 　require("" + dir + "collect/start-task").startTask;
+  startTask = require("" + dir + "collect/start-task").startTask;
 
   settings = (process.env.NODE_ENV === "production" ? require("" + dir + "configs/production") : require("" + dir + "configs/development")).settings;
 

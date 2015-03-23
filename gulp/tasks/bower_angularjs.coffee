@@ -11,5 +11,6 @@ gulp.task 'bower_angularjs', ->
       .pipe gulp.dest config.dest
       .pipe $.rename suffix: '.min'
       .pipe $.uglify mangle: false
+      .pipe $.gzip()
       .pipe gulp.dest config.dest
       .pipe $.notify 'Library AngularJS task complete'
