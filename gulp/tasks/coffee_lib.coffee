@@ -9,5 +9,6 @@ gulp.task 'coffee_lib', ->
     .pipe $.coffeelint()
     .pipe $.coffeelint.reporter()
     .pipe $.coffee()
+    .pipe $.gzip()
     .pipe gulp.dest config.dest
     .pipe $.notify 'coffee_lib task complete'
