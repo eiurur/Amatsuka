@@ -1,5 +1,5 @@
 (function() {
-  var Promise, TwitterCilent, UserProvider, dir, moment, my, settings, twitterPostTest, twitterTest, _;
+  var Promise, TwitterCilent, UserProvider, dir, moment, my, settings, _;
 
   dir = '../../lib/';
 
@@ -13,15 +13,15 @@
 
   TwitterCilent = require("" + dir + "TwitterClient");
 
-  twitterTest = require("" + dir + "twitter-test").twitterTest;
-
-  twitterPostTest = require("" + dir + "twitter-post-test").twitterPostTest;
-
   UserProvider = require("" + dir + "model").UserProvider;
 
   settings = process.env.NODE_ENV === 'production' ? require(dir + 'configs/production') : require(dir + 'configs/development');
 
   module.exports = function(app) {
+
+    /*
+    Middleware
+     */
     app.use('/api/?', function(req, res, next) {
       console.log("======> " + req.originalUrl);
       if (!_.isUndefined(req.session.passport.user)) {
@@ -30,6 +30,10 @@
         return res.redirect('/');
       }
     });
+
+    /*
+    APIs
+     */
     app.post('/api/findUserById', function(req, res) {
       console.log("\n============> findUserById in API\n");
       return UserProvider.findUserById({

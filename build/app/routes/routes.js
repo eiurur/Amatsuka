@@ -1,5 +1,5 @@
 (function() {
-  var Promise, UserProvider, dir, moment, my, settings, twitterTest, _;
+  var Promise, UserProvider, dir, moment, my, settings, _;
 
   dir = '../../lib/';
 
@@ -10,8 +10,6 @@
   Promise = require('es6-promise').Promise;
 
   my = require(dir + 'my');
-
-  twitterTest = require(dir + 'twitter-test').twitterTest;
 
   UserProvider = require(dir + 'model').UserProvider;
 

@@ -4,8 +4,6 @@ _                 = require 'lodash'
 {Promise}         = require 'es6-promise'
 my                = require "#{dir}my"
 TwitterCilent     = require "#{dir}TwitterClient"
-{twitterTest}     = require "#{dir}twitter-test"
-{twitterPostTest} = require "#{dir}twitter-post-test"
 {UserProvider}    = require "#{dir}model"
 settings          = if process.env.NODE_ENV is 'production'
   require dir + 'configs/production'
@@ -16,6 +14,9 @@ else
 # JSON API
 module.exports = (app) ->
 
+  ###
+  Middleware
+  ###
   app.use '/api/?', (req, res, next) ->
     console.log "======> #{req.originalUrl}"
     unless _.isUndefined(req.session.passport.user)
@@ -23,20 +24,9 @@ module.exports = (app) ->
     else
       res.redirect '/'
 
-  # # APIの動作テスト。後で消す
-  # app.post '/api/twitterTest', (req, res) ->
-  #   twitterTest(req.body.user)
-  #   .then (data) ->
-  #     console.log 'twitterTest data = ', data
-  #     res.json data: data
-
-  # # APIの動作テスト(おもに投稿関連)。後で消す
-  # app.post '/api/twitterPostTest', (req, res) ->
-  #   twitterPostTest(req.body.user)
-  #   .then (data) ->
-  #     # console.log 'twitterPostTest data = ', data
-  #     res.json data: data
-
+  ###
+  APIs
+  ###
   app.post '/api/findUserById', (req, res) ->
     console.log "\n============> findUserById in API\n"
     UserProvider.findUserById
