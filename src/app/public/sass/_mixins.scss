@@ -41,3 +41,14 @@
     }
   }
 }
+
+// For dot-loader
+@mixin dot($margin-vertical: 0.3em) {
+  position: absolute;
+  margin: 0.3em $margin-vertical;
+  height: 1em;
+  width: 1em;
+  background: $amatsuka-color;
+  @include round(50%);
+  display: inline-block;
+}

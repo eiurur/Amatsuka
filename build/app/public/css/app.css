@@ -314,13 +314,11 @@
 }
 
 .dot:nth-child(1) {
-  margin: 0.3em;
   position: absolute;
+  margin: 0.3em 0.3em;
   height: 1em;
   width: 1em;
   background: #f2446f;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
   border-radius: 50%;
   display: inline-block;
 }
@@ -331,8 +329,6 @@
   height: 1em;
   width: 1em;
   background: #f2446f;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
   border-radius: 50%;
   display: inline-block;
 }
@@ -343,54 +339,37 @@
   height: 1em;
   width: 1em;
   background: #f2446f;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
   border-radius: 50%;
   display: inline-block;
 }
 
 .dot:nth-child(1) {
-  -webkit-animation: load 1.8s linear infinite;
   -moz-animation: load 1.8s linear infinite;
-  -o-animation: load 1.8s linear infinite;
+  -webkit-animation: load 1.8s linear infinite;
   animation: load 1.8s linear infinite;
-  -webkit-animation-delay: 0.4s;
   -moz-animation-delay: 0.4s;
-  -o-animation-delay: 0.4s;
+  -webkit-animation-delay: 0.4s;
   animation-delay: 0.4s;
 }
 
 .dot:nth-child(2) {
-  -webkit-animation: load 1.8s linear infinite;
   -moz-animation: load 1.8s linear infinite;
-  -o-animation: load 1.8s linear infinite;
+  -webkit-animation: load 1.8s linear infinite;
   animation: load 1.8s linear infinite;
-  -webkit-animation-delay: 0.8s;
   -moz-animation-delay: 0.8s;
-  -o-animation-delay: 0.8s;
+  -webkit-animation-delay: 0.8s;
   animation-delay: 0.8s;
 }
 
 .dot:nth-child(3) {
-  -webkit-animation: load 1.8s linear infinite;
   -moz-animation: load 1.8s linear infinite;
-  -o-animation: load 1.8s linear infinite;
+  -webkit-animation: load 1.8s linear infinite;
   animation: load 1.8s linear infinite;
-  -webkit-animation-delay: 1.2s;
   -moz-animation-delay: 1.2s;
-  -o-animation-delay: 1.2s;
+  -webkit-animation-delay: 1.2s;
   animation-delay: 1.2s;
 }
 
-@-webkit-keyframes load {
-  5% {
-    margin-top: -2em;
-    position: absolute;
-  }
-  100% {
-    margin-top: 0;
-  }
-}
 @-moz-keyframes load {
   5% {
     margin-top: -2em;
@@ -400,7 +379,7 @@
     margin-top: 0;
   }
 }
-@-o-keyframes load {
+@-webkit-keyframes load {
   5% {
     margin-top: -2em;
     position: absolute;

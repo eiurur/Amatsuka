@@ -318,73 +318,30 @@
 }
 
 .dot:nth-child(1) {
-  margin: 0.3em;
-  position: absolute;
-  height: 1em;
-  width: 1em;
-  background: $amatsuka-color;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-  display: inline-block;
+  @include dot();
 }
 .dot:nth-child(2) {
-  position: absolute;
-  margin: 0.3em 2em;
-  height: 1em;
-  width: 1em;
-  background: $amatsuka-color;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-  display: inline-block;
+  @include dot(2em);
 }
 .dot:nth-child(3) {
-  position: absolute;
-  margin: 0.3em 3.7em;
-  height: 1em;
-  width: 1em;
-  background: $amatsuka-color;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-  display: inline-block;
+  @include dot(3.7em);
 }
 .dot:nth-child(1) {
-  -webkit-animation: load 1.8s linear infinite;
-     -moz-animation: load 1.8s linear infinite;
-       -o-animation: load 1.8s linear infinite;
-          animation: load 1.8s linear infinite;
-  -webkit-animation-delay: 0.4s;
-     -moz-animation-delay: 0.4s;
-       -o-animation-delay: 0.4s;
-          animation-delay: 0.4s;
+  @include animation(load 1.8s linear infinite);
+  @include animation-delay(0.4s);
 }
 
 .dot:nth-child(2) {
-  -webkit-animation: load 1.8s linear infinite;
-     -moz-animation: load 1.8s linear infinite;
-       -o-animation: load 1.8s linear infinite;
-          animation: load 1.8s linear infinite;
-  -webkit-animation-delay: 0.8s;
-     -moz-animation-delay: 0.8s;
-       -o-animation-delay: 0.8s;
-          animation-delay: 0.8s;
+  @include animation(load 1.8s linear infinite);
+  @include animation-delay(0.8s);
 }
 
 .dot:nth-child(3) {
-  -webkit-animation: load 1.8s linear infinite;
-     -moz-animation: load 1.8s linear infinite;
-       -o-animation: load 1.8s linear infinite;
-          animation: load 1.8s linear infinite;
-  -webkit-animation-delay: 1.2s;
-     -moz-animation-delay: 1.2s;
-       -o-animation-delay: 1.2s;
-          animation-delay: 1.2s;
+  @include animation(load 1.8s linear infinite);
+  @include animation-delay(1.2s);
 }
 
-@-webkit-keyframes load
-{
+@include keyframes(load) {
   5% {
     margin-top: -2em;
     position: absolute;
@@ -393,37 +350,3 @@
     margin-top: 0;
   }
 }
-
-@-moz-keyframes load
-{
-  5% {
-    margin-top: -2em;
-    position: absolute;
-  }
-  100% {
-    margin-top: 0;
-  }
-}
-
-@-o-keyframes load
-{
-  5% {
-    margin-top: -2em;
-    position: absolute;
-  }
-  100% {
-    margin-top: 0;
-  }
-}
-
-@keyframes load
-{
-  5% {
-    margin-top: -2em;
-    position: absolute;
-  }
-  100% {
-    margin-top: 0;
-  }
-}
-
