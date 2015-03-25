@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
+angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/index',
     controller: 'IndexCtrl'
@@ -21,6 +21,25 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   });
   return $locationProvider.html5Mode(true);
 }]);
+
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
 
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
@@ -156,6 +175,11 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
         };
       })(this)).then((function(_this) {
         return function(itemsNomalized) {
+          if (_.isEmpty(itemsNomalized)) {
+            console.log('空');
+            _this.busy = false;
+            return;
+          }
           (function() {
             $q.all(itemsNomalized.map(function(item) {
               return _this.addTweet(item);
@@ -198,25 +222,6 @@ angular.module("myApp.services", []).service("CommonService", function() {
     isLoaded: false
   };
 });
-
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
 
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;

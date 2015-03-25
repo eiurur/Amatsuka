@@ -74,6 +74,8 @@ module.exports =
       'bower_components/jquery/dist/jquery.min.js'
       'bower_components/bootstrap/dist/js/bootstrap.min.js'
       'bower_components/es6-promise/promise.min.js'
+      'bower_components/imagesloaded/imagesloaded.pkgd.min.js'
+      'bower_components/masonry/dist/masonry.pkgd.min.js'
     ]
     dest: dest + app_public + "/js/vendors/"
 
@@ -83,6 +85,7 @@ module.exports =
       'bower_components/angular-route/angular-route.min.js'
       'bower_components/angular-animate/angular-animate.min.js'
       'bower_components/angular-sanitize/angular-sanitize.min.js'
+      'bower_components/angular-masonry/angular-masonry.js'
     ]
     dest: dest + app_public + "/js/vendors/"
 

@@ -296,6 +296,12 @@
   padding-top: 20px;
   width: 100%;
   max-width: 540px;
+  color: #a1a1a1;
+}
+
+.loading-bar--grid {
+  bottom: 0;
+  margin: 0 auto;
 }
 
 /**
@@ -304,6 +310,7 @@
 .wrapper {
   width: 3em;
   margin: 3em auto;
+  padding-right: 100px;
 }
 
 .dot:nth-child(1) {
@@ -623,11 +630,14 @@ i {
 
 .timeline {
   width: 100%;
-  padding: 0 0 30px 85px;
   color: #a1a1a1;
 }
 .timeline i {
   color: #a1a1a1;
+}
+
+.timeline--list {
+  padding: 0 0 30px 85px;
 }
 
 .timeline__post {
@@ -768,7 +778,75 @@ i {
 }
 
 /**
- * Grid表示
+ * Grid 表示
+ * ほとんど max-width:480px からコピペ。直そう。
+ */
+.timeline--grid {
+  padding: 0 0 30px 0;
+}
+
+.timeline__post--grid {
+  max-width: 300px;
+  margin: 10px;
+  padding-top: 15px;
+}
+
+.timeline__post--header--grid {
+  line-height: 32px;
+  padding: 0 8px;
+}
+
+.timeline__post--header--info--grid {
+  line-height: 30px;
+}
+
+.timeline__post--header--link--grid {
+  margin-left: 44px;
+}
+
+.timeline__post--header--rt_source--grid {
+  line-height: 12px;
+}
+
+.timeline__post--header--user--grid {
+  line-height: 12px;
+  display: block;
+}
+
+.timeline__post--header--rt_icon--grid {
+  padding: 0;
+}
+
+.timeline__post--icon--grid {
+  top: 15px;
+  left: 8px;
+  width: 32px;
+  height: 32px;
+}
+.timeline__post--icon--grid img {
+  max-width: 32px;
+}
+
+.timeline__post--image--grid {
+  padding: 10px 0;
+}
+
+.timeline__post--text--grid {
+  padding: 0 8px;
+}
+
+.timeline__post--blockquote--grid {
+  padding: 0 8px;
+}
+
+.timeline__post--footer--grid {
+  padding: 0 8px;
+}
+
+/**
+ * [width description]
+ * Under 480px
+ * For iPhone6, etc.
  */
 @media (max-width: 480px) {
   .timeline {

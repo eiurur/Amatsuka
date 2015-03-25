@@ -297,6 +297,12 @@
   padding-top: 20px;
   width: 100%;
   max-width: $timeline__post--width;
+  color: $link-color;
+}
+
+.loading-bar--grid {
+  bottom: 0;
+  margin: 0 auto;
 }
 
 /**
@@ -306,7 +312,11 @@
 .wrapper {
   width: 3em;
   margin: 3em auto;
+
+  // 中心に移動するために追加。
+  padding-right: 100px;
 }
+
 .dot:nth-child(1) {
   margin: 0.3em;
   position: absolute;
