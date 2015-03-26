@@ -28,6 +28,18 @@ angular.module "myApp.directives", []
         $('html, body').animate
           scrollTop: $(scope.scrollTo).offset().top, "slow"
 
+  .directive 'resize', ($rootScope, $window) ->
+    link: ->
+      angular.element($window).on 'load resize', (e) ->
+        console.log 'broadCast resize '
+
+        # ウィンドウのサイズを取得
+        html = angular.element(document).find('html')
+        cW = html[0].clientWidth
+
+        # ウィンドウのサイズを元にビューを切り替える
+        layoutType = if cW < 480 then 'list' else 'grid'
+
   .directive "zoomImage", ($rootScope, TweetService) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
@@ -48,14 +60,12 @@ angular.module "myApp.directives", []
         # windowのサイズを取得
         html = angular.element(document).find('html')
 
-
         imageLayer = angular.element(document).find('.image-layer')
         imageLayer.addClass('image-layer__overlay')
 
         imageLayerImg = angular.element(document).find('.image-layer__img')
         imageLayerImg.removeClass('image-layer__img--hidden')
         return unless imageLayerImg[0].naturalHeight?
-
 
         # 画面に綺麗に収まるようimgのサイズを設定する処理
         # XXX:
@@ -64,8 +74,6 @@ angular.module "myApp.directives", []
         # ngTouchとか使ってスマホにも対応。
         h = imageLayerImg[0].naturalHeight
         w = imageLayerImg[0].naturalWidth
-
-
         dirction = if h > w then 'h' else 'w'
 
         # 画像の縦横比から調整する
@@ -93,7 +101,6 @@ angular.module "myApp.directives", []
           # 縦長
           console.log 'c 縦長', cH_cW_percent
           dirction = 'w'
-
 
         imageLayerImg.addClass("image-layer__img-#{dirction}-wide")
 

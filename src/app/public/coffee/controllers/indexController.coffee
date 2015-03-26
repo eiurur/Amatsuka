@@ -1,5 +1,6 @@
 angular.module "myApp.controllers"
   .controller "IndexCtrl", (
+    $window
     $scope
     $rootScope
     AuthService
@@ -11,6 +12,7 @@ angular.module "myApp.controllers"
 
   $scope.listIdStr = ''
   $scope.isLoaded  = false
+  $scope.layoutType = 'grid'
 
   ls               = localStorage
   ListService.amatsukaList =
@@ -52,6 +54,11 @@ angular.module "myApp.controllers"
     return
 
 
+
   $scope.$on 'addMember', (event, args) ->
     console.log 'index addMember on ', args
     TweetService.applyFollowStatusChange $scope.tweets.items, args
+
+  $scope.$on 'resize::resize', (event, args) ->
+    console.log 'index resize::resize on ', args.layoutType
+    $scope.layoutType = args.layoutType
