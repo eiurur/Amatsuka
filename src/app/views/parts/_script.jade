@@ -2,7 +2,6 @@ if process.env.NODE_ENV == 'production'
   script(src='./js/vendors/lib.min.js')
   script(src='./js/vendors/angular-lib.min.js')
   script(src='./js/vendors/ng-infinite-scroll.min.js')
-  script(src='//cdnjs.cloudflare.com/ajax/libs/masonry/3.2.2/masonry.pkgd.min.js')
   script(src='./js/main.min.js')
   script.
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -15,8 +14,4 @@ else
   script(src='./js/vendors/lib.js')
   script(src='./js/vendors/angular-lib.js')
   script(src='./js/vendors/ng-infinite-scroll.js')
-
-  // FIXME: 単独で呼ばないと最後の並び替えでバグる(原因不明)
-  // バージョン違いではない
-  script(src='//cdnjs.cloudflare.com/ajax/libs/masonry/3.2.2/masonry.pkgd.min.js')
   script(src='./js/main.js')
