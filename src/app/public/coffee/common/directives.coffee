@@ -28,6 +28,22 @@ angular.module "myApp.directives", []
         $('html, body').animate
           scrollTop: $(scope.scrollTo).offset().top, "slow"
 
+  .directive 'resize', ($rootScope, $window) ->
+    link: ->
+      angular.element($window).on 'load resize', (e) ->
+
+        # ウィンドウのサイズを取得
+        html = angular.element(document).find('html')
+        cW = html[0].clientWidth
+        console.log 'broadCast resize ', cW
+
+        # ウィンドウのサイズを元にビューを切り替える
+        # 2カラムで表示できる限界が700px
+        layoutType = if cW < 700 then 'list' else 'grid'
+
+        $rootScope.$broadcast 'resize::resize', layoutType: layoutType
+
+
   .directive "zoomImage", ($rootScope, TweetService) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
@@ -42,21 +58,18 @@ angular.module "myApp.directives", []
             class="image-layer__img image-layer__img--hidden" />
           """
         imageLayer.html html
-        # console.log 'imageLayer', imageLayer
-        # console.log(imageLayer[0].children[0].naturalHeight)
-        # console.log(imageLayer[0].children[0].naturalWidth)
 
       element.on 'click', ->
+
+        # windowのサイズを取得
+        html = angular.element(document).find('html')
+
         imageLayer = angular.element(document).find('.image-layer')
         imageLayer.addClass('image-layer__overlay')
 
         imageLayerImg = angular.element(document).find('.image-layer__img')
         imageLayerImg.removeClass('image-layer__img--hidden')
         return unless imageLayerImg[0].naturalHeight?
-
-        # console.log imageLayerImg
-        # console.log imageLayerImg[0].naturalHeight
-        # console.log imageLayerImg[0].naturalWidth
 
         # 画面に綺麗に収まるようimgのサイズを設定する処理
         # XXX:
@@ -66,6 +79,33 @@ angular.module "myApp.directives", []
         h = imageLayerImg[0].naturalHeight
         w = imageLayerImg[0].naturalWidth
         dirction = if h > w then 'h' else 'w'
+
+        # 画像の縦横比から調整する
+        console.log h, w
+        h_w_percent = h / w * 100
+        if 50 < h_w_percent < 75
+          # 横長
+          console.log '横長', h_w_percent
+          dirction = 'w'
+        else if 100 <= h_w_percent < 125
+          # 縦長
+          console.log '縦長', h_w_percent
+          dirction = 'h'
+
+        # 画面サイズから調整する
+        cH = html[0].clientHeight
+        cW = html[0].clientWidth
+        cH_cW_percent = cH / cW * 100
+        console.log 'cH_cW_percent = ', cH_cW_percent
+        if cH_cW_percent < 75
+          # 横長
+          console.log 'c 横長', cH_cW_percent
+          dirction = 'h'
+        else if 125 < cH_cW_percent
+          # 縦長
+          console.log 'c 縦長', cH_cW_percent
+          dirction = 'w'
+
         imageLayerImg.addClass("image-layer__img-#{dirction}-wide")
 
         imageLayer.on 'click', ->

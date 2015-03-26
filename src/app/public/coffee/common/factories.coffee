@@ -46,6 +46,11 @@ angular.module "myApp.factories", []
           itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member)
           itemsNomalized
         .then (itemsNomalized) =>
+          if _.isEmpty itemsNomalized
+            console.log '空'
+            @busy = false
+            return
+
           do =>
             $q.all itemsNomalized.map (item) =>
               @addTweet(item)

@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
+angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/index',
     controller: 'IndexCtrl'
@@ -21,6 +21,25 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   });
   return $locationProvider.html5Mode(true);
 }]);
+
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
 
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
@@ -56,7 +75,22 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       });
     }
   };
-}).directive("zoomImage", ["$rootScope", "TweetService", function($rootScope, TweetService) {
+}).directive('resize', ["$rootScope", "$window", function($rootScope, $window) {
+  return {
+    link: function() {
+      return angular.element($window).on('load resize', function(e) {
+        var cW, html, layoutType;
+        html = angular.element(document).find('html');
+        cW = html[0].clientWidth;
+        console.log('broadCast resize ', cW);
+        layoutType = cW < 700 ? 'list' : 'grid';
+        return $rootScope.$broadcast('resize::resize', {
+          layoutType: layoutType
+        });
+      });
+    }
+  };
+}]).directive("zoomImage", ["$rootScope", "TweetService", function($rootScope, TweetService) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
@@ -69,7 +103,8 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
         return imageLayer.html(html);
       });
       return element.on('click', function() {
-        var dirction, h, imageLayer, imageLayerImg, w;
+        var cH, cH_cW_percent, cW, dirction, h, h_w_percent, imageLayer, imageLayerImg, w;
+        html = angular.element(document).find('html');
         imageLayer = angular.element(document).find('.image-layer');
         imageLayer.addClass('image-layer__overlay');
         imageLayerImg = angular.element(document).find('.image-layer__img');
@@ -80,6 +115,26 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
         h = imageLayerImg[0].naturalHeight;
         w = imageLayerImg[0].naturalWidth;
         dirction = h > w ? 'h' : 'w';
+        console.log(h, w);
+        h_w_percent = h / w * 100;
+        if ((50 < h_w_percent && h_w_percent < 75)) {
+          console.log('横長', h_w_percent);
+          dirction = 'w';
+        } else if ((100 <= h_w_percent && h_w_percent < 125)) {
+          console.log('縦長', h_w_percent);
+          dirction = 'h';
+        }
+        cH = html[0].clientHeight;
+        cW = html[0].clientWidth;
+        cH_cW_percent = cH / cW * 100;
+        console.log('cH_cW_percent = ', cH_cW_percent);
+        if (cH_cW_percent < 75) {
+          console.log('c 横長', cH_cW_percent);
+          dirction = 'h';
+        } else if (125 < cH_cW_percent) {
+          console.log('c 縦長', cH_cW_percent);
+          dirction = 'w';
+        }
         imageLayerImg.addClass("image-layer__img-" + dirction + "-wide");
         return imageLayer.on('click', function() {
           imageLayer.html('');
@@ -156,6 +211,11 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
         };
       })(this)).then((function(_this) {
         return function(itemsNomalized) {
+          if (_.isEmpty(itemsNomalized)) {
+            console.log('空');
+            _this.busy = false;
+            return;
+          }
           (function() {
             $q.all(itemsNomalized.map(function(item) {
               return _this.addTweet(item);
@@ -198,25 +258,6 @@ angular.module("myApp.services", []).service("CommonService", function() {
     isLoaded: false
   };
 });
-
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
 
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
@@ -271,13 +312,14 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   });
 }]);
 
-angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootScope", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, AuthService, TweetService, ListService, Tweets) {
+angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope", "$rootScope", "AuthService", "TweetService", "ListService", "Tweets", function($window, $scope, $rootScope, AuthService, TweetService, ListService, Tweets) {
   var ls;
   if (_.isEmpty(AuthService.user)) {
     return;
   }
   $scope.listIdStr = '';
   $scope.isLoaded = false;
+  $scope.layoutType = 'grid';
   ls = localStorage;
   ListService.amatsukaList = {
     data: JSON.parse(ls.getItem('amatsukaList')) || {},
@@ -306,9 +348,13 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$rootSco
     $scope.isLoaded = true;
     console.log('終わり');
   });
-  return $scope.$on('addMember', function(event, args) {
+  $scope.$on('addMember', function(event, args) {
     console.log('index addMember on ', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
+  });
+  return $scope.$on('resize::resize', function(event, args) {
+    console.log('index resize::resize on ', args.layoutType);
+    return $scope.layoutType = args.layoutType;
   });
 }]);
 

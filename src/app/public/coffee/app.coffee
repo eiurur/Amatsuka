@@ -3,6 +3,7 @@ angular.module('myApp', [
   'ngAnimate'
   'ngSanitize'
   'infinite-scroll'
+  'wu.masonry'
   'myApp.controllers'
   'myApp.filters'
   'myApp.services'
