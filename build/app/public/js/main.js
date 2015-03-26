@@ -80,10 +80,13 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
     link: function() {
       return angular.element($window).on('load resize', function(e) {
         var cW, html, layoutType;
-        console.log('broadCast resize ');
         html = angular.element(document).find('html');
         cW = html[0].clientWidth;
-        return layoutType = cW < 480 ? 'list' : 'grid';
+        console.log('broadCast resize ', cW);
+        layoutType = cW < 700 ? 'list' : 'grid';
+        return $rootScope.$broadcast('resize::resize', {
+          layoutType: layoutType
+        });
       });
     }
   };

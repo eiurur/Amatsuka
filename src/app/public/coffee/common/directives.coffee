@@ -31,14 +31,18 @@ angular.module "myApp.directives", []
   .directive 'resize', ($rootScope, $window) ->
     link: ->
       angular.element($window).on 'load resize', (e) ->
-        console.log 'broadCast resize '
 
         # ウィンドウのサイズを取得
         html = angular.element(document).find('html')
         cW = html[0].clientWidth
+        console.log 'broadCast resize ', cW
 
         # ウィンドウのサイズを元にビューを切り替える
-        layoutType = if cW < 480 then 'list' else 'grid'
+        # 2カラムで表示できる限界が700px
+        layoutType = if cW < 700 then 'list' else 'grid'
+
+        $rootScope.$broadcast 'resize::resize', layoutType: layoutType
+
 
   .directive "zoomImage", ($rootScope, TweetService) ->
     restrict: 'A'
