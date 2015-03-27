@@ -12,7 +12,7 @@ gulp.task 'coffee_app_public', ->
     .pipe $.concat('main.js')
     .pipe ngAnnotate()
     .pipe gulp.dest config.dest
-    .pipe $.stripDebug()
+    # .pipe $.stripDebug()
     .pipe $.rename suffix: '.min'
     .pipe $.uglify mangle: false
     .pipe $.gzip()
