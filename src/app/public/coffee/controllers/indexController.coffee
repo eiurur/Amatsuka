@@ -58,8 +58,11 @@ angular.module "myApp.controllers"
   $scope.$on 'addMember', (event, args) ->
     console.log 'index addMember on ', args
     TweetService.applyFollowStatusChange $scope.tweets.items, args
+    return
 
   $scope.$on 'resize::resize', (event, args) ->
     console.log 'index resize::resize on ', args.layoutType
     $scope.$apply ->
       $scope.layoutType = args.layoutType
+      return
+    return

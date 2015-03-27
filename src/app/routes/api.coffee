@@ -138,6 +138,8 @@ module.exports = (app) ->
       count: req.params.count
     .then (data) ->
       res.json data: data
+    .catch (err) ->
+      res.json err: err
 
   app.post '/api/favorites/create', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)

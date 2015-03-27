@@ -2,6 +2,7 @@ extends layout
 
 block body
   div(ng-controller='AdminUserCtrl')
+    toaster-container
 
     .cover-until-authenticated(ng-if='!isLoaded')
       .spinner

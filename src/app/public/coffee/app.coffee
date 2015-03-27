@@ -4,6 +4,7 @@ angular.module('myApp', [
   'ngSanitize'
   'infinite-scroll'
   'wu.masonry'
+  'toaster'
   'myApp.controllers'
   'myApp.filters'
   'myApp.services'

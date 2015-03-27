@@ -35,7 +35,7 @@ class TwitterClientDefine
         # console.log data
         if error
           console.log "postViaAPI #{params.method}.#{params.type} e = ", error
-          return reject error
+          return reject new Error(error)
         return resolve data
 
 

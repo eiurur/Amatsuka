@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
+angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'toaster', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/index',
     controller: 'IndexCtrl'
@@ -145,13 +145,18 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
   };
 }]);
 
-angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetService", "ListService", function($http, $q, TweetService, ListService) {
+var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "ToasterService", "TweetService", "ListService", function($http, $q, ToasterService, TweetService, ListService) {
   var Tweets;
   Tweets = (function() {
     function Tweets(items, maxId, type, twitterIdStr) {
       if (maxId == null) {
         maxId = void 0;
       }
+      this.checkError = __bind(this.checkError, this);
+      this.assignTweet = __bind(this.assignTweet, this);
+      this.normalizeTweet = __bind(this.normalizeTweet, this);
       this.busy = false;
       this.isLast　 = false;
       this.method = null;
@@ -162,8 +167,65 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
       this.twitterIdStr = twitterIdStr || null;
     }
 
-    Tweets.prototype.addTweet = function(tweet) {
-      return [this.items][0].push(tweet);
+    Tweets.prototype.normalizeTweet = function(data) {
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          var itemsImageOnly, itemsNomalized;
+          if (data.err != null) {
+            reject(data.err);
+          }
+          if (_.isEmpty(data.data)) {
+            reject({
+              statusCode: 10100
+            });
+          }
+          _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
+          itemsImageOnly = TweetService.filterIncludeImage(data.data);
+          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member);
+          return resolve(itemsNomalized);
+        };
+      })(this));
+    };
+
+    Tweets.prototype.assignTweet = function(tweets) {
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          if (_.isEmpty(tweets)) {
+            reject({
+              statusCode: 100110
+            });
+          }
+          (function() {
+            $q.all(tweets.map(function(tweet) {
+              return [_this.items][0].push(tweet);
+            })).then(function(result) {
+              return _this.busy = false;
+            });
+          })();
+        };
+      })(this));
+    };
+
+    Tweets.prototype.checkError = function(statusCode) {
+      console.log(statusCode);
+      switch (statusCode) {
+        case 429:
+          ToasterService.warning({
+            title: 'ツイート取得API制限',
+            text: '15分お待ちください'
+          });
+          break;
+        case 10100:
+          this.isLast = true;
+          this.busy = false;
+          ToasterService.success({
+            title: '全ツイート取得完了',
+            text: '全て読み込みました'
+          });
+          break;
+        case 10110:
+          this.busy = false;
+      }
     };
 
     Tweets.prototype.nextPage = function() {
@@ -192,39 +254,17 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "TweetSe
         });
       }
       this.busy = true;
-      console.time('get');
-      return this.method.then((function(_this) {
-        return function(data) {
-          var itemsImageOnly, itemsNomalized;
-          console.timeEnd('get');
-          console.log(data);
-          console.log('@method maxId', _this.maxId);
-          if (_.isEmpty(data.data)) {
-            _this.isLast = true;
-            _this.busy = false;
-            return;
-          }
-          _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
-          itemsImageOnly = TweetService.filterIncludeImage(data.data);
-          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member);
-          return itemsNomalized;
+      return (function(_this) {
+        return function() {
+          _this.method.then(function(data) {
+            return _this.normalizeTweet(data);
+          }).then(function(itemsNomalized) {
+            return _this.assignTweet(itemsNomalized);
+          })["catch"](function(error) {
+            return _this.checkError(error.statusCode);
+          });
         };
-      })(this)).then((function(_this) {
-        return function(itemsNomalized) {
-          if (_.isEmpty(itemsNomalized)) {
-            console.log('空');
-            _this.busy = false;
-            return;
-          }
-          (function() {
-            $q.all(itemsNomalized.map(function(item) {
-              return _this.addTweet(item);
-            })).then(function(result) {
-              return _this.busy = false;
-            });
-          })();
-        };
-      })(this));
+      })(this)();
     };
 
     return Tweets;
@@ -257,7 +297,18 @@ angular.module("myApp.services", []).service("CommonService", function() {
   return {
     isLoaded: false
   };
-});
+}).service('ToasterService', ["toaster", function(toaster) {
+  return {
+    success: function(notify) {
+      console.log(notify.title);
+      return toaster.pop('success', notify.title, notify.text);
+    },
+    warning: function(notify) {
+      console.log(notify.title);
+      return toaster.pop('warning', notify.title, notify.text);
+    }
+  };
+}]);
 
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
@@ -309,12 +360,12 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   $scope.isLoaded = true;
   $scope.$on('addMember', function(event, args) {
     console.log('fav addMember on ', args);
-    return TweetService.applyFollowStatusChange($scope.tweets.items, args);
+    TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
   return $scope.$on('resize::resize', function(event, args) {
     console.log('fav resize::resize on ', args.layoutType);
-    return $scope.$apply(function() {
-      return $scope.layoutType = args.layoutType;
+    $scope.$apply(function() {
+      $scope.layoutType = args.layoutType;
     });
   });
 }]);
@@ -357,12 +408,12 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope"
   });
   $scope.$on('addMember', function(event, args) {
     console.log('index addMember on ', args);
-    return TweetService.applyFollowStatusChange($scope.tweets.items, args);
+    TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
   return $scope.$on('resize::resize', function(event, args) {
     console.log('index resize::resize on ', args.layoutType);
-    return $scope.$apply(function() {
-      return $scope.layoutType = args.layoutType;
+    $scope.$apply(function() {
+      $scope.layoutType = args.layoutType;
     });
   });
 }]);

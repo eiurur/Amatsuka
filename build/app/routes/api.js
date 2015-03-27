@@ -174,6 +174,10 @@
         return res.json({
           data: data
         });
+      })["catch"](function(err) {
+        return res.json({
+          err: err
+        });
       });
     });
     app.post('/api/favorites/create', function(req, res) {
