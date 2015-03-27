@@ -10,6 +10,7 @@ angular.module "myApp.controllers"
   return if _.isEmpty AuthService.user
 
   $scope.isLoaded = false
+  $scope.layoutType = 'grid'
 
   ls = localStorage
   ListService.amatsukaList =
@@ -29,3 +30,8 @@ angular.module "myApp.controllers"
   $scope.$on 'addMember', (event, args) ->
     console.log 'fav addMember on ', args
     TweetService.applyFollowStatusChange $scope.tweets.items, args
+
+  $scope.$on 'resize::resize', (event, args) ->
+    console.log 'fav resize::resize on ', args.layoutType
+    $scope.$apply ->
+      $scope.layoutType = args.layoutType
