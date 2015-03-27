@@ -12,13 +12,6 @@
   }
 }
 
-.btn {
-  background: rgba(0,0,0, 0);
-  border-color: $link-color;
-  color: $link-color;
-  transition: .2s ease;
-}
-
 .btn-follow {
   margin-top: 10px; // iconのサイズが縦64px。 paddibng-top: 10px だと、media-bodyの縦が64pxになる。
 }

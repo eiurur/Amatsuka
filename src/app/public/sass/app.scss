@@ -49,6 +49,10 @@ Modifierは状態を表すときに使用されます。
 
 */
 
+html, body {
+  height:100%;
+}
+
 body {
   background: $body__bg-color;
   color: #000;
@@ -57,7 +61,6 @@ body {
   font-weight: 400;
   margin-top: 0;
   line-height: 1.4;
-  padding-top: 70px;
 }
 
 ul {
@@ -68,6 +71,17 @@ ul {
 
 a {
   cursor: pointer;
+}
+
+.h100per {
+  height: 100%;
+}
+
+.btn {
+  background: rgba(0,0,0, 0);
+  border-color: $link-color;
+  color: $link-color;
+  transition: .2s ease;
 }
 
 

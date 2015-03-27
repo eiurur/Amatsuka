@@ -440,6 +440,10 @@ Modifierは状態を表すときに使用されます。
 ・CSSプロパティはアルファベット順
 
 */
+html, body {
+  height: 100%;
+}
+
 body {
   background: #292929;
   color: #000;
@@ -448,7 +452,6 @@ body {
   font-weight: 400;
   margin-top: 0;
   line-height: 1.4;
-  padding-top: 70px;
 }
 
 ul {
@@ -461,10 +464,43 @@ a {
   cursor: pointer;
 }
 
+.h100per {
+  height: 100%;
+}
+
+.btn {
+  background: transparent;
+  border-color: #a1a1a1;
+  color: #a1a1a1;
+  transition: .2s ease;
+}
+
+.login__bg {
+  /* 画像ファイルの指定 */
+  background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_ver2.gif);
+  /* 画像を常に天地左右の中央に配置 */
+  background-position: center center;
+  /* 画像をタイル状に繰り返し表示しない */
+  background-repeat: no-repeat;
+  /* コンテンツの高さが画像の高さより大きい時、動かないように固定 */
+  background-attachment: fixed;
+  /* 表示するコンテナの大きさに基づいて、背景画像を調整 */
+  background-size: cover;
+  /* 背景画像が読み込まれる前に表示される背景のカラー */
+  background-color: #292929;
+  /* body 以外で全体表示するために必要 */
+  height: 100%;
+}
+
+.login__container {
+  position: relative;
+}
+
 .login__description {
   color: #a1a1a1;
   padding: 50px;
   height: 100%;
+  background: rgba(33, 33, 33, 0.9);
 }
 .login__description i {
   font-size: 130%;
@@ -497,6 +533,10 @@ a {
 
 .login__demo-gif {
   padding: 50px;
+}
+
+.navbar-padding {
+  padding-top: 70px;
 }
 
 .navbar-default {
@@ -898,13 +938,6 @@ i {
 }
 .external-link a {
   text-decoration: none;
-}
-
-.btn {
-  background: transparent;
-  border-color: #a1a1a1;
-  color: #a1a1a1;
-  transition: .2s ease;
 }
 
 .btn-follow {

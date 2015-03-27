@@ -1,22 +1,22 @@
 extends layout
 
 block body
-  div(ng-controller='AdminUserCtrl')
-    toaster-container
+  .h100per(ng-controller='AdminUserCtrl')
 
     .cover-until-authenticated(ng-if='!isLoaded')
       .spinner
 
-    span(ng-if='isLoaded')
+    .h100per(ng-if='isLoaded')
 
-      div(ng-if='!isAuthenticated')
+      .login__bg(ng-if='!isAuthenticated')
         include parts/_login
 
-      div(ng-if='isAuthenticated')
+      .navbar-padding(ng-if='isAuthenticated')
+        toaster-container
         include parts/_layer
         include parts/_nav
 
-        .site-main.col-md-12
+        .site-main.col-md-12(resize="resize")
           .col-md-12(ng-view)
 
         include parts/_user_sidebar
