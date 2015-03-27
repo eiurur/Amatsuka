@@ -11,6 +11,7 @@ gulp.task 'bower_js', ->
       .pipe gulp.dest config.dest
       .pipe $.rename suffix: '.min'
       .pipe $.uglify mangle: false
+      .pipe gulp.dest config.dest
       .pipe $.gzip()
       .pipe gulp.dest config.dest
       .pipe $.notify 'Library Scripts task complete'
