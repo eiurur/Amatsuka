@@ -11,7 +11,7 @@ What's this
 
 Twitter Client - Viewer for Image.
 
-![demo](https://dl.dropboxusercontent.com/u/31717228/898/Amatsuka/demnmo.gif)
+![demo](https://dl.dropboxusercontent.com/u/31717228/Amatsuka_ver2.gif)
 
 動機
 ======
@@ -52,6 +52,7 @@ Feature
 - [ ] List up tweets in own lists
 - [x] Show individually user data and tweet
 - [x] Zoom up a image
+- [x] Masonry
 - [ ] Streaming
 - [ ] Suggest user
 - [ ] config
