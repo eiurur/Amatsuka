@@ -64,6 +64,7 @@ module.exports =
       'bower_components/bootstrap/dist/css/bootstrap.min.css'
       'bower_components/bootflat/css/bootflat.css'
       'bower_components/angular/angular-csp.css'
+      'bower_components/angularjs-toaster/toaster.min.css'
     ]
     dest: dest + app_public + "/css/vendors/"
 
@@ -86,6 +87,7 @@ module.exports =
       'bower_components/angular-animate/angular-animate.min.js'
       'bower_components/angular-sanitize/angular-sanitize.min.js'
       'bower_components/angular-masonry/angular-masonry.js'
+      'bower_components/angularjs-toaster/toaster.min.js'
     ]
     dest: dest + app_public + "/js/vendors/"
 

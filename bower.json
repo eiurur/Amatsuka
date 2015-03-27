@@ -32,6 +32,7 @@
     "angular-bootstrap-lightbox": "~0.3.2",
     "imagesloaded": "~3.1.8",
     "masonry": "~3.2.2",
-    "angular-masonry": "~0.11.0"
+    "angular-masonry": "~0.11.0",
+    "angularjs-toaster": "~0.4.11"
   }
 }
