@@ -1,6 +1,6 @@
 # Factories
 angular.module "myApp.factories", []
-  .factory 'Tweets', ($http, $q, TweetService, ListService) ->
+  .factory 'Tweets', ($http, $q, ToasterService, TweetService, ListService) ->
 
     class Tweets
       constructor: (items, maxId = undefined, type, twitterIdStr) ->
@@ -13,8 +13,44 @@ angular.module "myApp.factories", []
         @type   = type
         @twitterIdStr = twitterIdStr || null
 
-      addTweet: (tweet) ->
-        [@items][0].push tweet
+      normalizeTweet: (data) =>
+        return new Promise (resolve, reject) =>
+          if data.err? then reject data.err
+          if _.isEmpty(data.data) then reject statusCode: 10100
+
+          @maxId         = TweetService.decStrNum _.last(data.data).id_str
+          itemsImageOnly = TweetService.filterIncludeImage data.data
+          itemsNomalized = TweetService.nomalizeTweets itemsImageOnly, ListService.amatsukaList.member
+          resolve itemsNomalized
+
+      assignTweet: (tweets) =>
+        return new Promise (resolve, reject) =>
+          if _.isEmpty tweets then reject statusCode: 100110
+
+          do =>
+            $q.all tweets.map (tweet) =>
+              [@items][0].push tweet
+            .then (result) =>
+              @busy = false
+            return
+          return
+
+      checkError: (statusCode) =>
+        console.log statusCode
+        switch statusCode
+          when 429
+            # Rate limit exceeded
+            ToasterService.warning title: 'ツイート取得API制限', text: '15分お待ちください'
+          when 10100
+            # 最後まで読み込み終了
+            @isLast = true
+            @busy = false
+            ToasterService.success title: '全ツイート取得完了', text: '全て読み込みました'
+          when 10110
+            # 取得するツイートが0
+            @busy = false
+        return
+
 
       nextPage: ->
         console.log @busy
@@ -29,34 +65,15 @@ angular.module "myApp.factories", []
           @method = TweetService.getListsStatuses(listIdStr: ListService.amatsukaList.data.id_str, maxId: @maxId, count: @count)
 
         @busy = true
-        console.time 'get'
-        @method
-        .then (data) =>
-          console.timeEnd 'get'
-          console.log data
-          console.log '@method maxId', @maxId
 
-          if _.isEmpty(data.data)
-            @isLast = true
-            @busy = false
-            return
-
-          @maxId         = TweetService.decStrNum(_.last(data.data).id_str)
-          itemsImageOnly = TweetService.filterIncludeImage data.data
-          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member)
-          itemsNomalized
-        .then (itemsNomalized) =>
-          if _.isEmpty itemsNomalized
-            console.log '空'
-            @busy = false
-            return
-
-          do =>
-            $q.all itemsNomalized.map (item) =>
-              @addTweet(item)
-            .then (result) =>
-              @busy = false
-            return
+        do =>
+          @method
+          .then (data) =>
+            @normalizeTweet data
+          .then (itemsNomalized) =>
+            @assignTweet itemsNomalized
+          .catch (error) =>
+            @checkError error.statusCode
           return
 
     Tweets
