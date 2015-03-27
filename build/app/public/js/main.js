@@ -294,6 +294,7 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
     return;
   }
   $scope.isLoaded = false;
+  $scope.layoutType = 'grid';
   ls = localStorage;
   ListService.amatsukaList = {
     data: JSON.parse(ls.getItem('amatsukaList')) || {},
@@ -306,9 +307,15 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   $scope.tweets = new Tweets([], void 0, 'fav', AuthService.user._json.id_str);
   $scope.listIdStr = ListService.amatsukaList.data.id_str;
   $scope.isLoaded = true;
-  return $scope.$on('addMember', function(event, args) {
+  $scope.$on('addMember', function(event, args) {
     console.log('fav addMember on ', args);
     return TweetService.applyFollowStatusChange($scope.tweets.items, args);
+  });
+  return $scope.$on('resize::resize', function(event, args) {
+    console.log('fav resize::resize on ', args.layoutType);
+    return $scope.$apply(function() {
+      return $scope.layoutType = args.layoutType;
+    });
   });
 }]);
 
@@ -354,7 +361,9 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope"
   });
   return $scope.$on('resize::resize', function(event, args) {
     console.log('index resize::resize on ', args.layoutType);
-    return $scope.layoutType = args.layoutType;
+    return $scope.$apply(function() {
+      return $scope.layoutType = args.layoutType;
+    });
   });
 }]);
 

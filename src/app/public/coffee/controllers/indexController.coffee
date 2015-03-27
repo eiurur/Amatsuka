@@ -61,4 +61,5 @@ angular.module "myApp.controllers"
 
   $scope.$on 'resize::resize', (event, args) ->
     console.log 'index resize::resize on ', args.layoutType
-    $scope.layoutType = args.layoutType
+    $scope.$apply ->
+      $scope.layoutType = args.layoutType
