@@ -1,10 +1,5 @@
 @charset "utf-8";
 
-// .login__bg {
-//   background: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_ver2.gif) center center / cover no-repeat fixed;
-//   height: 100%;
-// }
-
 .login__bg {
   /* 画像ファイルの指定 */
   background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_ver2.gif);
@@ -28,6 +23,8 @@
   height: 100%;
 }
 
+
+
 .login__container {
   position: relative;
 }
@@ -47,8 +44,8 @@
   }
 }
 
-.login__description--poem {
-  padding-top: 10px;
+.login__description--catchcopy {
+  padding-bottom: 10px;
 }
 
 .login__description--about {
@@ -71,4 +68,20 @@
 
 .login__demo-gif {
   padding: 50px;
+}
+
+
+@media(max-width:480px)
+{
+  .login__bg {
+    background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_v2_sp.gif);
+  }
+  .login__description {
+    padding: 24px;
+    font-size: 0.9em;
+    line-height: 1.6;
+  }
+  .login__description--btn {
+    width: 100%;
+  }
 }
