@@ -75,18 +75,25 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       });
     }
   };
-}).directive('resize', ["$rootScope", "$window", function($rootScope, $window) {
+}).directive('resize', ["$timeout", "$rootScope", "$window", function($timeout, $rootScope, $window) {
   return {
     link: function() {
+      var timer;
+      timer = false;
       return angular.element($window).on('load resize', function(e) {
-        var cW, html, layoutType;
-        html = angular.element(document).find('html');
-        cW = html[0].clientWidth;
-        console.log('broadCast resize ', cW);
-        layoutType = cW < 700 ? 'list' : 'grid';
-        return $rootScope.$broadcast('resize::resize', {
-          layoutType: layoutType
-        });
+        if (timer) {
+          $timeout.cancel(timer);
+        }
+        timer = $timeout(function() {
+          var cW, html, layoutType;
+          html = angular.element(document).find('html');
+          cW = html[0].clientWidth;
+          console.log('broadCast resize ', cW);
+          layoutType = cW < 700 ? 'list' : 'grid';
+          return $rootScope.$broadcast('resize::resize', {
+            layoutType: layoutType
+          });
+        }, 200);
       });
     }
   };

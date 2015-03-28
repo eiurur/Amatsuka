@@ -28,20 +28,28 @@ angular.module "myApp.directives", []
         $('html, body').animate
           scrollTop: $(scope.scrollTo).offset().top, "slow"
 
-  .directive 'resize', ($rootScope, $window) ->
+  .directive 'resize', ($timeout, $rootScope, $window) ->
     link: ->
+      timer = false
       angular.element($window).on 'load resize', (e) ->
+        if timer then $timeout.cancel timer
 
-        # ウィンドウのサイズを取得
-        html = angular.element(document).find('html')
-        cW = html[0].clientWidth
-        console.log 'broadCast resize ', cW
+        timer = $timeout ->
 
-        # ウィンドウのサイズを元にビューを切り替える
-        # 2カラムで表示できる限界が700px
-        layoutType = if cW < 700 then 'list' else 'grid'
+          # ウィンドウのサイズを取得
+          html = angular.element(document).find('html')
+          cW = html[0].clientWidth
+          console.log 'broadCast resize ', cW
 
-        $rootScope.$broadcast 'resize::resize', layoutType: layoutType
+          # ウィンドウのサイズを元にビューを切り替える
+          # 2カラムで表示できる限界が700px
+          layoutType = if cW < 700 then 'list' else 'grid'
+
+          $rootScope.$broadcast 'resize::resize', layoutType: layoutType
+
+        , 200
+        return
+
 
 
   .directive "zoomImage", ($rootScope, TweetService) ->
