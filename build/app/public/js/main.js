@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'toaster', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
+angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'toaster', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).value('THROTTLE_MILLISECONDS', 300).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/index',
     controller: 'IndexCtrl'

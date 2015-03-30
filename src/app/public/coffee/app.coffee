@@ -11,6 +11,7 @@ angular.module('myApp', [
   'myApp.factories'
   'myApp.directives'
 ])
+.value 'THROTTLE_MILLISECONDS', 300
 .config ($routeProvider, $locationProvider) ->
   $routeProvider.
     when '/',
