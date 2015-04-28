@@ -77,6 +77,7 @@ module.exports =
       'bower_components/es6-promise/promise.min.js'
       'bower_components/imagesloaded/imagesloaded.pkgd.min.js'
       'bower_components/masonry/dist/masonry.pkgd.min.js'
+      'bower_components/file-saver-js/FileSaver.min.js'
     ]
     dest: dest + app_public + "/js/vendors/"
 
