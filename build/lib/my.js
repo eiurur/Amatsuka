@@ -1,13 +1,19 @@
 (function() {
-  var crypto, moment, my, util, _;
+  var Promise, atob, crypto, moment, my, request, util, _;
 
   _ = require('lodash');
 
   util = require('util');
 
+  atob = require('atob');
+
   moment = require('moment');
 
   crypto = require('crypto');
+
+  request = require('request');
+
+  Promise = require('es6-promise').Promise;
 
   my = function() {
     return {
@@ -122,6 +128,23 @@
           result.push(pluckedVal);
         }
         return result;
+      },
+      loadBase64Data: function(url) {
+        return new Promise(function(resolve, reject) {
+          return request({
+            url: url,
+            encoding: null
+          }, function(err, res, body) {
+            var base64prefix, image;
+            if (!err && res.statusCode === 200) {
+              base64prefix = 'data:' + res.headers['content-type'] + ';base64,';
+              image = body.toString('base64');
+              return resolve(base64prefix + image);
+            } else {
+              return reject(err);
+            }
+          });
+        });
       }
     };
   };

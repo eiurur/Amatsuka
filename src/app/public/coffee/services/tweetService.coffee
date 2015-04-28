@@ -27,7 +27,6 @@ angular.module "myApp.services"
       return @.replace 'normal', 'bigger' if _.isUndefined url
       url.replace 'normal', 'bigger'
 
-
     hasOrigParameter: (tweet) ->
       console.log tweet
 
@@ -57,6 +56,7 @@ angular.module "myApp.services"
         tweet.picUrlList     = @get(tweet, 'media_url', isRT)
         tweet.picOrigUrlList = @get(tweet, 'media_url:orig', isRT)
         tweet.video_url      = @get(tweet, 'video_url', isRT)
+        tweet.fileName       = @get(tweet, 'screen_name', isRT) + '_' + @get(tweet, 'tweet.id_str', isRT)
         tweet.user.profile_image_url =
           @iconBigger(tweet.user.profile_image_url)
         return

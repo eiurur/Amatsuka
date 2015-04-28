@@ -119,3 +119,16 @@ angular.module "myApp.directives", []
         imageLayer.on 'click', ->
           imageLayer.html ''
           imageLayer.removeClass('image-layer__overlay')
+
+  .directive 'downloadFromUrl', (DownloadService, ConvertService) ->
+    restrict: 'A'
+    link: (scope, element, attrs) ->
+      element.on 'click', (event) ->
+        DownloadService.exec(attrs.url)
+        .success (data) ->
+          blob = ConvertService.base64toBlob data.base64Data
+          ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(attrs.url)[1]
+          filename = "#{attrs.filename}.#{ext}"
+          saveAs blob, filename
+
+

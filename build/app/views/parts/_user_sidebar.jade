@@ -44,8 +44,8 @@
           .timeline__post--footer--contents--controls
             i.fa.fa-retweet.icon-retweet(retweet-num="tweet.retweetNum", retweeted='tweet.retweeted', tweet-id-str='{{tweet.tweetIdStr}}', retweetable='retweetable')  {{tweet.retweetNum}}
             i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
-            a(href='{{tweet.extended_entities.media[0].media_url}}:orig?.jpg', download='download')
-              i.fa.fa-download
+            a
+              i.fa.fa-download(data-url="{{tweet.extended_entities.media[0].media_url}}:orig", filename="{{tweet.fileName}}", download-from-url='download-from-url')
 
     dot-loader.user-sidebar__contents--infinitescroll-message(ng-if='tweets.busy')
     .text-center.user-sidebar__contents--infinitescroll-message(ng-show='tweets.isLast') 終わりです

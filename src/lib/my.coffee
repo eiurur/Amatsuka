@@ -1,7 +1,10 @@
-_      = require 'lodash'
-util   = require 'util'
-moment = require 'moment'
-crypto = require 'crypto'
+_         = require 'lodash'
+util      = require 'util'
+atob      = require 'atob'
+moment    = require 'moment'
+crypto    = require 'crypto'
+request   = require 'request'
+{Promise} = require 'es6-promise'
 
 my = ->
 # module.exports = class My
@@ -110,5 +113,18 @@ my = ->
       # HACK: 上の2行は 下の1行でいいんじゃね？
       # result = _.uniq result
     result
+
+  loadBase64Data: (url) ->
+    new Promise (resolve, reject) ->
+      request
+        url: url
+        encoding: null
+      , (err, res, body) ->
+        if !err and res.statusCode is 200
+          base64prefix = 'data:' + res.headers['content-type'] + ';base64,'
+          image = body.toString('base64')
+          return resolve(base64prefix + image)
+        else
+          return reject err
 
 exports.my = my()

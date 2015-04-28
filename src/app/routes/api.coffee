@@ -1,8 +1,10 @@
 dir               = '../../lib/'
+fs = require 'fs'
+http = require 'http'
 moment            = require 'moment'
 _                 = require 'lodash'
 {Promise}         = require 'es6-promise'
-my                = require "#{dir}my"
+{my}              = require "#{dir}my"
 TwitterCilent     = require "#{dir}TwitterClient"
 {UserProvider}    = require "#{dir}model"
 settings          = if process.env.NODE_ENV is 'production'
@@ -26,6 +28,15 @@ module.exports = (app) ->
 
   ###
   APIs
+  ###
+  app.post '/api/downloadExec', (req, res) ->
+    console.log "\n========> downloadExec\n"
+    my.loadBase64Data req.body.url
+    .then (base64Data) ->
+      res.json base64Data: base64Data
+
+  ###
+  Twitter
   ###
   app.post '/api/findUserById', (req, res) ->
     console.log "\n============> findUserById in API\n"

@@ -150,6 +150,21 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       });
     }
   };
+}]).directive('downloadFromUrl', ["DownloadService", "ConvertService", function(DownloadService, ConvertService) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        return DownloadService.exec(attrs.url).success(function(data) {
+          var blob, ext, filename;
+          blob = ConvertService.base64toBlob(data.base64Data);
+          ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(attrs.url)[1];
+          filename = "" + attrs.filename + "." + ext;
+          return saveAs(blob, filename);
+        });
+      });
+    }
+  };
 }]);
 
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -315,7 +330,35 @@ angular.module("myApp.services", []).service("CommonService", function() {
       return toaster.pop('warning', notify.title, notify.text);
     }
   };
-}]);
+}]).service('DownloadService', ["$http", function($http) {
+  return {
+    exec: function(url) {
+      return $http.post('/api/downloadExec', {
+        url: url
+      });
+    }
+  };
+}]).service('ConvertService', function() {
+  return {
+    base64toBlob: function(_base64) {
+      var arr, blob, data, i, mime, tmp;
+      i = void 0;
+      tmp = _base64.split(',');
+      data = atob(tmp[1]);
+      mime = tmp[0].split(':')[1].split(';')[0];
+      arr = new Uint8Array(data.length);
+      i = 0;
+      while (i < data.length) {
+        arr[i] = data.charCodeAt(i);
+        i++;
+      }
+      blob = new Blob([arr], {
+        type: mime
+      });
+      return blob;
+    }
+  };
+});
 
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
@@ -946,6 +989,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           tweet.picUrlList = _this.get(tweet, 'media_url', isRT);
           tweet.picOrigUrlList = _this.get(tweet, 'media_url:orig', isRT);
           tweet.video_url = _this.get(tweet, 'video_url', isRT);
+          tweet.fileName = _this.get(tweet, 'screen_name', isRT) + '_' + _this.get(tweet, 'tweet.id_str', isRT);
           tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
         };
       })(this));
