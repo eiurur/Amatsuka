@@ -62,7 +62,8 @@
 }
 .search-form
 {
-    width: 33%;
+    max-width: $member__divider--width;
+    width: 100%;
     margin: 70px 0 35px 0;
 
     border-color: $link-color;
