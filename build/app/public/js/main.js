@@ -155,14 +155,15 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
-        toaster.pop('wait', "Now Downloading ...", '', 1000, 'trustedHtml');
+        toaster.pop('wait', "Now Downloading ...", '', 0, 'trustedHtml');
         return DownloadService.exec(attrs.url).success(function(data) {
           var blob, ext, filename;
           blob = ConvertService.base64toBlob(data.base64Data);
           ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(attrs.url)[1];
           filename = "" + attrs.filename + "." + ext;
           saveAs(blob, filename);
-          return toaster.pop('success', "Finished Download", '', 1000, 'trustedHtml');
+          toaster.clear();
+          return toaster.pop('success', "Finished Download", '', 2000, 'trustedHtml');
         });
       });
     }

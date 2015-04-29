@@ -126,7 +126,7 @@ angular.module "myApp.directives", []
       element.on 'click', (event) ->
 
         # download属性に比べてはるかに時間がかかるので通知を出す。
-        toaster.pop('wait', "Now Downloading ...", '', 1000, 'trustedHtml');
+        toaster.pop 'wait', "Now Downloading ...", '', 0, 'trustedHtml'
 
         DownloadService.exec(attrs.url)
         .success (data) ->
@@ -135,5 +135,8 @@ angular.module "myApp.directives", []
           filename = "#{attrs.filename}.#{ext}"
           saveAs blob, filename
 
+          # Fix: 複数DL中に一つ終えると全部のtoasterが消える。
+          toaster.clear()
+
           # DL終了を通知
-          toaster.pop('success', "Finished Download", '', 1000, 'trustedHtml');
+          toaster.pop 'success', "Finished Download", '', 2000, 'trustedHtml'
