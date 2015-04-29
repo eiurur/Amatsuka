@@ -14,7 +14,7 @@ angular.module "myApp.services", []
 
   .service 'DownloadService', ($http) ->
     exec: (url) ->
-      $http.post '/api/downloadExec', url: url
+      $http.post '/api/download', url: url
 
   .service 'ConvertService', ->
     base64toBlob: (_base64) ->

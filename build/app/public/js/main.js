@@ -150,17 +150,19 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       });
     }
   };
-}]).directive('downloadFromUrl', ["DownloadService", "ConvertService", function(DownloadService, ConvertService) {
+}]).directive('downloadFromUrl', ["toaster", "DownloadService", "ConvertService", function(toaster, DownloadService, ConvertService) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
+        toaster.pop('wait', "Now Downloading ...", '', 1000, 'trustedHtml');
         return DownloadService.exec(attrs.url).success(function(data) {
           var blob, ext, filename;
           blob = ConvertService.base64toBlob(data.base64Data);
           ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(attrs.url)[1];
           filename = "" + attrs.filename + "." + ext;
-          return saveAs(blob, filename);
+          saveAs(blob, filename);
+          return toaster.pop('success', "Finished Download", '', 1000, 'trustedHtml');
         });
       });
     }
@@ -333,7 +335,7 @@ angular.module("myApp.services", []).service("CommonService", function() {
 }]).service('DownloadService', ["$http", function($http) {
   return {
     exec: function(url) {
-      return $http.post('/api/downloadExec', {
+      return $http.post('/api/download', {
         url: url
       });
     }

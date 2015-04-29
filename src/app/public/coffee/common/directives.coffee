@@ -120,10 +120,14 @@ angular.module "myApp.directives", []
           imageLayer.html ''
           imageLayer.removeClass('image-layer__overlay')
 
-  .directive 'downloadFromUrl', (DownloadService, ConvertService) ->
+  .directive 'downloadFromUrl', (toaster, DownloadService, ConvertService) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
       element.on 'click', (event) ->
+
+        # download属性に比べてはるかに時間がかかるので通知を出す。
+        toaster.pop('wait', "Now Downloading ...", '', 1000, 'trustedHtml');
+
         DownloadService.exec(attrs.url)
         .success (data) ->
           blob = ConvertService.base64toBlob data.base64Data
@@ -131,4 +135,5 @@ angular.module "myApp.directives", []
           filename = "#{attrs.filename}.#{ext}"
           saveAs blob, filename
 
-
+          # DL終了を通知
+          toaster.pop('success', "Finished Download", '', 1000, 'trustedHtml');

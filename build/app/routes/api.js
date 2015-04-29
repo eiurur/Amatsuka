@@ -1,11 +1,7 @@
 (function() {
-  var Promise, TwitterCilent, UserProvider, dir, fs, http, moment, my, settings, _;
+  var Promise, TwitterCilent, UserProvider, dir, moment, my, settings, _;
 
   dir = '../../lib/';
-
-  fs = require('fs');
-
-  http = require('http');
 
   moment = require('moment');
 
@@ -38,8 +34,8 @@
     /*
     APIs
      */
-    app.post('/api/downloadExec', function(req, res) {
-      console.log("\n========> downloadExec\n");
+    app.post('/api/download', function(req, res) {
+      console.log("\n========> download\n");
       return my.loadBase64Data(req.body.url).then(function(base64Data) {
         return res.json({
           base64Data: base64Data
