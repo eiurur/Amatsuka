@@ -17,6 +17,8 @@
 }
 
 .media {
+  min-height: 100px; // ユーザ名とスクリーンネームが二行に渡っても表示が崩れない長さ
+
   .thumbnail-img {
     cursor: pointer; // ここでいいんかな？
     max-width: 64px;

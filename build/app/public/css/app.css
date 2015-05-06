@@ -960,6 +960,9 @@ i {
   margin-top: 10px;
 }
 
+.media {
+  min-height: 100px;
+}
 .media .thumbnail-img {
   cursor: pointer;
   max-width: 64px;
