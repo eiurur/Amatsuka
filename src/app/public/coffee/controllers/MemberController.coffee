@@ -4,5 +4,6 @@ angular.module "myApp.controllers"
     AuthService
     List
     ) ->
-  return if _.isEmpty AuthService.user
+  if _.isEmpty AuthService.user then $location.path '/'
+
   $scope.list = new List('Amatsuka')

@@ -5,7 +5,7 @@ angular.module "myApp.controllers"
     TweetService
     Tweets
     ) ->
-  return if _.isEmpty AuthService.user
+  if _.isEmpty AuthService.user then $location.path '/'
 
   # [WIP]
 

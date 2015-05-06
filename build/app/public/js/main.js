@@ -429,15 +429,27 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
 }]);
 
 angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "AuthService", "TweetService", "ConfigService", "Tweets", function($scope, AuthService, TweetService, ConfigService, Tweets) {
+  var ls;
   if (_.isEmpty(AuthService.user)) {
-
+    $location.path('/');
   }
+  ls = localStorage;
+  ConfigService.config = JSON.parse(ls.getItem('amatsuka.config')) || {};
+  if (_.isEmpty(ConfigService.config)) {
+    ConfigService.init();
+  }
+  $scope.config = ConfigService.config;
+  return $scope.$watch('config.includeRetweet', function(includeRetweet) {
+    ConfigService.config.includeRetweet = includeRetweet;
+    console.log(ConfigService);
+    ConfigService.update();
+  });
 }]);
 
 angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, Tweets) {
   var ls;
   if (_.isEmpty(AuthService.user)) {
-    return;
+    $location.path('/');
   }
   $scope.isLoaded = false;
   $scope.layoutType = 'grid';
@@ -515,13 +527,13 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope"
 
 angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthService", "TweetService", "Tweets", function($scope, AuthService, TweetService, Tweets) {
   if (_.isEmpty(AuthService.user)) {
-
+    return $location.path('/');
   }
 }]);
 
 angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthService", "List", function($scope, AuthService, List) {
   if (_.isEmpty(AuthService.user)) {
-    return;
+    $location.path('/');
   }
   return $scope.list = new List('Amatsuka');
 }]);
@@ -815,32 +827,20 @@ angular.module("myApp.services").service("AuthService", ["$http", function($http
 
 angular.module("myApp.services").service("ConfigService", ["$http", function($http) {
   return {
-    getDisplayFormat: (function(_this) {
-      return function() {
-        var ls;
-        ls = localStorage;
-        return _this.displayFormat = JSON.parse(ls.getItem('displayFormat')) || 'list';
+    config: {},
+    update: function() {
+      var ls;
+      ls = localStorage;
+      ls.setItem('amatsuka.config', JSON.stringify(this.config));
+    },
+    init: function() {
+      var ls;
+      ls = localStorage;
+      this.config = {
+        includeRetweet: true
       };
-    })(this),
-    setDisplayFormat: (function(_this) {
-      return function() {
-        var ls;
-        ls = localStorage;
-        return ls.setItem('displayFormat', _this.displayFormat);
-      };
-    })(this),
-    toggleDisplayFormat: (function(_this) {
-      return function() {
-        return _this.displayFormat = _this.displayFormat === 'list' ? 'grid' : 'list';
-      };
-    })(this),
-    toggleIncludeRetweet: (function(_this) {
-      return function() {
-        return _this.isIncludeRetweet = !_this.isIncludeRetweet;
-      };
-    })(this),
-    displayFormat: 'list',
-    isIncludeRetweet: true
+      return ls.setItem('amatsuka.config', JSON.stringify(this.config));
+    }
   };
 }]);
 

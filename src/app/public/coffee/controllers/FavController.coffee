@@ -7,7 +7,7 @@ angular.module "myApp.controllers"
     ListService
     Tweets
     ) ->
-  return if _.isEmpty AuthService.user
+  if _.isEmpty AuthService.user then $location.path '/'
 
   $scope.isLoaded = false
   $scope.layoutType = 'grid'

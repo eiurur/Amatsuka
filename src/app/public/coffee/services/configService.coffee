@@ -2,20 +2,20 @@
 angular.module "myApp.services"
   .service "ConfigService", ($http) ->
 
-    getDisplayFormat: =>
+    config: {}
+
+    # registerConfig2LocalStorage: ->
+    #   ls = localStorage
+    #   ls.setItem 'amatsuka.config', JSON.stringify(@config)
+    #   return
+
+    update: ->
       ls = localStorage
-      @displayFormat = JSON.parse(ls.getItem 'displayFormat') || 'list'
+      ls.setItem 'amatsuka.config', JSON.stringify(@config)
+      return
 
-    setDisplayFormat: =>
+    init: ->
       ls = localStorage
-      ls.setItem 'displayFormat', @displayFormat
-
-    toggleDisplayFormat: =>
-      @displayFormat = if @displayFormat is 'list' then 'grid' else 'list'
-
-    toggleIncludeRetweet: =>
-      @isIncludeRetweet = !@isIncludeRetweet
-
-    displayFormat: 'list'
-
-    isIncludeRetweet: true
+      @config =
+        includeRetweet: true
+      ls.setItem 'amatsuka.config', JSON.stringify(@config)

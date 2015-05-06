@@ -6,8 +6,18 @@ angular.module "myApp.controllers"
     ConfigService
     Tweets
     ) ->
-  return if _.isEmpty AuthService.user
+  if _.isEmpty AuthService.user then $location.path '/'
+
   # [WIP]
 
-  # $scope.displayFormats = ['list', 'grid']
-  # $scope.toggleDisplayFormat = ConfigService.toggleDisplayFormat
+  ls = localStorage
+  ConfigService.config = JSON.parse(ls.getItem 'amatsuka.config') || {}
+  if _.isEmpty ConfigService.config then do ConfigService.init
+
+  $scope.config = ConfigService.config
+  $scope.$watch 'config.includeRetweet', (includeRetweet) ->
+    ConfigService.config.includeRetweet = includeRetweet
+    console.log ConfigService
+    do ConfigService.update
+    return
+

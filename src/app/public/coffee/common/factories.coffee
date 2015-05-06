@@ -13,6 +13,18 @@ angular.module "myApp.factories", []
         @type   = type
         @twitterIdStr = twitterIdStr || null
 
+      # ###
+      # # キャッシュをとっておき、体感速度を向上させる。
+      # # 死ぬほど面倒だからどうしよう。
+      # ###
+      # saveTweet2LocalStorage: ->
+      #   switch @type
+      #     when 'fav'
+      #       ls.setItem 'favTweetList', JSON.stringify(@items)
+      #     else
+      #       ls.setItem 'amatsukaTweetList', JSON.stringify(@items)
+
+
       normalizeTweet: (data) =>
         return new Promise (resolve, reject) =>
           if data.err? then reject data.err

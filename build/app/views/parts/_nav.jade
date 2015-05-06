@@ -34,11 +34,13 @@ nav.navbar-default.navbar-fixed-top
             i.fa.fa-heart
             | Fav
         li
+          a(href='/config')
+            i.fa.fa-cog
+            | Config
+        li
           a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank')
             i.fa.fa-twitter
             | @{{user.username}}
-        //- li
-        //-   a(href='/config') config
         li
           a(href='/logout', target='_self')
             i.fa.fa-power-off
