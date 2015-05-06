@@ -1,22 +1,23 @@
 .col-md-12
   h2
     a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
-      / Amatsuka ({{amatsukaMemberList.length}}人)
+      / {{list.name}} ({{list.length}}人)
 
   .input-group.input-group-sm.search-form
     span.input-group-addon
       i.fa.fa-search
     input.form-control.search-input(type='text', placeholder='Search', ng-model="searchWord.screen_name")
 
-  div(ng-repeat="member in amatsukaMemberList | orderBy: 'screen_name' | filter:searchWord | limitTo: limitNum")
-    .member__divider
-    .media
-      a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")
-        img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url}}', img-preload="img-preload")
-      .media-body
-        h4.media-heading
-          span.name {{member.name}}
-          span.screen-name @{{member.screen_name}}
-        span.btn-wrapper
-        a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{member.id_str}}', ng-disabled='isProcessing')
+  div(infinite-scroll='list.loadMoreMember()',infinite-scroll-distance='2')
+    .col-md-4.col-sm-6(ng-repeat="member in list.members | filter:searchWord")
+      .member__divider
+      .media
+        a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")
+          img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url}}', img-preload="img-preload")
+        .media-body
+          h4.media-heading
+            span.name {{member.name}}
+            span.screen-name @{{member.screen_name}}
+          span.btn-wrapper
+          a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{member.id_str}}', ng-disabled='isProcessing')
 

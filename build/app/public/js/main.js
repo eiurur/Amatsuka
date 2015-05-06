@@ -296,6 +296,48 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
 
   })();
   return Tweets;
+}]).factory('List', ["TweetService", "ListService", function(TweetService, ListService) {
+  var List;
+  List = (function() {
+    function List(name) {
+      this.name = name;
+      this.isLast　 = false;
+      this.count = 20;
+      this.members = [];
+      this.memberIdx = 0;
+      this.ls = localStorage;
+      this.idStr = JSON.parse(this.ls.getItem('amatsukaList')) || {};
+      this.amatsukaMemberList = ListService.nomarlizeMembers(JSON.parse(this.ls.getItem('amatsukaFollowList'))) || [];
+      this.amatsukaMemberLength = this.amatsukaMemberList.length;
+      this.updateAmatsukaList();
+      this.length = this.amatsukaMemberList.length;
+    }
+
+    List.prototype.updateAmatsukaList = function() {
+      return ListService.update().then((function(_this) {
+        return function(users) {
+          _this.idstr = ListService.amatsukaList.data.id_str;
+          _this.amatsukaMemberList = ListService.nomarlizeMembers(users);
+          return _this.length = _this.amatsukaMemberList.length;
+        };
+      })(this));
+    };
+
+    List.prototype.loadMoreMember = function() {
+      if (this.isLast) {
+        return;
+      }
+      this.members = this.members.concat(this.amatsukaMemberList.slice(this.memberIdx, this.memberIdx + this.count));
+      this.memberIdx += this.count;
+      if (this.memberIdx > this.amatsukaMemberLength) {
+        this.isLast = true;
+      }
+    };
+
+    return List;
+
+  })();
+  return List;
 }]);
 
 angular.module("myApp.filters", []).filter("interpolate", ["version", function(version) {
@@ -477,27 +519,11 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthServi
   }
 }]);
 
-angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthService", "TweetService", "ListService", function($scope, AuthService, TweetService, ListService) {
-  var ls;
+angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthService", "List", function($scope, AuthService, List) {
   if (_.isEmpty(AuthService.user)) {
     return;
   }
-  $scope.limitNum = 20;
-  $scope.listIdStr = null;
-  $scope.amatsukaMemberList = null;
-  if (ListService.hasListData()) {
-    $scope.listIdStr = ListService.amatsukaList.data.id_str;
-    $scope.amatsukaMemberList = ListService.nomarlizeMembers(ListService.amatsukaList.member);
-    return;
-  }
-  ls = localStorage;
-  $scope.listIdStr = JSON.parse(ls.getItem('amatsukaList')) || {};
-  $scope.amatsukaMemberList = JSON.parse(ls.getItem('amatsukaFollowList')) || [];
-  return ListService.update().then(function(users) {
-    console.log(users);
-    $scope.listIdStr = ListService.amatsukaList.data.id_str;
-    return $scope.amatsukaMemberList = ListService.nomarlizeMembers(users);
-  });
+  return $scope.list = new List('Amatsuka');
 }]);
 
 angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, AuthService, TweetService, ListService, Tweets) {

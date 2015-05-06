@@ -77,3 +77,39 @@ angular.module "myApp.factories", []
           return
 
     Tweets
+
+  .factory 'List', (TweetService, ListService) ->
+
+    class List
+      constructor: (name) ->
+        @name  　= name
+        @isLast　= false
+        @count  = 20
+        @members 　= []
+        @memberIdx 　= 0
+
+        # TODO: クラス変数にしたい
+        @ls = localStorage
+        @idStr = JSON.parse(@ls.getItem 'amatsukaList') || {}
+        @amatsukaMemberList = ListService.nomarlizeMembers(JSON.parse(@ls.getItem 'amatsukaFollowList')) || []
+        @amatsukaMemberLength = @amatsukaMemberList.length
+        do @updateAmatsukaList
+
+        # todo: Listごとの要素数に変更。(今は暫定的にAmatsukaListの人数で固定)
+        @length = @amatsukaMemberList.length
+
+      updateAmatsukaList: ->
+        ListService.update()
+        .then (users) =>
+          @idstr = ListService.amatsukaList.data.id_str
+          @amatsukaMemberList = ListService.nomarlizeMembers(users)
+          @length = @amatsukaMemberList.length
+
+      loadMoreMember: ->
+        return if @isLast
+        @members = @members.concat @amatsukaMemberList[@memberIdx...@memberIdx+@count]
+        @memberIdx += @count
+        if @memberIdx > @amatsukaMemberLength then @isLast = true
+        return
+
+    List

@@ -19,7 +19,6 @@ class TwitterClientDefine
       , @user.twitter_token
       , @user.twitter_token_secret
       , (error, data, response) ->
-        # console.log data
         if error
           console.log "getViaAPI #{params.method}.#{params.type} e = ", error
           return reject error
@@ -32,7 +31,6 @@ class TwitterClientDefine
       , @user.twitter_token
       , @user.twitter_token_secret
       , (error, data, response) ->
-        # console.log data
         if error
           console.log "postViaAPI #{params.method}.#{params.type} e = ", error
           return reject new Error(error)
