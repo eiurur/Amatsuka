@@ -9,6 +9,10 @@ angular.module "myApp.services"
     #   ls.setItem 'amatsuka.config', JSON.stringify(@config)
     #   return
 
+    set: (config) ->
+      @config = config
+
+
     update: ->
       localStorage.setItem 'amatsuka.config', JSON.stringify(@config)
       return
@@ -17,12 +21,16 @@ angular.module "myApp.services"
       @config =
         includeRetweet: true
       localStorage.setItem 'amatsuka.config', JSON.stringify(@config)
+      @save2DB().then (data) ->
 
     getFromDB: ->
       return $q (resolve, reject) ->
         $http.get '/api/config'
           .success (data) ->
-            return resolve data
+            # console.log typeof data.data.configStr
+            console.log _.isEmpty JSON.parse(data.data.configStr)
+            if _.isEmpty JSON.parse(data.data.configStr) then return reject 'Not found data'
+            return resolve JSON.parse(data.data.configStr)
           .error (data) ->
             return reject data || 'getFromDB Request failed'
 

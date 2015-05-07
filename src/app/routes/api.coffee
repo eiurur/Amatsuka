@@ -25,6 +25,13 @@ module.exports = (app) ->
     else
       res.redirect '/'
 
+  # app.use ['/api/timeline/*', '/api/lists/statuses/*'], (req, res) ->
+  #   console.log "======> #{req.originalUrl}"
+  #   unless _.isUndefined(req.session.passport.user)
+  #     next()
+  #   else
+  #     res.redirect '/'
+
   ###
   APIs
   ###
@@ -77,26 +84,46 @@ module.exports = (app) ->
 
   # GET リストのタイムラインを取得
   app.get '/api/lists/statuses/:id/:maxId?/:count?', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
-    twitterClient.getListsStatuses
-      listIdStr: req.params.id
-      maxId: req.params.maxId
-      count: req.params.count
-    .then (data) ->
-      console.log '/api/lists/list/:id/:count data.length = ', data.length
-      res.json data: data
+
+    # HACK: 重複
+    ConfigProvider.findOneById
+      twitterIdStr: req.session.passport.user._json.id_str
+    , (err, data) ->
+      # 設定データが未登録
+      config = if _.isNull data then {} else JSON.parse(data.configStr)
+      console.log 'api lists config = ', config
+
+      twitterClient = new TwitterCilent(req.session.passport.user)
+      twitterClient.getListsStatuses
+        listIdStr: req.params.id
+        maxId: req.params.maxId
+        count: req.params.count
+        includeRetweet: config.includeRetweet
+      .then (data) ->
+        console.log '/api/lists/list/:id/:count data.length = ', data.length
+        res.json data: data
 
   # GET タイムラインの情報(home_timeline, user_timeline)
   app.get '/api/timeline/:id/:maxId?/:count?', (req, res) ->
-    m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
-    twitterClient = new TwitterCilent(req.session.passport.user)
-    twitterClient[m]
-      twitterIdStr: req.params.id
-      maxId: req.params.maxId
-      count: req.params.count
-    .then (data) ->
-      console.log '/api/timeline/:id/:count data.length = ', data.length
-      res.json data: data
+
+    # HACK: 重複
+    ConfigProvider.findOneById
+      twitterIdStr: req.session.passport.user._json.id_str
+    , (err, data) ->
+      # 設定データが未登録
+      config = if _.isNull data then {} else JSON.parse(data.configStr)
+      console.log 'api timeline config = ', config
+
+      m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
+      twitterClient = new TwitterCilent(req.session.passport.user)
+      twitterClient[m]
+        twitterIdStr: req.params.id
+        maxId: req.params.maxId
+        count: req.params.count
+        includeRetweet: config.includeRetweet
+      .then (data) ->
+        console.log '/api/timeline/:id/:count data.length = ', data.length
+        res.json data: data
 
   # user情報を取得
   app.get '/api/users/show/:id', (req, res) ->

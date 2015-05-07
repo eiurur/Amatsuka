@@ -6,18 +6,18 @@ angular.module "myApp.controllers"
     AuthService
     TweetService
     ListService
+    ConfigService
     Tweets
     ) ->
   return if _.isEmpty AuthService.user
 
-  $scope.listIdStr = ''
-  $scope.isLoaded  = false
+  $scope.listIdStr  = ''
+  $scope.isLoaded   = false
   $scope.layoutType = 'grid'
 
-  ls               = localStorage
   ListService.amatsukaList =
-    data: JSON.parse(ls.getItem 'amatsukaList') || {}
-    member: JSON.parse(ls.getItem 'amatsukaFollowList') || []
+    data: JSON.parse(localStorage.getItem 'amatsukaList') || {}
+    member: JSON.parse(localStorage.getItem 'amatsukaFollowList') || []
 
   ListService.isSameUser()
   .then (isSame) ->
@@ -36,10 +36,19 @@ angular.module "myApp.controllers"
       # 別のユーザで再ログインしたとき
       $scope.tweets = new Tweets([])
       return
+
     .catch (error) ->
 
-      # ログインユーザはAmatsuka Listを未作成(初ログイン)のとき
+      # ログインしたユーザがAmatsuka Listを未作成(初ログイン)のとき
       ListService.init()
+      .then (data) ->
+
+        #設定データを初期化
+        do ConfigService.init
+
+        # 初期化した設定データをデータベースに格納
+        do ConfigService.save2DB
+
       .then (data) ->
         $scope.tweets = new Tweets([])
         return
@@ -52,7 +61,6 @@ angular.module "myApp.controllers"
     $scope.isLoaded  = true
     console.log '終わり'
     return
-
 
 
   $scope.$on 'addMember', (event, args) ->

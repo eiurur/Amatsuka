@@ -98,31 +98,45 @@
       });
     });
     app.get('/api/lists/statuses/:id/:maxId?/:count?', function(req, res) {
-      var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
-      return twitterClient.getListsStatuses({
-        listIdStr: req.params.id,
-        maxId: req.params.maxId,
-        count: req.params.count
-      }).then(function(data) {
-        console.log('/api/lists/list/:id/:count data.length = ', data.length);
-        return res.json({
-          data: data
+      return ConfigProvider.findOneById({
+        twitterIdStr: req.session.passport.user._json.id_str
+      }, function(err, data) {
+        var config, twitterClient;
+        config = _.isNull(data) ? {} : JSON.parse(data.configStr);
+        console.log('api lists config = ', config);
+        twitterClient = new TwitterCilent(req.session.passport.user);
+        return twitterClient.getListsStatuses({
+          listIdStr: req.params.id,
+          maxId: req.params.maxId,
+          count: req.params.count,
+          includeRetweet: config.includeRetweet
+        }).then(function(data) {
+          console.log('/api/lists/list/:id/:count data.length = ', data.length);
+          return res.json({
+            data: data
+          });
         });
       });
     });
     app.get('/api/timeline/:id/:maxId?/:count?', function(req, res) {
-      var m, twitterClient;
-      m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
-      twitterClient = new TwitterCilent(req.session.passport.user);
-      return twitterClient[m]({
-        twitterIdStr: req.params.id,
-        maxId: req.params.maxId,
-        count: req.params.count
-      }).then(function(data) {
-        console.log('/api/timeline/:id/:count data.length = ', data.length);
-        return res.json({
-          data: data
+      return ConfigProvider.findOneById({
+        twitterIdStr: req.session.passport.user._json.id_str
+      }, function(err, data) {
+        var config, m, twitterClient;
+        config = _.isNull(data) ? {} : JSON.parse(data.configStr);
+        console.log('api timeline config = ', config);
+        m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
+        twitterClient = new TwitterCilent(req.session.passport.user);
+        return twitterClient[m]({
+          twitterIdStr: req.params.id,
+          maxId: req.params.maxId,
+          count: req.params.count,
+          includeRetweet: config.includeRetweet
+        }).then(function(data) {
+          console.log('/api/timeline/:id/:count data.length = ', data.length);
+          return res.json({
+            data: data
+          });
         });
       });
     });

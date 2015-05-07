@@ -10,10 +10,23 @@ angular.module "myApp.controllers"
 
   # [WIP]
 
-  ConfigService.config = JSON.parse(localStorage.getItem 'amatsuka.config') || {}
-  if _.isEmpty ConfigService.config then do ConfigService.init
+  # ConfigService.config = JSON.parse(localStorage.getItem 'amatsuka.config') || {}
+  # if _.isEmpty ConfigService.config
+  #   ConfigService.getFromDB()
+  #   .then (config) ->
+  #     console.log config
+  #   .catch (e) ->
+  #     console.log e
+  #     do ConfigService.init
 
-  $scope.config = ConfigService.config
+  ConfigService.getFromDB()
+  .then (config) ->
+    ConfigService.set config
+  .catch (e) ->
+    console.log e
+    do ConfigService.init
+  .finally ->
+    $scope.config = ConfigService.config
 
   $scope.$watch 'config.includeRetweet', (includeRetweet) ->
     do ConfigService.update

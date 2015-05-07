@@ -432,11 +432,14 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "AuthSer
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
-  ConfigService.config = JSON.parse(localStorage.getItem('amatsuka.config')) || {};
-  if (_.isEmpty(ConfigService.config)) {
-    ConfigService.init();
-  }
-  $scope.config = ConfigService.config;
+  ConfigService.getFromDB().then(function(config) {
+    return ConfigService.set(config);
+  })["catch"](function(e) {
+    console.log(e);
+    return ConfigService.init();
+  })["finally"](function() {
+    return $scope.config = ConfigService.config;
+  });
   return $scope.$watch('config.includeRetweet', function(includeRetweet) {
     ConfigService.update();
     ConfigService.save2DB().then(function(data) {
@@ -478,7 +481,7 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   });
 }]);
 
-angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope", "$rootScope", "AuthService", "TweetService", "ListService", "Tweets", function($window, $scope, $rootScope, AuthService, TweetService, ListService, Tweets) {
+angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope", "$rootScope", "AuthService", "TweetService", "ListService", "ConfigService", "Tweets", function($window, $scope, $rootScope, AuthService, TweetService, ListService, ConfigService, Tweets) {
   var ls;
   if (_.isEmpty(AuthService.user)) {
     return;
@@ -505,6 +508,9 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope"
       $scope.tweets = new Tweets([]);
     })["catch"](function(error) {
       ListService.init().then(function(data) {
+        ConfigService.init();
+        return ConfigService.save2DB();
+      }).then(function(data) {
         $scope.tweets = new Tweets([]);
       });
     });
@@ -829,6 +835,9 @@ angular.module("myApp.services").service("AuthService", ["$http", function($http
 angular.module("myApp.services").service("ConfigService", ["$http", "$q", function($http, $q) {
   return {
     config: {},
+    set: function(config) {
+      return this.config = config;
+    },
     update: function() {
       localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
     },
@@ -836,12 +845,17 @@ angular.module("myApp.services").service("ConfigService", ["$http", "$q", functi
       this.config = {
         includeRetweet: true
       };
-      return localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
+      localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
+      return this.save2DB().then(function(data) {});
     },
     getFromDB: function() {
       return $q(function(resolve, reject) {
         return $http.get('/api/config').success(function(data) {
-          return resolve(data);
+          console.log(_.isEmpty(JSON.parse(data.data.configStr)));
+          if (_.isEmpty(JSON.parse(data.data.configStr))) {
+            return reject('Not found data');
+          }
+          return resolve(JSON.parse(data.data.configStr));
         }).error(function(data) {
           return reject(data || 'getFromDB Request failed');
         });

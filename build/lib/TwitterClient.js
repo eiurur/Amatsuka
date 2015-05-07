@@ -73,6 +73,7 @@
       if (!(params.maxId === '0' || params.maxId === 'undefined')) {
         opts.max_id = params.maxId;
       }
+      opts.include_rts = _.isUndefined(params.includeRetweet) ? true : params.includeRetweet;
       console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'getTimeline',
@@ -95,6 +96,7 @@
       if (params.count === '0' || params.count === 'undefined') {
         opts.count = settings.MAX_NUM_GET_TIMELINE_TWEET;
       }
+      opts.include_rts = _.isUndefined(params.includeRetweet) ? true : params.includeRetweet;
       console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'getTimeline',
@@ -159,12 +161,12 @@
       opts = {
         list_id: params.listIdStr,
         count: ~~params.count || settings.MAX_NUM_GET_LIST_STATUSES,
-        include_entities: true,
-        include_rts: true
+        include_entities: true
       };
       if (!(params.maxId === '0' || params.maxId === 'undefined')) {
         opts.max_id = params.maxId;
       }
+      opts.include_rts = _.isUndefined(params.includeRetweet) ? true : params.includeRetweet;
       console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'lists',
