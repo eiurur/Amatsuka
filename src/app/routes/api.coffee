@@ -5,6 +5,7 @@ _              = require 'lodash'
 {my}           = require "#{dir}my"
 TwitterCilent  = require "#{dir}TwitterClient"
 {UserProvider} = require "#{dir}model"
+{ConfigProvider} = require "#{dir}model"
 settings       = if process.env.NODE_ENV is 'production'
   require dir + 'configs/production'
 else
@@ -179,3 +180,24 @@ module.exports = (app) ->
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
       res.json data: data
+
+
+  ###
+  # Config
+  ###
+  app.get '/api/config', (req, res) ->
+    ConfigProvider.findOneById
+      twitterIdStr: req.session.passport.user._json.id_str
+    , (err, data) ->
+      console.log 'get config: ', data
+      res.json data: data
+
+  app.post '/api/config', (req, res) ->
+    console.log req.body
+    ConfigProvider.upsert
+      twitterIdStr: req.session.passport.user._json.id_str
+      config: req.body.config
+    , (err, data) ->
+      console.log 'post config: ', data
+      res.json data: data
+

@@ -1,6 +1,6 @@
 # Services
 angular.module "myApp.services"
-  .service "ConfigService", ($http) ->
+  .service "ConfigService", ($http, $q) ->
 
     config: {}
 
@@ -10,12 +10,26 @@ angular.module "myApp.services"
     #   return
 
     update: ->
-      ls = localStorage
-      ls.setItem 'amatsuka.config', JSON.stringify(@config)
+      localStorage.setItem 'amatsuka.config', JSON.stringify(@config)
       return
 
     init: ->
-      ls = localStorage
       @config =
         includeRetweet: true
-      ls.setItem 'amatsuka.config', JSON.stringify(@config)
+      localStorage.setItem 'amatsuka.config', JSON.stringify(@config)
+
+    getFromDB: ->
+      return $q (resolve, reject) ->
+        $http.get '/api/config'
+          .success (data) ->
+            return resolve data
+          .error (data) ->
+            return reject data || 'getFromDB Request failed'
+
+    save2DB: ->
+      return $q (resolve, reject) =>
+        $http.post '/api/config', config: @config
+          .success (data) ->
+            return resolve data
+          .error (data) ->
+            return reject data || 'save2DB Request failed'

@@ -1,5 +1,5 @@
 angular.module "myApp.services"
-  .service "TweetService", ($http, $q, $injector) ->
+  .service "TweetService", ($http, $q, $injector, ConfigService) ->
 
     activateLink: (t) ->
       t.replace(

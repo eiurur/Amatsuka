@@ -93,6 +93,8 @@ angular.module "myApp.factories", []
   .factory 'List', (TweetService, ListService) ->
 
     class List
+      # TODO: AmatsukaList1だけでなく、他のリストにも対応できるよう汎用的な構造にする
+
       constructor: (name) ->
         @name  　= name
         @isLast　= false
@@ -100,7 +102,7 @@ angular.module "myApp.factories", []
         @members 　= []
         @memberIdx 　= 0
 
-        # TODO: クラス変数にしたい
+        # TODO: 共通の値だからクラス変数にしたい
         @ls = localStorage
         @idStr = JSON.parse(@ls.getItem 'amatsukaList') || {}
         @amatsukaMemberList = ListService.nomarlizeMembers(JSON.parse(@ls.getItem 'amatsukaFollowList')) || []

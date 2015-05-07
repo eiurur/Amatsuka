@@ -1,5 +1,5 @@
 (function() {
-  var Promise, TwitterCilent, UserProvider, dir, moment, my, settings, _;
+  var ConfigProvider, Promise, TwitterCilent, UserProvider, dir, moment, my, settings, _;
 
   dir = '../../lib/';
 
@@ -14,6 +14,8 @@
   TwitterCilent = require("" + dir + "TwitterClient");
 
   UserProvider = require("" + dir + "model").UserProvider;
+
+  ConfigProvider = require("" + dir + "model").ConfigProvider;
 
   settings = process.env.NODE_ENV === 'production' ? require(dir + 'configs/production') : require(dir + 'configs/development');
 
@@ -225,12 +227,38 @@
         });
       });
     });
-    return app.post('/api/statuses/destroy', function(req, res) {
+    app.post('/api/statuses/destroy', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterCilent(req.session.passport.user);
       return twitterClient.destroyStatus({
         tweetIdStr: req.body.tweetIdStr
       }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      });
+    });
+
+    /*
+     * Config
+     */
+    app.get('/api/config', function(req, res) {
+      return ConfigProvider.findOneById({
+        twitterIdStr: req.session.passport.user._json.id_str
+      }, function(err, data) {
+        console.log('get config: ', data);
+        return res.json({
+          data: data
+        });
+      });
+    });
+    return app.post('/api/config', function(req, res) {
+      console.log(req.body);
+      return ConfigProvider.upsert({
+        twitterIdStr: req.session.passport.user._json.id_str,
+        config: req.body.config
+      }, function(err, data) {
+        console.log('post config: ', data);
         return res.json({
           data: data
         });

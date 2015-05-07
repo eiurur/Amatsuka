@@ -429,20 +429,21 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
 }]);
 
 angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "AuthService", "TweetService", "ConfigService", "Tweets", function($scope, AuthService, TweetService, ConfigService, Tweets) {
-  var ls;
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
-  ls = localStorage;
-  ConfigService.config = JSON.parse(ls.getItem('amatsuka.config')) || {};
+  ConfigService.config = JSON.parse(localStorage.getItem('amatsuka.config')) || {};
   if (_.isEmpty(ConfigService.config)) {
     ConfigService.init();
   }
   $scope.config = ConfigService.config;
   return $scope.$watch('config.includeRetweet', function(includeRetweet) {
-    ConfigService.config.includeRetweet = includeRetweet;
-    console.log(ConfigService);
     ConfigService.update();
+    ConfigService.save2DB().then(function(data) {
+      return console.log(data);
+    })["catch"](function(error) {
+      return console.log(error);
+    });
   });
 }]);
 
@@ -825,21 +826,39 @@ angular.module("myApp.services").service("AuthService", ["$http", function($http
   };
 }]);
 
-angular.module("myApp.services").service("ConfigService", ["$http", function($http) {
+angular.module("myApp.services").service("ConfigService", ["$http", "$q", function($http, $q) {
   return {
     config: {},
     update: function() {
-      var ls;
-      ls = localStorage;
-      ls.setItem('amatsuka.config', JSON.stringify(this.config));
+      localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
     },
     init: function() {
-      var ls;
-      ls = localStorage;
       this.config = {
         includeRetweet: true
       };
-      return ls.setItem('amatsuka.config', JSON.stringify(this.config));
+      return localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
+    },
+    getFromDB: function() {
+      return $q(function(resolve, reject) {
+        return $http.get('/api/config').success(function(data) {
+          return resolve(data);
+        }).error(function(data) {
+          return reject(data || 'getFromDB Request failed');
+        });
+      });
+    },
+    save2DB: function() {
+      return $q((function(_this) {
+        return function(resolve, reject) {
+          return $http.post('/api/config', {
+            config: _this.config
+          }).success(function(data) {
+            return resolve(data);
+          }).error(function(data) {
+            return reject(data || 'save2DB Request failed');
+          });
+        };
+      })(this));
     }
   };
 }]);
@@ -973,7 +992,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
   };
 }]);
 
-angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injector", function($http, $q, $injector) {
+angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injector", "ConfigService", function($http, $q, $injector, ConfigService) {
   return {
     activateLink: function(t) {
       return t.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&amp;%@!&#45;\/]))?)/g, "<a href=\"$1\" target=\"_blank\">$1</a>").replace(/(^|\s)(@|＠)(\w+)/g, "$1<a href=\"http://www.twitter.com/$3\" target=\"_blank\">@$3</a>").replace(/(?:^|[^ーー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9&_\/>]+)[#＃]([ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z]+[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*)/g, ' <a href="http://twitter.com/search?q=%23$1" target="_blank">#$1</a>');

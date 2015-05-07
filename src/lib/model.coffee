@@ -35,6 +35,13 @@ TLSchema = new Schema
     type: Date
     default: Date.now()
 
+ConfigSchema = new Schema
+  twitterIdStr:
+    type: String
+    unique: true
+    index: true
+  configStr: String
+
 
 ##
 # モデルへのアクセス
@@ -43,6 +50,7 @@ TLSchema = new Schema
 ##
 mongoose.model 'User', UserSchema
 mongoose.model 'TL', TLSchema
+mongoose.model 'Config', ConfigSchema
 
 
 ##
@@ -50,6 +58,7 @@ mongoose.model 'TL', TLSchema
 ##
 User = mongoose.model 'User'
 TL = mongoose.model 'TL'
+Config = mongoose.model 'Config'
 
 
 class UserProvider
@@ -115,5 +124,32 @@ class TLProvider
       callback err
 
 
-exports.UserProvider  = new UserProvider()
-exports.TLProvider  = new TLProvider()
+class ConfigProvider
+
+  findOneById: (params, callback) ->
+    console.log "\n============> Config findOneByID\n"
+    console.log params
+    Config.findOne
+      twitterIdStr: params.twitterIdStr
+    , (err, config) ->
+      callback err, config
+
+  upsert: (params, callback) ->
+    console.log "\n============> Config upsert\n"
+    console.log params
+    config =
+      twitterIdStr: params.twitterIdStr
+      configStr: JSON.stringify(params.config)
+
+    Config.update
+      twitterIdStr: params.twitterIdStr
+    ,
+      config
+    , upsert: true
+    , (err) ->
+      callback err
+
+
+exports.UserProvider   = new UserProvider()
+exports.TLProvider     = new TLProvider()
+exports.ConfigProvider = new ConfigProvider()

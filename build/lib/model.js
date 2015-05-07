@@ -1,5 +1,5 @@
 (function() {
-  var ObjectId, Schema, TL, TLProvider, TLSchema, User, UserProvider, UserSchema, db, mongoose, uri, _;
+  var Config, ConfigProvider, ConfigSchema, ObjectId, Schema, TL, TLProvider, TLSchema, User, UserProvider, UserSchema, db, mongoose, uri, _;
 
   mongoose = require('mongoose');
 
@@ -48,13 +48,26 @@
     }
   });
 
+  ConfigSchema = new Schema({
+    twitterIdStr: {
+      type: String,
+      unique: true,
+      index: true
+    },
+    configStr: String
+  });
+
   mongoose.model('User', UserSchema);
 
   mongoose.model('TL', TLSchema);
 
+  mongoose.model('Config', ConfigSchema);
+
   User = mongoose.model('User');
 
   TL = mongoose.model('TL');
+
+  Config = mongoose.model('Config');
 
   UserProvider = (function() {
     function UserProvider() {}
@@ -138,8 +151,44 @@
 
   })();
 
+  ConfigProvider = (function() {
+    function ConfigProvider() {}
+
+    ConfigProvider.prototype.findOneById = function(params, callback) {
+      console.log("\n============> Config findOneByID\n");
+      console.log(params);
+      return Config.findOne({
+        twitterIdStr: params.twitterIdStr
+      }, function(err, config) {
+        return callback(err, config);
+      });
+    };
+
+    ConfigProvider.prototype.upsert = function(params, callback) {
+      var config;
+      console.log("\n============> Config upsert\n");
+      console.log(params);
+      config = {
+        twitterIdStr: params.twitterIdStr,
+        configStr: JSON.stringify(params.config)
+      };
+      return Config.update({
+        twitterIdStr: params.twitterIdStr
+      }, config, {
+        upsert: true
+      }, function(err) {
+        return callback(err);
+      });
+    };
+
+    return ConfigProvider;
+
+  })();
+
   exports.UserProvider = new UserProvider();
 
   exports.TLProvider = new TLProvider();
+
+  exports.ConfigProvider = new ConfigProvider();
 
 }).call(this);
