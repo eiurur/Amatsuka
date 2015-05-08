@@ -47,7 +47,6 @@ module.exports = (app) ->
   app.post '/api/findUserById', (req, res) ->
     console.log "\n============> findUserById in API\n"
     UserProvider.findUserById
-      # twitterIdStr: req.body.twitterIdStr
       twitterIdStr: req.session.passport.user._json.id_str
     , (err, data) ->
       res.json data: data

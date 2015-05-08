@@ -451,16 +451,14 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "AuthSer
 }]);
 
 angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, Tweets) {
-  var ls;
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
   $scope.isLoaded = false;
   $scope.layoutType = 'grid';
-  ls = localStorage;
   ListService.amatsukaList = {
-    data: JSON.parse(ls.getItem('amatsukaList')) || {},
-    member: JSON.parse(ls.getItem('amatsukaFollowList')) || []
+    data: JSON.parse(localStorage.getItem('amatsukaList')) || {},
+    member: JSON.parse(localStorage.getItem('amatsukaFollowList')) || []
   };
   if (!ListService.hasListData()) {
     console.log('Go /fav to /');
@@ -482,17 +480,15 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
 }]);
 
 angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope", "$rootScope", "AuthService", "TweetService", "ListService", "ConfigService", "Tweets", function($window, $scope, $rootScope, AuthService, TweetService, ListService, ConfigService, Tweets) {
-  var ls;
   if (_.isEmpty(AuthService.user)) {
     return;
   }
   $scope.listIdStr = '';
   $scope.isLoaded = false;
   $scope.layoutType = 'grid';
-  ls = localStorage;
   ListService.amatsukaList = {
-    data: JSON.parse(ls.getItem('amatsukaList')) || {},
-    member: JSON.parse(ls.getItem('amatsukaFollowList')) || []
+    data: JSON.parse(localStorage.getItem('amatsukaList')) || {},
+    member: JSON.parse(localStorage.getItem('amatsukaFollowList')) || []
   };
   ListService.isSameUser().then(function(isSame) {
     if (isSame) {

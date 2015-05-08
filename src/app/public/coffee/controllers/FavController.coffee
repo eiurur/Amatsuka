@@ -9,13 +9,12 @@ angular.module "myApp.controllers"
     ) ->
   if _.isEmpty AuthService.user then $location.path '/'
 
-  $scope.isLoaded = false
+  $scope.isLoaded   = false
   $scope.layoutType = 'grid'
 
-  ls = localStorage
   ListService.amatsukaList =
-    data: JSON.parse(ls.getItem 'amatsukaList') || {}
-    member: JSON.parse(ls.getItem 'amatsukaFollowList') || []
+    data: JSON.parse(localStorage.getItem 'amatsukaList') || {}
+    member: JSON.parse(localStorage.getItem 'amatsukaFollowList') || []
 
   # AmatsukaList や AmatsukaFollowList の生成処理は /index で行うことにした。
   unless ListService.hasListData()

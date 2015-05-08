@@ -47,6 +47,8 @@ module.exports = class TwitterClient extends TwitterClientDefine
       include_rts: true
     unless params.maxId is '0' || params.maxId is 'undefined'
       opts.max_id = params.maxId
+
+    # HACK 汚い
     opts.include_rts = if _.isUndefined params.includeRetweet then true else params.includeRetweet
     console.log "opts = ", opts
 
@@ -66,6 +68,8 @@ module.exports = class TwitterClient extends TwitterClientDefine
       opts.max_id = params.maxId
     if params.count is '0' || params.count is 'undefined'
       opts.count = settings.MAX_NUM_GET_TIMELINE_TWEET
+
+    # HACK 汚い
     opts.include_rts = if _.isUndefined params.includeRetweet then true else params.includeRetweet
 
     console.log "opts = ", opts
@@ -121,8 +125,11 @@ module.exports = class TwitterClient extends TwitterClientDefine
       list_id: params.listIdStr
       count: ~~params.count || settings.MAX_NUM_GET_LIST_STATUSES
       include_entities: true
+      include_rts: true
     unless params.maxId is '0' || params.maxId is 'undefined'
       opts.max_id = params.maxId
+
+    # HACK 汚い
     opts.include_rts = if _.isUndefined params.includeRetweet then true else params.includeRetweet
     console.log "opts = ", opts
 
