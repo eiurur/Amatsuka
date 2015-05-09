@@ -91,8 +91,30 @@ angular.module "myApp.factories", []
     Tweets
 
   .factory 'List', (TweetService, ListService) ->
-
     class List
+      constructor: (name, idStr) ->
+        @name  　= name
+        @idStr  　= idStr
+        @isLast　= false
+        @count  = 20
+        @members 　= []
+        @memberIdx 　= 0
+
+        @amatsukaIdStr = JSON.parse(localStorage.getItem 'amatsukaList') || {}
+
+      loadMember: ->
+        TweetService.getListsMembers listIdStr: @idStr, count: 1000
+        .then (data) =>
+          @members = ListService.nomarlizeMembersForCopy data.data.users
+
+      copyMember2AmatsukaList: ->
+        TweetService.createAllListsMembers listIdStr: @amatsukaListIdStr, twitterIdStr: @members
+
+    List
+
+  .factory 'AmatsukaList', (TweetService, ListService) ->
+
+    class AmatsukaList # extends List
       # TODO: AmatsukaList1だけでなく、他のリストにも対応できるよう汎用的な構造にする
 
       constructor: (name) ->
@@ -126,4 +148,4 @@ angular.module "myApp.factories", []
         if @memberIdx > @amatsukaMemberLength then @isLast = true
         return
 
-    List
+    AmatsukaList
