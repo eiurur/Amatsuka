@@ -1048,6 +1048,16 @@ i {
   padding-top: 20px;
 }
 
+.user-sidebar__profile--url {
+  font-size: .7em;
+  line-height: 1.8;
+  padding-top: 5px;
+}
+.user-sidebar__profile--url i {
+  color: #a1a1a1;
+  margin-right: 5px;
+}
+
 .user-sidebar__profile--icon {
   width: 73px;
   height: 73px;

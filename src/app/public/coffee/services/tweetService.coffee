@@ -107,6 +107,17 @@ angular.module "myApp.services"
         when 'user.url' then t.user.url
         else null
 
+    # https://t.co -> https://pixiv ~ (url ver)
+    getExpandedURLFromURL: (entities) ->
+      if !_.has(entities, 'url') then return ''
+      entities.url.urls
+
+    # (description ver)
+    getExpandedURLFromDescription: (entities) ->
+      if !_.has(entities, 'description') then return ''
+      if !_.has(entities.description, 'urls') then return ''
+      entities.description.urls
+
     # max_idは自分のIDも含むため、1だけデクリメントしないとダメ。
     # それ用の関数。
     decStrNum: (n) ->

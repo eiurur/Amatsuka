@@ -66,6 +66,18 @@
     padding-top: 20px;
 }
 
+.user-sidebar__profile--url
+{
+    font-size: .7em;
+    line-height: 1.8;
+
+    padding-top: 5px;
+    i {
+      color: $link-color;
+      margin-right: 5px;
+    }
+}
+
 .user-sidebar__profile--icon
 {
     width: 73px;

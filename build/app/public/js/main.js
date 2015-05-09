@@ -921,6 +921,15 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       });
     },
     nomarlizeMember: function(member) {
+      var expandedUrlListInDescription, expandedUrlListInUrl;
+      expandedUrlListInDescription = TweetService.getExpandedURLFromDescription(member.entities);
+      expandedUrlListInUrl = TweetService.getExpandedURLFromURL(member.entities);
+      _.each(expandedUrlListInDescription, function(urls) {
+        member.description = member.description.replace(urls.url, urls.expanded_url);
+      });
+      _.each(expandedUrlListInUrl, function(urls) {
+        member.url = member.url.replace(urls.url, urls.expanded_url);
+      });
       member.followStatus = this.isFollow(member);
       member.description = TweetService.activateLink(member.description);
       member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
@@ -1132,6 +1141,21 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
         default:
           return null;
       }
+    },
+    getExpandedURLFromURL: function(entities) {
+      if (!_.has(entities, 'url')) {
+        return '';
+      }
+      return entities.url.urls;
+    },
+    getExpandedURLFromDescription: function(entities) {
+      if (!_.has(entities, 'description')) {
+        return '';
+      }
+      if (!_.has(entities.description, 'urls')) {
+        return '';
+      }
+      return entities.description.urls;
     },
     decStrNum: function(n) {
       var i, result;

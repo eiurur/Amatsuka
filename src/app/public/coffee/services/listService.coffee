@@ -42,6 +42,18 @@ angular.module "myApp.services"
         return
 
     nomarlizeMember: (member) ->
+
+      # TODO: 関数化
+      # TODO: urkとdescriptionだけでなく、tweetにも対応
+      expandedUrlListInDescription = TweetService.getExpandedURLFromDescription(member.entities)
+      expandedUrlListInUrl = TweetService.getExpandedURLFromURL(member.entities)
+      _.each expandedUrlListInDescription, (urls) ->
+        member.description = member.description.replace(urls.url, urls.expanded_url)
+        return
+      _.each expandedUrlListInUrl, (urls) ->
+        member.url = member.url.replace(urls.url, urls.expanded_url)
+        return
+
       member.followStatus      = @isFollow(member)
       member.description       = TweetService.activateLink(member.description)
       member.profile_image_url =

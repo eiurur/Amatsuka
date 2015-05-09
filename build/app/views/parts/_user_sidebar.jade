@@ -11,6 +11,9 @@
       span.btn-wrapper
       a.btn.btn-sm.btn-follow.user-sidebar__btn-follow(followable, follow-status='user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{user.id_str}}', ng-disabled='isProcessing')
     .user-sidebar__profile--description(ng-bind-html='user.description | newlines')
+    .user-sidebar__profile--url(ng-hide="user.url == null")
+      i.fa.fa-link
+      a(href="{{user.url}}", target="_blank") {{user.url}}
 
   // code from index.jade(少しだけ表示内容がかわってる。)
   .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='1', infinite-scroll-container="'#scroll'")
