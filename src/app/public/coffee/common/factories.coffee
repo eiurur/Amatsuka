@@ -99,8 +99,7 @@ angular.module "myApp.factories", []
         @count  = 20
         @members 　= []
         @memberIdx 　= 0
-
-        @amatsukaIdStr = JSON.parse(localStorage.getItem 'amatsukaList') || {}
+        @amatsukaListIdStr = ListService.amatsukaList.data.id_str
 
       loadMember: ->
         TweetService.getListsMembers listIdStr: @idStr, count: 1000
@@ -108,7 +107,16 @@ angular.module "myApp.factories", []
           @members = ListService.nomarlizeMembersForCopy data.data.users
 
       copyMember2AmatsukaList: ->
-        TweetService.createAllListsMembers listIdStr: @amatsukaListIdStr, twitterIdStr: @members
+        # id_strだけを抜き出す。
+        # membersOnlyIdStr = _.pluck @members, 'id_str'
+        return if @members.length is 0
+
+        # TODO: 100人ずつしか追加できないから、lengthを100で割った回数分回す。
+        twitterIdStr = ''
+        _.each @members, (user) -> twitterIdStr += "#{user.id_str},"
+        TweetService.createAllListsMembers(listIdStr: @amatsukaListIdStr, twitterIdStr: twitterIdStr)
+        .then (data) ->
+          console.log 'copyMember2AmatsukaList ok', data
 
     List
 

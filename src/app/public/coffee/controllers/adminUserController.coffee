@@ -27,6 +27,8 @@ angular.module "myApp.controllers"
       AuthService.user = data.data
       $scope.user = data.data
 
+      console.log 'AuthService', AuthService.user
+
       # 準備OK
       $scope.isLoaded = true
 

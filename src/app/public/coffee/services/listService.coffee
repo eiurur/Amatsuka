@@ -81,7 +81,12 @@ angular.module "myApp.services"
       params = twitterIdStr: AuthService.user._json.id_str
       TweetService.getListsList(params)
       .then (data) =>
-        @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
+        console.log 'UPDATE!! ', data.data
+
+        # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
+        # @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
+        @amatsukaList.data = _.findWhere data.data, 'full_name': "@#{AuthService.user.username}/amatsuka"
+        console.log @amatsukaList.data
         ls.setItem 'amatsukaList', JSON.stringify(@amatsukaList.data)
         TweetService.getListsMembers(listIdStr: @amatsukaList.data.id_str)
       .then (data) =>
@@ -112,8 +117,12 @@ angular.module "myApp.services"
       params = twitterIdStr: AuthService.user._json.id_str
       TweetService.getListsList(params)
       .then (data) ->
+        console.log 'isSameUser', data.data
         oldList = JSON.parse(ls.getItem 'amatsukaList') || {}
-        newList = _.findWhere(data.data, 'name': 'Amatsuka') || id_str: null
+
+        # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
+        # newList = _.findWhere(data.data, 'name': 'Amatsuka') || id_str: null
+        newList = _.findWhere(data.data, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
         oldList.id_str is newList.id_str
 
     hasListData: ->

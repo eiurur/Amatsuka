@@ -14,7 +14,9 @@ angular.module "myApp.controllers"
 
   TweetService.getListsList(AuthService.user._json.id_str)
   .then (data) ->
-    l = _.reject data.data, (list) -> list.name is 'Amatsuka'
+    # 人のAmatuskaリストをフォローしたとき、そのリストが一覧に表示されないため、full_nameの方を使う。
+    # l = _.reject data.data, (list) -> list.name is 'Amatsuka'
+    l = _.reject data.data, (list) -> list.full_name is "@#{AuthService.user.username}/amatsuka"
     $scope.ownList = l
 
   $scope.$watch 'sourceListData', (list) ->

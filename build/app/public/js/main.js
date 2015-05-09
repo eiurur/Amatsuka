@@ -306,7 +306,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       this.count = 20;
       this.members = [];
       this.memberIdx = 0;
-      this.amatsukaIdStr = JSON.parse(localStorage.getItem('amatsukaList')) || {};
+      this.amatsukaListIdStr = ListService.amatsukaList.data.id_str;
     }
 
     List.prototype.loadMember = function() {
@@ -321,9 +321,19 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
     };
 
     List.prototype.copyMember2AmatsukaList = function() {
+      var twitterIdStr;
+      if (this.members.length === 0) {
+        return;
+      }
+      twitterIdStr = '';
+      _.each(this.members, function(user) {
+        return twitterIdStr += "" + user.id_str + ",";
+      });
       return TweetService.createAllListsMembers({
         listIdStr: this.amatsukaListIdStr,
-        twitterIdStr: this.members
+        twitterIdStr: twitterIdStr
+      }).then(function(data) {
+        return console.log('copyMember2AmatsukaList ok', data);
       });
     };
 
@@ -456,6 +466,7 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
     $scope.isAuthenticated = AuthService.status.isAuthenticated;
     AuthService.user = data.data;
     $scope.user = data.data;
+    console.log('AuthService', AuthService.user);
     return $scope.isLoaded = true;
   }).error(function(status, data) {
     console.log(status);
@@ -571,7 +582,7 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthServi
   TweetService.getListsList(AuthService.user._json.id_str).then(function(data) {
     var l;
     l = _.reject(data.data, function(list) {
-      return list.name === 'Amatsuka';
+      return list.full_name === ("@" + AuthService.user.username + "/amatsuka");
     });
     return $scope.ownList = l;
   });
@@ -640,6 +651,22 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
 angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
   return function(scope, elm, attrs) {
     elm.text(version);
+  };
+}]);
+
+angular.module("myApp.directives").directive('copyMember', ["TweetService", function(TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      sourceList: '='
+    },
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        if (window.confirm('コピーしてもよろしいですか？')) {
+          return scope.sourceList.copyMember2AmatsukaList();
+        }
+      });
+    }
   };
 }]);
 
@@ -1013,9 +1040,11 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       };
       return TweetService.getListsList(params).then((function(_this) {
         return function(data) {
+          console.log('UPDATE!! ', data.data);
           _this.amatsukaList.data = _.findWhere(data.data, {
-            'name': 'Amatsuka'
+            'full_name': "@" + AuthService.user.username + "/amatsuka"
           });
+          console.log(_this.amatsukaList.data);
           ls.setItem('amatsukaList', JSON.stringify(_this.amatsukaList.data));
           return TweetService.getListsMembers({
             listIdStr: _this.amatsukaList.data.id_str
@@ -1066,9 +1095,10 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       };
       return TweetService.getListsList(params).then(function(data) {
         var newList, oldList;
+        console.log('isSameUser', data.data);
         oldList = JSON.parse(ls.getItem('amatsukaList')) || {};
         newList = _.findWhere(data.data, {
-          'name': 'Amatsuka'
+          'full_name': "@" + AuthService.user.username + "/amatsuka"
         }) || {
           id_str: null
         };
