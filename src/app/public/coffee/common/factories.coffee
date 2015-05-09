@@ -91,6 +91,9 @@ angular.module "myApp.factories", []
     Tweets
 
   .factory 'List', (TweetService, ListService) ->
+
+    # TODO: ListクラスをBaseとする設計でAmatsukaListClassを修正。
+
     class List
       constructor: (name, idStr) ->
         @name  　= name
@@ -107,8 +110,12 @@ angular.module "myApp.factories", []
           @members = ListService.nomarlizeMembersForCopy data.data.users
 
       copyMember2AmatsukaList: ->
-        # id_strだけを抜き出す。
-        # membersOnlyIdStr = _.pluck @members, 'id_str'
+        # TODO: @isCheckedを1つも持っていなければ何もせずreturn
+        # unless @isChecked then return
+
+        # TODO: isCheckedがfalseのmemberを除外する処理。
+        # @members = _.reject
+
         return if @members.length is 0
 
         # TODO: 100人ずつしか追加できないから、lengthを100で割った回数分回す。

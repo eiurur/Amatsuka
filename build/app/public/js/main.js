@@ -22,25 +22,6 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   return $locationProvider.html5Mode(true);
 }]);
 
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
-
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
     $log.info('location changin to: ' + next);
@@ -450,6 +431,25 @@ angular.module("myApp.services", []).service("CommonService", function() {
   };
 });
 
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
+
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
   $scope.isAuthenticated = AuthService.status.isAuthenticated;
@@ -466,7 +466,6 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
     $scope.isAuthenticated = AuthService.status.isAuthenticated;
     AuthService.user = data.data;
     $scope.user = data.data;
-    console.log('AuthService', AuthService.user);
     return $scope.isLoaded = true;
   }).error(function(status, data) {
     console.log(status);

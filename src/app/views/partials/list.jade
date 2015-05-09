@@ -1,12 +1,15 @@
 .col-md-12.col-sm-12.col-xs-12
   // 自分のリスト一覧
+  // TODO: デザインを統一(search boxっぽく、)
   select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
+
+  // TODO: Smartphoneでは、セレクトボックスの横に、Copyボタンを置く(上部はここ)
+
 .col-md-5.col-sm-12.col-xs-12
   h3(ng-if="sourceList.members")
     a.external-link(href='https://twitter.com/{{user.username}}/lists/{{sourceList.name}}', target='_blank')
       {{sourceList.name}} ({{sourceList.countChecked}}人)
   .scrollable.stylish-scrollbar.list-member__container(ng-if="sourceList.members")
-
     div(ng-repeat="member in sourceList.members")
       .media
         a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")
@@ -15,6 +18,7 @@
           h4.media-heading
             span.name {{member.name}}
             span.screen-name @{{member.screen_name}}
+          // TODO: 追加するか否かのチェックボックスをここに置く。
       .member__divider
 
   //- pre
@@ -34,7 +38,6 @@
   h3
     a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
       {{amatsukaList.name}} ({{amatsukaList.length}}人)
-
   #amatsuka-list__scrollable.scrollable.stylish-scrollbar
     .list-member__container(infinite-scroll='amatsukaList.loadMoreMember()',infinite-scroll-distance='0', infinite-scroll-container="'#amatsuka-list__scrollable'")
       div(ng-repeat="member in amatsukaList.members")
@@ -48,3 +51,5 @@
         .member__divider
             //- span.btn-wrapper
             //- a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{member.id_str}}', ng-disabled='isProcessing')
+
+// TODO: Smartphoneでは、セレクトボックスの横に、Copyボタンを置く(下部はここ)
