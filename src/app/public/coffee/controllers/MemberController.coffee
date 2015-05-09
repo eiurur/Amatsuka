@@ -2,8 +2,8 @@ angular.module "myApp.controllers"
   .controller "MemberCtrl", (
     $scope
     AuthService
-    List
+    AmatsukaList
     ) ->
   if _.isEmpty AuthService.user then $location.path '/'
 
-  $scope.list = new List('Amatsuka')
+  $scope.list = new AmatsukaList('Amatsuka')
