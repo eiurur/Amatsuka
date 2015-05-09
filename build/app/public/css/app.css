@@ -398,6 +398,26 @@
     margin-top: 0;
   }
 }
+/**
+ * Scroll
+ */
+.scrollable {
+  height: 80vh;
+  border-left: 1px solid #f2446f;
+  overflow-y: scroll;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.stylish-scrollbar::-webkit-scrollbar {
+  width: 1px;
+  background-color: transparant;
+}
+
+.stylish-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #f2446f;
+}
+
 /*
 明度
 lighten(red, 30%);
@@ -1100,6 +1120,12 @@ i {
   .user-sidebar__post {
     margin: 20px 15px;
   }
+}
+.list-member__container {
+  padding-left: 20px;
+}
+.list-member__container .media {
+  min-height: 0px;
 }
 
 /*# sourceMappingURL=app.css.map */

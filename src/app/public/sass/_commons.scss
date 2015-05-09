@@ -351,3 +351,29 @@
     margin-top: 0;
   }
 }
+
+
+
+/**
+ * Scroll
+ */
+.scrollable {
+  // max-height: 740px;
+  height: 80vh;
+  border-left: 1px solid $amatsuka-color;
+  overflow-y: scroll;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.stylish-scrollbar::-webkit-scrollbar
+{
+  // width: 4px;
+  width: 1px;
+  background-color: transparant;
+}
+
+.stylish-scrollbar::-webkit-scrollbar-thumb
+{
+  background-color: $amatsuka-color;
+}

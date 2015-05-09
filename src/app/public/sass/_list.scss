@@ -1,0 +1,9 @@
+@charset "utf-8";
+
+.list-member__container {
+  padding-left: 20px;
+
+  .media {
+    min-height: 0px;  // 打消し用
+  }
+}
