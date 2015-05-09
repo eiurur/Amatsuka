@@ -78,25 +78,29 @@ class UserProvider
     , (err, users) ->
       callback err, users
 
-  upsert: (params, callback) ->
-    user = undefined
+  # upsert: (params, callback) ->
+  #   user = undefined
+  #   console.log "\n============> User upsert\n"
+  #   console.log params
+  #   user = params.user
+  #   User.update
+  #     twitterIdStr: params.user.twitterIdStr
+  #   , user,
+  #     upsert: true
+  #   , (err) ->
+  #     callback err
+
+  findOneAndUpdate: (params, callback) ->
+    user = null
     console.log "\n============> User upsert\n"
     console.log params
-    user =
-      twitterIdStr: params.profile._json.id_str
-      name: params.profile.username
-      screenName: params.profile.displayName
-      icon: params.profile._json.profile_image_url_https
-      url: params.profile._json.url
-      accessToken: params.profile.twitter_token
-      accessTokenSecret: params.profile.twitter_token_secret
-    User.update
-      twitterIdStr: params.profile._json.id_str
+    user = params.user
+    User.findOneAndUpdate
+      twitterIdStr: params.user.twitterIdStr
     , user,
       upsert: true
-    , (err) ->
-      callback err
-
+    , (err, user) ->
+      callback err, user
 
 
 class TLProvider
@@ -148,6 +152,21 @@ class ConfigProvider
     , upsert: true
     , (err) ->
       callback err
+
+  findOneAndUpdate: (params, callback) ->
+    console.log "\n============> User findOneAndUpdate\n"
+    console.log params
+    config =
+      twitterIdStr: params.twitterIdStr
+      configStr: JSON.stringify(params.config)
+
+    Config.findOneAndUpdate
+      twitterIdStr: params.twitterIdStr
+    ,
+      config
+    , upsert: true
+    , (err, config) ->
+      callback err, config
 
 
 exports.UserProvider   = new UserProvider()

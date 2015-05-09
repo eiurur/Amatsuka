@@ -107,9 +107,19 @@ exports.serve = ->
       console.log 'User profile = ', profile
       profile.twitter_token = token
       profile.twitter_token_secret = tokenSecret
-      UserProvider.upsert
-        profile: profile
-      , (err) ->
+
+      user =
+        twitterIdStr: profile._json.id_str
+        name: profile.username
+        screenName: profile.displayName
+        icon: profile._json.profile_image_url_https
+        url: profile._json.url
+        accessToken: token
+        accessTokenSecret: tokenSecret
+
+      UserProvider.findOneAndUpdate
+        user: user
+      , (err, data) ->
         console.log err  if err
         done null, profile
       return

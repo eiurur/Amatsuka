@@ -95,21 +95,28 @@
       user = void 0;
       console.log("\n============> User upsert\n");
       console.log(params);
-      user = {
-        twitterIdStr: params.profile._json.id_str,
-        name: params.profile.username,
-        screenName: params.profile.displayName,
-        icon: params.profile._json.profile_image_url_https,
-        url: params.profile._json.url,
-        accessToken: params.profile.twitter_token,
-        accessTokenSecret: params.profile.twitter_token_secret
-      };
+      user = params.user;
       return User.update({
-        twitterIdStr: params.profile._json.id_str
+        twitterIdStr: params.user.twitterIdStr
       }, user, {
         upsert: true
       }, function(err) {
         return callback(err);
+      });
+    };
+
+    UserProvider.prototype.findOneAndUpdate = function(params, callback) {
+      var user;
+      user = null;
+      console.log("\n============> User upsert\n");
+      console.log(params);
+      user = params.user;
+      return User.findOneAndUpdate({
+        twitterIdStr: params.user.twitterIdStr
+      }, user, {
+        upsert: true
+      }, function(err, user) {
+        return callback(err, user);
       });
     };
 
@@ -178,6 +185,23 @@
         upsert: true
       }, function(err) {
         return callback(err);
+      });
+    };
+
+    ConfigProvider.prototype.findOneAndUpdate = function(params, callback) {
+      var config;
+      console.log("\n============> User findOneAndUpdate\n");
+      console.log(params);
+      config = {
+        twitterIdStr: params.twitterIdStr,
+        configStr: JSON.stringify(params.config)
+      };
+      return Config.findOneAndUpdate({
+        twitterIdStr: params.twitterIdStr
+      }, config, {
+        upsert: true
+      }, function(err, config) {
+        return callback(err, config);
       });
     };
 

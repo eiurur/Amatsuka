@@ -93,11 +93,21 @@
         consumerSecret: settings.TW_CS,
         callbackURL: settings.CALLBACK_URL
       }, function(token, tokenSecret, profile, done) {
+        var user;
         console.log('User profile = ', profile);
         profile.twitter_token = token;
         profile.twitter_token_secret = tokenSecret;
+        user = {
+          twitterIdStr: profile._json.id_str,
+          name: profile.username,
+          screenName: profile.displayName,
+          icon: profile._json.profile_image_url_https,
+          url: profile._json.url,
+          accessToken: token,
+          accessTokenSecret: tokenSecret
+        };
         UserProvider.upsert({
-          profile: profile
+          user: user
         }, function(err) {
           if (err) {
             console.log(err);
