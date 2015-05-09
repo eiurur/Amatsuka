@@ -1,18 +1,12 @@
-.col-md-12
-  //- h2
-  //-   a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
-  //-     / {{amatsukaList.name}} ({{amatsukaList.length}}人)
-
+.col-md-12.col-sm-12.col-xs-12
   // 自分のリスト一覧
-  select(ng-model='sourceListData', ng-options='l.name for l in ownList')
-.col-md-6
-  .scrollable.stylish-scrollbar.list-member__container(ng-if="sourceList.members.users.length != 0")
-    //- .panel.panel-default
-    //-   .panel-heading
-    //-     h3.panel-title
-    //-   .panel-body
-    //-     | Panel content
-    //- div(infinite-scroll='sourceList.loadMoreMember()',infinite-scroll-distance='0', ng-if='sourceList.members')
+  select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
+.col-md-5.col-sm-12.col-xs-12
+  h3(ng-if="sourceList.members")
+    a.external-link(href='https://twitter.com/{{user.username}}/lists/{{sourceList.name}}', target='_blank')
+      {{sourceList.name}} ({{sourceList.countChecked}}人)
+  .scrollable.stylish-scrollbar.list-member__container(ng-if="sourceList.members")
+
     div(ng-repeat="member in sourceList.members")
       .media
         a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")
@@ -23,17 +17,26 @@
             span.screen-name @{{member.screen_name}}
       .member__divider
 
-  pre
-    {{sourceList|json}}
-  pre
-    {{sourceListData|json}}
-  pre
-    {{ownList|json}}
+  //- pre
+  //-   {{sourceList|json}}
+  //- pre
+  //-   {{sourceListData|json}}
+  //- pre
+  //-   {{ownList|json}}
+
+.col-md-2.hidden-sm.hidden-xs
+  .list__controlls--copy(ng-if="sourceList.members")
+    .list__controlls--copy--icon(source-list='sourceList', copy-member)
+
 
 // Amatsukaリスト
-.col-md-6
-  .scrollable.stylish-scrollbar
-    .list-member__container(infinite-scroll='amatsukaList.loadMoreMember()',infinite-scroll-distance='0')
+.col-md-5.col-sm-12.col-xs-12
+  h3
+    a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
+      {{amatsukaList.name}} ({{amatsukaList.length}}人)
+
+  #amatsuka-list__scrollable.scrollable.stylish-scrollbar
+    .list-member__container(infinite-scroll='amatsukaList.loadMoreMember()',infinite-scroll-distance='0', infinite-scroll-container="'#amatsuka-list__scrollable'")
       div(ng-repeat="member in amatsukaList.members")
         .media
           a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")

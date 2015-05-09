@@ -402,7 +402,7 @@
  * Scroll
  */
 .scrollable {
-  height: 80vh;
+  height: 75vh;
   border-left: 1px solid #f2446f;
   overflow-y: scroll;
   margin-top: 20px;
@@ -1126,6 +1126,30 @@ i {
 }
 .list-member__container .media {
   min-height: 0px;
+}
+
+.list__controlls--copy {
+  width: 15px;
+  height: 15px;
+  margin: 0 auto;
+}
+
+.list__controlls--copy--icon {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  padding: 20px;
+  cursor: pointer;
+  transition: .24s;
+  -moz-transform: rotate(225deg);
+  -ms-transform: rotate(225deg);
+  -webkit-transform: rotate(225deg);
+  transform: rotate(225deg);
+  border: solid transparent;
+  box-shadow: 1px -1px 0 0 #f2446f inset;
+}
+.list__controlls--copy--icon:hover {
+  box-shadow: 1px -1px 0 0 #f9a3b8 inset;
 }
 
 /*# sourceMappingURL=app.css.map */
