@@ -3,26 +3,31 @@ angular.module "myApp.controllers"
     $scope
     AuthService
     TweetService
-    Tweets
+    List
+    AmatsukaList
     ) ->
   if _.isEmpty AuthService.user then $location.path '/'
 
   # [WIP]
 
-  # Listを取得する
-  # TweetService.getListsList()
-  # .then (data) ->
-  #   $scope.lists = data.data
-  # .then (data)
+  $scope.amatsukaList = new AmatsukaList('Amatsuka')
 
+  TweetService.getListsList(AuthService.user._json.id_str)
+  .then (data) ->
+    l = _.reject data.data, (list) -> list.name is 'Amatsuka'
+    $scope.ownList = l
 
-  # Listを上部に並べる
-
-  # そのListのツイートを取得する(とりあえずAmatsukaが初期)
-
-  # $on -> Listが切り替わったら
-
-    # そのListのついーとを取得する
+  $scope.$watch 'sourceListData', (list) ->
+    return unless list?.name?
+    console.log list
+    do ->
+      $scope.sourceList = {}
+      $scope.sourceList = new List(list.name, list.id_str)
+      $scope.sourceList.loadMember()
+      console.log $scope.sourceList
+      return
+      # $scope.sourceList.members = data.data
+    # do ConfigService.update
 
 
 

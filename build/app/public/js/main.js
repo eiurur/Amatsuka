@@ -299,7 +299,42 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
 }]).factory('List', ["TweetService", "ListService", function(TweetService, ListService) {
   var List;
   List = (function() {
-    function List(name) {
+    function List(name, idStr) {
+      this.name = name;
+      this.idStr = idStr;
+      this.isLast　 = false;
+      this.count = 20;
+      this.members = [];
+      this.memberIdx = 0;
+      this.amatsukaIdStr = JSON.parse(localStorage.getItem('amatsukaList')) || {};
+    }
+
+    List.prototype.loadMember = function() {
+      return TweetService.getListsMembers({
+        listIdStr: this.idStr,
+        count: 1000
+      }).then((function(_this) {
+        return function(data) {
+          return _this.members = ListService.nomarlizeMembersForCopy(data.data.users);
+        };
+      })(this));
+    };
+
+    List.prototype.copyMember2AmatsukaList = function() {
+      return TweetService.createAllListsMembers({
+        listIdStr: this.amatsukaListIdStr,
+        twitterIdStr: this.members
+      });
+    };
+
+    return List;
+
+  })();
+  return List;
+}]).factory('AmatsukaList', ["TweetService", "ListService", function(TweetService, ListService) {
+  var AmatsukaList;
+  AmatsukaList = (function() {
+    function AmatsukaList(name) {
       this.name = name;
       this.isLast　 = false;
       this.count = 20;
@@ -313,7 +348,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       this.length = this.amatsukaMemberList.length;
     }
 
-    List.prototype.updateAmatsukaList = function() {
+    AmatsukaList.prototype.updateAmatsukaList = function() {
       return ListService.update().then((function(_this) {
         return function(users) {
           _this.idstr = ListService.amatsukaList.data.id_str;
@@ -323,7 +358,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       })(this));
     };
 
-    List.prototype.loadMoreMember = function() {
+    AmatsukaList.prototype.loadMoreMember = function() {
       if (this.isLast) {
         return;
       }
@@ -334,10 +369,10 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       }
     };
 
-    return List;
+    return AmatsukaList;
 
   })();
-  return List;
+  return AmatsukaList;
 }]);
 
 angular.module("myApp.filters", []).filter("interpolate", ["version", function(version) {
@@ -528,17 +563,37 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope"
   });
 }]);
 
-angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthService", "TweetService", "Tweets", function($scope, AuthService, TweetService, Tweets) {
-  if (_.isEmpty(AuthService.user)) {
-    return $location.path('/');
-  }
-}]);
-
-angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthService", "List", function($scope, AuthService, List) {
+angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthService", "TweetService", "List", "AmatsukaList", function($scope, AuthService, TweetService, List, AmatsukaList) {
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
-  return $scope.list = new List('Amatsuka');
+  $scope.amatsukaList = new AmatsukaList('Amatsuka');
+  TweetService.getListsList(AuthService.user._json.id_str).then(function(data) {
+    var l;
+    l = _.reject(data.data, function(list) {
+      return list.name === 'Amatsuka';
+    });
+    return $scope.ownList = l;
+  });
+  return $scope.$watch('sourceListData', function(list) {
+    if ((list != null ? list.name : void 0) == null) {
+      return;
+    }
+    console.log(list);
+    return (function() {
+      $scope.sourceList = {};
+      $scope.sourceList = new List(list.name, list.id_str);
+      $scope.sourceList.loadMember();
+      console.log($scope.sourceList);
+    })();
+  });
+}]);
+
+angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthService", "AmatsukaList", function($scope, AuthService, AmatsukaList) {
+  if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  return $scope.list = new AmatsukaList('Amatsuka');
 }]);
 
 angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, AuthService, TweetService, ListService, Tweets) {
@@ -880,9 +935,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       member: {}
     },
     registerMember2LocalStorage: function() {
-      var ls;
-      ls = localStorage;
-      ls.setItem('amatsukaFollowList', JSON.stringify(this.amatsukaList.member));
+      localStorage.setItem('amatsukaFollowList', JSON.stringify(this.amatsukaList.member));
     },
     addMember: function(twitterIdStr) {
       return TweetService.showUsers({
@@ -920,6 +973,13 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
         member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
       });
     },
+
+    /*
+     * 短縮URLの復元
+     * followStatusの代入
+     * Bioに含まれるリンクをハイパーリンク化
+     * アイコン画像を大きいものに差し替え
+     */
     nomarlizeMember: function(member) {
       var expandedUrlListInDescription, expandedUrlListInUrl;
       expandedUrlListInDescription = TweetService.getExpandedURLFromDescription(member.entities);
@@ -934,6 +994,16 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       member.description = TweetService.activateLink(member.description);
       member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
       return member;
+    },
+
+    /*
+     * 既存のリストからAmatsukaListへコピーするメンバーの属性をあるべき姿に正す(?)
+     */
+    nomarlizeMembersForCopy: function(members) {
+      return _.each(members, function(member) {
+        member.isPermissionCopy = true;
+        member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
+      });
     },
     update: function() {
       var ls, params;

@@ -6,8 +6,7 @@ angular.module "myApp.services"
       member: {}
 
     registerMember2LocalStorage: ->
-      ls = localStorage
-      ls.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
+      localStorage.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
       return
 
     # HACK:
@@ -32,7 +31,7 @@ angular.module "myApp.services"
         targetIdStr = TweetService.get(target, 'user.id_str', isRT)
       !!_.findWhere(@amatsukaList.member, 'id_str': targetIdStr)
 
-    # 今のところ、Member.jadeｄふぇ使う関数なので isFollow を全部　true　にしても構わない
+    # 今のところ、Member.jadeで使う関数なので isFollow を全部　true　にしても構わない
     nomarlizeMembers: (members) ->
       _.each members, (member) ->
         member.followStatus      = true
@@ -41,6 +40,12 @@ angular.module "myApp.services"
          TweetService.iconBigger(member.profile_image_url)
         return
 
+    ###
+    # 短縮URLの復元
+    # followStatusの代入
+    # Bioに含まれるリンクをハイパーリンク化
+    # アイコン画像を大きいものに差し替え
+    ###
     nomarlizeMember: (member) ->
 
       # TODO: 関数化
@@ -59,6 +64,17 @@ angular.module "myApp.services"
       member.profile_image_url =
         TweetService.iconBigger(member.profile_image_url)
       member
+
+    ###
+    # 既存のリストからAmatsukaListへコピーするメンバーの属性をあるべき姿に正す(?)
+    ###
+    nomarlizeMembersForCopy: (members) ->
+      _.each members, (member) ->
+        member.isPermissionCopy      = true
+        member.profile_image_url =
+         TweetService.iconBigger(member.profile_image_url)
+        return
+
 
     update: ->
       ls = localStorage

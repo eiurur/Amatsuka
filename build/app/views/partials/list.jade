@@ -1,1 +1,47 @@
-h1 list page
+.col-md-12
+  //- h2
+  //-   a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
+  //-     / {{amatsukaList.name}} ({{amatsukaList.length}}人)
+
+  // 自分のリスト一覧
+  select(ng-model='sourceListData', ng-options='l.name for l in ownList')
+.col-md-6
+  .scrollable.stylish-scrollbar.list-member__container(ng-if="sourceList.members.users.length != 0")
+    //- .panel.panel-default
+    //-   .panel-heading
+    //-     h3.panel-title
+    //-   .panel-body
+    //-     | Panel content
+    //- div(infinite-scroll='sourceList.loadMoreMember()',infinite-scroll-distance='0', ng-if='sourceList.members')
+    div(ng-repeat="member in sourceList.members")
+      .media
+        a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")
+          img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url}}', img-preload="img-preload")
+        .media-body
+          h4.media-heading
+            span.name {{member.name}}
+            span.screen-name @{{member.screen_name}}
+      .member__divider
+
+  pre
+    {{sourceList|json}}
+  pre
+    {{sourceListData|json}}
+  pre
+    {{ownList|json}}
+
+// Amatsukaリスト
+.col-md-6
+  .scrollable.stylish-scrollbar
+    .list-member__container(infinite-scroll='amatsukaList.loadMoreMember()',infinite-scroll-distance='0')
+      div(ng-repeat="member in amatsukaList.members")
+        .media
+          a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")
+            img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url}}', img-preload="img-preload")
+          .media-body
+            h4.media-heading
+              span.name {{member.name}}
+              span.screen-name @{{member.screen_name}}
+        .member__divider
+            //- span.btn-wrapper
+            //- a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{member.id_str}}', ng-disabled='isProcessing')
