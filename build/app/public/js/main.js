@@ -668,9 +668,12 @@ angular.module("myApp.directives").directive('copyMember', ["toaster", "TweetSer
     },
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
+        element.hasClass('disabled');
         if (window.confirm('コピーしてもよろしいですか？')) {
+          element.addClass('disabled');
           toaster.pop('wait', "Now Copying ...", '', 0, 'trustedHtml');
           return scope.sourceList.copyMember2AmatsukaList().then(function(data) {
+            element.removeClass('disabled');
             toaster.clear();
             return toaster.pop('success', "Finished copy member", '', 2000, 'trustedHtml');
           });

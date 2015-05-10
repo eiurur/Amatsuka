@@ -1,16 +1,29 @@
 .col-md-12.col-sm-12.col-xs-12
-  // 自分のリスト一覧
-  // TODO: デザインを統一(search boxっぽく、)
-  .input-group.list__select--group
-    span.input-group-addon
-      i.fa.fa-list-ul
-    select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
+  form.form-inline.list__select--group
+    .form-group
+      .input-group
+        span.input-group-addon
+          i.fa.fa-list-ul
+        select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
+    .form-group.hidden-lg.hidden-md
+      button.btn.btn-stretch(ng-if="sourceList.members", source-list='sourceList', copy-member)
+        i.fa.fa-copy
+        | Copy members to AmatsukaList
 
+
+    //- .input-group.list__select--group
+    //-   span.input-group-addon
+    //-     i.fa.fa-list-ul
+    //-   select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
+    //- span.btn-wrapper(ng-if="sourceList.members")
+    //-   a.btn.btn-lg.login__description--btn(source-list='sourceList', copy-member)
+    //-     i.fa.fa-plus-square-o
+    //-     | Copy members to AmatsukaList
   // TODO: Smartphoneでは、セレクトボックスの横に、Copyボタンを置く(上部はここ)
 
 .col-md-5.col-sm-12.col-xs-12
   h3(ng-if="sourceList.members")
-    a.external-link(href='https://twitter.com/{{user.username}}/lists/{{sourceList.name}}', target='_blank')
+    a.external-link(href='https://twitter.com{{sourceListData.uri}}', target='_blank')
       {{sourceList.name}} ({{sourceList.countChecked}}人)
 
   // TODO: 読み込み中のloader
@@ -37,7 +50,7 @@
 // TODO: 読み込みが完了するまで、copy-masterはdisabledにする。(directiveに書くのかな？)
 .col-md-2.hidden-sm.hidden-xs
   .list__controlls--copy(ng-if="sourceList.members")
-    .list__controlls--copy--icon(source-list='sourceList', copy-member)
+    a.list__controlls--copy--icon(source-list='sourceList', copy-member)
 
 
 // Amatsukaリスト

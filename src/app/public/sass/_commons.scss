@@ -377,3 +377,14 @@
 {
   background-color: $amatsuka-color;
 }
+
+
+/**
+ * Button
+ */
+@media(max-width:480px)
+{
+  .btn-stretch {
+    width: 100%;
+  }
+}

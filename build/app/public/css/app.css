@@ -418,6 +418,14 @@
   background-color: #f2446f;
 }
 
+/**
+ * Button
+ */
+@media (max-width: 480px) {
+  .btn-stretch {
+    width: 100%;
+  }
+}
 /*
 明度
 lighten(red, 30%);
@@ -483,6 +491,11 @@ ul {
 
 a {
   cursor: pointer;
+}
+
+a.disabled {
+  pointer-events: none;
+  cursor: default;
 }
 
 select {
@@ -1143,7 +1156,6 @@ i {
 .list__controlls--copy--icon {
   position: fixed;
   top: 50%;
-  left: 50%;
   padding: 20px;
   cursor: pointer;
   transition: .24s;

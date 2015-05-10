@@ -73,6 +73,14 @@ a {
   cursor: pointer;
 }
 
+// <a>タグはdisabledがないので疑似的なスタイルを自前で用意する
+a.disabled {
+   pointer-events: none;
+   cursor: default;
+}
+
+
+
 select {
   background: $sidebar-color;
   border-color: $link-color;
