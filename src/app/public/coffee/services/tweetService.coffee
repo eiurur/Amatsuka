@@ -144,21 +144,21 @@ angular.module "myApp.services"
         !_.has(tweet, 'extended_entities') or
         _.isEmpty(tweet.extended_entities.media)
 
-    # TwitterAPI動作テスト用
-    twitterTest: (user) ->
-      return new Promise (resolve, reject) ->
-        $http.post('/api/twitterTest', user: user)
-          .success (data) ->
-            console.log 'twitterTest in service data = ', data
-            return resolve data
+    # # TwitterAPI動作テスト用
+    # twitterTest: (user) ->
+    #   return new Promise (resolve, reject) ->
+    #     $http.post('/api/twitterTest', user: user)
+    #       .success (data) ->
+    #         console.log 'twitterTest in service data = ', data
+    #         return resolve data
 
-    # TwitterAPI、投稿動作テスト用
-    twitterPostTest: (user) ->
-      return new Promise (resolve, reject) ->
-        $http.post('/api/twitterPostTest', user: user)
-          .success (data) ->
-            console.log 'twitterPostTest in service data = ', data
-            return resolve data
+    # # TwitterAPI、投稿動作テスト用
+    # twitterPostTest: (user) ->
+    #   return new Promise (resolve, reject) ->
+    #     $http.post('/api/twitterPostTest', user: user)
+    #       .success (data) ->
+    #         console.log 'twitterPostTest in service data = ', data
+    #         return resolve data
 
     ###
     List

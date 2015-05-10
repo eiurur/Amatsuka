@@ -90,7 +90,7 @@ angular.module "myApp.factories", []
 
     Tweets
 
-  .factory 'List', (TweetService, ListService) ->
+  .factory 'List', ($q, TweetService, ListService) ->
 
     # TODO: ListクラスをBaseとする設計でAmatsukaListClassを修正。
 
@@ -110,20 +110,24 @@ angular.module "myApp.factories", []
           @members = ListService.nomarlizeMembersForCopy data.data.users
 
       copyMember2AmatsukaList: ->
-        # TODO: @isCheckedを1つも持っていなければ何もせずreturn
-        # unless @isChecked then return
+        return $q (resolve, reject) =>
+          # TODO: @isCheckedを1つも持っていなければ何もせずreturn
+          # unless @isChecked then return
 
-        # TODO: isCheckedがfalseのmemberを除外する処理。
-        # @members = _.reject
+          # TODO: isCheckedがfalseのmemberを除外する処理。
+          # @members = _.reject
 
-        return if @members.length is 0
+          return reject 'member is nothing' if @members.length is 0
 
-        # TODO: 100人ずつしか追加できないから、lengthを100で割った回数分回す。
-        twitterIdStr = ''
-        _.each @members, (user) -> twitterIdStr += "#{user.id_str},"
-        TweetService.createAllListsMembers(listIdStr: @amatsukaListIdStr, twitterIdStr: twitterIdStr)
-        .then (data) ->
-          console.log 'copyMember2AmatsukaList ok', data
+          # TODO: 100人ずつしか追加できないから、lengthを100で割った回数分回す。
+          twitterIdStr = ''
+          _.each @members, (user) -> twitterIdStr += "#{user.id_str},"
+          TweetService.createAllListsMembers(listIdStr: @amatsukaListIdStr, twitterIdStr: twitterIdStr)
+          .then (data) ->
+            console.log 'copyMember2AmatsukaList ok', data
+            return resolve data
+          .catch (e) ->
+            return reject e
 
     List
 

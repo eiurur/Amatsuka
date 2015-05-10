@@ -22,6 +22,25 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   return $locationProvider.html5Mode(true);
 }]);
 
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
+
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
     $log.info('location changin to: ' + next);
@@ -277,7 +296,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
 
   })();
   return Tweets;
-}]).factory('List', ["TweetService", "ListService", function(TweetService, ListService) {
+}]).factory('List', ["$q", "TweetService", "ListService", function($q, TweetService, ListService) {
   var List;
   List = (function() {
     function List(name, idStr) {
@@ -302,20 +321,27 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
     };
 
     List.prototype.copyMember2AmatsukaList = function() {
-      var twitterIdStr;
-      if (this.members.length === 0) {
-        return;
-      }
-      twitterIdStr = '';
-      _.each(this.members, function(user) {
-        return twitterIdStr += "" + user.id_str + ",";
-      });
-      return TweetService.createAllListsMembers({
-        listIdStr: this.amatsukaListIdStr,
-        twitterIdStr: twitterIdStr
-      }).then(function(data) {
-        return console.log('copyMember2AmatsukaList ok', data);
-      });
+      return $q((function(_this) {
+        return function(resolve, reject) {
+          var twitterIdStr;
+          if (_this.members.length === 0) {
+            return reject('member is nothing');
+          }
+          twitterIdStr = '';
+          _.each(_this.members, function(user) {
+            return twitterIdStr += "" + user.id_str + ",";
+          });
+          return TweetService.createAllListsMembers({
+            listIdStr: _this.amatsukaListIdStr,
+            twitterIdStr: twitterIdStr
+          }).then(function(data) {
+            console.log('copyMember2AmatsukaList ok', data);
+            return resolve(data);
+          })["catch"](function(e) {
+            return reject(e);
+          });
+        };
+      })(this));
     };
 
     return List;
@@ -430,25 +456,6 @@ angular.module("myApp.services", []).service("CommonService", function() {
     }
   };
 });
-
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
 
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
@@ -653,7 +660,7 @@ angular.module("myApp.directives").directive("appVersion", ["version", function(
   };
 }]);
 
-angular.module("myApp.directives").directive('copyMember', ["TweetService", function(TweetService) {
+angular.module("myApp.directives").directive('copyMember', ["toaster", "TweetService", function(toaster, TweetService) {
   return {
     restrict: 'A',
     scope: {
@@ -662,7 +669,11 @@ angular.module("myApp.directives").directive('copyMember', ["TweetService", func
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
         if (window.confirm('コピーしてもよろしいですか？')) {
-          return scope.sourceList.copyMember2AmatsukaList();
+          toaster.pop('wait', "Now Copying ...", '', 0, 'trustedHtml');
+          return scope.sourceList.copyMember2AmatsukaList().then(function(data) {
+            toaster.clear();
+            return toaster.pop('success', "Finished copy member", '', 2000, 'trustedHtml');
+          });
         }
       });
     }
@@ -1278,26 +1289,6 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
     filterIncludeImage: function(tweets) {
       return _.reject(tweets, function(tweet) {
         return !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
-      });
-    },
-    twitterTest: function(user) {
-      return new Promise(function(resolve, reject) {
-        return $http.post('/api/twitterTest', {
-          user: user
-        }).success(function(data) {
-          console.log('twitterTest in service data = ', data);
-          return resolve(data);
-        });
-      });
-    },
-    twitterPostTest: function(user) {
-      return new Promise(function(resolve, reject) {
-        return $http.post('/api/twitterPostTest', {
-          user: user
-        }).success(function(data) {
-          console.log('twitterPostTest in service data = ', data);
-          return resolve(data);
-        });
       });
     },
 

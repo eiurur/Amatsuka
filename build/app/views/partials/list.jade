@@ -9,6 +9,9 @@
   h3(ng-if="sourceList.members")
     a.external-link(href='https://twitter.com/{{user.username}}/lists/{{sourceList.name}}', target='_blank')
       {{sourceList.name}} ({{sourceList.countChecked}}人)
+
+  // TODO: 読み込み中のloader
+
   .scrollable.stylish-scrollbar.list-member__container(ng-if="sourceList.members")
     div(ng-repeat="member in sourceList.members")
       .media
@@ -28,6 +31,7 @@
   //- pre
   //-   {{ownList|json}}
 
+// TODO: 読み込みが完了するまで、copy-masterはdisabledにする。(directiveに書くのかな？)
 .col-md-2.hidden-sm.hidden-xs
   .list__controlls--copy(ng-if="sourceList.members")
     .list__controlls--copy--icon(source-list='sourceList', copy-member)
