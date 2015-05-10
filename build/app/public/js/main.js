@@ -300,7 +300,6 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
   var List;
   List = (function() {
     function List(name, idStr) {
-      this.checkError = __bind(this.checkError, this);
       this.name = name;
       this.idStr = idStr;
       this.isLast　 = false;
@@ -318,23 +317,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
         return function(data) {
           return _this.members = ListService.nomarlizeMembersForCopy(data.data.users);
         };
-      })(this))["catch"]((function(_this) {
-        return function(error) {
-          console.log(error);
-          return _this.checkError(error.statusCode);
-        };
       })(this));
-    };
-
-    List.prototype.checkError = function(statusCode) {
-      console.log(statusCode);
-      switch (statusCode) {
-        case 429:
-          return ToasterService.warning({
-            title: 'ツイート取得API制限',
-            text: '15分お待ちください'
-          });
-      }
     };
 
     List.prototype.copyMember2AmatsukaList = function() {

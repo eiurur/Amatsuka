@@ -1,3 +1,4 @@
+// リストセレクトボックス + コピー実行ボタン(for smartphone)
 .col-md-12.col-sm-12.col-xs-12
   form.form-inline.list__select--group
     .form-group
@@ -10,25 +11,14 @@
         i.fa.fa-copy
         | Copy members to AmatsukaList
 
-
-    //- .input-group.list__select--group
-    //-   span.input-group-addon
-    //-     i.fa.fa-list-ul
-    //-   select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
-    //- span.btn-wrapper(ng-if="sourceList.members")
-    //-   a.btn.btn-lg.login__description--btn(source-list='sourceList', copy-member)
-    //-     i.fa.fa-plus-square-o
-    //-     | Copy members to AmatsukaList
-  // TODO: Smartphoneでは、セレクトボックスの横に、Copyボタンを置く(上部はここ)
-
 .col-md-5.col-sm-12.col-xs-12
-  h3(ng-if="sourceList.members")
-    a.external-link(href='https://twitter.com{{sourceListData.uri}}', target='_blank')
-      {{sourceList.name}} ({{sourceList.countChecked}}人)
-
   div(ng-if="sourceList.members.length == 0")
     dot-loader
 
+  // ソースとなるリスト
+  h3(ng-if="sourceList.members.length > 0")
+    a.external-link(href='https://twitter.com{{sourceListData.uri}}', target='_blank')
+      {{sourceList.name}} ({{sourceList.members.length}}人)
   .scrollable.stylish-scrollbar.list-member__container(ng-if="sourceList.members.length > 0")
     div(ng-repeat="member in sourceList.members")
       .media
@@ -40,7 +30,6 @@
             span.screen-name @{{member.screen_name}}
           // TODO: 追加するか否かのチェックボックスをここに置く。
       .member__divider
-
   //- pre
   //-   {{sourceList|json}}
   //- pre
@@ -50,7 +39,7 @@
   //- pre
   //-   {{sourceList.members|json}}
 
-// TODO: 読み込みが完了するまで、copy-masterはdisabledにする。(directiveに書くのかな？)
+// コピー実行アイコン(for pc)
 .col-md-2.hidden-sm.hidden-xs
   .list__controlls--copy(ng-if="sourceList.members.length > 0")
     a.list__controlls--copy--icon(source-list='sourceList', copy-member)
@@ -72,7 +61,3 @@
               span.name {{member.name}}
               span.screen-name @{{member.screen_name}}
         .member__divider
-            //- span.btn-wrapper
-            //- a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{member.id_str}}', ng-disabled='isProcessing')
-
-// TODO: Smartphoneでは、セレクトボックスの横に、Copyボタンを置く(下部はここ)
