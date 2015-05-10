@@ -5,89 +5,34 @@
 @import "functions";
 @import "commons";
 
-/*
-明度
-lighten(red, 30%);
-darken(red, 30%);
+// Fundamental element
+@import "primitive";
 
-彩度
-saturate(red, 20%);
-desaturate(red, 20%);
+// login
+@import "login";
 
-透明度
-transparentize(red, 0.8);
-rgba(red, 0.2);
+// Header
+@import "header";
 
+// Sidebar
+@import "sidebar";
 
-規約は原則 BEM を使用する
+// left_col
+@import "timeline";
 
-BEM
-親の要素となるような要素をBlockとして命名
-.item
-.item-list
-.form
-.form-search
-.form-search-item
+// member.jade
+@import "member";
 
-ElementはBlockに内包される部品。Elementが集まったものがBlockになるので、ElementはBlock内部に存在します。
-.item__text
-.item-list__btn
-.form__input
-.form-search__title
-.form-search-item__user
+// user-sidebar.jade
+@import "user-slidebar";
 
-Modifierは状態を表すときに使用されます。
-.item--red
-.item-list__btn--type_success
-.form__input--active
-.form-search__title--hover
-.form-search-result__user--following
+// list.jade
+@import "list";
 
-その他
-
-・CSSプロパティはアルファベット順
-
-*/
-
-html, body {
-  height:100%;
-}
-
-body {
-  background: $body__bg-color;
-  color: #000;
-  font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
-  font-size: $baseFontSize;
-  font-weight: 400;
-  margin-top: 0;
-  line-height: 1.4;
-}
-
-ul {
-  margin: 0;
-  list-style: none;
-  padding-left: 0;
-}
-
-a {
-  cursor: pointer;
-}
-
-// <a>タグはdisabledがないので疑似的なスタイルを自前で用意する
-a.disabled {
-   pointer-events: none;
-   cursor: default;
-}
-
-
-
-select {
-  background: $sidebar-color;
-  border-color: $link-color;
-  color: $link-color;
-  // color: white;
-}
-
+/**
+ * TODO: ファイルに分ける
+ * other
+ */
 .h100per {
   height: 100%;
 }
@@ -98,16 +43,6 @@ select {
   color: $link-color;
   transition: .2s ease;
 }
-
-
-// login
-@import "login";
-
-// Header
-@import "header";
-
-// Sidebar
-@import "sidebar";
 
 .site-main {
   position: relative;
@@ -120,14 +55,3 @@ select {
   padding-bottom: 30px;
   // padding-right: $sidebar-width + 40px;
 }
-
-// left_col
-@import "timeline";
-
-// member.jade
-@import "member";
-
-@import "user-slidebar";
-
-// list.jade
-@import "list";

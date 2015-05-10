@@ -51,7 +51,6 @@
 /**
  * seaerch box
  */
-
 // フォームも角ばったほうがいいかなって思ったけど
 // なんか微妙。消すかも
 .input-group-sm > .form-control,
@@ -86,7 +85,6 @@
 /**
  * Aside slider
  */
-
 .fullscreen-overlay
 {
     position: fixed;
@@ -268,7 +266,10 @@
     background-size: cover;
 }
 
-// Box-loader
+
+/**
+ * Box-loader
+ */
 .box-loader
 {
     font-size: 0;
@@ -307,9 +308,8 @@
 }
 
 /**
- * Loader
+ * Dot-loader
  */
-
 .wrapper {
   width: 3em;
   margin: 3em auto;
