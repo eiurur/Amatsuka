@@ -6,8 +6,7 @@ angular.module "myApp.services"
       member: {}
 
     registerMember2LocalStorage: ->
-      ls = localStorage
-      ls.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
+      localStorage.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
       return
 
     # HACK:
@@ -32,7 +31,7 @@ angular.module "myApp.services"
         targetIdStr = TweetService.get(target, 'user.id_str', isRT)
       !!_.findWhere(@amatsukaList.member, 'id_str': targetIdStr)
 
-    # 今のところ、Member.jadeｄふぇ使う関数なので isFollow を全部　true　にしても構わない
+    # 今のところ、Member.jadeで使う関数なので isFollow を全部　true　にしても構わない
     nomarlizeMembers: (members) ->
       _.each members, (member) ->
         member.followStatus      = true
@@ -41,6 +40,12 @@ angular.module "myApp.services"
          TweetService.iconBigger(member.profile_image_url)
         return
 
+    ###
+    # 短縮URLの復元
+    # followStatusの代入
+    # Bioに含まれるリンクをハイパーリンク化
+    # アイコン画像を大きいものに差し替え
+    ###
     nomarlizeMember: (member) ->
 
       # TODO: 関数化
@@ -60,12 +65,28 @@ angular.module "myApp.services"
         TweetService.iconBigger(member.profile_image_url)
       member
 
+    ###
+    # 既存のリストからAmatsukaListへコピーするメンバーの属性をあるべき姿に正す(?)
+    ###
+    nomarlizeMembersForCopy: (members) ->
+      _.each members, (member) ->
+        member.isPermissionCopy      = true
+        member.profile_image_url =
+         TweetService.iconBigger(member.profile_image_url)
+        return
+
+
     update: ->
       ls = localStorage
       params = twitterIdStr: AuthService.user._json.id_str
       TweetService.getListsList(params)
       .then (data) =>
-        @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
+        console.log 'UPDATE!! ', data.data
+
+        # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
+        # @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
+        @amatsukaList.data = _.findWhere data.data, 'full_name': "@#{AuthService.user.username}/amatsuka"
+        console.log @amatsukaList.data
         ls.setItem 'amatsukaList', JSON.stringify(@amatsukaList.data)
         TweetService.getListsMembers(listIdStr: @amatsukaList.data.id_str)
       .then (data) =>
@@ -96,8 +117,12 @@ angular.module "myApp.services"
       params = twitterIdStr: AuthService.user._json.id_str
       TweetService.getListsList(params)
       .then (data) ->
+        console.log 'isSameUser', data.data
         oldList = JSON.parse(ls.getItem 'amatsukaList') || {}
-        newList = _.findWhere(data.data, 'name': 'Amatsuka') || id_str: null
+
+        # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
+        # newList = _.findWhere(data.data, 'name': 'Amatsuka') || id_str: null
+        newList = _.findWhere(data.data, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
         oldList.id_str is newList.id_str
 
     hasListData: ->

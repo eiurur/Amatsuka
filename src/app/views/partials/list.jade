@@ -1,1 +1,63 @@
-h1 list page
+// リストセレクトボックス + コピー実行ボタン(for smartphone)
+.col-md-12.col-sm-12.col-xs-12
+  form.form-inline.list__select--group
+    .form-group
+      .input-group
+        span.input-group-addon
+          i.fa.fa-list-ul
+        select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
+    .form-group.hidden-lg.hidden-md
+      button.btn.btn-stretch(ng-if="sourceList.members", source-list='sourceList', copy-member)
+        i.fa.fa-copy
+        | Copy members to AmatsukaList
+
+.col-md-5.col-sm-12.col-xs-12
+  div(ng-if="sourceList.members.length == 0")
+    dot-loader
+
+  // ソースとなるリスト
+  h3(ng-if="sourceList.members.length > 0")
+    a.external-link(href='https://twitter.com{{sourceListData.uri}}', target='_blank')
+      {{sourceList.name}} ({{sourceList.members.length}}人)
+  .scrollable.stylish-scrollbar.list-member__container(ng-if="sourceList.members.length > 0")
+    div(ng-repeat="member in sourceList.members")
+      .media
+        a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")
+          img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url}}', img-preload="img-preload")
+        .media-body
+          h4.media-heading
+            span.name {{member.name}}
+            span.screen-name @{{member.screen_name}}
+          // TODO: 追加するか否かのチェックボックスをここに置く。
+      .member__divider
+  //- pre
+  //-   {{sourceList|json}}
+  //- pre
+  //-   {{sourceListData|json}}
+  //- pre
+  //-   {{ownList|json}}
+  //- pre
+  //-   {{sourceList.members|json}}
+
+// コピー実行アイコン(for pc)
+.col-md-2.hidden-sm.hidden-xs
+  .list__controlls--copy(ng-if="sourceList.members.length > 0")
+    a.list__controlls--copy--icon(source-list='sourceList', copy-member)
+
+
+// Amatsukaリスト
+.col-md-5.col-sm-12.col-xs-12
+  h3
+    a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
+      {{amatsukaList.name}} ({{amatsukaList.length}}人)
+  #amatsuka-list__scrollable.scrollable.stylish-scrollbar
+    .list-member__container(infinite-scroll='amatsukaList.loadMoreMember()',infinite-scroll-distance='0', infinite-scroll-container="'#amatsuka-list__scrollable'")
+      div(ng-repeat="member in amatsukaList.members")
+        .media
+          a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")
+            img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url}}', img-preload="img-preload")
+          .media-body
+            h4.media-heading
+              span.name {{member.name}}
+              span.screen-name @{{member.screen_name}}
+        .member__divider

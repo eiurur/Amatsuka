@@ -37,12 +37,15 @@ $font-size-percent-smartphone: 70%;
  * Colors
  */
 $base-color: #424242;
+
 // $sidebar-color: #272B33;
 // $sidebar-color: #FE6260;
 $sidebar-color: #292929;
+
 // $sidebar__line-color: #2ECC71;
-$sidebar__line-color: lighten($sidebar-color, 10%);
 // $sidebar__line-color: #FE6260;
+$sidebar__line-color: lighten($sidebar-color, 10%);
+
 $link-color: #a1a1a1;
 $accent-color: #EEA8B6;
 $amatsuka-color: #f2446f;
@@ -52,6 +55,8 @@ $favorite-color: #FFAC33;
 $download-color: #29A7E1;
 
 $transparent-color: rgba(0, 0, 0, 0);
+
+$scrollbar-color: #a1a1a1;
 
 // timeline
 // $body__bg-color: #272B33;

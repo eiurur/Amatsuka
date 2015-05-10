@@ -90,21 +90,6 @@
       });
     };
 
-    UserProvider.prototype.upsert = function(params, callback) {
-      var user;
-      user = void 0;
-      console.log("\n============> User upsert\n");
-      console.log(params);
-      user = params.user;
-      return User.update({
-        twitterIdStr: params.user.twitterIdStr
-      }, user, {
-        upsert: true
-      }, function(err) {
-        return callback(err);
-      });
-    };
-
     UserProvider.prototype.findOneAndUpdate = function(params, callback) {
       var user;
       user = null;

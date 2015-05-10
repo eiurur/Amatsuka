@@ -275,6 +275,9 @@
   background-size: cover;
 }
 
+/**
+ * Box-loader
+ */
 .box-loader {
   font-size: 0;
   position: relative;
@@ -306,7 +309,7 @@
 }
 
 /**
- * Loader
+ * Dot-loader
  */
 .wrapper {
   width: 3em;
@@ -398,49 +401,34 @@
     margin-top: 0;
   }
 }
-/*
-明度
-lighten(red, 30%);
-darken(red, 30%);
+/**
+ * Scroll
+ */
+.scrollable {
+  height: 75vh;
+  border-left: 1px solid #f2446f;
+  overflow-y: scroll;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
 
-彩度
-saturate(red, 20%);
-desaturate(red, 20%);
+.stylish-scrollbar::-webkit-scrollbar {
+  width: 1px;
+  background-color: transparant;
+}
 
-透明度
-transparentize(red, 0.8);
-rgba(red, 0.2);
+.stylish-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #f2446f;
+}
 
-
-規約は原則 BEM を使用する
-
-BEM
-親の要素となるような要素をBlockとして命名
-.item
-.item-list
-.form
-.form-search
-.form-search-item
-
-ElementはBlockに内包される部品。Elementが集まったものがBlockになるので、ElementはBlock内部に存在します。
-.item__text
-.item-list__btn
-.form__input
-.form-search__title
-.form-search-item__user
-
-Modifierは状態を表すときに使用されます。
-.item--red
-.item-list__btn--type_success
-.form__input--active
-.form-search__title--hover
-.form-search-result__user--following
-
-その他
-
-・CSSプロパティはアルファベット順
-
-*/
+/**
+ * Button
+ */
+@media (max-width: 480px) {
+  .btn-stretch {
+    width: 100%;
+  }
+}
 html, body {
   height: 100%;
 }
@@ -465,15 +453,15 @@ a {
   cursor: pointer;
 }
 
-.h100per {
-  height: 100%;
+a.disabled {
+  pointer-events: none;
+  cursor: default;
 }
 
-.btn {
-  background: transparent;
+select {
+  background: #292929;
   border-color: #a1a1a1;
   color: #a1a1a1;
-  transition: .2s ease;
 }
 
 .login__bg {
@@ -656,11 +644,6 @@ i {
 }
 .sidebar .main-nav .nav-text a:hover {
   color: white;
-}
-
-.site-main {
-  position: relative;
-  padding-bottom: 30px;
 }
 
 .timeline {
@@ -1100,6 +1083,59 @@ i {
   .user-sidebar__post {
     margin: 20px 15px;
   }
+}
+.list-member__container {
+  padding-left: 20px;
+}
+.list-member__container .media {
+  min-height: 0px;
+}
+
+.list__controlls--copy {
+  width: 15px;
+  height: 15px;
+  margin: 0 auto;
+}
+
+.list__controlls--copy--icon {
+  position: fixed;
+  top: 50%;
+  padding: 20px;
+  cursor: pointer;
+  transition: .24s;
+  -moz-transform: rotate(225deg);
+  -ms-transform: rotate(225deg);
+  -webkit-transform: rotate(225deg);
+  transform: rotate(225deg);
+  border: solid transparent;
+  box-shadow: 1px -1px 0 0 #f2446f inset;
+}
+.list__controlls--copy--icon:hover {
+  box-shadow: 1px -1px 0 0 #f9a3b8 inset;
+}
+
+.list__select--group {
+  margin: -20px 0 20px;
+}
+
+/**
+ * TODO: ファイルに分ける
+ * other
+ */
+.h100per {
+  height: 100%;
+}
+
+.btn {
+  background: transparent;
+  border-color: #a1a1a1;
+  color: #a1a1a1;
+  transition: .2s ease;
+}
+
+.site-main {
+  position: relative;
+  padding-bottom: 30px;
 }
 
 /*# sourceMappingURL=app.css.map */

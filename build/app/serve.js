@@ -46,9 +46,12 @@
       app.set('view engine', 'jade');
       app.use(morgan('dev'));
       app.use(cookieParser());
-      app.use(bodyParser.json());
+      app.use(bodyParser.json({
+        limit: '50mb'
+      }));
       app.use(bodyParser.urlencoded({
-        extended: true
+        extended: true,
+        limit: '50mb'
       }));
       app.use(methodOverride());
       app.use(session(options));
@@ -106,9 +109,9 @@
           accessToken: token,
           accessTokenSecret: tokenSecret
         };
-        UserProvider.upsert({
+        UserProvider.findOneAndUpdate({
           user: user
-        }, function(err) {
+        }, function(err, data) {
           if (err) {
             console.log(err);
           }
