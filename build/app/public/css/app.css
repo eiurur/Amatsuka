@@ -485,6 +485,12 @@ a {
   cursor: pointer;
 }
 
+select {
+  background: #292929;
+  border-color: #a1a1a1;
+  color: #a1a1a1;
+}
+
 .h100per {
   height: 100%;
 }
@@ -1150,6 +1156,10 @@ i {
 }
 .list__controlls--copy--icon:hover {
   box-shadow: 1px -1px 0 0 #f9a3b8 inset;
+}
+
+.list__select--group {
+  margin: -20px 0 20px;
 }
 
 /*# sourceMappingURL=app.css.map */

@@ -1,7 +1,10 @@
 .col-md-12.col-sm-12.col-xs-12
   // 自分のリスト一覧
   // TODO: デザインを統一(search boxっぽく、)
-  select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
+  .input-group.list__select--group
+    span.input-group-addon
+      i.fa.fa-list-ul
+    select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
 
   // TODO: Smartphoneでは、セレクトボックスの横に、Copyボタンを置く(上部はここ)
 

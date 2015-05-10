@@ -73,6 +73,13 @@ a {
   cursor: pointer;
 }
 
+select {
+  background: $sidebar-color;
+  border-color: $link-color;
+  color: $link-color;
+  // color: white;
+}
+
 .h100per {
   height: 100%;
 }
