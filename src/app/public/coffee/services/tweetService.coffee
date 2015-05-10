@@ -169,36 +169,48 @@ angular.module "myApp.services"
           .success (data) ->
             console.table data.data
             return resolve data
+          .error (data) ->
+            return reject data
 
     createLists: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/lists/create', params)
           .success (data) ->
             return resolve data
+          .error (data) ->
+            return reject data
 
     getListsMembers: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/lists/members/#{params.listIdStr}/#{params.count}")
           .success (data) ->
             return resolve data
+          .error (data) ->
+            return reject data
 
     getListsStatuses: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/lists/statuses/#{params.listIdStr}/#{params.maxId}/#{params.count}")
           .success (data) ->
             return resolve data
+          .error (data) ->
+            return reject data
 
     createListsMembers: (params) ->
       return $q (resolve, reject) ->
         $http.post("/api/lists/members/create", params)
           .success (data) ->
             return resolve data
+          .error (data) ->
+            return reject data
 
     createAllListsMembers: (params) ->
       return $q (resolve, reject) ->
         $http.post("/api/lists/members/create_all", params)
           .success (data) ->
             return resolve data
+          .error (data) ->
+            return reject data
 
     destroyListsMembers: (params) ->
       return $q (resolve, reject) ->

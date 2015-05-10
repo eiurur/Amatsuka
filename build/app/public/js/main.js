@@ -296,10 +296,11 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
 
   })();
   return Tweets;
-}]).factory('List', ["$q", "TweetService", "ListService", function($q, TweetService, ListService) {
+}]).factory('List', ["$q", "toaster", "TweetService", "ListService", function($q, toaster, TweetService, ListService) {
   var List;
   List = (function() {
     function List(name, idStr) {
+      this.checkError = __bind(this.checkError, this);
       this.name = name;
       this.idStr = idStr;
       this.isLast　 = false;
@@ -317,7 +318,23 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
         return function(data) {
           return _this.members = ListService.nomarlizeMembersForCopy(data.data.users);
         };
+      })(this))["catch"]((function(_this) {
+        return function(error) {
+          console.log(error);
+          return _this.checkError(error.statusCode);
+        };
       })(this));
+    };
+
+    List.prototype.checkError = function(statusCode) {
+      console.log(statusCode);
+      switch (statusCode) {
+        case 429:
+          return ToasterService.warning({
+            title: 'ツイート取得API制限',
+            text: '15分お待ちください'
+          });
+      }
     };
 
     List.prototype.copyMember2AmatsukaList = function() {
@@ -1303,6 +1320,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
         return $http.get("/api/lists/list/" + params.twitterIdStr).success(function(data) {
           console.table(data.data);
           return resolve(data);
+        }).error(function(data) {
+          return reject(data);
         });
       });
     },
@@ -1310,6 +1329,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
       return $q(function(resolve, reject) {
         return $http.post('/api/lists/create', params).success(function(data) {
           return resolve(data);
+        }).error(function(data) {
+          return reject(data);
         });
       });
     },
@@ -1317,6 +1338,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
       return $q(function(resolve, reject) {
         return $http.get("/api/lists/members/" + params.listIdStr + "/" + params.count).success(function(data) {
           return resolve(data);
+        }).error(function(data) {
+          return reject(data);
         });
       });
     },
@@ -1324,6 +1347,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
       return $q(function(resolve, reject) {
         return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
           return resolve(data);
+        }).error(function(data) {
+          return reject(data);
         });
       });
     },
@@ -1331,6 +1356,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
       return $q(function(resolve, reject) {
         return $http.post("/api/lists/members/create", params).success(function(data) {
           return resolve(data);
+        }).error(function(data) {
+          return reject(data);
         });
       });
     },
@@ -1338,6 +1365,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
       return $q(function(resolve, reject) {
         return $http.post("/api/lists/members/create_all", params).success(function(data) {
           return resolve(data);
+        }).error(function(data) {
+          return reject(data);
         });
       });
     },

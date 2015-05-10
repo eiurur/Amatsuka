@@ -90,7 +90,7 @@ angular.module "myApp.factories", []
 
     Tweets
 
-  .factory 'List', ($q, TweetService, ListService) ->
+  .factory 'List', ($q, toaster, TweetService, ListService) ->
 
     # TODO: ListクラスをBaseとする設計でAmatsukaListClassを修正。
 
@@ -108,6 +108,16 @@ angular.module "myApp.factories", []
         TweetService.getListsMembers listIdStr: @idStr, count: 1000
         .then (data) =>
           @members = ListService.nomarlizeMembersForCopy data.data.users
+        .catch (error) =>
+          console.log error
+          @checkError error.statusCode
+
+      checkError: (statusCode) =>
+        console.log statusCode
+        switch statusCode
+          when 429
+            # Rate limit exceeded
+            ToasterService.warning title: 'ツイート取得API制限', text: '15分お待ちください'
 
       copyMember2AmatsukaList: ->
         return $q (resolve, reject) =>

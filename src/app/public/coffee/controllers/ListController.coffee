@@ -18,7 +18,11 @@ angular.module "myApp.controllers"
     # 人のAmatuskaリストをフォローしたとき、そのリストが一覧に表示されないため、full_nameの方を使う。
     # l = _.reject data.data, (list) -> list.name is 'Amatsuka'
     l = _.reject data.data, (list) -> list.full_name is "@#{AuthService.user.username}/amatsuka"
+
     $scope.ownList = l
+    # ListService.ownList = $scope.ownList
+  # .catch (data) ->
+  #   console.log data.err
 
   $scope.$watch 'sourceListData', (list) ->
     return unless list?.name?
