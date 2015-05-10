@@ -48,15 +48,15 @@ Feature
 - [x] Download
 - [x] Filtering with name for list's members
 - [x] List up own favorite tweets
-- [ ] List up own lists
+- [x] List up own lists
 - [ ] List up tweets in own lists
 - [x] Show individually user data and tweet
 - [x] Zoom up a image
 - [x] Masonry
 - [ ] Streaming
 - [ ] Suggest user
-- [ ] config
-- [ ] Toggle the tpye of display (only user's tweet or include retweet)
+- [x] config
+- [x] Toggle the tpye of display (only user's tweet or include retweet)
 
 Status
 =======
