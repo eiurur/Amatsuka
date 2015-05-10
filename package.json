@@ -1,6 +1,6 @@
 {
   "name": "Amatsuka",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "author": "eiurur",
   "description": "",
   "private": true,
@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "gulp clean",
     "build": "gulp build",
-    "watch": "gulp",
+    "start": "gulp",
     "launch": "nodemon build/app.js",
     "test": "mocha --require espower-coffee/guess test/*.coffee"
   },
