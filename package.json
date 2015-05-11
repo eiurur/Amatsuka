@@ -1,6 +1,6 @@
 {
   "name": "Amatsuka",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "author": "eiurur",
   "description": "",
   "private": true,
@@ -90,5 +90,8 @@
     "require-dir": "^0.1.0",
     "rimraf": "^2.2.8",
     "vinyl-source-stream": "^1.0.0"
+  },
+  "engines": {
+    "node": "0.12.x"
   }
 }
