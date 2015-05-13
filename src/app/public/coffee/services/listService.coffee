@@ -75,7 +75,6 @@ angular.module "myApp.services"
          TweetService.iconBigger(member.profile_image_url)
         return
 
-
     update: ->
       ls = localStorage
       params = twitterIdStr: AuthService.user._json.id_str

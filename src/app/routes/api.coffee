@@ -101,6 +101,9 @@ module.exports = (app) ->
       .then (data) ->
         console.log '/api/lists/list/:id/:count data.length = ', data.length
         res.json data: data
+      .catch (err) ->
+        console.log '/api/lists/list/:id/:count err ', err
+        res.json err: err
 
   # GET タイムラインの情報(home_timeline, user_timeline)
   app.get '/api/timeline/:id/:maxId?/:count?', (req, res) ->
@@ -123,6 +126,8 @@ module.exports = (app) ->
       .then (data) ->
         console.log '/api/timeline/:id/:count data.length = ', data.length
         res.json data: data
+      .catch (err) ->
+        res.json err: err
 
   # user情報を取得
   app.get '/api/users/show/:id', (req, res) ->

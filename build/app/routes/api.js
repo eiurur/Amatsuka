@@ -115,6 +115,11 @@
           return res.json({
             data: data
           });
+        })["catch"](function(err) {
+          console.log('/api/lists/list/:id/:count err ', err);
+          return res.json({
+            err: err
+          });
         });
       });
     });
@@ -136,6 +141,10 @@
           console.log('/api/timeline/:id/:count data.length = ', data.length);
           return res.json({
             data: data
+          });
+        })["catch"](function(err) {
+          return res.json({
+            err: err
           });
         });
       });

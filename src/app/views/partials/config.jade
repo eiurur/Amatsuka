@@ -6,3 +6,15 @@ label
 // NG user (textarea)
 
 // NG word (textarea)
+
+form
+  .form-group
+    label(for='exampleInputEmail1') NG
+    input#exampleInputEmail1.form-control(type='email', placeholder='Enter email')
+  .form-group
+    label(for='exampleInputPassword1') Password
+    input#exampleInputPassword1.form-control(type='password', placeholder='Password')
+  .checkbox
+    label
+      input(type='checkbox', ng-model='config.includeRetweet')
+      | Include Retweet

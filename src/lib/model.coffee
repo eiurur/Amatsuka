@@ -56,8 +56,8 @@ mongoose.model 'Config', ConfigSchema
 ##
 # 定義した時の登録名で呼び出し
 ##
-User = mongoose.model 'User'
-TL = mongoose.model 'TL'
+User   = mongoose.model 'User'
+TL     = mongoose.model 'TL'
 Config = mongoose.model 'Config'
 
 

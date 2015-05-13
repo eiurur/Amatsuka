@@ -58,7 +58,6 @@ my = ->
     else
       moment().add(seconds, 's').format("YYYY-MM-DD HH:mm:ss")
 
-
   # 引数の日の終わり間際の時間をYYYY-MM-DD 23:59:59 の形式で返す
   endBrinkFormatYMDHms: (time) ->
     if time?
@@ -82,12 +81,10 @@ my = ->
   # http://blog.fkei.me/2012/03/nodejs-uid.html
   createUID: (size, base) ->
     size = size or 32
-    base = base or
-           "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    base = base or "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     len = base.length
     buf = []
     i = 0
-
     while i < size
       buf.push base[Math.floor(Math.random() * len)]
       ++i
