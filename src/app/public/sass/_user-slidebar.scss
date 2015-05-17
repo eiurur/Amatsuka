@@ -2,135 +2,135 @@
 
 .user-sidebar
 {
-    position: fixed;
-    z-index: 10000;
-    top: 0;
-    right: 0;
-    // right: -$timeline__post--width - ($timeline__post--padding * 2);
+  position: fixed;
+  z-index: 10000;
+  top: 0;
+  right: 0;
+  // right: -$timeline__post--width - ($timeline__post--padding * 2);
 
-    overflow-x: hidden;
-    overflow-y: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 
-    width: 80%;
-    max-width: 600px;
-    height: 100%;
+  width: 80%;
+  max-width: 600px;
+  height: 100%;
 
-    transition: .3s ease;
+  transition: .3s ease;
 
-    background: white;
+  background: white;
 
-    @include transform(translate3d(100%, 0, 0));
+  @include transform(translate3d(100%, 0, 0));
 }
 
 .user-sidebar-in
 {
-    @include transform(translate3d(0, 0, 0));
+  @include transform(translate3d(0, 0, 0));
 }
 
 .user-sidebar__btn-follow
 {
-    &:hover
-    {
-        color: white;
-    }
+  &:hover
+  {
+    color: white;
+  }
 }
 
 .user-sidebar__contents
 {
-    // width: 620px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0;
+  // width: 620px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
 }
 
 .user-sidebar__profile
 {
-    width: 100%;
-    min-height: 150px;
-    padding: 20px 30px;
+  width: 100%;
+  min-height: 150px;
+  padding: 20px 30px;
 
-    color: $sidebar-color;
+  color: $sidebar-color;
 }
 
 .user-sidebar__profile--name
 {
-    color: $base-color;
+  color: $base-color;
 }
 
 
 .user-sidebar__profile--description
 {
-    font-size: .8em;
-    line-height: 1.8;
+  font-size: .8em;
+  line-height: 1.8;
 
-    padding-top: 20px;
+  padding-top: 20px;
 }
 
 .user-sidebar__profile--url
 {
-    font-size: .7em;
-    line-height: 1.8;
+  font-size: .7em;
+  line-height: 1.8;
 
-    padding-top: 5px;
-    i {
-      color: $link-color;
-      margin-right: 5px;
-    }
+  padding-top: 5px;
+  i {
+    color: $link-color;
+    margin-right: 5px;
+  }
 }
 
 .user-sidebar__profile--icon
 {
-    width: 73px;
-    height: 73px;
-    margin: 0 auto;
+  width: 73px;
+  height: 73px;
+  margin: 0 auto;
 
-    @include round(4px);
-    img
-    {
-        max-width: 73px;
+  @include round(4px);
+  img
+  {
+    max-width: 73px;
 
-        border-radius: 3px;
-    }
+    border-radius: 3px;
+  }
 }
 
 .user-sidebar__post
 {
-    margin: 20px 30px;
+  margin: 20px 30px;
 
-    @include zurui-box(.3);
+  @include zurui-box(.3);
 }
 
 
 .user-sidebar__contents--infinitescroll-message
 {
-    padding: 20px;
+  padding: 20px;
 }
 
 .user-sidebar__contents--box-loading-init
 {
-    padding: 0 20px 20px;
+  padding: 0 20px 20px;
 }
 
 
 @media(max-width:480px)
 {
-    .user-sidebar__post--header--link
-    {
-        // アイコン表示がない分を相殺
-        margin-left: 0;
-    }
+  .user-sidebar__post--header--link
+  {
+    // アイコン表示がない分を相殺
+    margin-left: 0;
+  }
 
-    .user-sidebar
-    {
-        font-size: $font-size-percent-smartphone;
-    }
+  .user-sidebar
+  {
+    font-size: $font-size-percent-smartphone;
+  }
 
-    .user-sidebar__profile {
-        padding: 20px $timeline__post--padding-horizontal;
-    }
+  .user-sidebar__profile {
+    padding: 20px $timeline__post--padding-horizontal;
+  }
 
-    .user-sidebar__post
-    {
-        margin: 20px $timeline__post--padding-horizontal;
-    }
+  .user-sidebar__post
+  {
+    margin: 20px $timeline__post--padding-horizontal;
+  }
 }

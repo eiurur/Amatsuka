@@ -38,36 +38,9 @@
 }
 
 /**
- * Share
- */
-.share-icons {
-  position: fixed;
-  bottom: 14px;
-  left: 32px;
-  padding: 0;
-  list-style: none;
-  font-size: 0.7em;
-}
-
-.share-icons li {
-  display: inline;
-  margin-right: 16px;
-}
-.share-icons li a {
-  color: #a1a1a1 !important;
-  text-decoration: none;
-  transition: .2s ease;
-}
-.share-icons li a:hover {
-  color: white !important;
-}
-
-/**
  * seaerch box
  */
-.input-group-sm > .form-control,
-.input-group-sm > .input-group-addon,
-.input-group-sm > .input-group-btn > .btn {
+.input-group-sm > .form-control, .input-group-sm > .input-group-addon, .input-group-sm > .input-group-btn > .btn {
   border-radius: 0px;
 }
 
@@ -276,7 +249,7 @@
   position: fixed;
   width: 32px;
   height: 32px;
-  content: '';
+  content: "";
   border: 2px solid #f2446f;
 }
 .spinner:after {
@@ -490,20 +463,20 @@ select {
 }
 
 .login__bg {
+  /* body 以外で全体表示するために必要 */
+  height: 100%;
+  /* 背景画像が読み込まれる前に表示される背景のカラー */
+  background-color: #292929;
   /* 画像ファイルの指定 */
   background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_ver2.gif);
-  /* 画像を常に天地左右の中央に配置 */
-  background-position: center center;
   /* 画像をタイル状に繰り返し表示しない */
   background-repeat: no-repeat;
   /* コンテンツの高さが画像の高さより大きい時、動かないように固定 */
   background-attachment: fixed;
+  /* 画像を常に天地左右の中央に配置 */
+  background-position: center center;
   /* 表示するコンテナの大きさに基づいて、背景画像を調整 */
   background-size: cover;
-  /* 背景画像が読み込まれる前に表示される背景のカラー */
-  background-color: #292929;
-  /* body 以外で全体表示するために必要 */
-  height: 100%;
 }
 
 .login__container {
@@ -511,9 +484,9 @@ select {
 }
 
 .login__description {
-  color: #a1a1a1;
-  padding: 50px;
   height: 100%;
+  padding: 50px;
+  color: #a1a1a1;
   background: rgba(33, 33, 33, 0.8);
 }
 .login__description i {
@@ -533,9 +506,9 @@ select {
 }
 .login__description--about a {
   font-size: 90%;
-  color: #a1a1a1;
-  text-decoration: none;
   transition: .2s ease;
+  text-decoration: none;
+  color: #a1a1a1;
 }
 .login__description--about a:hover {
   color: white;
@@ -549,15 +522,43 @@ select {
   padding: 50px;
 }
 
+/**
+ * Share
+ */
+.share-icons {
+  font-size: .7em;
+  position: fixed;
+  bottom: 50px;
+  left: 32px;
+  padding: 0;
+  list-style: none;
+}
+
+.share-icons li {
+  display: inline;
+  margin-right: 16px;
+}
+.share-icons li a {
+  color: #a1a1a1 !important;
+  text-decoration: none;
+  transition: .2s ease;
+}
+.share-icons li a:hover {
+  color: white !important;
+}
+
+/**
+ * multi devise
+ */
 @media (max-width: 480px) {
   .login__bg {
     background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_v2_sp.gif);
   }
 
   .login__description {
-    padding: 24px;
-    font-size: 0.9em;
+    font-size: .9em;
     line-height: 1.6;
+    padding: 24px;
   }
 
   .login__description--btn {
