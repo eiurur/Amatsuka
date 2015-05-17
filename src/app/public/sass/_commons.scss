@@ -59,6 +59,7 @@
 {
   @include round(0px);
 }
+
 .search-form
 {
   width: 100%;
@@ -68,12 +69,14 @@
   border-color: $link-color;
   border-radius: 0;
 }
+
 .search-input
 {
   color: white;
   border-color: $link-color;
   background: $transparent-color;
 }
+
 .input-group-addon
 {
   color: white;
@@ -135,6 +138,7 @@
 
   background: rgba(0, 0, 0, .8);
 }
+
 .image-layer__img
 {
   z-index: 13001;
@@ -147,6 +151,7 @@
   @include display-flex();
   @include justify-content(center);
 }
+
 .image-layer__img-h-wide
 {
   width: auto;
@@ -188,7 +193,8 @@
   transition: .24s;
 
   border: solid transparent;
-  box-shadow: 1px -1px 0 0 $link-color inset;
+  // box-shadow: 1px -1px 0 0 $link-color inset;
+  @include box-shadow($link-color 1px -1px 0 0 inset);
 
   @include rotate(135deg);
 }

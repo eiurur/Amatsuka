@@ -3,12 +3,10 @@
 .external-link {
   color: $link-color;
   margin: 15px 0;
+  text-decoration: none;
   transition: .15s;
   &:hover {
     color: white;
-  }
-  a {
-      text-decoration: none;
   }
 }
 

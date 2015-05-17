@@ -154,7 +154,9 @@
   cursor: pointer;
   transition: .24s;
   border: solid transparent;
-  box-shadow: 1px -1px 0 0 #a1a1a1 inset;
+  -moz-box-shadow: #a1a1a1 1px -1px 0 0 inset;
+  -webkit-box-shadow: #a1a1a1 1px -1px 0 0 inset;
+  box-shadow: #a1a1a1 1px -1px 0 0 inset;
   -moz-transform: rotate(135deg);
   -ms-transform: rotate(135deg);
   -webkit-transform: rotate(135deg);
@@ -958,13 +960,11 @@ i {
 .external-link {
   color: #a1a1a1;
   margin: 15px 0;
+  text-decoration: none;
   transition: .15s;
 }
 .external-link:hover {
   color: white;
-}
-.external-link a {
-  text-decoration: none;
 }
 
 .btn-follow {
