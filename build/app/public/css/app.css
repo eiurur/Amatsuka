@@ -1119,6 +1119,10 @@ i {
   min-height: 0px;
 }
 
+.list__copy-target {
+  margin-right: 16px;
+}
+
 .list__controlls--copy {
   width: 15px;
   height: 15px;
@@ -1164,6 +1168,10 @@ i {
 .site-main {
   position: relative;
   padding-bottom: 30px;
+}
+
+.text {
+  color: #a1a1a1;
 }
 
 /*# sourceMappingURL=app.css.map */

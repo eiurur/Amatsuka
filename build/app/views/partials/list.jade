@@ -1,4 +1,4 @@
-// リストセレクトボックス + コピー実行ボタン(for smartphone)
+// リストセレクトボックス
 .col-md-12.col-sm-12.col-xs-12
   form.form-inline.list__select--group
     .form-group
@@ -6,7 +6,8 @@
         span.input-group-addon
           i.fa.fa-list-ul
         select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
-    .form-group.hidden-lg.hidden-md
+    // コピー実行ボタン(for smartphone)
+    .form-group
       button.btn.btn-stretch(ng-if="sourceList.members", source-list='sourceList', copy-member)
         i.fa.fa-copy
         | Copy members to AmatsukaList
@@ -17,6 +18,8 @@
 
   // ソースとなるリスト
   h3(ng-if="sourceList.members.length > 0")
+    span.text.list__copy-target
+      コピー元 :
     a.external-link(href='https://twitter.com{{sourceListData.uri}}', target='_blank')
       {{sourceList.name}} ({{sourceList.members.length}}人)
   .scrollable.stylish-scrollbar.list-member__container(ng-if="sourceList.members.length > 0")
@@ -48,6 +51,8 @@
 // Amatsukaリスト
 .col-md-5.col-sm-12.col-xs-12
   h3
+    span.text.list__copy-target
+      コピー先 :
     a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
       {{amatsukaList.name}} ({{amatsukaList.length}}人)
   #amatsuka-list__scrollable.scrollable.stylish-scrollbar
