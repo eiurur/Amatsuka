@@ -73,6 +73,8 @@ module.exports = (app) ->
     .then (data) ->
       console.log '/api/lists/create', data.length
       res.json data: data
+    .catch (error) ->
+      res.json error: error
 
   # GET リストのメンバー
   app.get '/api/lists/members/:id?/:count?', (req, res) ->
@@ -83,6 +85,8 @@ module.exports = (app) ->
     .then (data) ->
       console.log '/api/lists/members/:id/:count data.length = ', data.length
       res.json data: data
+    .catch (error) ->
+      res.json error: error
 
   # GET リストのタイムラインを取得
   app.get '/api/lists/statuses/:id/:maxId?/:count?', (req, res) ->
@@ -104,9 +108,9 @@ module.exports = (app) ->
       .then (data) ->
         console.log '/api/lists/list/:id/:count data.length = ', data.length
         res.json data: data
-      .catch (err) ->
-        console.log '/api/lists/list/:id/:count err ', err
-        res.json err: err
+      .catch (error) ->
+        console.log '/api/lists/list/:id/:count error ', error
+        res.json error: error
 
   # GET タイムラインの情報(home_timeline, user_timeline)
   app.get '/api/timeline/:id/:maxId?/:count?', (req, res) ->
@@ -129,8 +133,8 @@ module.exports = (app) ->
       .then (data) ->
         console.log '/api/timeline/:id/:count data.length = ', data.length
         res.json data: data
-      .catch (err) ->
-        res.json err: err
+      .catch (error) ->
+        res.json error: error
 
   # user情報を取得
   app.get '/api/users/show/:id', (req, res) ->
@@ -139,6 +143,8 @@ module.exports = (app) ->
       twitterIdStr: req.params.id
     .then (data) ->
       res.json data: data
+    .catch (error) ->
+      res.json error: error
 
 
   # GET フォロー状況の取得
@@ -153,6 +159,8 @@ module.exports = (app) ->
       twitterIdStr: req.body.twitterIdStr
     .then (data) ->
       res.json data: data
+    .catch (error) ->
+      res.json error: error
 
   app.post '/api/lists/members/create_all', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)
@@ -161,6 +169,8 @@ module.exports = (app) ->
       twitterIdStr: req.body.twitterIdStr
     .then (data) ->
       res.json data: data
+    .catch (error) ->
+      res.json error: error
 
   app.post '/api/lists/members/destroy', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)
@@ -169,6 +179,8 @@ module.exports = (app) ->
       twitterIdStr: req.body.twitterIdStr
     .then (data) ->
       res.json data: data
+    .catch (error) ->
+      res.json error: error
 
 
   ###
@@ -182,8 +194,8 @@ module.exports = (app) ->
       count: req.params.count
     .then (data) ->
       res.json data: data
-    .catch (err) ->
-      res.json err: err
+    .catch (error) ->
+      res.json error: error
 
   app.post '/api/favorites/create', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)
@@ -191,6 +203,8 @@ module.exports = (app) ->
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
       res.json data: data
+    .catch (error) ->
+      res.json error: error
 
   app.post '/api/favorites/destroy', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)
@@ -198,6 +212,8 @@ module.exports = (app) ->
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
       res.json data: data
+    .catch (error) ->
+      res.json error: error
 
 
   # POST リツイート、解除
@@ -207,6 +223,8 @@ module.exports = (app) ->
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
       res.json data: data
+    .catch (error) ->
+      res.json error: error
 
   app.post '/api/statuses/destroy', (req, res) ->
     twitterClient = new TwitterCilent(req.session.passport.user)
@@ -214,6 +232,8 @@ module.exports = (app) ->
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
       res.json data: data
+    .catch (error) ->
+      res.json error: error
 
 
   ###

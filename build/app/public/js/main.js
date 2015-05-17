@@ -196,8 +196,8 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       return new Promise((function(_this) {
         return function(resolve, reject) {
           var itemsImageOnly, itemsNomalized;
-          if (data.err != null) {
-            reject(data.err);
+          if (data.error != null) {
+            reject(data.error);
           }
           if (_.isEmpty(data.data)) {
             reject({

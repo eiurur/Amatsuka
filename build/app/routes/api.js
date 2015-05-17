@@ -87,6 +87,10 @@
         return res.json({
           data: data
         });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
+        });
       });
     });
     app.get('/api/lists/members/:id?/:count?', function(req, res) {
@@ -99,6 +103,10 @@
         console.log('/api/lists/members/:id/:count data.length = ', data.length);
         return res.json({
           data: data
+        });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
         });
       });
     });
@@ -120,10 +128,10 @@
           return res.json({
             data: data
           });
-        })["catch"](function(err) {
-          console.log('/api/lists/list/:id/:count err ', err);
+        })["catch"](function(error) {
+          console.log('/api/lists/list/:id/:count error ', error);
           return res.json({
-            err: err
+            error: error
           });
         });
       });
@@ -147,9 +155,9 @@
           return res.json({
             data: data
           });
-        })["catch"](function(err) {
+        })["catch"](function(error) {
           return res.json({
-            err: err
+            error: error
           });
         });
       });
@@ -163,6 +171,10 @@
         return res.json({
           data: data
         });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
+        });
       });
     });
     app.post('/api/lists/members/create', function(req, res) {
@@ -174,6 +186,10 @@
       }).then(function(data) {
         return res.json({
           data: data
+        });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
         });
       });
     });
@@ -187,6 +203,10 @@
         return res.json({
           data: data
         });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
+        });
       });
     });
     app.post('/api/lists/members/destroy', function(req, res) {
@@ -198,6 +218,10 @@
       }).then(function(data) {
         return res.json({
           data: data
+        });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
         });
       });
     });
@@ -216,9 +240,9 @@
         return res.json({
           data: data
         });
-      })["catch"](function(err) {
+      })["catch"](function(error) {
         return res.json({
-          err: err
+          error: error
         });
       });
     });
@@ -231,6 +255,10 @@
         return res.json({
           data: data
         });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
+        });
       });
     });
     app.post('/api/favorites/destroy', function(req, res) {
@@ -241,6 +269,10 @@
       }).then(function(data) {
         return res.json({
           data: data
+        });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
         });
       });
     });
@@ -253,6 +285,10 @@
         return res.json({
           data: data
         });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
+        });
       });
     });
     app.post('/api/statuses/destroy', function(req, res) {
@@ -263,6 +299,10 @@
       }).then(function(data) {
         return res.json({
           data: data
+        });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
         });
       });
     });
