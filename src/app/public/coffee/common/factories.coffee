@@ -4,13 +4,13 @@ angular.module "myApp.factories", []
 
     class Tweets
       constructor: (items, maxId = undefined, type, twitterIdStr) ->
-        @busy  　= false
-        @isLast　= false
-        @method = null
-        @count  = 50
-        @items 　= items
-        @maxId 　= maxId
-        @type   = type
+        @busy         = false
+        @isLast       = false
+        @method       = null
+        @count        = 50
+        @items        = items
+        @maxId        = maxId
+        @type         = type
         @twitterIdStr = twitterIdStr || null
 
       # ###
@@ -96,12 +96,12 @@ angular.module "myApp.factories", []
 
     class List
       constructor: (name, idStr) ->
-        @name  　= name
-        @idStr  　= idStr
-        @isLast　= false
-        @count  = 20
-        @members 　= []
-        @memberIdx 　= 0
+        @name              = name
+        @idStr             = idStr
+        @isLast            = false
+        @count             = 20
+        @members           = []
+        @memberIdx         = 0
         @amatsukaListIdStr = ListService.amatsukaList.data.id_str
 
       loadMember: ->
@@ -137,28 +137,26 @@ angular.module "myApp.factories", []
       # TODO: AmatsukaList1だけでなく、他のリストにも対応できるよう汎用的な構造にする
 
       constructor: (name) ->
-        @name  　= name
-        @isLast　= false
-        @count  = 20
-        @members 　= []
-        @memberIdx 　= 0
+        @name      = name
+        @isLast    = false
+        @count     = 20
+        @members   = []
+        @memberIdx = 0
 
         # TODO: 共通の値だからクラス変数にしたい
-        @ls = localStorage
-        @idStr = JSON.parse(@ls.getItem 'amatsukaList') || {}
-        @amatsukaMemberList = ListService.nomarlizeMembers(JSON.parse(@ls.getItem 'amatsukaFollowList')) || []
+        @idStr                = JSON.parse(localStorage.getItem 'amatsukaList') || {}
+        @amatsukaMemberList   = ListService.nomarlizeMembers(JSON.parse(localStorage.getItem 'amatsukaFollowList')) || []
         @amatsukaMemberLength = @amatsukaMemberList.length
-        do @updateAmatsukaList
 
-        # todo: Listごとの要素数に変更。(今は暫定的にAmatsukaListの人数で固定)
-        @length = @amatsukaMemberList.length
+        # 古いリストデータの可能性があるのでここで更新する
+        do @updateAmatsukaList
 
       updateAmatsukaList: ->
         ListService.update()
         .then (users) =>
-          @idstr = ListService.amatsukaList.data.id_str
+          @idstr              = ListService.amatsukaList.data.id_str
           @amatsukaMemberList = ListService.nomarlizeMembers(users)
-          @length = @amatsukaMemberList.length
+          @length             = @amatsukaMemberList.length
 
       loadMoreMember: ->
         return if @isLast

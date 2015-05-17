@@ -183,7 +183,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       this.assignTweet = __bind(this.assignTweet, this);
       this.normalizeTweet = __bind(this.normalizeTweet, this);
       this.busy = false;
-      this.isLast　 = false;
+      this.isLast = false;
       this.method = null;
       this.count = 50;
       this.items = items;
@@ -302,7 +302,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
     function List(name, idStr) {
       this.name = name;
       this.idStr = idStr;
-      this.isLast　 = false;
+      this.isLast = false;
       this.count = 20;
       this.members = [];
       this.memberIdx = 0;
@@ -353,16 +353,14 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
   AmatsukaList = (function() {
     function AmatsukaList(name) {
       this.name = name;
-      this.isLast　 = false;
+      this.isLast = false;
       this.count = 20;
       this.members = [];
       this.memberIdx = 0;
-      this.ls = localStorage;
-      this.idStr = JSON.parse(this.ls.getItem('amatsukaList')) || {};
-      this.amatsukaMemberList = ListService.nomarlizeMembers(JSON.parse(this.ls.getItem('amatsukaFollowList'))) || [];
+      this.idStr = JSON.parse(localStorage.getItem('amatsukaList')) || {};
+      this.amatsukaMemberList = ListService.nomarlizeMembers(JSON.parse(localStorage.getItem('amatsukaFollowList'))) || [];
       this.amatsukaMemberLength = this.amatsukaMemberList.length;
       this.updateAmatsukaList();
-      this.length = this.amatsukaMemberList.length;
     }
 
     AmatsukaList.prototype.updateAmatsukaList = function() {

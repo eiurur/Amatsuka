@@ -54,7 +54,7 @@
     span.text.list__copy-target
       コピー先 :
     a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
-      {{amatsukaList.name}} ({{amatsukaList.length}}人)
+      {{amatsukaList.name}} ({{amatsukaList.amatsukaMemberLength}}人)
   #amatsuka-list__scrollable.scrollable.stylish-scrollbar
     .list-member__container(infinite-scroll='amatsukaList.loadMoreMember()',infinite-scroll-distance='0', infinite-scroll-container="'#amatsuka-list__scrollable'")
       div(ng-repeat="member in amatsukaList.members")
