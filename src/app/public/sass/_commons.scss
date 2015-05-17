@@ -21,6 +21,7 @@
         color: $retweet-color !important;
     }
 }
+
 .retweeted
 {
     color: $retweet-color !important;
@@ -34,6 +35,7 @@
         color: $favorite-color !important;
     }
 }
+
 .favorited
 {
     color: $favorite-color !important;
@@ -49,6 +51,32 @@
 
 
 /**
+ * Share
+ */
+.share-icons
+{
+    position: fixed;
+    bottom: 14px;
+    left: 32px;
+
+    padding: 0;
+
+    list-style: none;
+
+    font-size: 0.7em;
+}
+
+.share-icons li
+{
+    display: inline;
+    margin-right: 16px;
+
+    @include link();
+}
+
+
+
+/**
  * seaerch box
  */
 // フォームも角ばったほうがいいかなって思ったけど
@@ -61,8 +89,8 @@
 }
 .search-form
 {
-    max-width: $member__divider--width;
     width: 100%;
+    max-width: $member__divider--width;
     margin: 70px 0 35px 0;
 
     border-color: $link-color;
@@ -186,10 +214,11 @@
 
     cursor: pointer;
     transition: .24s;
-    @include rotate(135deg);
 
     border: solid transparent;
     box-shadow: 1px -1px 0 0 $link-color inset;
+
+    @include rotate(135deg);
 }
 
 .arrow-top:hover
@@ -292,64 +321,78 @@
 
 .box-loading-padding-vertical
 {
-  padding: 10px 0;
+    padding: 10px 0;
 }
 
-.loading-bar {
-  padding-top: 20px;
-  width: 100%;
-  max-width: $timeline__post--width;
-  color: $link-color;
+.loading-bar
+{
+    width: 100%;
+    max-width: $timeline__post--width;
+    padding-top: 20px;
+
+    color: $link-color;
 }
 
-.loading-bar--grid {
-  bottom: 0;
-  margin: 0 auto;
+.loading-bar--grid
+{
+    bottom: 0;
+
+    margin: 0 auto;
 }
 
 /**
  * Dot-loader
  */
-.wrapper {
-  width: 3em;
-  margin: 3em auto;
-
-  // 中心に移動するために追加。
-  padding-right: 100px;
+.wrapper
+{
+    width: 3em;
+    margin: 3em auto;
+    // 中心に移動するために追加。
+    padding-right: 100px;
 }
 
-.dot:nth-child(1) {
-  @include dot();
+.dot:nth-child(1)
+{
+    @include dot();
 }
-.dot:nth-child(2) {
-  @include dot(2em);
+.dot:nth-child(2)
+{
+    @include dot(2em);
 }
-.dot:nth-child(3) {
-  @include dot(3.7em);
+.dot:nth-child(3)
+{
+    @include dot(3.7em);
 }
-.dot:nth-child(1) {
-  @include animation(load 1.8s linear infinite);
-  @include animation-delay(0.4s);
-}
-
-.dot:nth-child(2) {
-  @include animation(load 1.8s linear infinite);
-  @include animation-delay(0.8s);
-}
-
-.dot:nth-child(3) {
-  @include animation(load 1.8s linear infinite);
-  @include animation-delay(1.2s);
+.dot:nth-child(1)
+{
+    @include animation(load 1.8s linear infinite);
+    @include animation-delay(.4s);
 }
 
-@include keyframes(load) {
-  5% {
-    margin-top: -2em;
-    position: absolute;
-  }
-  100% {
-    margin-top: 0;
-  }
+.dot:nth-child(2)
+{
+    @include animation(load 1.8s linear infinite);
+    @include animation-delay(.8s);
+}
+
+.dot:nth-child(3)
+{
+    @include animation(load 1.8s linear infinite);
+    @include animation-delay(1.2s);
+}
+
+@include keyframes(load)
+{
+    5%
+    {
+        position: absolute;
+
+        margin-top: -2em;
+    }
+    100%
+    {
+        margin-top: 0;
+    }
 }
 
 
@@ -357,25 +400,29 @@
 /**
  * Scroll
  */
-.scrollable {
-  // max-height: 740px;
-  height: 75vh;
-  border-left: 1px solid $amatsuka-color;
-  overflow-y: scroll;
-  margin-top: 20px;
-  margin-bottom: 20px;
+.scrollable
+{
+    overflow-y: scroll;
+    // max-height: 740px;
+
+    height: 75vh;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    border-left: 1px solid $amatsuka-color;
 }
 
 .stylish-scrollbar::-webkit-scrollbar
 {
-  // width: 4px;
-  width: 1px;
-  background-color: transparant;
+    // width: 4px;
+    width: 1px;
+
+    background-color: transparant;
 }
 
 .stylish-scrollbar::-webkit-scrollbar-thumb
 {
-  background-color: $amatsuka-color;
+    background-color: $amatsuka-color;
 }
 
 
@@ -384,7 +431,8 @@
  */
 @media(max-width:480px)
 {
-  .btn-stretch {
-    width: 100%;
-  }
+    .btn-stretch
+    {
+        width: 100%;
+    }
 }

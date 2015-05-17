@@ -38,6 +38,31 @@
 }
 
 /**
+ * Share
+ */
+.share-icons {
+  position: fixed;
+  bottom: 14px;
+  left: 32px;
+  padding: 0;
+  list-style: none;
+  font-size: 0.7em;
+}
+
+.share-icons li {
+  display: inline;
+  margin-right: 16px;
+}
+.share-icons li a {
+  color: #a1a1a1 !important;
+  text-decoration: none;
+  transition: .2s ease;
+}
+.share-icons li a:hover {
+  color: white !important;
+}
+
+/**
  * seaerch box
  */
 .input-group-sm > .form-control,
@@ -47,8 +72,8 @@
 }
 
 .search-form {
-  max-width: 400px;
   width: 100%;
+  max-width: 400px;
   margin: 70px 0 35px 0;
   border-color: #a1a1a1;
   border-radius: 0;
@@ -155,12 +180,12 @@
   padding: 25px;
   cursor: pointer;
   transition: .24s;
+  border: solid transparent;
+  box-shadow: 1px -1px 0 0 #a1a1a1 inset;
   -moz-transform: rotate(135deg);
   -ms-transform: rotate(135deg);
   -webkit-transform: rotate(135deg);
   transform: rotate(135deg);
-  border: solid transparent;
-  box-shadow: 1px -1px 0 0 #a1a1a1 inset;
 }
 
 .arrow-top:hover {
@@ -297,9 +322,9 @@
 }
 
 .loading-bar {
-  padding-top: 20px;
   width: 100%;
   max-width: 540px;
+  padding-top: 20px;
   color: #a1a1a1;
 }
 
@@ -376,8 +401,8 @@
 
 @-moz-keyframes load {
   5% {
-    margin-top: -2em;
     position: absolute;
+    margin-top: -2em;
   }
   100% {
     margin-top: 0;
@@ -385,8 +410,8 @@
 }
 @-webkit-keyframes load {
   5% {
-    margin-top: -2em;
     position: absolute;
+    margin-top: -2em;
   }
   100% {
     margin-top: 0;
@@ -394,8 +419,8 @@
 }
 @keyframes load {
   5% {
-    margin-top: -2em;
     position: absolute;
+    margin-top: -2em;
   }
   100% {
     margin-top: 0;
@@ -405,11 +430,11 @@
  * Scroll
  */
 .scrollable {
-  height: 75vh;
-  border-left: 1px solid #f2446f;
   overflow-y: scroll;
+  height: 75vh;
   margin-top: 20px;
   margin-bottom: 20px;
+  border-left: 1px solid #f2446f;
 }
 
 .stylish-scrollbar::-webkit-scrollbar {
@@ -548,6 +573,7 @@ select {
 }
 .navbar-default a {
   color: #a1a1a1 !important;
+  text-decoration: none;
   transition: .2s ease;
 }
 .navbar-default a:hover {
@@ -556,6 +582,7 @@ select {
 
 .navbar-nav-default a {
   color: #a1a1a1 !important;
+  text-decoration: none;
   transition: .2s ease;
 }
 .navbar-nav-default a:hover {
