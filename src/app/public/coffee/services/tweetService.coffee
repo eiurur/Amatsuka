@@ -1,5 +1,5 @@
 angular.module "myApp.services"
-  .service "TweetService", ($http, $q, $injector, ConfigService) ->
+  .service "TweetService", ($http, $q, $injector, ConfigService, ToasterService) ->
 
     activateLink: (t) ->
       t.replace(
@@ -144,30 +144,31 @@ angular.module "myApp.services"
         !_.has(tweet, 'extended_entities') or
         _.isEmpty(tweet.extended_entities.media)
 
-    # # TwitterAPI動作テスト用
-    # twitterTest: (user) ->
-    #   return new Promise (resolve, reject) ->
-    #     $http.post('/api/twitterTest', user: user)
-    #       .success (data) ->
-    #         console.log 'twitterTest in service data = ', data
-    #         return resolve data
+    checkError: (statusCode) ->
+      console.log statusCode
+      switch statusCode
+        when 429
+          # Rate limit exceeded
+          ToasterService.warning title: 'API制限', text: '15分お待ちください'
+      return
 
-    # # TwitterAPI、投稿動作テスト用
-    # twitterPostTest: (user) ->
-    #   return new Promise (resolve, reject) ->
-    #     $http.post('/api/twitterPostTest', user: user)
-    #       .success (data) ->
-    #         console.log 'twitterPostTest in service data = ', data
-    #         return resolve data
+    ###
+    # $httpのerrorメソッドは、サーバーがエラーを返したとき(404とか、500)であって、
+    # TwitterAPIがAPI制限とかのエラーを返したときはsuccessメソッドの方へ渡されるため、
+    # その中でresolve, rejectの分岐を行う
+    ###
 
     ###
     List
     ###
     getListsList: (params) ->
-      return $q (resolve, reject) ->
+      return $q (resolve, reject) =>
         $http.get("/api/lists/list/#{params.twitterIdStr}")
-          .success (data) ->
-            console.table data.data
+          .success (data) =>
+            console.log data
+            if _.has data, 'error'
+              @checkError data.error.statusCode
+              return reject data
             return resolve data
           .error (data) ->
             return reject data

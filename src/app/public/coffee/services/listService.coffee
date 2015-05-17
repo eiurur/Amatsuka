@@ -26,18 +26,16 @@ angular.module "myApp.services"
       return
 
     isFollow: (target, isRT = true) ->
-      targetIdStr = target.id_str
       if _.has target, 'user'
-        targetIdStr = TweetService.get(target, 'user.id_str', isRT)
-      !!_.findWhere(@amatsukaList.member, 'id_str': targetIdStr)
+        target.id_str = TweetService.get(target, 'user.id_str', isRT)
+      !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
 
     # 今のところ、Member.jadeで使う関数なので isFollow を全部　true　にしても構わない
     nomarlizeMembers: (members) ->
       _.each members, (member) ->
         member.followStatus      = true
         member.description       = TweetService.activateLink(member.description)
-        member.profile_image_url =
-         TweetService.iconBigger(member.profile_image_url)
+        member.profile_image_url = TweetService.iconBigger(member.profile_image_url)
         return
 
     ###
@@ -61,8 +59,7 @@ angular.module "myApp.services"
 
       member.followStatus      = @isFollow(member)
       member.description       = TweetService.activateLink(member.description)
-      member.profile_image_url =
-        TweetService.iconBigger(member.profile_image_url)
+      member.profile_image_url = TweetService.iconBigger(member.profile_image_url)
       member
 
     ###
@@ -70,15 +67,13 @@ angular.module "myApp.services"
     ###
     nomarlizeMembersForCopy: (members) ->
       _.each members, (member) ->
-        member.isPermissionCopy      = true
-        member.profile_image_url =
-         TweetService.iconBigger(member.profile_image_url)
+        member.isPermissionCopy  = true
+        member.profile_image_url = TweetService.iconBigger(member.profile_image_url)
         return
 
     update: ->
-      ls = localStorage
-      params = twitterIdStr: AuthService.user._json.id_str
-      TweetService.getListsList(params)
+      TweetService.getListsList
+        twitterIdStr: AuthService.user._json.id_str
       .then (data) =>
         console.log 'UPDATE!! ', data.data
 
@@ -86,43 +81,47 @@ angular.module "myApp.services"
         # @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
         @amatsukaList.data = _.findWhere data.data, 'full_name': "@#{AuthService.user.username}/amatsuka"
         console.log @amatsukaList.data
-        ls.setItem 'amatsukaList', JSON.stringify(@amatsukaList.data)
+        localStorage.setItem 'amatsukaList', JSON.stringify(@amatsukaList.data)
         TweetService.getListsMembers(listIdStr: @amatsukaList.data.id_str)
       .then (data) =>
         @amatsukaList.member = data.data.users
-        ls.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
+        localStorage.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
         data.data.users
 
     init: ->
-      ls = localStorage
       # Flow:
       # リスト作成 -> リストに自分を格納 -> リストのメンバを取得 ->　リストのツイートを取得
-      params = name: 'Amatsuka', mode: 'private'
-      TweetService.createLists(params)
+      TweetService.createLists
+        name: 'Amatsuka'
+        mode: 'private'
       .then (data) =>
         @amatsukaList.data = data.data
-        ls.setItem 'amatsukaList', JSON.stringify(data.data)
+        localStorage.setItem 'amatsukaList', JSON.stringify(data.data)
         params = listIdStr: data.data.id_str, twitterIdStr: undefined
         TweetService.createAllListsMembers(params)
       .then (data) ->
         TweetService.getListsMembers(listIdStr: data.data.id_str)
       .then (data) =>
         @amatsukaList.member = data.data.users
-        ls.setItem 'amatsukaFollowList', JSON.stringify(data.data.users)
+        localStorage.setItem 'amatsukaFollowList', JSON.stringify(data.data.users)
         data.data.users
 
     isSameUser: ->
-      ls = localStorage
-      params = twitterIdStr: AuthService.user._json.id_str
-      TweetService.getListsList(params)
-      .then (data) ->
-        console.log 'isSameUser', data.data
-        oldList = JSON.parse(ls.getItem 'amatsukaList') || {}
+      return $q (resolve, reject) ->
+        TweetService.getListsList
+          twitterIdStr: AuthService.user._json.id_str
+        .then (data) ->
+          console.log 'isSameUser', data.data
+          oldList = JSON.parse(localStorage.getItem 'amatsukaList') || {}
 
-        # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
-        # newList = _.findWhere(data.data, 'name': 'Amatsuka') || id_str: null
-        newList = _.findWhere(data.data, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
-        oldList.id_str is newList.id_str
+          # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
+          # newList = _.findWhere(data.data, 'name': 'Amatsuka') || id_str: null
+          newList = _.findWhere(data.data, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
+          return resolve oldList.id_str is newList.id_str
+        .catch (error) ->
+          console.log 'listService isSameUser = ', error
+          return reject error
+
 
     hasListData: ->
       !(_.isEmpty(@amatsukaList.data) and _.isEmpty(@amatsukaList.member))

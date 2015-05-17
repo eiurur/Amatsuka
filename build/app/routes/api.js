@@ -69,6 +69,11 @@
         return res.json({
           data: data
         });
+      })["catch"](function(error) {
+        console.log('/api/lists/list/:id/:count error = ', error);
+        return res.json({
+          error: error
+        });
       });
     });
     app.post('/api/lists/create', function(req, res) {

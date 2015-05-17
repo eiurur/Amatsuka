@@ -531,16 +531,21 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   });
 }]);
 
-angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope", "$rootScope", "AuthService", "TweetService", "ListService", "ConfigService", "Tweets", function($window, $scope, $rootScope, AuthService, TweetService, ListService, ConfigService, Tweets) {
+angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "AuthService", "TweetService", "ListService", "ConfigService", "Tweets", function($scope, AuthService, TweetService, ListService, ConfigService, Tweets) {
+  var amatsukaFollowList, amatsukaList;
   if (_.isEmpty(AuthService.user)) {
     return;
   }
   $scope.listIdStr = '';
   $scope.isLoaded = false;
   $scope.layoutType = 'grid';
+  amatsukaList = localStorage.getItem('amatsukaList');
+  amatsukaList = amatsukaList === 'undefined' ? {} : JSON.parse(amatsukaList);
+  amatsukaFollowList = localStorage.getItem('amatsukaFollowList');
+  amatsukaFollowList = amatsukaFollowList === 'undefined' ? [] : JSON.parse(amatsukaFollowList);
   ListService.amatsukaList = {
-    data: JSON.parse(localStorage.getItem('amatsukaList')) || {},
-    member: JSON.parse(localStorage.getItem('amatsukaFollowList')) || []
+    data: amatsukaList,
+    member: amatsukaFollowList
   };
   ListService.isSameUser().then(function(isSame) {
     if (isSame) {
@@ -552,16 +557,21 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$window", "$scope"
       })();
       return;
     }
+    console.log('false isSame');
     ListService.update().then(function(data) {
       $scope.tweets = new Tweets([]);
     })["catch"](function(error) {
+      console.log('catch update2 error ', error);
       ListService.init().then(function(data) {
+        console.log('then init data ', data);
         ConfigService.init();
         return ConfigService.save2DB();
       }).then(function(data) {
         $scope.tweets = new Tweets([]);
       });
     });
+  }).then(function(error) {
+    return console.log('catch isSame User error = ', error);
   })["finally"](function() {
     console.info('10');
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
@@ -591,6 +601,8 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthServi
       return list.full_name === ("@" + AuthService.user.username + "/amatsuka");
     });
     return $scope.ownList = l;
+  })["catch"](function(error) {
+    return console.log('listController = ', error);
   });
   return $scope.$watch('sourceListData', function(list) {
     if ((list != null ? list.name : void 0) == null) {
@@ -994,16 +1006,14 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       this.registerMember2LocalStorage();
     },
     isFollow: function(target, isRT) {
-      var targetIdStr;
       if (isRT == null) {
         isRT = true;
       }
-      targetIdStr = target.id_str;
       if (_.has(target, 'user')) {
-        targetIdStr = TweetService.get(target, 'user.id_str', isRT);
+        target.id_str = TweetService.get(target, 'user.id_str', isRT);
       }
       return !!_.findWhere(this.amatsukaList.member, {
-        'id_str': targetIdStr
+        'id_str': target.id_str
       });
     },
     nomarlizeMembers: function(members) {
@@ -1046,19 +1056,16 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       });
     },
     update: function() {
-      var ls, params;
-      ls = localStorage;
-      params = {
+      return TweetService.getListsList({
         twitterIdStr: AuthService.user._json.id_str
-      };
-      return TweetService.getListsList(params).then((function(_this) {
+      }).then((function(_this) {
         return function(data) {
           console.log('UPDATE!! ', data.data);
           _this.amatsukaList.data = _.findWhere(data.data, {
             'full_name': "@" + AuthService.user.username + "/amatsuka"
           });
           console.log(_this.amatsukaList.data);
-          ls.setItem('amatsukaList', JSON.stringify(_this.amatsukaList.data));
+          localStorage.setItem('amatsukaList', JSON.stringify(_this.amatsukaList.data));
           return TweetService.getListsMembers({
             listIdStr: _this.amatsukaList.data.id_str
           });
@@ -1066,22 +1073,20 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       })(this)).then((function(_this) {
         return function(data) {
           _this.amatsukaList.member = data.data.users;
-          ls.setItem('amatsukaFollowList', JSON.stringify(_this.amatsukaList.member));
+          localStorage.setItem('amatsukaFollowList', JSON.stringify(_this.amatsukaList.member));
           return data.data.users;
         };
       })(this));
     },
     init: function() {
-      var ls, params;
-      ls = localStorage;
-      params = {
+      return TweetService.createLists({
         name: 'Amatsuka',
         mode: 'private'
-      };
-      return TweetService.createLists(params).then((function(_this) {
+      }).then((function(_this) {
         return function(data) {
+          var params;
           _this.amatsukaList.data = data.data;
-          ls.setItem('amatsukaList', JSON.stringify(data.data));
+          localStorage.setItem('amatsukaList', JSON.stringify(data.data));
           params = {
             listIdStr: data.data.id_str,
             twitterIdStr: void 0
@@ -1095,27 +1100,29 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       }).then((function(_this) {
         return function(data) {
           _this.amatsukaList.member = data.data.users;
-          ls.setItem('amatsukaFollowList', JSON.stringify(data.data.users));
+          localStorage.setItem('amatsukaFollowList', JSON.stringify(data.data.users));
           return data.data.users;
         };
       })(this));
     },
     isSameUser: function() {
-      var ls, params;
-      ls = localStorage;
-      params = {
-        twitterIdStr: AuthService.user._json.id_str
-      };
-      return TweetService.getListsList(params).then(function(data) {
-        var newList, oldList;
-        console.log('isSameUser', data.data);
-        oldList = JSON.parse(ls.getItem('amatsukaList')) || {};
-        newList = _.findWhere(data.data, {
-          'full_name': "@" + AuthService.user.username + "/amatsuka"
-        }) || {
-          id_str: null
-        };
-        return oldList.id_str === newList.id_str;
+      return $q(function(resolve, reject) {
+        return TweetService.getListsList({
+          twitterIdStr: AuthService.user._json.id_str
+        }).then(function(data) {
+          var newList, oldList;
+          console.log('isSameUser', data.data);
+          oldList = JSON.parse(localStorage.getItem('amatsukaList')) || {};
+          newList = _.findWhere(data.data, {
+            'full_name': "@" + AuthService.user.username + "/amatsuka"
+          }) || {
+            id_str: null
+          };
+          return resolve(oldList.id_str === newList.id_str);
+        })["catch"](function(error) {
+          console.log('listService isSameUser = ', error);
+          return reject(error);
+        });
       });
     },
     hasListData: function() {
@@ -1124,7 +1131,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
   };
 }]);
 
-angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injector", "ConfigService", function($http, $q, $injector, ConfigService) {
+angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injector", "ConfigService", "ToasterService", function($http, $q, $injector, ConfigService, ToasterService) {
   return {
     activateLink: function(t) {
       return t.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&amp;%@!&#45;\/]))?)/g, "<a href=\"$1\" target=\"_blank\">$1</a>").replace(/(^|\s)(@|＠)(\w+)/g, "$1<a href=\"http://www.twitter.com/$3\" target=\"_blank\">@$3</a>").replace(/(?:^|[^ーー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9&_\/>]+)[#＃]([ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z]+[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*)/g, ' <a href="http://twitter.com/search?q=%23$1" target="_blank">#$1</a>');
@@ -1294,19 +1301,41 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
         return !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
       });
     },
+    checkError: function(statusCode) {
+      console.log(statusCode);
+      switch (statusCode) {
+        case 429:
+          ToasterService.warning({
+            title: 'API制限',
+            text: '15分お待ちください'
+          });
+      }
+    },
+
+    /*
+     * $httpのerrorメソッドは、サーバーがエラーを返したとき(404とか、500)であって、
+     * TwitterAPIがAPI制限とかのエラーを返したときはsuccessメソッドの方へ渡されるため、
+     * その中でresolve, rejectの分岐を行う
+     */
 
     /*
     List
      */
     getListsList: function(params) {
-      return $q(function(resolve, reject) {
-        return $http.get("/api/lists/list/" + params.twitterIdStr).success(function(data) {
-          console.table(data.data);
-          return resolve(data);
-        }).error(function(data) {
-          return reject(data);
-        });
-      });
+      return $q((function(_this) {
+        return function(resolve, reject) {
+          return $http.get("/api/lists/list/" + params.twitterIdStr).success(function(data) {
+            console.log(data);
+            if (_.has(data, 'error')) {
+              _this.checkError(data.error.statusCode);
+              return reject(data);
+            }
+            return resolve(data);
+          }).error(function(data) {
+            return reject(data);
+          });
+        };
+      })(this));
     },
     createLists: function(params) {
       return $q(function(resolve, reject) {

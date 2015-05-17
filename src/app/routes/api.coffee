@@ -60,6 +60,9 @@ module.exports = (app) ->
     .then (data) ->
       console.log '/api/lists/list/:id/:count data.length = ', data.length
       res.json data: data
+    .catch (error) ->
+      console.log '/api/lists/list/:id/:count error = ', error
+      res.json error: error
 
   # POST リストの作成
   app.post '/api/lists/create', (req, res) ->

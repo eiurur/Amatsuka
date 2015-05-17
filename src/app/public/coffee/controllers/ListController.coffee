@@ -21,8 +21,9 @@ angular.module "myApp.controllers"
 
     $scope.ownList = l
     # ListService.ownList = $scope.ownList
-  # .catch (data) ->
-  #   console.log data.err
+  .catch (error) ->
+    console.log 'listController = ', error
+
 
   $scope.$watch 'sourceListData', (list) ->
     return unless list?.name?
