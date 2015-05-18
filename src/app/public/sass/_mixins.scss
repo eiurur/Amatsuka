@@ -31,14 +31,14 @@
   }
 }
 
-@mixin link {
+@mixin link($color-normal: $link-color, $color-hover: white) {
   a {
-    color: $link-color !important;
+    color: $color-normal !important;
     text-decoration: none;
     transition: .2s ease;
     &:hover
     {
-      color: white !important;
+      color: $color-hover !important;
     }
   }
 }

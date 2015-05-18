@@ -5,6 +5,7 @@ angular.module('myApp', [
   'infinite-scroll'
   'wu.masonry'
   'toaster'
+  # 'ngTagsInput'
   'myApp.controllers'
   'myApp.filters'
   'myApp.services'

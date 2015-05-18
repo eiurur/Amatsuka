@@ -65,6 +65,8 @@ module.exports =
       'bower_components/bootflat/css/bootflat.css'
       'bower_components/angular/angular-csp.css'
       'bower_components/angularjs-toaster/toaster.min.css'
+      'bower_components/ng-tags-input/ng-tags-input.min.css'
+      'bower_components/ng-tags-input/ng-tags-input.bootstrap.min.css'
     ]
     dest: dest + app_public + "/css/vendors/"
 
@@ -89,6 +91,7 @@ module.exports =
       'bower_components/angular-sanitize/angular-sanitize.min.js'
       'bower_components/angular-masonry/angular-masonry.js'
       'bower_components/angularjs-toaster/toaster.min.js'
+      'bower_components/ng-tags-input/ng-tags-input.min.js'
     ]
     dest: dest + app_public + "/js/vendors/"
 

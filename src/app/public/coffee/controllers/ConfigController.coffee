@@ -36,3 +36,15 @@ angular.module "myApp.controllers"
     .catch (error) ->
       console.log error
     return
+
+
+  # # For ng
+  # $scope.$watch 'config', (newVal, oldVal) ->
+  #   do ConfigService.update
+  #   ConfigService.save2DB()
+  #   .then (data) ->
+  #     console.log data
+  #   .catch (error) ->
+  #     console.log error
+  #   return
+  # , true

@@ -1,20 +1,20 @@
-// include retweet (checkbox)
-label
-  span.external-link  Include Retweet:
-  input(type='checkbox', ng-model='config.includeRetweet')
+.col-md-12.col-sm-12.col-xs-12
+  form
+    .checkbox
+      label.text
+        input(type='checkbox', ng-model='config.includeRetweet')
+        | Include Retweet
 
-// NG user (textarea)
-
-// NG word (textarea)
-
-form
-  .form-group
-    label(for='exampleInputEmail1') NG
-    input#exampleInputEmail1.form-control(type='email', placeholder='Enter email')
-  .form-group
-    label(for='exampleInputPassword1') Password
-    input#exampleInputPassword1.form-control(type='password', placeholder='Password')
-  .checkbox
-    label
-      input(type='checkbox', ng-model='config.includeRetweet')
-      | Include Retweet
+//- // ng-tags-input、日本語入力できないんですけど！？
+//- .col-md-12.col-sm-12.col-xs-12
+//-   form
+//-     .form-group
+//-       label.text(for='inputNGUsername') NG username
+//-       tags-input.bootstrap(ng-model='config.ngUsername', placeholder='Add a ng-username (ex) twitter, TwitterDevJP', replace-spaces-with-dashes='false')
+//-     .form-group
+//-       label.text(for='inputNGWord') NG word
+//-       tags-input.bootstrap(ng-model='config.ngWord', placeholder='Add a ng-word (ex) #ハッシュタグ, 名前, 禁止ワード', replace-spaces-with-dashes='false')
+//-     .checkbox
+//-       label.text
+//-         input(type='checkbox', ng-model='config.includeRetweet')
+//-         | Include Retweet
