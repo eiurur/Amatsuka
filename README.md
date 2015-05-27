@@ -35,7 +35,7 @@ Twitter Client - Viewer for Image.
 Site
 ======
 
-<a href="http://amatsuka.herokuapp.com/" target="_blank">Amatsuka - heroku</a>
+<a href="https://amatsuka.herokuapp.com/" target="_blank">Amatsuka - heroku</a>
 
 Feature
 ======
