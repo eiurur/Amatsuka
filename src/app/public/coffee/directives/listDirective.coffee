@@ -5,7 +5,7 @@ angular.module "myApp.directives"
       sourceList: '='
     link: (scope, element, attrs) ->
       element.on 'click', (event) ->
-        element.hasClass('disabled')
+        return if element.hasClass('disabled')
 
         if window.confirm('コピーしてもよろしいですか？')
           element.addClass('disabled')

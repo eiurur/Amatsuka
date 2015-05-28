@@ -541,6 +541,15 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "AuthServ
   amatsukaList = amatsukaList === 'undefined' ? {} : JSON.parse(amatsukaList);
   amatsukaFollowList = localStorage.getItem('amatsukaFollowList');
   amatsukaFollowList = amatsukaFollowList === 'undefined' ? [] : JSON.parse(amatsukaFollowList);
+  console.log(amatsukaList);
+  console.log(typeof amatsukaList);
+  console.log(_.isEmpty(amatsukaList));
+  console.log(amatsukaFollowList);
+  console.log(typeof amatsukaFollowList);
+  console.log(_.isEmpty(amatsukaList));
+  if (_.isEmpty(amatsukaList)) {
+    window.localStorage.clear();
+  }
   ListService.amatsukaList = {
     data: amatsukaList,
     member: amatsukaFollowList
@@ -678,7 +687,9 @@ angular.module("myApp.directives").directive('copyMember', ["toaster", "TweetSer
     },
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
-        element.hasClass('disabled');
+        if (element.hasClass('disabled')) {
+          return;
+        }
         if (window.confirm('コピーしてもよろしいですか？')) {
           element.addClass('disabled');
           toaster.pop('wait', "Now Copying ...", '', 0, 'trustedHtml');

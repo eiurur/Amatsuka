@@ -8,7 +8,7 @@
         select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
     // コピー実行ボタン(for smartphone)
     .form-group
-      button.btn.btn-stretch(ng-if="sourceList.members", source-list='sourceList', copy-member)
+      button.btn.btn-stretch(ng-if="sourceList.members", source-list='sourceList', ng-disabled="sourceList.members.length == 0", copy-member)
         i.fa.fa-copy
         | Copy members to AmatsukaList
 

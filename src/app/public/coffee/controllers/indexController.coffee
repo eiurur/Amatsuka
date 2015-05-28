@@ -23,6 +23,16 @@ angular.module "myApp.controllers"
   amatsukaFollowList = localStorage.getItem('amatsukaFollowList')
   amatsukaFollowList = if amatsukaFollowList is 'undefined' then [] else JSON.parse amatsukaFollowList
 
+  console.log amatsukaList
+  console.log typeof amatsukaList
+  console.log _.isEmpty amatsukaList
+
+  console.log amatsukaFollowList
+  console.log typeof amatsukaFollowList
+  console.log _.isEmpty amatsukaList
+
+  if _.isEmpty amatsukaList then window.localStorage.clear()
+
   ListService.amatsukaList =
     data: amatsukaList
     member: amatsukaFollowList

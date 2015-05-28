@@ -120,6 +120,13 @@ angular.module "myApp.factories", []
           return reject 'member is nothing' if @members.length is 0
 
           # TODO: 100人ずつしか追加できないから、lengthを100で割った回数分回す。
+          # promises = []
+          # oneMoreLoopNum = if @members.length % 100 then 1 else 0
+          # console.log 'oneMoreLoopNum = ', oneMoreLoopNum
+          # loopNum = @members.length / 100 + oneMoreLoopNum
+          # for i in loopNum
+          #   [0..loopNum*100]
+
           twitterIdStr = ''
           _.each @members, (user) -> twitterIdStr += "#{user.id_str},"
           TweetService.createAllListsMembers(listIdStr: @amatsukaListIdStr, twitterIdStr: twitterIdStr)
