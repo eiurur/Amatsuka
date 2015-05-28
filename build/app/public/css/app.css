@@ -554,7 +554,7 @@ select {
  */
 @media (max-width: 480px) {
   .login__bg {
-    background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_v2_sp.gif);
+    background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka/smarthph-compressor.gif);
   }
 
   .login__description {
@@ -565,6 +565,13 @@ select {
 
   .login__description--btn {
     width: 100%;
+  }
+
+  /**
+   * Share
+   */
+  .share-icons {
+    left: 16px;
   }
 }
 .navbar-padding {
