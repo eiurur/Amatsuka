@@ -20,30 +20,30 @@ nav.navbar-default.navbar-fixed-top
       //-   button.btn.btn-default(type='submit') Submit
       ul.nav.navbar-nav.navbar-right
         li
-          a(href="/")
+          a(href="/", data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
             i.fa.fa-home
             | Home
         li
-          a(href='/member')
+          a(href='/member', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
             i.fa.fa-users
             | Member
         li
-          a(href='/fav')
+          a(href='/fav', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
             i.fa.fa-heart
             | Fav
         li
-          a(href='/list')
+          a(href='/list', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
             i.fa.fa-list-ul
             | List
         li
-          a(href='/config')
+          a(href='/config', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
             i.fa.fa-cog
             | Config
         li
-          a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank')
+          a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
             i.fa.fa-twitter
             | @{{user.username}}
         li
-          a(href='/logout', target='_self')
+          a(href='/logout', target='_self', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
             i.fa.fa-power-off
             | Logout
