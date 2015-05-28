@@ -13,6 +13,7 @@ class TwitterClientDefine
   constructor: (@user) ->
 
   getViaAPI: (params) ->
+    console.log params
     return new Promise (resolve, reject) =>
       settings.twitterAPI[params.method] params.type,
         params.params
@@ -25,6 +26,7 @@ class TwitterClientDefine
         return resolve data
 
   postViaAPI: (params) ->
+    console.log params
     return new Promise (resolve, reject) =>
       settings.twitterAPI[params.method] params.type,
         params.params

@@ -24,6 +24,7 @@
     }
 
     TwitterClientDefine.prototype.getViaAPI = function(params) {
+      console.log(params);
       return new Promise((function(_this) {
         return function(resolve, reject) {
           return settings.twitterAPI[params.method](params.type, params.params, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {
@@ -38,6 +39,7 @@
     };
 
     TwitterClientDefine.prototype.postViaAPI = function(params) {
+      console.log(params);
       return new Promise((function(_this) {
         return function(resolve, reject) {
           return settings.twitterAPI[params.method](params.type, params.params, _this.user.twitter_token, _this.user.twitter_token_secret, function(error, data, response) {

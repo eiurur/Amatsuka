@@ -1,7 +1,6 @@
-
 div(ng-controller="UserCtrl")
 
-  // code from member.jade
+  //
   .media.user-sidebar__controll(ng-show='user.name')
     a.pull-left(href='https://www.twitter.com/{{user.screen_name}}', target="_blank")
       img.media-object.thumbnail-img.fade(ng-src='{{user.profile_image_url}}', img-preload="img-preload")

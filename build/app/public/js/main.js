@@ -22,6 +22,25 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   return $locationProvider.html5Mode(true);
 }]);
 
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
+
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
     $log.info('location changin to: ' + next);
@@ -435,25 +454,6 @@ angular.module("myApp.services", []).service("CommonService", function() {
     }
   };
 });
-
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
 
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
@@ -1010,14 +1010,16 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       this.registerMember2LocalStorage();
     },
     isFollow: function(target, isRT) {
+      var targetIdStr;
       if (isRT == null) {
         isRT = true;
       }
+      targetIdStr = target.id_str;
       if (_.has(target, 'user')) {
-        target.id_str = TweetService.get(target, 'user.id_str', isRT);
+        targetIdStr = TweetService.get(target, 'user.id_str', isRT);
       }
       return !!_.findWhere(this.amatsukaList.member, {
-        'id_str': target.id_str
+        'id_str': targetIdStr
       });
     },
     nomarlizeMembers: function(members) {
@@ -1164,6 +1166,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
     },
     nomalizeTweets: function(tweets) {
       var ListService;
+      console.log(tweets);
       ListService = $injector.get('ListService');
       return _.each(tweets, (function(_this) {
         return function(tweet) {

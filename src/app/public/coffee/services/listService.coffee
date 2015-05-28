@@ -26,9 +26,14 @@ angular.module "myApp.services"
       return
 
     isFollow: (target, isRT = true) ->
+
+      # この一時変数(targetIdStr)がなければtweetのid_strにtweet.user.id_strが上書きされてしまい、
+      # createFavやretweetができなくなってしまう。
+      targetIdStr = target.id_str
       if _.has target, 'user'
-        target.id_str = TweetService.get(target, 'user.id_str', isRT)
-      !!_.findWhere(@amatsukaList.member, 'id_str': target.id_str)
+        targetIdStr = TweetService.get(target, 'user.id_str', isRT)
+      !!_.findWhere(@amatsukaList.member, 'id_str': targetIdStr)
+
 
     # 今のところ、Member.jadeで使う関数なので isFollow を全部　true　にしても構わない
     nomarlizeMembers: (members) ->

@@ -40,6 +40,7 @@ angular.module "myApp.services"
           tweet.followStatus = true
 
     nomalizeTweets: (tweets) ->
+      console.log tweets
       # do =>
       ListService = $injector.get 'ListService'
       _.each tweets, (tweet) =>
