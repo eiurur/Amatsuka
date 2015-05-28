@@ -1,15 +1,16 @@
 div(ng-controller="UserCtrl")
 
   //
-  .media.user-sidebar__controll(ng-show='user.name')
-    a.pull-left(href='https://www.twitter.com/{{user.screen_name}}', target="_blank")
-      img.media-object.thumbnail-img.fade(ng-src='{{user.profile_image_url}}', img-preload="img-preload")
-    .media-body
-      h4.media-heading
-        span.user-sidebar__profile--name {{user.name}}
-        span.screen-name @{{user.screen_name}}
-      span.btn-wrapper
-      a.btn.btn-sm.btn-follow.user-sidebar__btn-follow(followable, follow-status='user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{user.id_str}}', ng-disabled='isProcessing')
+  .user-sidebar__header
+    .media.user-sidebar__controll(ng-if='user.name')
+      a.pull-left(href='https://www.twitter.com/{{user.screen_name}}', target="_blank")
+        img.media-object.thumbnail-img.fade(ng-src='{{user.profile_image_url}}', img-preload="img-preload")
+      .media-body
+        h4.media-heading
+          span.user-sidebar__profile--name {{user.name}}
+          span.screen-name @{{user.screen_name}}
+        span.btn-wrapper
+        a.btn.btn-sm.btn-follow.user-sidebar__btn-follow(followable, follow-status='user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{user.id_str}}', ng-disabled='isProcessing')
 
   #scroll.user-sidebar.user-sidebar--fixed
 

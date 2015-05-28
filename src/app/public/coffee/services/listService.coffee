@@ -26,7 +26,6 @@ angular.module "myApp.services"
       return
 
     isFollow: (target, isRT = true) ->
-
       # この一時変数(targetIdStr)がなければtweetのid_strにtweet.user.id_strが上書きされてしまい、
       # createFavやretweetができなくなってしまう。
       targetIdStr = target.id_str

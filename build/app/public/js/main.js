@@ -878,10 +878,10 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         });
       };
       return element.on('click', function() {
-        var body, domUserSidebar, domUserSidebarControll, isOpenedSidebar, layer;
+        var body, domUserSidebar, domUserSidebarHeader, isOpenedSidebar, layer;
         $rootScope.$broadcast('isOpened', true);
         domUserSidebar = angular.element(document).find('.user-sidebar');
-        domUserSidebarControll = angular.element(document).find('.user-sidebar__controll');
+        domUserSidebarHeader = angular.element(document).find('.user-sidebar__header');
         isOpenedSidebar = 　domUserSidebar[0].className.indexOf('.user-sidebar-in') !== -1;
         if (isOpenedSidebar) {
           showTweet();
@@ -892,7 +892,7 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         初回(サイドバーは見えない状態が初期状態)
          */
         domUserSidebar.addClass('user-sidebar-in');
-        domUserSidebarControll.removeClass('user-sidebar-out');
+        domUserSidebarHeader.removeClass('user-sidebar-out');
         body = angular.element(document).find('body');
         body.addClass('scrollbar-y-hidden');
         layer = angular.element(document).find('.layer');
@@ -902,7 +902,7 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
           body.removeClass('scrollbar-y-hidden');
           layer.removeClass('fullscreen-overlay');
           domUserSidebar.removeClass('user-sidebar-in');
-          domUserSidebarControll.addClass('user-sidebar-out');
+          domUserSidebarHeader.addClass('user-sidebar-out');
           return $rootScope.$broadcast('isClosed', true);
         });
       });

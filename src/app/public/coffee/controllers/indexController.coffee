@@ -37,12 +37,6 @@ angular.module "myApp.controllers"
     data: amatsukaList
     member: amatsukaFollowList
 
-  # ListService.amatsukaList =
-  #   data: JSON.parse localStorage.getItem('amatsukaList') || {}
-  #   member: JSON.parse localStorage.getItem('amatsukaFollowList') || []
-
-
-
   ListService.isSameUser()
   .then (isSame) ->
     if isSame

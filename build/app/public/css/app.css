@@ -1031,14 +1031,7 @@ i {
 }
 
 .user-sidebar-out {
-  -moz-transform: translate3d(100%, 0, 0);
-  -ms-transform: translate3d(100%, 0, 0);
-  -webkit-transform: translate3d(100%, 0, 0);
-  transform: translate3d(100%, 0, 0);
-}
-
-.test {
-  background: black;
+  display: none;
 }
 
 .user-sidebar--fixed {
@@ -1128,14 +1121,40 @@ i {
 
   .user-sidebar {
     font-size: 70%;
+    padding: 88px 0 0 0;
   }
 
   .user-sidebar__profile {
-    padding: 20px 15px;
+    padding: 0 15px;
+    min-height: 100px;
   }
 
   .user-sidebar__post {
     margin: 20px 15px;
+  }
+
+  /**
+   * プロフィール群
+   */
+  .user-sidebar__controll {
+    width: 80%;
+    padding: 20px 15px 0;
+  }
+
+  .media .thumbnail-img {
+    max-width: 48px;
+  }
+
+  .media-heading {
+    font-size: 70%;
+  }
+
+  .btn-follow {
+    margin: 0;
+  }
+
+  .user-sidebar__profile--description {
+    padding-top: 8px;
   }
 }
 .list-member__container {

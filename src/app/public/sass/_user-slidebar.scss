@@ -29,11 +29,8 @@
 // .user-sidebar-controllを非表示にする。
 .user-sidebar-out
 {
-  @include transform(translate3d(100%, 0, 0));
-}
-
-.test {
-  background: black;
+  // @include transform(translate3d(100%, 0, 0));
+  display: none;
 }
 
 // サイドバー全体を固定化
@@ -41,10 +38,13 @@
 {
   position: fixed;
   z-index: 10000;
-
 }
 
 // フォローボタンはスクロールしても上部に固定するために用意。
+.user-sidebar__header {
+
+}
+
 .user-sidebar__controll
 {
   top: 0px;
@@ -149,7 +149,7 @@
 }
 
 
-@media(max-width:480px)
+@media(max-width: 480px)
 {
   .user-sidebar__post--header--link
   {
@@ -160,14 +160,44 @@
   .user-sidebar
   {
     font-size: $font-size-percent-smartphone;
+    padding: 88px 0 0 0;
   }
 
   .user-sidebar__profile {
-    padding: 20px $timeline__post--padding-horizontal;
+    padding: 0 $timeline__post--padding-horizontal;
+    min-height: 100px;
   }
 
   .user-sidebar__post
   {
     margin: 20px $timeline__post--padding-horizontal;
+  }
+
+  /**
+   * プロフィール群
+   */
+  .user-sidebar__controll
+  {
+    // padding: 10px 60px 0 0;
+    width: 80%;
+    padding: 20px 15px 0;
+  }
+
+  .media .thumbnail-img
+  {
+    max-width: 48px;
+  }
+
+  .media-heading
+  {
+    font-size: $font-size-percent-smartphone;
+  }
+
+  .btn-follow  {
+    margin: 0;
+  }
+
+  .user-sidebar__profile--description {
+    padding-top: 8px;
   }
 }
