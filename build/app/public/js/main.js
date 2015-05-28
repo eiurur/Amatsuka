@@ -22,25 +22,6 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   return $locationProvider.html5Mode(true);
 }]);
 
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
-
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
     $log.info('location changin to: ' + next);
@@ -455,6 +436,25 @@ angular.module("myApp.services", []).service("CommonService", function() {
   };
 });
 
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
+
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
   $scope.isAuthenticated = AuthService.status.isAuthenticated;
@@ -867,16 +867,21 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         });
       };
       return element.on('click', function() {
-        var body, domUserSidebar, isOpenedSidebar, layer;
+        var body, domUserSidebar, domUserSidebarControll, isOpenedSidebar, layer;
         $rootScope.$broadcast('isOpened', true);
         domUserSidebar = angular.element(document).find('.user-sidebar');
-        isOpenedSidebar = domUserSidebar[0].className.indexOf('.user-sidebar-in') !== -1;
+        domUserSidebarControll = angular.element(document).find('.user-sidebar__controll');
+        isOpenedSidebar = 　domUserSidebar[0].className.indexOf('.user-sidebar-in') !== -1;
         if (isOpenedSidebar) {
-          console.log('-in もってる');
           showTweet();
           return;
         }
+
+        /*
+        初回(サイドバーは見えない状態が初期状態)
+         */
         domUserSidebar.addClass('user-sidebar-in');
+        domUserSidebarControll.removeClass('user-sidebar-out');
         body = angular.element(document).find('body');
         body.addClass('scrollbar-y-hidden');
         layer = angular.element(document).find('.layer');
@@ -886,6 +891,7 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
           body.removeClass('scrollbar-y-hidden');
           layer.removeClass('fullscreen-overlay');
           domUserSidebar.removeClass('user-sidebar-in');
+          domUserSidebarControll.addClass('user-sidebar-out');
           return $rootScope.$broadcast('isClosed', true);
         });
       });

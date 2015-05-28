@@ -140,29 +140,40 @@ angular.module "myApp.directives"
       element.on 'click', ->
         $rootScope.$broadcast 'isOpened', true
 
-        domUserSidebar = angular.element(document).find('.user-sidebar')
+        domUserSidebar         = angular.element(document).find('.user-sidebar')
+        domUserSidebarControll = angular.element(document).find('.user-sidebar__controll')
 
-        # user-sidebarが開かれた状態で呼び出し。
-        isOpenedSidebar =
-          domUserSidebar[0].className.indexOf('.user-sidebar-in') isnt -1
+        # user-sidebarが開かれた状態で呼び出しされたら、
+        # サイドバーを維持したまま他のユーザのツイートとプロフィールを表示
+        isOpenedSidebar =　domUserSidebar[0].className.indexOf('.user-sidebar-in') isnt -1
         if isOpenedSidebar
-          console.log '-in もってる'
           do showTweet
           return
 
-        # 初回(サイドバーは見えない状態が初期状態)
+        ###
+        初回(サイドバーは見えない状態が初期状態)
+        ###
         domUserSidebar.addClass('user-sidebar-in')
+        domUserSidebarControll.removeClass('user-sidebar-out')
+
+        # bodyのスクロールバーを除去
         body = angular.element(document).find('body')
         body.addClass('scrollbar-y-hidden')
+
+        # 背景を半透明黒くして邪魔なものを隠す
         layer = angular.element(document).find('.layer')
         layer.addClass('fullscreen-overlay')
+
+        # 表示
         do showTweet
 
-        # サイドバーを閉じる
+        # クリックされたらサイドバーを閉じる
         layer.on 'click', ->
           body.removeClass('scrollbar-y-hidden')
           layer.removeClass('fullscreen-overlay')
           domUserSidebar.removeClass('user-sidebar-in')
+          domUserSidebarControll.addClass('user-sidebar-out')
+
           $rootScope.$broadcast 'isClosed', true
 
 

@@ -2,8 +2,6 @@
 
 .user-sidebar
 {
-  position: fixed;
-  z-index: 10000;
   top: 0;
   right: 0;
   // right: -$timeline__post--width - ($timeline__post--padding * 2);
@@ -14,17 +12,57 @@
   width: 80%;
   max-width: 600px;
   height: 100%;
+  background: white;
 
   transition: .3s ease;
 
-  background: white;
-
+  // .user-sidebarは最初非表示。画面外に出しておく。
   @include transform(translate3d(100%, 0, 0));
 }
 
+// .user-sidebarを表示する。
 .user-sidebar-in
 {
   @include transform(translate3d(0, 0, 0));
+}
+
+// .user-sidebar-controllを非表示にする。
+.user-sidebar-out
+{
+  @include transform(translate3d(100%, 0, 0));
+}
+
+.test {
+  background: black;
+}
+
+// サイドバー全体を固定化
+.user-sidebar--fixed
+{
+  position: fixed;
+  z-index: 10000;
+
+}
+
+// フォローボタンはスクロールしても上部に固定するために用意。
+.user-sidebar__controll
+{
+  top: 0px;
+  right: 0px;
+  // background: white;
+  background: rgba(255, 255, 255, 0.9);
+  position: fixed;
+  z-index: 10001;
+  max-width: 600px;
+  width: 100%;
+  padding: 20px 30px 0;
+
+  transition: .3s ease;
+}
+
+.user-sidebar__profile--bio {
+
+
 }
 
 .user-sidebar__btn-follow
@@ -47,7 +85,7 @@
 {
   width: 100%;
   min-height: 150px;
-  padding: 20px 30px;
+  padding: 100px 30px 20px;
 
   color: $sidebar-color;
 }
