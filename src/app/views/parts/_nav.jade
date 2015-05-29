@@ -1,4 +1,4 @@
-nav.navbar-default.navbar-fixed-top
+nav.navbar-default.navbar-fixed-top( ic-nav-autoclose)
   .container-fluid
     .navbar-header
       button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
@@ -8,7 +8,7 @@ nav.navbar-default.navbar-fixed-top
         span.icon-bar
       a.navbar-brand(href='/') Amatsuka
     #bs-example-navbar-collapse-1.collapse.navbar-collapse
-      ul.nav.navbar-nav.navbar-link
+      //- ul.nav.navbar-nav.navbar-link
         //- li.active
         //-   a(href='#')
         //-     | Link
@@ -20,30 +20,30 @@ nav.navbar-default.navbar-fixed-top
       //-   button.btn.btn-default(type='submit') Submit
       ul.nav.navbar-nav.navbar-right
         li
-          a(href="/", data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
+          a(href="/")
             i.fa.fa-home
             | Home
         li
-          a(href='/member', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
+          a(href='/member')
             i.fa.fa-users
             | Member
         li
-          a(href='/fav', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
+          a(href='/fav')
             i.fa.fa-heart
             | Fav
         li
-          a(href='/list', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
+          a(href='/list')
             i.fa.fa-list-ul
             | List
         li
-          a(href='/config', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
+          a(href='/config')
             i.fa.fa-cog
             | Config
         li
-          a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
+          a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank')
             i.fa.fa-twitter
             | @{{user.username}}
         li
-          a(href='/logout', target='_self', data-toggle='collapse', data-target='#bs-example-navbar-collapse-1')
+          a(href='/logout', target='_self')
             i.fa.fa-power-off
             | Logout

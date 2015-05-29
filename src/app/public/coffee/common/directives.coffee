@@ -50,8 +50,6 @@ angular.module "myApp.directives", []
         , 200
         return
 
-
-
   .directive "zoomImage", ($rootScope, TweetService) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
@@ -140,3 +138,17 @@ angular.module "myApp.directives", []
 
           # DL終了を通知
           toaster.pop 'success', "Finished Download", '', 2000, 'trustedHtml'
+
+  .directive 'icNavAutoclose', ->
+    console.log 'icNavAutoclose'
+    (scope, element, attrs) ->
+      collapsible = $(element).find('.navbar-collapse')
+      visible = false
+      collapsible.on 'show.bs.collapse', ->
+        visible = true
+      collapsible.on 'hide.bs.collapse', ->
+        visible = false
+      $(element).find('a').each (index, elem) ->
+        $(elem).click (e) ->
+          if visible and 'auto' is collapsible.css('overflow-y')
+            collapsible.collapse 'hide'

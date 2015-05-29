@@ -22,25 +22,6 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   return $locationProvider.html5Mode(true);
 }]);
 
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
-
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
     $log.info('location changin to: ' + next);
@@ -168,7 +149,27 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       });
     }
   };
-}]);
+}]).directive('icNavAutoclose', function() {
+  console.log('icNavAutoclose');
+  return function(scope, element, attrs) {
+    var collapsible, visible;
+    collapsible = $(element).find('.navbar-collapse');
+    visible = false;
+    collapsible.on('show.bs.collapse', function() {
+      return visible = true;
+    });
+    collapsible.on('hide.bs.collapse', function() {
+      return visible = false;
+    });
+    return $(element).find('a').each(function(index, elem) {
+      return $(elem).click(function(e) {
+        if (visible && 'auto' === collapsible.css('overflow-y')) {
+          return collapsible.collapse('hide');
+        }
+      });
+    });
+  };
+});
 
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -454,6 +455,25 @@ angular.module("myApp.services", []).service("CommonService", function() {
     }
   };
 });
+
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
 
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
   $scope.isLoaded = false;
