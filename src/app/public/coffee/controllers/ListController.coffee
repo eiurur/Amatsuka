@@ -1,6 +1,7 @@
 angular.module "myApp.controllers"
   .controller "ListCtrl", (
     $scope
+    # $timeout
     AuthService
     TweetService
     List
@@ -39,3 +40,11 @@ angular.module "myApp.controllers"
       return
 
   # TODO: $scope.sourceListにisCheck(?)を追加していく
+
+
+  $scope.$on 'list:copyMember', (event, args) ->
+    console.log 'list:copyMember on', args
+    do $scope.amatsukaList.updateAmatsukaList
+    # $timeout ->
+    #   do $scope.$apply
+    return

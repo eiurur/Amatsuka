@@ -151,19 +151,27 @@ angular.module "myApp.factories", []
         @memberIdx = 0
 
         # TODO: 共通の値だからクラス変数にしたい
-        @idStr                = JSON.parse(localStorage.getItem 'amatsukaList') || {}
+        @idStr                = (JSON.parse(localStorage.getItem 'amatsukaList') || {}).id_str
         @amatsukaMemberList   = ListService.nomarlizeMembers(JSON.parse(localStorage.getItem 'amatsukaFollowList')) || []
         @amatsukaMemberLength = @amatsukaMemberList.length
 
         # 古いリストデータの可能性があるのでここで更新する
-        do @updateAmatsukaList
+        # do @updateAmatsukaList
 
       updateAmatsukaList: ->
         ListService.update()
         .then (users) =>
-          @idstr              = ListService.amatsukaList.data.id_str
-          @amatsukaMemberList = ListService.nomarlizeMembers(users)
-          @length             = @amatsukaMemberList.length
+          @idstr                = ListService.amatsukaList.data.id_str
+          @amatsukaMemberList   = ListService.nomarlizeMembers(users)
+          @amatsukaMemberLength = @amatsukaMemberList.length
+
+          # reset
+          @length    = @amatsukaMemberLength
+          @isLast = true
+          console.log @members
+          @members   = _.uniq @members.concat(@amatsukaMemberList), 'id_str'
+          console.log @members
+          # @memberIdx = 0
 
       loadMoreMember: ->
         return if @isLast
@@ -171,5 +179,7 @@ angular.module "myApp.factories", []
         @memberIdx += @count
         if @memberIdx > @amatsukaMemberLength then @isLast = true
         return
+
+
 
     AmatsukaList

@@ -1,5 +1,5 @@
 angular.module "myApp.directives"
-  .directive 'copyMember', (toaster, TweetService) ->
+  .directive 'copyMember', ($rootScope, toaster, TweetService) ->
     restrict: 'A'
     scope:
       sourceList: '='
@@ -15,6 +15,8 @@ angular.module "myApp.directives"
           .then (data) ->
             element.removeClass('disabled')
             toaster.clear()
+
+            $rootScope.$broadcast 'list:copyMember', data
 
             # コピー終了を通知
             toaster.pop 'success', "Finished copy member", '', 2000, 'trustedHtml'

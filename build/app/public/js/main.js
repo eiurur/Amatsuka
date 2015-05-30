@@ -377,10 +377,9 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       this.count = 20;
       this.members = [];
       this.memberIdx = 0;
-      this.idStr = JSON.parse(localStorage.getItem('amatsukaList')) || {};
+      this.idStr = (JSON.parse(localStorage.getItem('amatsukaList')) || {}).id_str;
       this.amatsukaMemberList = ListService.nomarlizeMembers(JSON.parse(localStorage.getItem('amatsukaFollowList'))) || [];
       this.amatsukaMemberLength = this.amatsukaMemberList.length;
-      this.updateAmatsukaList();
     }
 
     AmatsukaList.prototype.updateAmatsukaList = function() {
@@ -388,7 +387,12 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
         return function(users) {
           _this.idstr = ListService.amatsukaList.data.id_str;
           _this.amatsukaMemberList = ListService.nomarlizeMembers(users);
-          return _this.length = _this.amatsukaMemberList.length;
+          _this.amatsukaMemberLength = _this.amatsukaMemberList.length;
+          _this.length = _this.amatsukaMemberLength;
+          _this.isLast = true;
+          console.log(_this.members);
+          _this.members = _.uniq(_this.members.concat(_this.amatsukaMemberList), 'id_str');
+          return console.log(_this.members);
         };
       })(this));
     };
@@ -631,7 +635,7 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthServi
   })["catch"](function(error) {
     return console.log('listController = ', error);
   });
-  return $scope.$watch('sourceListData', function(list) {
+  $scope.$watch('sourceListData', function(list) {
     if ((list != null ? list.name : void 0) == null) {
       return;
     }
@@ -642,6 +646,10 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthServi
       $scope.sourceList.loadMember();
       console.log($scope.sourceList);
     })();
+  });
+  return $scope.$on('list:copyMember', function(event, args) {
+    console.log('list:copyMember on', args);
+    $scope.amatsukaList.updateAmatsukaList();
   });
 }]);
 
@@ -699,7 +707,7 @@ angular.module("myApp.directives").directive("appVersion", ["version", function(
   };
 }]);
 
-angular.module("myApp.directives").directive('copyMember', ["toaster", "TweetService", function(toaster, TweetService) {
+angular.module("myApp.directives").directive('copyMember', ["$rootScope", "toaster", "TweetService", function($rootScope, toaster, TweetService) {
   return {
     restrict: 'A',
     scope: {
@@ -716,6 +724,7 @@ angular.module("myApp.directives").directive('copyMember', ["toaster", "TweetSer
           return scope.sourceList.copyMember2AmatsukaList().then(function(data) {
             element.removeClass('disabled');
             toaster.clear();
+            $rootScope.$broadcast('list:copyMember', data);
             return toaster.pop('success', "Finished copy member", '', 2000, 'trustedHtml');
           });
         }
