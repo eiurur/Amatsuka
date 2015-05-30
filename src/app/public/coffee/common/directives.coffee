@@ -141,14 +141,19 @@ angular.module "myApp.directives", []
 
   .directive 'icNavAutoclose', ->
     console.log 'icNavAutoclose'
-    (scope, element, attrs) ->
-      collapsible = $(element).find('.navbar-collapse')
+    (scope, elm, attrs) ->
+      collapsible = $(elm).find('.navbar-collapse')
       visible = false
       collapsible.on 'show.bs.collapse', ->
         visible = true
+        return
       collapsible.on 'hide.bs.collapse', ->
         visible = false
-      $(element).find('a').each (index, elem) ->
-        $(elem).click (e) ->
-          if visible and 'auto' is collapsible.css('overflow-y')
+        return
+      $(elm).find('a').each (index, element) ->
+        $(element).click (e) ->
+          if visible and 'auto' == collapsible.css('overflow-y')
             collapsible.collapse 'hide'
+          return
+        return
+      return
