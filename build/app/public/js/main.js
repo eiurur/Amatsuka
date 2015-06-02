@@ -561,16 +561,11 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "AuthServ
   $scope.listIdStr = '';
   $scope.isLoaded = false;
   $scope.layoutType = 'grid';
+  $scope.message = 'リストデータの確認中';
   amatsukaList = localStorage.getItem('amatsukaList');
   amatsukaList = amatsukaList === 'undefined' ? {} : JSON.parse(amatsukaList);
   amatsukaFollowList = localStorage.getItem('amatsukaFollowList');
   amatsukaFollowList = amatsukaFollowList === 'undefined' ? [] : JSON.parse(amatsukaFollowList);
-  console.log(amatsukaList);
-  console.log(typeof amatsukaList);
-  console.log(_.isEmpty(amatsukaList));
-  console.log(amatsukaFollowList);
-  console.log(typeof amatsukaFollowList);
-  console.log(_.isEmpty(amatsukaList));
   if (_.isEmpty(amatsukaList)) {
     window.localStorage.clear();
   }
@@ -589,24 +584,27 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "AuthServ
       return;
     }
     console.log('false isSame');
-    ListService.update().then(function(data) {
+    $scope.message = 'リストデータの更新中';
+    return ListService.update().then(function(data) {
       $scope.tweets = new Tweets([]);
     })["catch"](function(error) {
-      console.log('catch update2 error ', error);
-      ListService.init().then(function(data) {
+      $scope.message = 'リストを作成中';
+      return ListService.init().then(function(data) {
         console.log('then init data ', data);
         ConfigService.init();
         return ConfigService.save2DB();
       }).then(function(data) {
-        $scope.tweets = new Tweets([]);
+        return $scope.tweets = new Tweets([]);
       });
+    })["finally"](function() {
+      return $scope.message = '';
     });
   }).then(function(error) {
     return console.log('catch isSame User error = ', error);
   })["finally"](function() {
-    console.info('10');
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
     $scope.isLoaded = true;
+    $scope.message = '';
     console.log('終わり');
   });
   $scope.$on('addMember', function(event, args) {

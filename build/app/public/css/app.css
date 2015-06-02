@@ -1202,6 +1202,11 @@ i {
   margin: -20px 0 20px;
 }
 
+.list__status--message {
+  color: #f2446f;
+  margin-top: 30px;
+}
+
 /**
  * TODO: ファイルに分ける
  * other

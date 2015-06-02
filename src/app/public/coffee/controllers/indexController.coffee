@@ -12,6 +12,7 @@ angular.module "myApp.controllers"
   $scope.listIdStr  = ''
   $scope.isLoaded   = false
   $scope.layoutType = 'grid'
+  $scope.message    = 'リストデータの確認中'
 
   # todo: 後で消す
   # 何かの手違いで'amatsukaList'に文字列型のundefinedが格納されてしまい、
@@ -23,13 +24,13 @@ angular.module "myApp.controllers"
   amatsukaFollowList = localStorage.getItem('amatsukaFollowList')
   amatsukaFollowList = if amatsukaFollowList is 'undefined' then [] else JSON.parse amatsukaFollowList
 
-  console.log amatsukaList
-  console.log typeof amatsukaList
-  console.log _.isEmpty amatsukaList
+  # console.log amatsukaList
+  # console.log typeof amatsukaList
+  # console.log _.isEmpty amatsukaList
 
-  console.log amatsukaFollowList
-  console.log typeof amatsukaFollowList
-  console.log _.isEmpty amatsukaList
+  # console.log amatsukaFollowList
+  # console.log typeof amatsukaFollowList
+  # console.log _.isEmpty amatsukaList
 
   if _.isEmpty amatsukaList then window.localStorage.clear()
 
@@ -39,6 +40,7 @@ angular.module "myApp.controllers"
 
   ListService.isSameUser()
   .then (isSame) ->
+
     if isSame
       $scope.tweets = new Tweets([])
       do ->
@@ -50,6 +52,7 @@ angular.module "myApp.controllers"
 
     console.log 'false isSame'
 
+    $scope.message = 'リストデータの更新中'
     ListService.update()
     .then (data) ->
 
@@ -59,9 +62,8 @@ angular.module "myApp.controllers"
 
     .catch (error) ->
 
-      console.log 'catch update2 error ', error
-
       # ログインしたユーザがAmatsuka Listを未作成(初ログイン)のとき
+      $scope.message = 'リストを作成中'
       ListService.init()
       .then (data) ->
         console.log 'then init data ', data
@@ -74,15 +76,16 @@ angular.module "myApp.controllers"
 
       .then (data) ->
         $scope.tweets = new Tweets([])
-        return
-      return
-    return
+
+    .finally ->
+      $scope.message = ''
+
   .then (error) ->
     console.log 'catch isSame User error = ', error
   .finally ->
-    console.info '10'
     $scope.listIdStr = ListService.amatsukaList.data.id_str
     $scope.isLoaded  = true
+    $scope.message   = ''
     console.log '終わり'
     return
 
