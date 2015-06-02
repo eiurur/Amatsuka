@@ -157,3 +157,12 @@ angular.module "myApp.directives", []
           return
         return
       return
+
+  .directive 'clearLocalStorage', (toaster) ->
+    restrict: 'A'
+    link: (scope, element, attrs) ->
+      element.on 'click', (event) ->
+        toaster.pop 'wait', "Now Clearing ...", '', 0, 'trustedHtml'
+        window.localStorage.clear()
+        toaster.clear()
+        toaster.pop 'success', "Finished clearing the list data", '', 2000, 'trustedHtml'

@@ -30,6 +30,9 @@ angular.module('myApp', [
     .when '/config',
       templateUrl: 'partials/config'
       controller: 'ConfigCtrl'
+    .when '/help',
+      templateUrl: 'partials/help'
+      controller: 'HelpCtrl'
     .when "/logout",
       redirectTo: "/"
     .when "http://127.0.0.1:4040/auth/twitter/callback",

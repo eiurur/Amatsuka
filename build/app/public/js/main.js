@@ -14,6 +14,9 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   }).when('/config', {
     templateUrl: 'partials/config',
     controller: 'ConfigCtrl'
+  }).when('/help', {
+    templateUrl: 'partials/help',
+    controller: 'HelpCtrl'
   }).when("/logout", {
     redirectTo: "/"
   }).when("http://127.0.0.1:4040/auth/twitter/callback", {
@@ -188,7 +191,19 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       });
     });
   };
-});
+}).directive('clearLocalStorage', ["toaster", function(toaster) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        toaster.pop('wait', "Now Clearing ...", '', 0, 'trustedHtml');
+        window.localStorage.clear();
+        toaster.clear();
+        return toaster.pop('success', "Finished clearing the list data", '', 2000, 'trustedHtml');
+      });
+    }
+  };
+}]);
 
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -551,6 +566,12 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
       $scope.layoutType = args.layoutType;
     });
   });
+}]);
+
+angular.module("myApp.controllers").controller("HelpCtrl", ["$scope", "AuthService", function($scope, AuthService) {
+  if (_.isEmpty(AuthService.user)) {
+    return $location.path('/');
+  }
 }]);
 
 angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "AuthService", "TweetService", "ListService", "ConfigService", "Tweets", function($scope, AuthService, TweetService, ListService, ConfigService, Tweets) {
