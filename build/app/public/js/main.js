@@ -494,7 +494,7 @@ angular.module("myApp.services", []).service("CommonService", function() {
   };
 });
 
-angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$log", "AuthService", function($scope, $rootScope, $log, AuthService) {
+angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$location", "$log", "AuthService", function($scope, $rootScope, $location, $log, AuthService) {
   $scope.isLoaded = false;
   $scope.isAuthenticated = AuthService.status.isAuthenticated;
   if (AuthService.status.isAuthenticated) {
@@ -504,6 +504,7 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
   return AuthService.isAuthenticated().success(function(data) {
     if (_.isNull(data.data)) {
       $scope.isLoaded = true;
+      $location.path('/');
       return;
     }
     AuthService.status.isAuthenticated = true;

@@ -2,6 +2,7 @@ angular.module "myApp.controllers"
   .controller "AdminUserCtrl", (
     $scope
     $rootScope
+    $location
     $log
     AuthService
     ) ->
@@ -19,6 +20,7 @@ angular.module "myApp.controllers"
       # 未ログインならログインページを表示
       if _.isNull data.data
         $scope.isLoaded = true
+        $location.path '/'
         return
 
       AuthService.status.isAuthenticated = true
