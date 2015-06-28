@@ -13,7 +13,7 @@
       .member__divider
       .media
         a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")
-          img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url}}', img-preload="img-preload")
+          img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url_https}}', img-preload="img-preload")
         .media-body
           h4.media-heading
             span.name {{member.name}}

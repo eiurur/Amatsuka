@@ -17,7 +17,7 @@ span(ng-if='layoutType == "grid"')
           a(href="https://{{tweet.sourceUrl}}", target="_blank")
             {{tweet.time}}
       .timeline__post--icon.timeline__post--icon--grid
-        img.fade(ng-src="{{tweet.user.profile_image_url}}", img-preload="img-preload", show-tweet="show-tweet", twitter-id-str="{{tweet.user.id_str}}")
+        img.fade(ng-src="{{tweet.user.profile_image_url_https}}", img-preload="img-preload", show-tweet="show-tweet", twitter-id-str="{{tweet.user.id_str}}")
       .timeline__post--image.timeline__post--image--grid(ng-repeat='picUrl in tweet.picUrlList')
         img.fade(ng-if="!tweet.video_url", ng-src="{{picUrl}}", img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{picUrl}}")
         video(ng-if="tweet.video_url", poster="{{picUrl}}", autoplay, loop, controls, muted)
@@ -58,7 +58,7 @@ span(ng-if='layoutType == "list"')
           a(href="https://{{tweet.sourceUrl}}", target="_blank")
             {{tweet.time}}
       .timeline__post--icon
-        img.fade(ng-src="{{tweet.user.profile_image_url}}", img-preload="img-preload", show-tweet="show-tweet", twitter-id-str="{{tweet.user.id_str}}")
+        img.fade(ng-src="{{tweet.user.profile_image_url_https}}", img-preload="img-preload", show-tweet="show-tweet", twitter-id-str="{{tweet.user.id_str}}")
       .timeline__post--image(ng-repeat='picUrl in tweet.picUrlList')
         img.fade(ng-if="!tweet.video_url", ng-src="{{picUrl}}", img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{picUrl}}")
         video(ng-if="tweet.video_url", poster="{{picUrl}}", autoplay, loop, controls, muted)

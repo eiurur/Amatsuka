@@ -54,12 +54,12 @@ angular.module "myApp.services"
         tweet.favNum         = @get(tweet, 'tweet.favorite_count', isRT)
         tweet.tweetIdStr     = @get(tweet, 'tweet.id_str', isRT)
         tweet.sourceUrl      = @get(tweet, 'display_url', isRT)
-        tweet.picUrlList     = @get(tweet, 'media_url', isRT)
-        tweet.picOrigUrlList = @get(tweet, 'media_url:orig', isRT)
+        tweet.picUrlList     = @get(tweet, 'media_url_https', isRT)
+        tweet.picOrigUrlList = @get(tweet, 'media_url_https:orig', isRT)
         tweet.video_url      = @get(tweet, 'video_url', isRT)
         tweet.fileName       = @get(tweet, 'screen_name', isRT) + '_' + @get(tweet, 'tweet.id_str', isRT)
-        tweet.user.profile_image_url =
-          @iconBigger(tweet.user.profile_image_url)
+        tweet.user.profile_image_url_https =
+          @iconBigger(tweet.user.profile_image_url_https)
         return
 
     isRT: (tweet) ->
@@ -90,6 +90,7 @@ angular.module "myApp.services"
         when 'name' then t.user.name
         when 'profile_banner_url' then t.user.profile_banner_url
         when 'profile_image_url' then t.user.profile_image_url
+        when 'profile_image_url_https' then t.user.profile_image_url_https
         when 'statuses_count' then t.user.statuses_count
         when 'screen_name' then t.user.screen_name
         when 'source' then t.source

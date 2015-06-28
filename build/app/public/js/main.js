@@ -457,11 +457,11 @@ angular.module("myApp.services", []).service("CommonService", function() {
   return {
     success: function(notify) {
       console.log(notify.title);
-      return toaster.pop('success', notify.title, notify.text);
+      return toaster.pop('success', notify.title, notify.text, 2000, 'trustedHtml');
     },
     warning: function(notify) {
       console.log(notify.title);
-      return toaster.pop('warning', notify.title, notify.text);
+      return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
     }
   };
 }]).service('DownloadService', ["$http", function($http) {
@@ -1240,11 +1240,11 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);
           tweet.tweetIdStr = _this.get(tweet, 'tweet.id_str', isRT);
           tweet.sourceUrl = _this.get(tweet, 'display_url', isRT);
-          tweet.picUrlList = _this.get(tweet, 'media_url', isRT);
-          tweet.picOrigUrlList = _this.get(tweet, 'media_url:orig', isRT);
+          tweet.picUrlList = _this.get(tweet, 'media_url_https', isRT);
+          tweet.picOrigUrlList = _this.get(tweet, 'media_url_https:orig', isRT);
           tweet.video_url = _this.get(tweet, 'video_url', isRT);
           tweet.fileName = _this.get(tweet, 'screen_name', isRT) + '_' + _this.get(tweet, 'tweet.id_str', isRT);
-          tweet.user.profile_image_url = _this.iconBigger(tweet.user.profile_image_url);
+          tweet.user.profile_image_url_https = _this.iconBigger(tweet.user.profile_image_url_https);
         };
       })(this));
     },
@@ -1293,6 +1293,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           return t.user.profile_banner_url;
         case 'profile_image_url':
           return t.user.profile_image_url;
+        case 'profile_image_url_https':
+          return t.user.profile_image_url_https;
         case 'statuses_count':
           return t.user.statuses_count;
         case 'screen_name':
