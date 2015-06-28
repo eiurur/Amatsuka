@@ -37,9 +37,9 @@ angular.module "myApp.services"
     # 今のところ、Member.jadeで使う関数なので isFollow を全部　true　にしても構わない
     nomarlizeMembers: (members) ->
       _.each members, (member) ->
-        member.followStatus      = true
-        member.description       = TweetService.activateLink(member.description)
-        member.profile_image_url = TweetService.iconBigger(member.profile_image_url)
+        member.followStatus            = true
+        member.description             = TweetService.activateLink(member.description)
+        member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https)
         return
 
     ###
@@ -53,17 +53,19 @@ angular.module "myApp.services"
       # TODO: 関数化
       # TODO: urkとdescriptionだけでなく、tweetにも対応
       expandedUrlListInDescription = TweetService.getExpandedURLFromDescription(member.entities)
-      expandedUrlListInUrl = TweetService.getExpandedURLFromURL(member.entities)
+      expandedUrlListInUrl         = TweetService.getExpandedURLFromURL(member.entities)
+
       _.each expandedUrlListInDescription, (urls) ->
         member.description = member.description.replace(urls.url, urls.expanded_url)
         return
+
       _.each expandedUrlListInUrl, (urls) ->
         member.url = member.url.replace(urls.url, urls.expanded_url)
         return
 
-      member.followStatus      = @isFollow(member)
-      member.description       = TweetService.activateLink(member.description)
-      member.profile_image_url = TweetService.iconBigger(member.profile_image_url)
+      member.followStatus            = @isFollow(member)
+      member.description             = TweetService.activateLink(member.description)
+      member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https)
       member
 
     ###
@@ -71,8 +73,8 @@ angular.module "myApp.services"
     ###
     nomarlizeMembersForCopy: (members) ->
       _.each members, (member) ->
-        member.isPermissionCopy  = true
-        member.profile_image_url = TweetService.iconBigger(member.profile_image_url)
+        member.isPermissionCopy        = true
+        member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https)
         return
 
     update: ->

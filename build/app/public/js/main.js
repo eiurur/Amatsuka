@@ -1086,7 +1086,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       return _.each(members, function(member) {
         member.followStatus = true;
         member.description = TweetService.activateLink(member.description);
-        member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
+        member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https);
       });
     },
 
@@ -1108,7 +1108,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
       });
       member.followStatus = this.isFollow(member);
       member.description = TweetService.activateLink(member.description);
-      member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
+      member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https);
       return member;
     },
 
@@ -1118,7 +1118,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
     nomarlizeMembersForCopy: function(members) {
       return _.each(members, function(member) {
         member.isPermissionCopy = true;
-        member.profile_image_url = TweetService.iconBigger(member.profile_image_url);
+        member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https);
       });
     },
     update: function() {

@@ -46,20 +46,19 @@ angular.module "myApp.services"
       _.each tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
         # @hasOrigParameter tweet
-        tweet.isRT           = isRT
-        tweet.followStatus   = ListService.isFollow(tweet, isRT)
-        tweet.text           = @activateLink(@get(tweet, 'text', isRT))
-        tweet.time           = @fromNow(@get(tweet, 'tweet.created_at', false))
-        tweet.retweetNum     = @get(tweet, 'tweet.retweet_count', isRT)
-        tweet.favNum         = @get(tweet, 'tweet.favorite_count', isRT)
-        tweet.tweetIdStr     = @get(tweet, 'tweet.id_str', isRT)
-        tweet.sourceUrl      = @get(tweet, 'display_url', isRT)
-        tweet.picUrlList     = @get(tweet, 'media_url_https', isRT)
-        tweet.picOrigUrlList = @get(tweet, 'media_url_https:orig', isRT)
-        tweet.video_url      = @get(tweet, 'video_url', isRT)
-        tweet.fileName       = @get(tweet, 'screen_name', isRT) + '_' + @get(tweet, 'tweet.id_str', isRT)
-        tweet.user.profile_image_url_https =
-          @iconBigger(tweet.user.profile_image_url_https)
+        tweet.isRT                         = isRT
+        tweet.followStatus                 = ListService.isFollow(tweet, isRT)
+        tweet.text                         = @activateLink(@get(tweet, 'text', isRT))
+        tweet.time                         = @fromNow(@get(tweet, 'tweet.created_at', false))
+        tweet.retweetNum                   = @get(tweet, 'tweet.retweet_count', isRT)
+        tweet.favNum                       = @get(tweet, 'tweet.favorite_count', isRT)
+        tweet.tweetIdStr                   = @get(tweet, 'tweet.id_str', isRT)
+        tweet.sourceUrl                    = @get(tweet, 'display_url', isRT)
+        tweet.picUrlList                   = @get(tweet, 'media_url_https', isRT)
+        tweet.picOrigUrlList               = @get(tweet, 'media_url_https:orig', isRT)
+        tweet.video_url                    = @get(tweet, 'video_url', isRT)
+        tweet.fileName                     = @get(tweet, 'screen_name', isRT) + '_' + @get(tweet, 'tweet.id_str', isRT)
+        tweet.user.profile_image_url_https = @iconBigger(tweet.user.profile_image_url_https)
         return
 
     isRT: (tweet) ->
