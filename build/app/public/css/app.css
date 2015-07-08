@@ -582,6 +582,10 @@ video {
     display: inline-block;
   }
 
+  .login__bg {
+    background-image: url(../images/smarthph-compressor.gif);
+  }
+
   .login__description {
     font-size: .9em;
     line-height: 1.6;
