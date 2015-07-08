@@ -464,10 +464,7 @@ select {
   color: #a1a1a1;
 }
 
-/**
- * 手抜き
- */
-video {
+.login__video {
   position: fixed;
   right: 0;
   bottom: 0;
