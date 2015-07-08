@@ -464,13 +464,34 @@ select {
   color: #a1a1a1;
 }
 
+/**
+ * 手抜き
+ */
+video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -100;
+  background-size: cover;
+}
+
+.login__video--desktop {
+  display: inline-block;
+}
+
+.login__video--smartphone {
+  display: none;
+}
+
 .login__bg {
   /* body 以外で全体表示するために必要 */
   height: 100%;
   /* 背景画像が読み込まれる前に表示される背景のカラー */
-  background-color: #292929;
   /* 画像ファイルの指定 */
-  background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_ver2.gif);
   /* 画像をタイル状に繰り返し表示しない */
   background-repeat: no-repeat;
   /* コンテンツの高さが画像の高さより大きい時、動かないように固定 */
@@ -553,8 +574,12 @@ select {
  * multi devise
  */
 @media (max-width: 480px) {
-  .login__bg {
-    background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka/smarthph-compressor.gif);
+  .login__video--desktop {
+    display: none;
+  }
+
+  .login__video--smartphone {
+    display: inline-block;
   }
 
   .login__description {
