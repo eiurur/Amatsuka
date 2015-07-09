@@ -1,15 +1,14 @@
-dir            = '../../lib/'
-moment         = require 'moment'
-_              = require 'lodash'
-{Promise}      = require 'es6-promise'
-{my}           = require "#{dir}my"
-TwitterCilent  = require "#{dir}TwitterClient"
-{UserProvider} = require "#{dir}model"
-{ConfigProvider} = require "#{dir}model"
-settings       = if process.env.NODE_ENV is 'production'
-  require dir + 'configs/production'
+moment           = require 'moment'
+_                = require 'lodash'
+path             = require 'path'
+{my}             = require path.resolve 'build', 'lib', 'my'
+TwitterClient    = require path.resolve 'build', 'lib', 'TwitterClient'
+{UserProvider}   = require path.resolve 'build', 'lib', 'model'
+{ConfigProvider} = require path.resolve 'build', 'lib', 'model'
+settings         = if process.env.NODE_ENV is 'production'
+  require path.resolve 'build', 'lib', 'configs', 'production'
 else
-  require dir + 'configs/development'
+  require path.resolve 'build', 'lib', 'configs', 'development'
 
 
 # JSON API
@@ -41,6 +40,12 @@ module.exports = (app) ->
     .then (base64Data) ->
       res.json base64Data: base64Data
 
+  app.post '/api/collect/userAndTweet', (req, res) ->
+    console.log "\n========> download\n"
+    my.loadBase64Data req.body.url
+    .then (base64Data) ->
+      res.json base64Data: base64Data
+
   ###
   Twitter
   ###
@@ -53,7 +58,7 @@ module.exports = (app) ->
 
   # GET リストの情報(公開、非公開)
   app.get '/api/lists/list/:id?/:count?', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.getListsList
       twitterIdStr: req.params.id
       count: req.params.count
@@ -66,7 +71,7 @@ module.exports = (app) ->
 
   # POST リストの作成
   app.post '/api/lists/create', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.createLists
       name: req.body.name
       mode: req.body.mode
@@ -78,7 +83,7 @@ module.exports = (app) ->
 
   # GET リストのメンバー
   app.get '/api/lists/members/:id?/:count?', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.getListsMembers
       listIdStr: req.params.id
       count: req.params.count
@@ -99,7 +104,7 @@ module.exports = (app) ->
       config = if _.isNull data then {} else JSON.parse(data.configStr)
       console.log 'api lists config = ', config
 
-      twitterClient = new TwitterCilent(req.session.passport.user)
+      twitterClient = new TwitterClient(req.session.passport.user)
       twitterClient.getListsStatuses
         listIdStr: req.params.id
         maxId: req.params.maxId
@@ -124,7 +129,7 @@ module.exports = (app) ->
       console.log 'api timeline config = ', config
 
       m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
-      twitterClient = new TwitterCilent(req.session.passport.user)
+      twitterClient = new TwitterClient(req.session.passport.user)
       twitterClient[m]
         twitterIdStr: req.params.id
         maxId: req.params.maxId
@@ -138,7 +143,7 @@ module.exports = (app) ->
 
   # user情報を取得
   app.get '/api/users/show/:id', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.showUsers
       twitterIdStr: req.params.id
     .then (data) ->
@@ -153,7 +158,7 @@ module.exports = (app) ->
 
   # POST 仮想フォロー、仮想アンフォロー機能( = Amatsukaリストへの追加、削除)
   app.post '/api/lists/members/create', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.createListsMembers
       listIdStr: req.body.listIdStr
       twitterIdStr: req.body.twitterIdStr
@@ -163,7 +168,7 @@ module.exports = (app) ->
       res.json error: error
 
   app.post '/api/lists/members/create_all', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.createAllListsMembers
       listIdStr: req.body.listIdStr
       twitterIdStr: req.body.twitterIdStr
@@ -173,7 +178,7 @@ module.exports = (app) ->
       res.json error: error
 
   app.post '/api/lists/members/destroy', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.destroyListsMembers
       listIdStr: req.body.listIdStr
       twitterIdStr: req.body.twitterIdStr
@@ -187,7 +192,7 @@ module.exports = (app) ->
   Fav
   ###
   app.get '/api/favorites/lists/:id/:maxId?/:count?', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.getFavLists
       twitterIdStr: req.params.id
       maxId: req.params.maxId
@@ -198,7 +203,7 @@ module.exports = (app) ->
       res.json error: error
 
   app.post '/api/favorites/create', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.createFav
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
@@ -207,7 +212,7 @@ module.exports = (app) ->
       res.json error: error
 
   app.post '/api/favorites/destroy', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.destroyFav
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
@@ -218,7 +223,7 @@ module.exports = (app) ->
 
   # POST リツイート、解除
   app.post '/api/statuses/retweet', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.retweetStatus
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
@@ -227,7 +232,7 @@ module.exports = (app) ->
       res.json error: error
 
   app.post '/api/statuses/destroy', (req, res) ->
-    twitterClient = new TwitterCilent(req.session.passport.user)
+    twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.destroyStatus
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->

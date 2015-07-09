@@ -1,23 +1,21 @@
 (function() {
-  var ConfigProvider, Promise, TwitterCilent, UserProvider, dir, moment, my, settings, _;
-
-  dir = '../../lib/';
+  var ConfigProvider, TwitterClient, UserProvider, moment, my, path, settings, _;
 
   moment = require('moment');
 
   _ = require('lodash');
 
-  Promise = require('es6-promise').Promise;
+  path = require('path');
 
-  my = require("" + dir + "my").my;
+  my = require(path.resolve('build', 'lib', 'my')).my;
 
-  TwitterCilent = require("" + dir + "TwitterClient");
+  TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
 
-  UserProvider = require("" + dir + "model").UserProvider;
+  UserProvider = require(path.resolve('build', 'lib', 'model')).UserProvider;
 
-  ConfigProvider = require("" + dir + "model").ConfigProvider;
+  ConfigProvider = require(path.resolve('build', 'lib', 'model')).ConfigProvider;
 
-  settings = process.env.NODE_ENV === 'production' ? require(dir + 'configs/production') : require(dir + 'configs/development');
+  settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
 
   module.exports = function(app) {
 
@@ -44,6 +42,14 @@
         });
       });
     });
+    app.post('/api/collect/userAndTweet', function(req, res) {
+      console.log("\n========> download\n");
+      return my.loadBase64Data(req.body.url).then(function(base64Data) {
+        return res.json({
+          base64Data: base64Data
+        });
+      });
+    });
 
     /*
     Twitter
@@ -60,7 +66,7 @@
     });
     app.get('/api/lists/list/:id?/:count?', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.getListsList({
         twitterIdStr: req.params.id,
         count: req.params.count
@@ -78,7 +84,7 @@
     });
     app.post('/api/lists/create', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.createLists({
         name: req.body.name,
         mode: req.body.mode
@@ -95,7 +101,7 @@
     });
     app.get('/api/lists/members/:id?/:count?', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.getListsMembers({
         listIdStr: req.params.id,
         count: req.params.count
@@ -117,7 +123,7 @@
         var config, twitterClient;
         config = _.isNull(data) ? {} : JSON.parse(data.configStr);
         console.log('api lists config = ', config);
-        twitterClient = new TwitterCilent(req.session.passport.user);
+        twitterClient = new TwitterClient(req.session.passport.user);
         return twitterClient.getListsStatuses({
           listIdStr: req.params.id,
           maxId: req.params.maxId,
@@ -144,7 +150,7 @@
         config = _.isNull(data) ? {} : JSON.parse(data.configStr);
         console.log('api timeline config = ', config);
         m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
-        twitterClient = new TwitterCilent(req.session.passport.user);
+        twitterClient = new TwitterClient(req.session.passport.user);
         return twitterClient[m]({
           twitterIdStr: req.params.id,
           maxId: req.params.maxId,
@@ -164,7 +170,7 @@
     });
     app.get('/api/users/show/:id', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.showUsers({
         twitterIdStr: req.params.id
       }).then(function(data) {
@@ -179,7 +185,7 @@
     });
     app.post('/api/lists/members/create', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.createListsMembers({
         listIdStr: req.body.listIdStr,
         twitterIdStr: req.body.twitterIdStr
@@ -195,7 +201,7 @@
     });
     app.post('/api/lists/members/create_all', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.createAllListsMembers({
         listIdStr: req.body.listIdStr,
         twitterIdStr: req.body.twitterIdStr
@@ -211,7 +217,7 @@
     });
     app.post('/api/lists/members/destroy', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.destroyListsMembers({
         listIdStr: req.body.listIdStr,
         twitterIdStr: req.body.twitterIdStr
@@ -231,7 +237,7 @@
      */
     app.get('/api/favorites/lists/:id/:maxId?/:count?', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.getFavLists({
         twitterIdStr: req.params.id,
         maxId: req.params.maxId,
@@ -248,7 +254,7 @@
     });
     app.post('/api/favorites/create', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.createFav({
         tweetIdStr: req.body.tweetIdStr
       }).then(function(data) {
@@ -263,7 +269,7 @@
     });
     app.post('/api/favorites/destroy', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.destroyFav({
         tweetIdStr: req.body.tweetIdStr
       }).then(function(data) {
@@ -278,7 +284,7 @@
     });
     app.post('/api/statuses/retweet', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.retweetStatus({
         tweetIdStr: req.body.tweetIdStr
       }).then(function(data) {
@@ -293,7 +299,7 @@
     });
     app.post('/api/statuses/destroy', function(req, res) {
       var twitterClient;
-      twitterClient = new TwitterCilent(req.session.passport.user);
+      twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.destroyStatus({
         tweetIdStr: req.body.tweetIdStr
       }).then(function(data) {
