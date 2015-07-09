@@ -185,6 +185,9 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
     });
     $(elm).find('a').each(function(index, element) {
       $(element).click(function(e) {
+        if (e.target.className === 'dropdown-toggle') {
+          return;
+        }
         if (visible && 'auto' === collapsible.css('overflow-y')) {
           collapsible.collapse('hide');
         }

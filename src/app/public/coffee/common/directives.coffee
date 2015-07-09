@@ -144,14 +144,18 @@ angular.module "myApp.directives", []
     (scope, elm, attrs) ->
       collapsible = $(elm).find('.navbar-collapse')
       visible = false
+
       collapsible.on 'show.bs.collapse', ->
         visible = true
         return
+
       collapsible.on 'hide.bs.collapse', ->
         visible = false
         return
+
       $(elm).find('a').each (index, element) ->
         $(element).click (e) ->
+          return if e.target.className is 'dropdown-toggle'
           if visible and 'auto' == collapsible.css('overflow-y')
             collapsible.collapse 'hide'
           return
