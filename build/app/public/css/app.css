@@ -1233,6 +1233,10 @@ i {
   margin-top: 30px;
 }
 
+.find__pict-tweet--container {
+  margin: 30px 0;
+}
+
 .help__wrapper--q {
   color: #f2446f;
 }

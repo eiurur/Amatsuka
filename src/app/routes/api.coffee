@@ -37,6 +37,14 @@ module.exports = (app) ->
       res.json base64Data: base64Data
 
 
+  app.get '/api/collect/:skip?/:limit?', (req, res) ->
+    PictProvider.find
+      skip: req.params.skip - 0
+      limit: 20
+    .then (data) ->
+      console.log data
+      res.send data
+
   app.post '/api/collect', (req, res) ->
     console.log "\n========> Collect\n"
 

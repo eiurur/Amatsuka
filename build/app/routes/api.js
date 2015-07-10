@@ -46,6 +46,15 @@
         });
       });
     });
+    app.get('/api/collect/:skip?/:limit?', function(req, res) {
+      return PictProvider.find({
+        skip: req.params.skip - 0,
+        limit: 20
+      }).then(function(data) {
+        console.log(data);
+        return res.send(data);
+      });
+    });
     app.post('/api/collect', function(req, res) {
       var maxId, twitterClient, userData;
       console.log("\n========> Collect\n");

@@ -52,6 +52,9 @@ PictSchema = new Schema
     ref: 'Illustrator'
     index: true
   pictTweetList: [PictTweetSchema]
+  updatedAt:
+    type: Date
+    default: Date.now()
 
 TLSchema = new Schema
   twitterIdStr:
@@ -149,16 +152,18 @@ class IllustratorProvider
 class PictProvider
 
   find: (params, callback) ->
-    console.log "\n============> Pict find\n"
-    console.log params
-    Pict.find {}
-    .limit params.limit or 20
-    .skip params.skip or 0
-    .sort updatedAt: -1
-    .populate 'postedBy'
-    .exec (err, pics) ->
-      console.timeEnd 'Pict find'
-      callback err, pics
+    return new Promise (resolve, reject) ->
+      console.log "\n============> Pict find\n"
+      console.log params
+      Pict.find {}
+      .limit params.limit or 20
+      .skip params.skip or 0
+      .populate 'postedBy'
+      .sort updatedAt: -1
+      .exec (err, pictList) ->
+        if err then return reject err
+        return resolve pictList
+
 
   findOneAndUpdate: (params) ->
     return new Promise (resolve, reject) ->
@@ -166,6 +171,7 @@ class PictProvider
       console.log "\n============> Pict upsert\n"
       console.log params
       pict = params
+      pict.updatedAt = new Date()
       Pict.findOneAndUpdate
         postedBy: params.postedBy
       , pict,

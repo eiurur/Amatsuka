@@ -153,6 +153,15 @@ angular.module "myApp.services"
           .error (data) ->
             return reject data
 
+    getPict: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/collect/#{params.skip}/#{params.limit}")
+          .success (data) ->
+            return resolve data
+          .error (data) ->
+            return reject data
+
+
     checkError: (statusCode) ->
       console.log statusCode
       switch statusCode
@@ -160,6 +169,7 @@ angular.module "myApp.services"
           # Rate limit exceeded
           ToasterService.warning title: 'API制限', text: '15分お待ちください'
       return
+
 
     ###
     # $httpのerrorメソッドは、サーバーがエラーを返したとき(404とか、500)であって、

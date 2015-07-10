@@ -337,6 +337,41 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
 
   })();
   return Tweets;
+}]).factory('Pict', ["$q", "toaster", "TweetService", function($q, toaster, TweetService) {
+  var Pict;
+  Pict = (function() {
+    function Pict(name, idStr) {
+      this.busy = false;
+      this.isLast = false;
+      this.limit = 20;
+      this.skip = 0;
+      this.items = [];
+    }
+
+    Pict.prototype.load = function() {
+      if (this.busy || this.isLast) {
+        return;
+      }
+      this.busy = true;
+      return TweetService.getPict({
+        skip: this.skip,
+        limit: this.limit
+      }).then((function(_this) {
+        return function(data) {
+          _this.items = _this.items.concat(data);
+          _this.skip += _this.limit;
+          if (data.length === 0) {
+            _this.isLast = true;
+          }
+          _this.busy = false;
+        };
+      })(this));
+    };
+
+    return Pict;
+
+  })();
+  return Pict;
 }]).factory('List', ["$q", "toaster", "TweetService", "ListService", function($q, toaster, TweetService, ListService) {
   var List;
   List = (function() {
@@ -575,10 +610,11 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   });
 }]);
 
-angular.module("myApp.controllers").controller("FindCtrl", ["$scope", "$location", "AuthService", "AmatsukaList", function($scope, $location, AuthService, AmatsukaList) {
+angular.module("myApp.controllers").controller("FindCtrl", ["$scope", "$location", "AuthService", "Pict", function($scope, $location, AuthService, Pict) {
   if (_.isEmpty(AuthService.user)) {
-    return $location.path('/');
+    $location.path('/');
   }
+  return $scope.pictList = new Pict();
 }]);
 
 angular.module("myApp.controllers").controller("HelpCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
@@ -1395,6 +1431,15 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
     collect: function(params) {
       return $q(function(resolve, reject) {
         return $http.post('/api/collect', params).success(function(data) {
+          return resolve(data);
+        }).error(function(data) {
+          return reject(data);
+        });
+      });
+    },
+    getPict: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.get("/api/collect/" + params.skip + "/" + params.limit).success(function(data) {
           return resolve(data);
         }).error(function(data) {
           return reject(data);

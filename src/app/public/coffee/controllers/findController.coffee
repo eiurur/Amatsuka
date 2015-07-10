@@ -3,8 +3,8 @@ angular.module "myApp.controllers"
     $scope
     $location
     AuthService
-    AmatsukaList
+    Pict
     ) ->
   if _.isEmpty AuthService.user then $location.path '/'
 
-  # $scope.list = new AmatsukaList('Amatsuka')
+  $scope.pictList = new Pict()

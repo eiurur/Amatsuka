@@ -63,7 +63,11 @@
       ref: 'Illustrator',
       index: true
     },
-    pictTweetList: [PictTweetSchema]
+    pictTweetList: [PictTweetSchema],
+    updatedAt: {
+      type: Date,
+      "default": Date.now()
+    }
   });
 
   TLSchema = new Schema({
@@ -188,13 +192,17 @@
     function PictProvider() {}
 
     PictProvider.prototype.find = function(params, callback) {
-      console.log("\n============> Pict find\n");
-      console.log(params);
-      return Pict.find({}).limit(params.limit || 20).skip(params.skip || 0).sort({
-        updatedAt: -1
-      }).populate('postedBy').exec(function(err, pics) {
-        console.timeEnd('Pict find');
-        return callback(err, pics);
+      return new Promise(function(resolve, reject) {
+        console.log("\n============> Pict find\n");
+        console.log(params);
+        return Pict.find({}).limit(params.limit || 20).skip(params.skip || 0).populate('postedBy').sort({
+          updatedAt: -1
+        }).exec(function(err, pictList) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(pictList);
+        });
       });
     };
 
@@ -205,6 +213,7 @@
         console.log("\n============> Pict upsert\n");
         console.log(params);
         pict = params;
+        pict.updatedAt = new Date();
         return Pict.findOneAndUpdate({
           postedBy: params.postedBy
         }, pict, {

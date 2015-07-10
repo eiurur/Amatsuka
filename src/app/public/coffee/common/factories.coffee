@@ -90,6 +90,35 @@ angular.module "myApp.factories", []
 
     Tweets
 
+  .factory 'Pict', ($q, toaster, TweetService) ->
+
+    class Pict
+      constructor: (name, idStr) ->
+        @busy     = false
+        @isLast   = false
+
+        @limit    = 20
+        @skip     = 0
+        @items = []
+
+      load: ->
+        return if @busy or @isLast
+        @busy = true
+        # TweetService.getListsMembers limit: @limit
+        TweetService.getPict
+          skip: @skip
+          limit: @limit
+        .then (data) =>
+          @items = @items.concat data
+          @skip += @limit
+          if data.length is 0 then @isLast = true
+          @busy = false
+
+          return
+
+    Pict
+
+
   .factory 'List', ($q, toaster, TweetService, ListService) ->
 
     # TODO: ListクラスをBaseとする設計でAmatsukaListClassを修正。
