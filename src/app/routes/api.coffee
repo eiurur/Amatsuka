@@ -40,9 +40,9 @@ module.exports = (app) ->
   app.get '/api/collect/:skip?/:limit?', (req, res) ->
     PictProvider.find
       skip: req.params.skip - 0
-      limit: 20
+      limit: req.params.limit - 0
     .then (data) ->
-      console.log data
+      # console.log data
       res.send data
 
   app.post '/api/collect', (req, res) ->

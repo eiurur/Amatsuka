@@ -49,9 +49,8 @@
     app.get('/api/collect/:skip?/:limit?', function(req, res) {
       return PictProvider.find({
         skip: req.params.skip - 0,
-        limit: 20
+        limit: req.params.limit - 0
       }).then(function(data) {
-        console.log(data);
         return res.send(data);
       });
     });

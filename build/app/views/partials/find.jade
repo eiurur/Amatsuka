@@ -1,9 +1,6 @@
-.col-md-12.col-sm-12.col-xs-12
+dot-loader.user-sidebar__contents--box-loading-init(ng-if='pictList.items/length == 0')
 
-  //- h1.text Find
-  //- pre
-  //-   code
-  //-     {{pictList|json}}
+.col-md-12.col-sm-12.col-xs-12
 
   .list-member__container(infinite-scroll='pictList.load()',infinite-scroll-distance='0')
     div(ng-repeat="pict in pictList.items")
@@ -18,6 +15,6 @@
                 span.screen-name @{{pict.postedBy.screenName}}
               a.link(href='{{pict.postedBy.url}}', target='_blank') {{pict.postedBy.url}}
       .row.find__pict-tweet--container
-        .col-sm-2.col-md-2(ng-repeat="pictTweet in pict.pictTweetList | limitTo: 6")
-          img.img-responsive.fade(ng-src='{{pictTweet.mediaUrl}}', img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{pictTweet.mediaUrl}}")
+        .col-xs-6.col-sm-2.col-md-2(ng-repeat="pictTweet in pict.pictTweetList | limitTo: 6")
+          img.img-responsive.fade(ng-src='{{pictTweet.mediaUrl}}:small', img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{pictTweet.mediaUrl}}")
       .member__divider

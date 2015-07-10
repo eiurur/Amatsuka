@@ -94,17 +94,15 @@ angular.module "myApp.factories", []
 
     class Pict
       constructor: (name, idStr) ->
-        @busy     = false
-        @isLast   = false
-
-        @limit    = 20
-        @skip     = 0
-        @items = []
+        @busy   = false
+        @isLast = false
+        @limit  = 10
+        @skip   = 0
+        @items  = []
 
       load: ->
         return if @busy or @isLast
         @busy = true
-        # TweetService.getListsMembers limit: @limit
         TweetService.getPict
           skip: @skip
           limit: @limit

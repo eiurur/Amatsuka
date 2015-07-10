@@ -87,6 +87,8 @@ mongoose.model 'Pict', PictSchema
 mongoose.model 'TL', TLSchema
 mongoose.model 'Config', ConfigSchema
 
+IllustratorSchema.index twitterIdStr: 1
+PictSchema.index twitterIdStr: 1, updatedAt: -1
 
 ##
 # 定義した時の登録名で呼び出し
@@ -155,12 +157,14 @@ class PictProvider
     return new Promise (resolve, reject) ->
       console.log "\n============> Pict find\n"
       console.log params
+      console.time 'Pict find'
       Pict.find {}
       .limit params.limit or 20
       .skip params.skip or 0
       .populate 'postedBy'
       .sort updatedAt: -1
       .exec (err, pictList) ->
+        console.timeEnd 'Pict find'
         if err then return reject err
         return resolve pictList
 

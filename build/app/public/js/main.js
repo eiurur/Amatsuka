@@ -343,7 +343,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
     function Pict(name, idStr) {
       this.busy = false;
       this.isLast = false;
-      this.limit = 20;
+      this.limit = 10;
       this.skip = 0;
       this.items = [];
     }

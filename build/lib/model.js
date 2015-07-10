@@ -106,6 +106,15 @@
 
   mongoose.model('Config', ConfigSchema);
 
+  IllustratorSchema.index({
+    twitterIdStr: 1
+  });
+
+  PictSchema.index({
+    twitterIdStr: 1,
+    updatedAt: -1
+  });
+
   User = mongoose.model('User');
 
   Illustrator = mongoose.model('Illustrator');
@@ -195,9 +204,11 @@
       return new Promise(function(resolve, reject) {
         console.log("\n============> Pict find\n");
         console.log(params);
+        console.time('Pict find');
         return Pict.find({}).limit(params.limit || 20).skip(params.skip || 0).populate('postedBy').sort({
           updatedAt: -1
         }).exec(function(err, pictList) {
+          console.timeEnd('Pict find');
           if (err) {
             return reject(err);
           }
