@@ -4,7 +4,7 @@ atob      = require 'atob'
 moment    = require 'moment'
 crypto    = require 'crypto'
 request   = require 'request'
-{Promise} = require 'es6-promise'
+Promise   = require 'bluebird'
 
 my = ->
 # module.exports = class My
@@ -123,5 +123,17 @@ my = ->
           return resolve(base64prefix + image)
         else
           return reject err
+
+
+  promiseWhile: (condition, action) ->
+    resolver = Promise.defer()
+
+    loop_ = ->
+      if !condition()
+        return resolver.resolve()
+      Promise.cast(action()).then(loop_).catch resolver.reject
+
+    process.nextTick loop_
+    resolver.promise
 
 exports.my = my()

@@ -9,10 +9,6 @@ nav.navbar-default.navbar-fixed-top(ic-nav-autoclose)
       a.navbar-brand(href='/') Amatsuka
     #bs-example-navbar-collapse-1.collapse.navbar-collapse
       ul.nav.navbar-nav.navbar-link
-        //- li.active
-        //-   a(href='#')
-        //-     | Link
-        //-     span.sr-only (current)
 
       //- form.navbar-form.navbar-left(role='search')
       //-   .form-group
@@ -35,22 +31,6 @@ nav.navbar-default.navbar-fixed-top(ic-nav-autoclose)
           a(href='/list')
             i.fa.fa-list-ul
             | List
-        //- li
-        //-   a(href='/config')
-        //-     i.fa.fa-cog
-        //-     | Config
-        //- li
-        //-   a(href='/help')
-        //-     i.fa.fa-question-circle
-        //-     | Help
-        //- li
-        //-   a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank')
-        //-     i.fa.fa-twitter
-        //-     | @{{user.username}}
-        //- li
-        //-   a(href='/logout', target='_self')
-        //-     i.fa.fa-power-off
-        //-     | Logout
         li.dropdown
           a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
             //- i.fa.fa-caret-down
@@ -67,10 +47,10 @@ nav.navbar-default.navbar-fixed-top(ic-nav-autoclose)
               a(href='/help')
                 i.fa.fa-question-circle
                 | Help
-            //- li
-            //-   a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank')
-            //-     i.fa.fa-twitter
-            //-     | @{{user.username}}
+            li
+              a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank')
+                i.fa.fa-twitter
+                | @{{user.username}}
             li.divider(role='separator')
             li
               a(href='/logout', target='_self')

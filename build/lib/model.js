@@ -1,5 +1,5 @@
 (function() {
-  var Config, ConfigProvider, ConfigSchema, ObjectId, Schema, TL, TLProvider, TLSchema, User, UserProvider, UserSchema, db, mongoose, uri, _;
+  var Config, ConfigProvider, ConfigSchema, Illustrator, IllustratorProvider, IllustratorSchema, ObjectId, Schema, TL, TLProvider, TLSchema, User, UserProvider, UserSchema, db, mongoose, uri, _;
 
   mongoose = require('mongoose');
 
@@ -25,6 +25,23 @@
     url: String,
     accessToken: String,
     accessTokenSecret: String,
+    createdAt: {
+      type: Date,
+      "default": Date.now()
+    }
+  });
+
+  IllustratorSchema = new Schema({
+    twitterIdStr: {
+      type: String,
+      unique: true,
+      index: true
+    },
+    name: String,
+    screenName: String,
+    icon: String,
+    url: String,
+    description: String,
     createdAt: {
       type: Date,
       "default": Date.now()
@@ -59,11 +76,15 @@
 
   mongoose.model('User', UserSchema);
 
+  mongoose.model('Illustrator', IllustratorSchema);
+
   mongoose.model('TL', TLSchema);
 
   mongoose.model('Config', ConfigSchema);
 
   User = mongoose.model('User');
+
+  Illustrator = mongoose.model('Illustrator');
 
   TL = mongoose.model('TL');
 
@@ -106,6 +127,38 @@
     };
 
     return UserProvider;
+
+  })();
+
+  IllustratorProvider = (function() {
+    function IllustratorProvider() {}
+
+    IllustratorProvider.prototype.findById = function(params, callback) {
+      console.log("\n============> Illustrator findUserByID\n");
+      console.log(params);
+      return Illustrator.findOne({
+        twitterIdStr: params.twitterIdStr
+      }, function(err, user) {
+        return callback(err, user);
+      });
+    };
+
+    IllustratorProvider.prototype.findOneAndUpdate = function(params, callback) {
+      var illustrator;
+      illustrator = null;
+      console.log("\n============> Illustrator upsert\n");
+      console.log(params);
+      illustrator = params.illustrator;
+      return Illustrator.findOneAndUpdate({
+        twitterIdStr: params.illustrator.twitterIdStr
+      }, illustrator, {
+        upsert: true
+      }, function(err, illustrator) {
+        return callback(err, illustrator);
+      });
+    };
+
+    return IllustratorProvider;
 
   })();
 
@@ -195,6 +248,8 @@
   })();
 
   exports.UserProvider = new UserProvider();
+
+  exports.IllustratorProvider = new IllustratorProvider();
 
   exports.TLProvider = new TLProvider();
 

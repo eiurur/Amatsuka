@@ -1,11 +1,12 @@
-moment           = require 'moment'
-_                = require 'lodash'
-path             = require 'path'
-{my}             = require path.resolve 'build', 'lib', 'my'
-TwitterClient    = require path.resolve 'build', 'lib', 'TwitterClient'
-{UserProvider}   = require path.resolve 'build', 'lib', 'model'
-{ConfigProvider} = require path.resolve 'build', 'lib', 'model'
-settings         = if process.env.NODE_ENV is 'production'
+moment                = require 'moment'
+_                     = require 'lodash'
+path                  = require 'path'
+{my}                  = require path.resolve 'build', 'lib', 'my'
+TwitterClient         = require path.resolve 'build', 'lib', 'TwitterClient'
+{UserProvider}        = require path.resolve 'build', 'lib', 'model'
+{ConfigProvider}      = require path.resolve 'build', 'lib', 'model'
+{IllustratorProvider} = require path.resolve 'build', 'lib', 'model'
+settings              = if process.env.NODE_ENV is 'production'
   require path.resolve 'build', 'lib', 'configs', 'production'
 else
   require path.resolve 'build', 'lib', 'configs', 'development'
@@ -24,12 +25,6 @@ module.exports = (app) ->
     else
       res.redirect '/'
 
-  # app.use ['/api/timeline/*', '/api/lists/statuses/*'], (req, res) ->
-  #   console.log "======> #{req.originalUrl}"
-  #   unless _.isUndefined(req.session.passport.user)
-  #     next()
-  #   else
-  #     res.redirect '/'
 
   ###
   APIs
@@ -40,11 +35,104 @@ module.exports = (app) ->
     .then (base64Data) ->
       res.json base64Data: base64Data
 
-  app.post '/api/collect/userAndTweet', (req, res) ->
-    console.log "\n========> download\n"
-    my.loadBase64Data req.body.url
-    .then (base64Data) ->
-      res.json base64Data: base64Data
+
+  app.post '/api/collect', (req, res) ->
+    console.log "\n========> Collect\n"
+    maxId = null
+
+    twitterClient = new TwitterClient(req.session.passport.user)
+
+    twitterClient.showUsers
+      twitterIdStr: req.body.twitterIdStr
+    .then (data) ->
+
+      maxId = data.status.id_str
+
+      # TODO: 関数化
+      return new Promise (resolve, reject) ->
+        illustrator =
+          twitterIdStr: data.id_str
+          name: data.name
+          screenName: data.screen_name
+          icon: data.profile_image_url_https
+          url: data.url
+          description: data.description
+
+        IllustratorProvider.findOneAndUpdate
+          illustrator: illustrator
+        , (err, data) ->
+          return reject err  if err
+          return resolve data
+    .then (user) ->
+      console.log user
+      pictList = []
+
+      # And below is a sample usage of this promiseWhile function
+      isContinue = true
+      my.promiseWhile((->
+        # Condition for stopping
+        isContinue
+      ), ->
+        # Action to run, should return a promise
+        new Promise((resolve, reject) ->
+          console.log 'isContinue = ', isContinue
+          twitterClient.getUserTimeline
+            twitterIdStr: user.twitterIdStr
+            maxId: maxId
+            count: '200'
+            includeRetweet: false
+          .then (data) ->
+            console.log 'data = ', data.length
+            console.log 'data[data.length - 1].id_str = ', data[data.length - 1].id_str
+            # API制限くらったら return
+            if _.isUndefined(data)
+              isContinue = false
+              reject()
+
+            # 全部読み終えたら(残りがないとき、APIは最後のツイートだけ取得する === 1) return
+            if data.length < 2
+              isContinue = false
+              resolve()
+
+            # maxId = _.last(data.data).id_str;
+            maxId = data[data.length - 1].id_str
+
+            # 画像付きツイートだけを抽出
+            tweetListIncludePict = _.filter data, (tweet) ->
+              hasPict = _.has(tweet, 'extended_entities') and !_.isEmpty(tweet.extended_entities.media)
+              hasPict
+
+            # 並び順の整合性をとるため、totalNumとcreatedAt(created_atだと文字列を含んでおり、バグるため、id_str)の設定を行う。
+            _.each tweetListIncludePict, (tweet) ->
+              tweet.totalNum = tweet.retweet_count + tweet.favorite_count
+              tweet.tweetIdStr = tweet.id_str
+              return
+
+            pictList = pictList.concat(tweetListIncludePict)
+
+            console.log 'pictList.length = ', pictList.length
+            resolve()
+          return
+      )
+      ).then (data) ->
+        console.log 'Done'
+
+        console.log data
+        console.log pictList
+        console.log pictList.length
+
+        pictListTop10 = _.chain(pictList).sortBy('totalNum').reverse().slice(0,10).value()
+        console.log pictListTop10
+        console.log pictListTop10.length
+
+        return pictListTop10
+
+    .then (data) ->
+
+      console.log 'End getUserTimeline ', data.length
+    .catch (err) ->
+      console.log err
+
 
   ###
   Twitter

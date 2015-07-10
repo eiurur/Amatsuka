@@ -24,6 +24,20 @@ UserSchema = new Schema
     type: Date
     default: Date.now()
 
+IllustratorSchema = new Schema
+  twitterIdStr:
+    type: String
+    unique: true
+    index: true
+  name: String
+  screenName:String
+  icon: String
+  url: String
+  description: String
+  createdAt:
+    type: Date
+    default: Date.now()
+
 TLSchema = new Schema
   twitterIdStr:
     type: String
@@ -43,12 +57,14 @@ ConfigSchema = new Schema
   configStr: String
 
 
+
 ##
 # モデルへのアクセス
 # mongoose.model 'モデル名', 定義したスキーマクラス
 # を通して一度モデルを定義すると、同じ関数を通してアクセスすることができる
 ##
 mongoose.model 'User', UserSchema
+mongoose.model 'Illustrator', IllustratorSchema
 mongoose.model 'TL', TLSchema
 mongoose.model 'Config', ConfigSchema
 
@@ -56,9 +72,10 @@ mongoose.model 'Config', ConfigSchema
 ##
 # 定義した時の登録名で呼び出し
 ##
-User   = mongoose.model 'User'
-TL     = mongoose.model 'TL'
-Config = mongoose.model 'Config'
+User        = mongoose.model 'User'
+Illustrator = mongoose.model 'Illustrator'
+TL          = mongoose.model 'TL'
+Config      = mongoose.model 'Config'
 
 
 class UserProvider
@@ -78,18 +95,6 @@ class UserProvider
     , (err, users) ->
       callback err, users
 
-  # upsert: (params, callback) ->
-  #   user = undefined
-  #   console.log "\n============> User upsert\n"
-  #   console.log params
-  #   user = params.user
-  #   User.update
-  #     twitterIdStr: params.user.twitterIdStr
-  #   , user,
-  #     upsert: true
-  #   , (err) ->
-  #     callback err
-
   findOneAndUpdate: (params, callback) ->
     user = null
     console.log "\n============> User upsert\n"
@@ -101,6 +106,28 @@ class UserProvider
       upsert: true
     , (err, user) ->
       callback err, user
+
+class IllustratorProvider
+
+  findById: (params, callback) ->
+    console.log "\n============> Illustrator findUserByID\n"
+    console.log params
+    Illustrator.findOne
+      twitterIdStr: params.twitterIdStr
+    , (err, user) ->
+      callback err, user
+
+  findOneAndUpdate: (params, callback) ->
+    illustrator = null
+    console.log "\n============> Illustrator upsert\n"
+    console.log params
+    illustrator = params.illustrator
+    Illustrator.findOneAndUpdate
+      twitterIdStr: params.illustrator.twitterIdStr
+    , illustrator,
+      upsert: true
+    , (err, illustrator) ->
+      callback err, illustrator
 
 
 class TLProvider
@@ -169,6 +196,7 @@ class ConfigProvider
       callback err, config
 
 
-exports.UserProvider   = new UserProvider()
-exports.TLProvider     = new TLProvider()
-exports.ConfigProvider = new ConfigProvider()
+exports.UserProvider        = new UserProvider()
+exports.IllustratorProvider = new IllustratorProvider()
+exports.TLProvider          = new TLProvider()
+exports.ConfigProvider      = new ConfigProvider()

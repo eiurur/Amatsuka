@@ -145,6 +145,14 @@ angular.module "myApp.services"
         !_.has(tweet, 'extended_entities') or
         _.isEmpty(tweet.extended_entities.media)
 
+    collect: (params) ->
+      return $q (resolve, reject) ->
+        $http.post('/api/collect', params)
+          .success (data) ->
+            return resolve data
+          .error (data) ->
+            return reject data
+
     checkError: (statusCode) ->
       console.log statusCode
       switch statusCode

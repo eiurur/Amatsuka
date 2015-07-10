@@ -13,7 +13,7 @@
 
   request = require('request');
 
-  Promise = require('es6-promise').Promise;
+  Promise = require('bluebird');
 
   my = function() {
     return {
@@ -145,6 +145,18 @@
             }
           });
         });
+      },
+      promiseWhile: function(condition, action) {
+        var loop_, resolver;
+        resolver = Promise.defer();
+        loop_ = function() {
+          if (!condition()) {
+            return resolver.resolve();
+          }
+          return Promise.cast(action()).then(loop_)["catch"](resolver.reject);
+        };
+        process.nextTick(loop_);
+        return resolver.promise;
       }
     };
   };

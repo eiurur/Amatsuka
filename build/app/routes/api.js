@@ -1,5 +1,5 @@
 (function() {
-  var ConfigProvider, TwitterClient, UserProvider, moment, my, path, settings, _;
+  var ConfigProvider, IllustratorProvider, TwitterClient, UserProvider, moment, my, path, settings, _;
 
   moment = require('moment');
 
@@ -14,6 +14,8 @@
   UserProvider = require(path.resolve('build', 'lib', 'model')).UserProvider;
 
   ConfigProvider = require(path.resolve('build', 'lib', 'model')).ConfigProvider;
+
+  IllustratorProvider = require(path.resolve('build', 'lib', 'model')).IllustratorProvider;
 
   settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
 
@@ -42,12 +44,91 @@
         });
       });
     });
-    app.post('/api/collect/userAndTweet', function(req, res) {
-      console.log("\n========> download\n");
-      return my.loadBase64Data(req.body.url).then(function(base64Data) {
-        return res.json({
-          base64Data: base64Data
+    app.post('/api/collect', function(req, res) {
+      var maxId, twitterClient;
+      console.log("\n========> Collect\n");
+      maxId = null;
+      twitterClient = new TwitterClient(req.session.passport.user);
+      return twitterClient.showUsers({
+        twitterIdStr: req.body.twitterIdStr
+      }).then(function(data) {
+        maxId = data.status.id_str;
+        return new Promise(function(resolve, reject) {
+          var illustrator;
+          illustrator = {
+            twitterIdStr: data.id_str,
+            name: data.name,
+            screenName: data.screen_name,
+            icon: data.profile_image_url_https,
+            url: data.url,
+            description: data.description
+          };
+          return IllustratorProvider.findOneAndUpdate({
+            illustrator: illustrator
+          }, function(err, data) {
+            if (err) {
+              return reject(err);
+            }
+            return resolve(data);
+          });
         });
+      }).then(function(user) {
+        var isContinue, pictList;
+        console.log(user);
+        pictList = [];
+        isContinue = true;
+        return my.promiseWhile((function() {
+          return isContinue;
+        }), function() {
+          return new Promise(function(resolve, reject) {
+            console.log('isContinue = ', isContinue);
+            twitterClient.getUserTimeline({
+              twitterIdStr: user.twitterIdStr,
+              maxId: maxId,
+              count: '200',
+              includeRetweet: false
+            }).then(function(data) {
+              var tweetListIncludePict;
+              console.log('data = ', data.length);
+              console.log('data[data.length - 1].id_str = ', data[data.length - 1].id_str);
+              if (_.isUndefined(data)) {
+                isContinue = false;
+                reject();
+              }
+              if (data.length < 2) {
+                isContinue = false;
+                resolve();
+              }
+              maxId = data[data.length - 1].id_str;
+              tweetListIncludePict = _.filter(data, function(tweet) {
+                var hasPict;
+                hasPict = _.has(tweet, 'extended_entities') && !_.isEmpty(tweet.extended_entities.media);
+                return hasPict;
+              });
+              _.each(tweetListIncludePict, function(tweet) {
+                tweet.totalNum = tweet.retweet_count + tweet.favorite_count;
+                tweet.tweetIdStr = tweet.id_str;
+              });
+              pictList = pictList.concat(tweetListIncludePict);
+              console.log('pictList.length = ', pictList.length);
+              return resolve();
+            });
+          });
+        }).then(function(data) {
+          var pictListTop10;
+          console.log('Done');
+          console.log(data);
+          console.log(pictList);
+          console.log(pictList.length);
+          pictListTop10 = _.chain(pictList).sortBy('totalNum').reverse().slice(0, 10).value();
+          console.log(pictListTop10);
+          console.log(pictListTop10.length);
+          return pictListTop10;
+        });
+      }).then(function(data) {
+        return console.log('End getUserTimeline ', data.length);
+      })["catch"](function(err) {
+        return console.log(err);
       });
     });
 

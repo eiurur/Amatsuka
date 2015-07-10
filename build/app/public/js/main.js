@@ -863,7 +863,12 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
           return TweetService.createListsMembers(opts).then(function(data) {
             ListService.addMember(twitterIdStr);
             $rootScope.$broadcast('addMember', twitterIdStr);
-            return console.log('E followable createListsMembers data', data);
+            console.log('E followable createListsMembers data', data);
+            return TweetService.collect({
+              twitterIdStr: twitterIdStr
+            });
+          }).then(function(data) {
+            return console.log(data);
           });
         }
       });
@@ -900,7 +905,12 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
           TweetService.createListsMembers(opts).then(function(data) {
             ListService.addMember(scope.twitterIdStr);
             $rootScope.$broadcast('addMember', scope.twitterIdStr);
-            return scope.isProcessing = false;
+            scope.isProcessing = false;
+            return TweetService.collect({
+              twitterIdStr: scope.twitterIdStr
+            });
+          }).then(function(data) {
+            return console.log(data);
           });
         }
         return scope.followStatus = !scope.followStatus;
@@ -1371,6 +1381,15 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
     filterIncludeImage: function(tweets) {
       return _.reject(tweets, function(tweet) {
         return !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
+      });
+    },
+    collect: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.post('/api/collect', params).success(function(data) {
+          return resolve(data);
+        }).error(function(data) {
+          return reject(data);
+        });
       });
     },
     checkError: function(statusCode) {

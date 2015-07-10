@@ -85,6 +85,10 @@ angular.module "myApp.directives"
             $rootScope.$broadcast 'addMember', twitterIdStr
             console.log 'E followable createListsMembers data', data
 
+            TweetService.collect(twitterIdStr: twitterIdStr)
+          .then (data) ->
+            console.log data
+
   .directive 'followable', ($rootScope, ListService, TweetService) ->
     restrict: 'A'
     scope:
@@ -117,6 +121,10 @@ angular.module "myApp.directives"
             ListService.addMember(scope.twitterIdStr)
             $rootScope.$broadcast 'addMember', scope.twitterIdStr
             scope.isProcessing = false
+
+            TweetService.collect(twitterIdStr: scope.twitterIdStr)
+          .then (data) ->
+            console.log data
 
         scope.followStatus = !scope.followStatus
 
