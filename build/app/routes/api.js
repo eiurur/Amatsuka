@@ -1,5 +1,5 @@
 (function() {
-  var ConfigProvider, IllustratorProvider, TwitterClient, UserProvider, moment, my, path, settings, _;
+  var ConfigProvider, IllustratorProvider, PictProvider, TwitterClient, UserProvider, moment, my, path, settings, _;
 
   moment = require('moment');
 
@@ -16,6 +16,8 @@
   ConfigProvider = require(path.resolve('build', 'lib', 'model')).ConfigProvider;
 
   IllustratorProvider = require(path.resolve('build', 'lib', 'model')).IllustratorProvider;
+
+  PictProvider = require(path.resolve('build', 'lib', 'model')).PictProvider;
 
   settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
 
@@ -45,8 +47,9 @@
       });
     });
     app.post('/api/collect', function(req, res) {
-      var maxId, twitterClient;
+      var maxId, twitterClient, userData;
       console.log("\n========> Collect\n");
+      userData = null;
       maxId = null;
       twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.showUsers({
@@ -74,14 +77,13 @@
         });
       }).then(function(user) {
         var isContinue, pictList;
-        console.log(user);
+        userData = user;
         pictList = [];
         isContinue = true;
         return my.promiseWhile((function() {
           return isContinue;
         }), function() {
           return new Promise(function(resolve, reject) {
-            console.log('isContinue = ', isContinue);
             twitterClient.getUserTimeline({
               twitterIdStr: user.twitterIdStr,
               maxId: maxId,
@@ -89,8 +91,6 @@
               includeRetweet: false
             }).then(function(data) {
               var tweetListIncludePict;
-              console.log('data = ', data.length);
-              console.log('data[data.length - 1].id_str = ', data[data.length - 1].id_str);
               if (_.isUndefined(data)) {
                 isContinue = false;
                 reject();
@@ -100,15 +100,21 @@
                 resolve();
               }
               maxId = data[data.length - 1].id_str;
-              tweetListIncludePict = _.filter(data, function(tweet) {
+              tweetListIncludePict = _.chain(data).filter(function(tweet) {
                 var hasPict;
                 hasPict = _.has(tweet, 'extended_entities') && !_.isEmpty(tweet.extended_entities.media);
                 return hasPict;
-              });
-              _.each(tweetListIncludePict, function(tweet) {
-                tweet.totalNum = tweet.retweet_count + tweet.favorite_count;
-                tweet.tweetIdStr = tweet.id_str;
-              });
+              }).map(function(tweet) {
+                var o;
+                o = {};
+                o.twitterIdStr = tweet.id_str;
+                o.totalNum = tweet.retweet_count + tweet.favorite_count;
+                o.mediaUrl = tweet.extended_entities.media[0].media_url_https;
+                o.mediaOrigUrl = tweet.extended_entities.media[0].media_url_https + ':orig';
+                o.displayUrl = tweet.extended_entities.media[0].display_url;
+                o.expandedUrl = tweet.extended_entities.media[0].expanded_url;
+                return o;
+              }).value();
               pictList = pictList.concat(tweetListIncludePict);
               console.log('pictList.length = ', pictList.length);
               return resolve();
@@ -117,16 +123,20 @@
         }).then(function(data) {
           var pictListTop10;
           console.log('Done');
-          console.log(data);
-          console.log(pictList);
-          console.log(pictList.length);
           pictListTop10 = _.chain(pictList).sortBy('totalNum').reverse().slice(0, 10).value();
           console.log(pictListTop10);
           console.log(pictListTop10.length);
           return pictListTop10;
         });
       }).then(function(data) {
-        return console.log('End getUserTimeline ', data.length);
+        console.log('End getUserTimeline ', data.length);
+        return PictProvider.findOneAndUpdate({
+          postedBy: userData._id,
+          pictTweetList: data
+        });
+      }).then(function(data) {
+        console.log('End PictProvider.findOneAndUpdate data = ', data);
+        return res.send(data);
       })["catch"](function(err) {
         return console.log(err);
       });

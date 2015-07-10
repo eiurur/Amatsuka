@@ -6,6 +6,7 @@ TwitterClient         = require path.resolve 'build', 'lib', 'TwitterClient'
 {UserProvider}        = require path.resolve 'build', 'lib', 'model'
 {ConfigProvider}      = require path.resolve 'build', 'lib', 'model'
 {IllustratorProvider} = require path.resolve 'build', 'lib', 'model'
+{PictProvider}        = require path.resolve 'build', 'lib', 'model'
 settings              = if process.env.NODE_ENV is 'production'
   require path.resolve 'build', 'lib', 'configs', 'production'
 else
@@ -38,6 +39,7 @@ module.exports = (app) ->
 
   app.post '/api/collect', (req, res) ->
     console.log "\n========> Collect\n"
+    userData = null
     maxId = null
 
     twitterClient = new TwitterClient(req.session.passport.user)
@@ -64,26 +66,24 @@ module.exports = (app) ->
           return reject err  if err
           return resolve data
     .then (user) ->
-      console.log user
+
+      userData = user
       pictList = []
 
-      # And below is a sample usage of this promiseWhile function
       isContinue = true
+
       my.promiseWhile((->
         # Condition for stopping
         isContinue
       ), ->
         # Action to run, should return a promise
         new Promise((resolve, reject) ->
-          console.log 'isContinue = ', isContinue
           twitterClient.getUserTimeline
             twitterIdStr: user.twitterIdStr
             maxId: maxId
             count: '200'
             includeRetweet: false
           .then (data) ->
-            console.log 'data = ', data.length
-            console.log 'data[data.length - 1].id_str = ', data[data.length - 1].id_str
             # API制限くらったら return
             if _.isUndefined(data)
               isContinue = false
@@ -94,19 +94,24 @@ module.exports = (app) ->
               isContinue = false
               resolve()
 
-            # maxId = _.last(data.data).id_str;
             maxId = data[data.length - 1].id_str
 
-            # 画像付きツイートだけを抽出
-            tweetListIncludePict = _.filter data, (tweet) ->
+
+            # pictList = pictList.concat(tweetListIncludePict)
+            tweetListIncludePict = _.chain(data)
+            .filter (tweet) ->
               hasPict = _.has(tweet, 'extended_entities') and !_.isEmpty(tweet.extended_entities.media)
               hasPict
-
-            # 並び順の整合性をとるため、totalNumとcreatedAt(created_atだと文字列を含んでおり、バグるため、id_str)の設定を行う。
-            _.each tweetListIncludePict, (tweet) ->
-              tweet.totalNum = tweet.retweet_count + tweet.favorite_count
-              tweet.tweetIdStr = tweet.id_str
-              return
+            .map (tweet) ->
+              o = {}
+              o.twitterIdStr = tweet.id_str
+              o.totalNum = tweet.retweet_count + tweet.favorite_count
+              o.mediaUrl = tweet.extended_entities.media[0].media_url_https
+              o.mediaOrigUrl = tweet.extended_entities.media[0].media_url_https+':orig'
+              o.displayUrl = tweet.extended_entities.media[0].display_url
+              o.expandedUrl = tweet.extended_entities.media[0].expanded_url
+              return o
+            .value()
 
             pictList = pictList.concat(tweetListIncludePict)
 
@@ -117,19 +122,26 @@ module.exports = (app) ->
       ).then (data) ->
         console.log 'Done'
 
-        console.log data
-        console.log pictList
-        console.log pictList.length
+        # pictListTop10 = _.chain(pictList).sortBy('totalNum').reverse().slice(0,10).value()
+        pictListTop10 = _.chain(pictList)
+        .sortBy('totalNum')
+        .reverse()
+        .slice(0,10)
+        .value()
 
-        pictListTop10 = _.chain(pictList).sortBy('totalNum').reverse().slice(0,10).value()
         console.log pictListTop10
         console.log pictListTop10.length
 
         return pictListTop10
 
     .then (data) ->
-
       console.log 'End getUserTimeline ', data.length
+      PictProvider.findOneAndUpdate
+        postedBy: userData._id
+        pictTweetList: data
+    .then (data) ->
+      console.log 'End PictProvider.findOneAndUpdate data = ', data
+      res.send data
     .catch (err) ->
       console.log err
 

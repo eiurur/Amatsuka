@@ -38,6 +38,21 @@ IllustratorSchema = new Schema
     type: Date
     default: Date.now()
 
+PictTweetSchema = new Schema
+  twitterIdStr: String
+  totalNum: Number
+  mediaUrl: String
+  mediaOrigUrl: String
+  expandedUrl: String
+  displayUrl: String
+
+PictSchema = new Schema
+  postedBy:
+    type: ObjectId
+    ref: 'Illustrator'
+    index: true
+  pictTweetList: [PictTweetSchema]
+
 TLSchema = new Schema
   twitterIdStr:
     type: String
@@ -65,6 +80,7 @@ ConfigSchema = new Schema
 ##
 mongoose.model 'User', UserSchema
 mongoose.model 'Illustrator', IllustratorSchema
+mongoose.model 'Pict', PictSchema
 mongoose.model 'TL', TLSchema
 mongoose.model 'Config', ConfigSchema
 
@@ -74,6 +90,7 @@ mongoose.model 'Config', ConfigSchema
 ##
 User        = mongoose.model 'User'
 Illustrator = mongoose.model 'Illustrator'
+Pict        = mongoose.model 'Pict'
 TL          = mongoose.model 'TL'
 Config      = mongoose.model 'Config'
 
@@ -128,6 +145,34 @@ class IllustratorProvider
       upsert: true
     , (err, illustrator) ->
       callback err, illustrator
+
+class PictProvider
+
+  find: (params, callback) ->
+    console.log "\n============> Pict find\n"
+    console.log params
+    Pict.find {}
+    .limit params.limit or 20
+    .skip params.skip or 0
+    .sort updatedAt: -1
+    .populate 'postedBy'
+    .exec (err, pics) ->
+      console.timeEnd 'Pict find'
+      callback err, pics
+
+  findOneAndUpdate: (params) ->
+    return new Promise (resolve, reject) ->
+      pict = null
+      console.log "\n============> Pict upsert\n"
+      console.log params
+      pict = params
+      Pict.findOneAndUpdate
+        postedBy: params.postedBy
+      , pict,
+        upsert: true
+      , (err, data) ->
+        if err then return reject err
+        return resolve data
 
 
 class TLProvider
@@ -198,5 +243,6 @@ class ConfigProvider
 
 exports.UserProvider        = new UserProvider()
 exports.IllustratorProvider = new IllustratorProvider()
+exports.PictProvider        = new PictProvider()
 exports.TLProvider          = new TLProvider()
 exports.ConfigProvider      = new ConfigProvider()

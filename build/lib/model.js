@@ -1,5 +1,5 @@
 (function() {
-  var Config, ConfigProvider, ConfigSchema, Illustrator, IllustratorProvider, IllustratorSchema, ObjectId, Schema, TL, TLProvider, TLSchema, User, UserProvider, UserSchema, db, mongoose, uri, _;
+  var Config, ConfigProvider, ConfigSchema, Illustrator, IllustratorProvider, IllustratorSchema, ObjectId, Pict, PictProvider, PictSchema, PictTweetSchema, Schema, TL, TLProvider, TLSchema, User, UserProvider, UserSchema, db, mongoose, uri, _;
 
   mongoose = require('mongoose');
 
@@ -48,6 +48,24 @@
     }
   });
 
+  PictTweetSchema = new Schema({
+    twitterIdStr: String,
+    totalNum: Number,
+    mediaUrl: String,
+    mediaOrigUrl: String,
+    expandedUrl: String,
+    displayUrl: String
+  });
+
+  PictSchema = new Schema({
+    postedBy: {
+      type: ObjectId,
+      ref: 'Illustrator',
+      index: true
+    },
+    pictTweetList: [PictTweetSchema]
+  });
+
   TLSchema = new Schema({
     twitterIdStr: {
       type: String,
@@ -78,6 +96,8 @@
 
   mongoose.model('Illustrator', IllustratorSchema);
 
+  mongoose.model('Pict', PictSchema);
+
   mongoose.model('TL', TLSchema);
 
   mongoose.model('Config', ConfigSchema);
@@ -85,6 +105,8 @@
   User = mongoose.model('User');
 
   Illustrator = mongoose.model('Illustrator');
+
+  Pict = mongoose.model('Pict');
 
   TL = mongoose.model('TL');
 
@@ -159,6 +181,44 @@
     };
 
     return IllustratorProvider;
+
+  })();
+
+  PictProvider = (function() {
+    function PictProvider() {}
+
+    PictProvider.prototype.find = function(params, callback) {
+      console.log("\n============> Pict find\n");
+      console.log(params);
+      return Pict.find({}).limit(params.limit || 20).skip(params.skip || 0).sort({
+        updatedAt: -1
+      }).populate('postedBy').exec(function(err, pics) {
+        console.timeEnd('Pict find');
+        return callback(err, pics);
+      });
+    };
+
+    PictProvider.prototype.findOneAndUpdate = function(params) {
+      return new Promise(function(resolve, reject) {
+        var pict;
+        pict = null;
+        console.log("\n============> Pict upsert\n");
+        console.log(params);
+        pict = params;
+        return Pict.findOneAndUpdate({
+          postedBy: params.postedBy
+        }, pict, {
+          upsert: true
+        }, function(err, data) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(data);
+        });
+      });
+    };
+
+    return PictProvider;
 
   })();
 
@@ -250,6 +310,8 @@
   exports.UserProvider = new UserProvider();
 
   exports.IllustratorProvider = new IllustratorProvider();
+
+  exports.PictProvider = new PictProvider();
 
   exports.TLProvider = new TLProvider();
 
