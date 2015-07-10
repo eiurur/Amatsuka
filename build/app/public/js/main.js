@@ -8,6 +8,9 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   }).when('/list', {
     templateUrl: 'partials/list',
     controller: 'ListCtrl'
+  }).when('/find', {
+    templateUrl: 'partials/find',
+    controller: 'FindCtrl'
   }).when('/fav', {
     templateUrl: 'partials/fav',
     controller: 'FavCtrl'
@@ -521,7 +524,7 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
   });
 }]);
 
-angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "AuthService", "TweetService", "ConfigService", "Tweets", function($scope, AuthService, TweetService, ConfigService, Tweets) {
+angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$location", "AuthService", "TweetService", "ConfigService", "Tweets", function($scope, $location, AuthService, TweetService, ConfigService, Tweets) {
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
@@ -572,13 +575,19 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   });
 }]);
 
-angular.module("myApp.controllers").controller("HelpCtrl", ["$scope", "AuthService", function($scope, AuthService) {
+angular.module("myApp.controllers").controller("FindCtrl", ["$scope", "$location", "AuthService", "AmatsukaList", function($scope, $location, AuthService, AmatsukaList) {
   if (_.isEmpty(AuthService.user)) {
     return $location.path('/');
   }
 }]);
 
-angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "AuthService", "TweetService", "ListService", "ConfigService", "Tweets", function($scope, AuthService, TweetService, ListService, ConfigService, Tweets) {
+angular.module("myApp.controllers").controller("HelpCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
+  if (_.isEmpty(AuthService.user)) {
+    return $location.path('/');
+  }
+}]);
+
+angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "ConfigService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, ConfigService, Tweets) {
   var amatsukaFollowList, amatsukaList;
   if (_.isEmpty(AuthService.user)) {
     return;
@@ -644,7 +653,7 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "AuthServ
   });
 }]);
 
-angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthService", "TweetService", "List", "AmatsukaList", function($scope, AuthService, TweetService, List, AmatsukaList) {
+angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location", "AuthService", "TweetService", "List", "AmatsukaList", function($scope, $location, AuthService, TweetService, List, AmatsukaList) {
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
@@ -676,14 +685,14 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "AuthServi
   });
 }]);
 
-angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "AuthService", "AmatsukaList", function($scope, AuthService, AmatsukaList) {
+angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$location", "AuthService", "AmatsukaList", function($scope, $location, AuthService, AmatsukaList) {
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
   return $scope.list = new AmatsukaList('Amatsuka');
 }]);
 
-angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, AuthService, TweetService, ListService, Tweets) {
+angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, $location, AuthService, TweetService, ListService, Tweets) {
   if (_.isEmpty(AuthService.user)) {
     return;
   }

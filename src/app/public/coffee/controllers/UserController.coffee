@@ -2,6 +2,7 @@ angular.module "myApp.controllers"
   .controller "UserCtrl", (
     $scope
     $rootScope
+    $location
     AuthService
     TweetService
     ListService

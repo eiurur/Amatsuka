@@ -1,6 +1,7 @@
 angular.module "myApp.controllers"
   .controller "MemberCtrl", (
     $scope
+    $location
     AuthService
     AmatsukaList
     ) ->

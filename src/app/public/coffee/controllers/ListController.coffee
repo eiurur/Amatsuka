@@ -1,7 +1,7 @@
 angular.module "myApp.controllers"
   .controller "ListCtrl", (
     $scope
-    # $timeout
+    $location
     AuthService
     TweetService
     List

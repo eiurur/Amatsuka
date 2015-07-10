@@ -24,6 +24,9 @@ angular.module('myApp', [
     .when '/list',
       templateUrl: 'partials/list'
       controller: 'ListCtrl'
+    .when '/find',
+      templateUrl: 'partials/find'
+      controller: 'FindCtrl'
     .when '/fav',
       templateUrl: 'partials/fav'
       controller: 'FavCtrl'

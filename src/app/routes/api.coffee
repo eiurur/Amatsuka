@@ -39,6 +39,7 @@ module.exports = (app) ->
 
   app.post '/api/collect', (req, res) ->
     console.log "\n========> Collect\n"
+
     userData = null
     maxId = null
 

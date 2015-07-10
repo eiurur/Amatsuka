@@ -1,6 +1,7 @@
 angular.module "myApp.controllers"
   .controller "ConfigCtrl", (
     $scope
+    $location
     AuthService
     TweetService
     ConfigService

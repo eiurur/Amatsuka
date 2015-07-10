@@ -1,6 +1,7 @@
 angular.module "myApp.controllers"
   .controller "IndexCtrl", (
     $scope
+    $location
     AuthService
     TweetService
     ListService
