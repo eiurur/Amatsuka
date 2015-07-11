@@ -155,7 +155,7 @@ angular.module "myApp.directives", []
 
       $(elm).find('a').each (index, element) ->
         $(element).click (e) ->
-          return if e.target.className is 'dropdown-toggle'
+          return if e.target.className.indexOf('dropdown-toggle') isnt -1
           if visible and 'auto' == collapsible.css('overflow-y')
             collapsible.collapse 'hide'
           return

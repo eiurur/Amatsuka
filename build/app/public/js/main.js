@@ -188,7 +188,7 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
     });
     $(elm).find('a').each(function(index, element) {
       $(element).click(function(e) {
-        if (e.target.className === 'dropdown-toggle') {
+        if (e.target.className.indexOf('dropdown-toggle') !== -1) {
           return;
         }
         if (visible && 'auto' === collapsible.css('overflow-y')) {
