@@ -1233,8 +1233,37 @@ i {
   margin-top: 30px;
 }
 
-.find__pict-tweet--container {
+.find__media {
+  min-height: 80px;
+}
+
+.find__divider {
   margin: 30px 0;
+  width: 100%;
+  border-bottom: 1px solid rgba(161, 161, 161, 0.4);
+  -moz-box-shadow: rgba(255, 255, 255, 0.5) 0 1px 0 inset;
+  -webkit-box-shadow: rgba(255, 255, 255, 0.5) 0 1px 0 inset;
+  box-shadow: rgba(255, 255, 255, 0.5) 0 1px 0 inset;
+}
+
+.find__pict-tweet--img__container {
+  display: inline-block;
+  padding: 8px;
+}
+@media (min-width: 1600px) {
+  .find__pict-tweet--img__container {
+    width: 16.6%;
+  }
+}
+
+.find__pict-tweet--img {
+  display: inline-block;
+  background-color: #ccc;
+  background-position: center center;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 200px;
+  background-size: cover;
 }
 
 .help__wrapper--q {
@@ -1265,6 +1294,9 @@ i {
   color: #a1a1a1;
 }
 
+/**
+ * _navbar.scss?ファイルに移動
+ */
 a.dropdown-toggle {
   height: 50px;
 }

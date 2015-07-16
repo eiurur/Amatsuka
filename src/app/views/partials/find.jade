@@ -2,11 +2,11 @@ dot-loader.user-sidebar__contents--box-loading-init(ng-if='pictList.items/length
 
 .col-md-12.col-sm-12.col-xs-12
 
-  .list-member__container(infinite-scroll='pictList.load()',infinite-scroll-distance='0')
+  div(infinite-scroll='pictList.load()',infinite-scroll-distance='0')
     div(ng-repeat="pict in pictList.items")
       .row
         .col-sm-12
-          .media
+          .media.find__media
             a.pull-left(twitter-id-str="{{pict.postedBy.twitterIdStr}}", show-tweet="show-tweet")
               img.media-object.thumbnail-img.fade(ng-src='{{pict.postedBy.icon}}', img-preload="img-preload")
             .media-body
@@ -15,6 +15,10 @@ dot-loader.user-sidebar__contents--box-loading-init(ng-if='pictList.items/length
                 span.screen-name @{{pict.postedBy.screenName}}
               a.link(href='{{pict.postedBy.url}}', target='_blank') {{pict.postedBy.url}}
       .row.find__pict-tweet--container
-        .col-xs-6.col-sm-2.col-md-2(ng-repeat="pictTweet in pict.pictTweetList | limitTo: 6")
-          img.img-responsive.fade(ng-src='{{pictTweet.mediaUrl}}:small', img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{pictTweet.mediaUrl}}")
-      .member__divider
+        //- .col-xs-6.col-sm-2.col-md-2(ng-repeat="pictTweet in pict.pictTweetList | limitTo: 6")
+          //- img.img-responsive.fade(ng-src='{{pictTweet.mediaUrl}}:small', img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{pictTweet.mediaUrl}}")
+        .col-md-12
+          .find__pict-tweet--img__container.col-xs-12.col-sm-6.col-md-4.col-lg-3(ng-repeat="pictTweet in pict.pictTweetList | limitTo: 12")
+            .find__pict-tweet--img(style="background-image: url('{{pictTweet.mediaUrl}}:small')", zoom-image="zoom-image", data-img-src="{{pictTweet.mediaUrl}}")
+      .find__divider
+      //- .member__divider
