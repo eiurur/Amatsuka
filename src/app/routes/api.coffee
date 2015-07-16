@@ -135,7 +135,7 @@ module.exports = (app) ->
         pictListTop10 = _.chain(pictList)
         .sortBy('totalNum')
         .reverse()
-        .slice(0,10)
+        .slice(0, 12)
         .value()
 
         console.log pictListTop10

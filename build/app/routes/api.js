@@ -131,7 +131,7 @@
         }).then(function(data) {
           var pictListTop10;
           console.log('Done');
-          pictListTop10 = _.chain(pictList).sortBy('totalNum').reverse().slice(0, 10).value();
+          pictListTop10 = _.chain(pictList).sortBy('totalNum').reverse().slice(0, 12).value();
           console.log(pictListTop10);
           console.log(pictListTop10.length);
           return pictListTop10;
