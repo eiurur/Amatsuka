@@ -592,7 +592,6 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
     member: JSON.parse(localStorage.getItem('amatsukaFollowList')) || []
   };
   if (!ListService.hasListData()) {
-    console.log('Go /fav to /');
     $location.path('/');
   }
   $scope.tweets = new Tweets([], void 0, 'fav', AuthService.user._json.id_str);
@@ -610,8 +609,15 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
   });
 }]);
 
-angular.module("myApp.controllers").controller("FindCtrl", ["$scope", "$location", "AuthService", "Pict", function($scope, $location, AuthService, Pict) {
+angular.module("myApp.controllers").controller("FindCtrl", ["$scope", "$location", "AuthService", "ListService", "Pict", function($scope, $location, AuthService, ListService, Pict) {
   if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  ListService.amatsukaList = {
+    data: JSON.parse(localStorage.getItem('amatsukaList')) || {},
+    member: JSON.parse(localStorage.getItem('amatsukaFollowList')) || []
+  };
+  if (!ListService.hasListData()) {
     $location.path('/');
   }
   return $scope.pictList = new Pict();
@@ -689,8 +695,15 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$locatio
   });
 }]);
 
-angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location", "AuthService", "TweetService", "List", "AmatsukaList", function($scope, $location, AuthService, TweetService, List, AmatsukaList) {
+angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "List", "AmatsukaList", function($scope, $location, AuthService, TweetService, ListService, List, AmatsukaList) {
   if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  ListService.amatsukaList = {
+    data: JSON.parse(localStorage.getItem('amatsukaList')) || {},
+    member: JSON.parse(localStorage.getItem('amatsukaFollowList')) || []
+  };
+  if (!ListService.hasListData()) {
     $location.path('/');
   }
   $scope.amatsukaList = new AmatsukaList('Amatsuka');
@@ -721,8 +734,15 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location
   });
 }]);
 
-angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$location", "AuthService", "AmatsukaList", function($scope, $location, AuthService, AmatsukaList) {
+angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$location", "AuthService", "ListService", "AmatsukaList", function($scope, $location, AuthService, ListService, AmatsukaList) {
   if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  ListService.amatsukaList = {
+    data: JSON.parse(localStorage.getItem('amatsukaList')) || {},
+    member: JSON.parse(localStorage.getItem('amatsukaFollowList')) || []
+  };
+  if (!ListService.hasListData()) {
     $location.path('/');
   }
   return $scope.list = new AmatsukaList('Amatsuka');

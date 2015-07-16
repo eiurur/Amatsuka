@@ -12,14 +12,14 @@ angular.module "myApp.controllers"
   $scope.isLoaded   = false
   $scope.layoutType = 'grid'
 
+  # 共通の処理
+  # AmatsukaList や AmatsukaFollowList の生成処理は /index で行うことにした。
   ListService.amatsukaList =
     data: JSON.parse(localStorage.getItem 'amatsukaList') || {}
     member: JSON.parse(localStorage.getItem 'amatsukaFollowList') || []
 
-  # AmatsukaList や AmatsukaFollowList の生成処理は /index で行うことにした。
-  unless ListService.hasListData()
-    console.log 'Go /fav to /'
-    $location.path '/'
+  unless ListService.hasListData() then $location.path '/'
+
 
   $scope.tweets =
     new Tweets([], undefined, 'fav', AuthService.user._json.id_str)
