@@ -23,19 +23,6 @@
   @media(min-width:1600px) {
     width: 16.6%;
   }
-
-  // @media(max-width:968px) {
-  //   width: 33.3%;
-  // }
-
-  // @media(max-width:768px) {
-  //   width: 50%;
-  // }
-
-  // @media(max-width:480px) {
-  //   width: 100%;
-  // }
-
 }
 
 .find__pict-tweet--img {
@@ -50,3 +37,8 @@
   background-size: cover;
 }
 
+
+.find--infinitescroll-message {
+  padding: 20px;
+  color: $link-color;
+}

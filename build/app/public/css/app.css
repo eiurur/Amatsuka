@@ -1266,6 +1266,11 @@ i {
   background-size: cover;
 }
 
+.find--infinitescroll-message {
+  padding: 20px;
+  color: #a1a1a1;
+}
+
 .help__wrapper--q {
   color: #f2446f;
 }

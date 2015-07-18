@@ -1,4 +1,4 @@
-dot-loader.user-sidebar__contents--box-loading-init(ng-if='pictList.items/length == 0')
+dot-loader.user-sidebar__contents--box-loading-init(ng-if='!pictList.items')
 
 .col-md-12.col-sm-12.col-xs-12
 
@@ -15,10 +15,12 @@ dot-loader.user-sidebar__contents--box-loading-init(ng-if='pictList.items/length
                 span.screen-name @{{pict.postedBy.screenName}}
               a.link(href='{{pict.postedBy.url}}', target='_blank') {{pict.postedBy.url}}
       .row.find__pict-tweet--container
-        //- .col-xs-6.col-sm-2.col-md-2(ng-repeat="pictTweet in pict.pictTweetList | limitTo: 6")
-          //- img.img-responsive.fade(ng-src='{{pictTweet.mediaUrl}}:small', img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{pictTweet.mediaUrl}}")
         .col-md-12
           .find__pict-tweet--img__container.col-xs-6.col-sm-6.col-md-4.col-lg-3(ng-repeat="pictTweet in pict.pictTweetList | limitTo: 12")
             .find__pict-tweet--img(style="background-image: url('{{pictTweet.mediaUrl}}:small')", zoom-image="zoom-image", data-img-src="{{pictTweet.mediaUrl}}")
-      .find__divider
-      //- .member__divider
+
+      .find__divider(ng-show="!$last")
+
+
+    dot-loader.user-sidebar__contents--infinitescroll-message(ng-if='pictList.busy')
+    .text-center.find--infinitescroll-message(ng-show='pictList.isLast') 終わりです
