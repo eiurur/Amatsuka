@@ -49,7 +49,7 @@
   });
 
   PictTweetSchema = new Schema({
-    twitterIdStr: String,
+    tweetIdStr: String,
     totalNum: Number,
     mediaUrl: String,
     mediaOrigUrl: String,

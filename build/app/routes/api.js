@@ -115,7 +115,7 @@
               }).map(function(tweet) {
                 var o;
                 o = {};
-                o.twitterIdStr = tweet.id_str;
+                o.tweetIdStr = tweet.id_str;
                 o.totalNum = tweet.retweet_count + tweet.favorite_count;
                 o.mediaUrl = tweet.extended_entities.media[0].media_url_https;
                 o.mediaOrigUrl = tweet.extended_entities.media[0].media_url_https + ':orig';

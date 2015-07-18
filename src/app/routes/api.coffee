@@ -113,7 +113,11 @@ module.exports = (app) ->
               hasPict
             .map (tweet) ->
               o = {}
-              o.twitterIdStr = tweet.id_str
+              o.tweetIdStr = tweet.id_str
+              # o.twitterIdStr = tweet.user.id_str
+              # o.favNum = tweet.favorite_count
+              # o.retweetNum = tweet.retweet_count
+              # o.fileName = "#{tweet.user.screen_name}_#{tweet.id_str}"
               o.totalNum = tweet.retweet_count + tweet.favorite_count
               o.mediaUrl = tweet.extended_entities.media[0].media_url_https
               o.mediaOrigUrl = tweet.extended_entities.media[0].media_url_https+':orig'

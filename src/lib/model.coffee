@@ -39,8 +39,11 @@ IllustratorSchema = new Schema
     default: Date.now()
 
 PictTweetSchema = new Schema
-  twitterIdStr: String
+  tweetIdStr: String
+  # favNum: Number
+  # retweetNumt: Number
   totalNum: Number
+  # fileName: String
   mediaUrl: String
   mediaOrigUrl: String
   expandedUrl: String
