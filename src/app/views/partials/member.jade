@@ -6,7 +6,7 @@
   .input-group.input-group-sm.search-form
     span.input-group-addon
       i.fa.fa-search
-    input.form-control.search-input(type='text', placeholder='Search', ng-model="searchWord.screen_name")
+    input.form-control.search-input(type='text', placeholder='Search', ng-model="searchWord.screen_name", ng-model-options="{debounce: 300}")
 
   div(infinite-scroll='list.loadMoreMember()',infinite-scroll-distance='2')
     .col-md-4.col-sm-6(ng-repeat="member in list.members | filter:searchWord")
