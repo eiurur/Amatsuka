@@ -1,4 +1,3 @@
-// リストセレクトボックス
 .col-md-12.col-sm-12.col-xs-12
   form.form-inline.list__select--group
     .form-group
@@ -6,11 +5,13 @@
         span.input-group-addon
           i.fa.fa-list-ul
         select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
+
     // コピー実行ボタン(for smartphone)
     .form-group
       button.btn.btn-stretch(ng-if="sourceList.members", source-list='sourceList', ng-disabled="sourceList.members.length == 0", copy-member)
         i.fa.fa-copy
         | Copy members to AmatsukaList
+
 
 .col-md-5.col-sm-12.col-xs-12
   div(ng-if="sourceList.members.length == 0")
@@ -31,22 +32,12 @@
           h4.media-heading
             span.name {{member.name}}
             span.screen-name @{{member.screen_name}}
-          // TODO: 追加するか否かのチェックボックスをここに置く。
       .member__divider
-  //- pre
-  //-   {{sourceList|json}}
-  //- pre
-  //-   {{sourceListData|json}}
-  //- pre
-  //-   {{ownList|json}}
-  //- pre
-  //-   {{sourceList.members|json}}
 
 // コピー実行アイコン > (for pc)
 .col-md-2.hidden-sm.hidden-xs
   .list__controlls--copy(ng-if="sourceList.members.length > 0")
     a.list__controlls--copy--icon(source-list='sourceList', copy-member)
-
 
 // Amatsukaリスト
 .col-md-5.col-sm-12.col-xs-12

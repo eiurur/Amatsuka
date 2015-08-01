@@ -1,12 +1,9 @@
-//- video.login__video--smartphone(autoplay='', loop='', muted='')
-//-   source(src='videos/smarthph-compressor.mp4', type='video/mp4')
 video.login__video.login__video--desktop(autoplay='', loop='', muted='')
   source(src='videos/Amatsuka_ver2.mp4', type='video/mp4')
 .login__description
   h1
     | Amatsuka
   h3
-    //- | 画像専用ツイートビューワー
     p.login__description--catchcopy もうひとつのタイムラインをあなたに
 
   .login__description--about
@@ -18,6 +15,8 @@ video.login__video.login__video--desktop(autoplay='', loop='', muted='')
     a.btn.btn-lg.login__description--btn(href='/auth/twitter/callback', target='_self')
       i.fa.fa-twitter
       | Twitterでログイン (無料)
+  .login__note
+    | ※ 勝手にツイートすることはありません。
 
   include _share
 
