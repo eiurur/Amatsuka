@@ -464,6 +464,10 @@ select {
   color: #a1a1a1;
 }
 
+img {
+  cursor: pointer;
+}
+
 .login__video {
   position: fixed;
   right: 0;
@@ -1091,6 +1095,7 @@ i {
 
 .user-sidebar__btn-follow:hover {
   color: white;
+  background-color: #a1a1a1;
 }
 
 .user-sidebar__contents {
@@ -1262,6 +1267,7 @@ i {
 }
 
 .find__pict-tweet--img {
+  cursor: pointer;
   display: inline-block;
   background-color: #ccc;
   background-position: center 20%;
@@ -1293,6 +1299,9 @@ i {
   border-color: #a1a1a1;
   color: #a1a1a1;
   transition: .2s ease;
+}
+.btn:hover {
+  background-color: #a1a1a1;
 }
 
 .site-main {

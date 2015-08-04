@@ -48,6 +48,9 @@
   border-color: $link-color;
   color: $link-color;
   transition: .2s ease;
+  &:hover {
+    background-color: $link-color;
+  }
 }
 
 .site-main {
