@@ -35,6 +35,7 @@
     "angular-masonry": "~0.11.0",
     "angularjs-toaster": "~0.4.11",
     "file-saver-js": "*",
-    "ng-tags-input": "~2.3.0"
+    "ng-tags-input": "~2.3.0",
+    "nginfinitescroll": "~1.2.1"
   }
 }

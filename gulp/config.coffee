@@ -62,7 +62,7 @@ module.exports =
     src: [
       'bower_components/font-awesome/css/font-awesome.min.css'
       'bower_components/bootstrap/dist/css/bootstrap.min.css'
-      'bower_components/bootflat/css/bootflat.css'
+      # 'bower_components/bootflat/css/bootflat.css'
       'bower_components/angular/angular-csp.css'
       'bower_components/angularjs-toaster/toaster.min.css'
       'bower_components/ng-tags-input/ng-tags-input.min.css'
@@ -89,6 +89,7 @@ module.exports =
       'bower_components/angular-route/angular-route.min.js'
       'bower_components/angular-animate/angular-animate.min.js'
       'bower_components/angular-sanitize/angular-sanitize.min.js'
+      'bower_components/nginfinitescroll/build/ng-infinite-scroll.js'
       'bower_components/angular-masonry/angular-masonry.js'
       'bower_components/angularjs-toaster/toaster.min.js'
       'bower_components/ng-tags-input/ng-tags-input.min.js'

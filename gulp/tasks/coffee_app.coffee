@@ -1,6 +1,8 @@
-gulp   = require 'gulp'
-$      = do require 'gulp-load-plugins'
-config = require('../config').coffee_app
+path    = require 'path'
+gulp    = require 'gulp'
+$       = do require 'gulp-load-plugins'
+config  = require('../config').coffee_app
+optFile = path.resolve 'config.json'
 
 # coffee_app (src)
 gulp.task 'coffee_app', ->

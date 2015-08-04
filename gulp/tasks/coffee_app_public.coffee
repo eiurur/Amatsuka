@@ -1,12 +1,15 @@
+path       = require 'path'
 gulp       = require 'gulp'
 $          = do require 'gulp-load-plugins'
 ngAnnotate = require 'gulp-ng-annotate'
 config     = require('../config').coffee_app_public
+optFile    = path.resolve 'config.json'
+
 
 gulp.task 'coffee_app_public', ->
   gulp.src config.src
     .pipe $.plumber()
-    .pipe $.coffeelint()
+    .pipe $.coffeelint(optFile: optFile)
     .pipe $.coffeelint.reporter()
     .pipe $.coffee(bare: true)
     .pipe $.concat('main.js')

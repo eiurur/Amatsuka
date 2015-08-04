@@ -1,12 +1,14 @@
-gulp   = require 'gulp'
-$      = do require 'gulp-load-plugins'
-config = require('../config').coffee
+path    = require 'path'
+gulp    = require 'gulp'
+$       = do require 'gulp-load-plugins'
+config  = require('../config').coffee
+optFile = path.resolve 'config.json'
 
 # coffee (src)
 gulp.task 'coffee', ->
   gulp.src config.src
     .pipe $.plumber()
-    .pipe $.coffeelint()
+    .pipe $.coffeelint(optFile: optFile)
     .pipe $.coffeelint.reporter()
     .pipe $.coffee()
     .pipe gulp.dest config.dest
