@@ -766,6 +766,7 @@ i {
   margin-left: 5px;
   padding: .1em .3em .3em;
   cursor: pointer;
+  background-color: #a1a1a1;
 }
 
 .timeline__post--header--info {
