@@ -54,9 +54,11 @@ Feature
 - [x] Zoom up a image
 - [x] Masonry
 - [ ] Streaming
-- [ ] Suggest user
+- [x] Suggest user
 - [x] config
 - [x] Toggle the tpye of display (only user's tweet or include retweet)
+
+
 
 Status
 =======
