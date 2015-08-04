@@ -22,7 +22,7 @@ div(ng-controller="UserCtrl")
           a(href="{{user.url}}", target="_blank") {{user.url}}
 
     // code from index.jade(少しだけ表示内容がかわってる。)
-    .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-distance='6', infinite-scroll-container="'#scroll'")
+    .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()', infinite-scroll-disabled='tweets.busy', infinite-scroll-container="'#scroll'")
       dot-loader.user-sidebar__contents--box-loading-init(ng-if='!tweets.items')
       .timeline__post.user-sidebar__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
         .timeline__post--header
