@@ -1217,6 +1217,10 @@ i {
   margin: 0 auto;
 }
 
+.list__copy-btn {
+  margin-left: 8px;
+}
+
 .list__controlls--copy--icon {
   position: fixed;
   top: 50%;
