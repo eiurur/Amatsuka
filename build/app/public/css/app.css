@@ -770,7 +770,7 @@ i {
   margin-left: 5px;
   padding: .1em .3em .3em;
   cursor: pointer;
-  background-color: #a1a1a1;
+  background-color: #CCD1D9;
 }
 
 .timeline__post--header--info {
@@ -1095,7 +1095,7 @@ i {
 
 .user-sidebar__btn-follow:hover {
   color: white;
-  background-color: #a1a1a1;
+  background-color: #CCD1D9;
 }
 
 .user-sidebar__contents {

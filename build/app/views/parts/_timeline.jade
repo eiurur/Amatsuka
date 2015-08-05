@@ -1,7 +1,7 @@
 include _loading_init
 
 span(ng-if='layoutType == "grid"')
-  .timeline.timeline--grid(infinite-scroll='tweets.nextPage()', infinite-scroll-distance='2', infinite-scroll-disabled='tweets.busy', masonry='masonry', load-images="true")
+  .timeline.timeline--grid(infinite-scroll='tweets.nextPage()', infinite-scroll-distance='2', infinite-scroll-disabled='tweets.busy', masonry='masonry', preserve-order)
     .masonry-brick.timeline__post.timeline__post--grid(ng-repeat='tweet in tweets.items')
       .timeline__post--header.timeline__post--header--grid
         .timeline__post--header--info.timeline__post--header--info--grid

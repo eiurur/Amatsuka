@@ -40,6 +40,9 @@ angular.module "myApp.factories", []
           if _.isEmpty tweets then reject statusCode: 100110
 
           do =>
+            # @items = @items.concat tweets
+            # @busy = false
+
             $q.all tweets.map (tweet) =>
               [@items][0].push tweet
             .then (result) =>
