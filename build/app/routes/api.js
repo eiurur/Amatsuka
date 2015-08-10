@@ -107,7 +107,7 @@
                 isContinue = false;
                 resolve();
               }
-              maxId = data[data.length - 1].id_str;
+              maxId = my.decStrNum(data[data.length - 1].id_str);
               tweetListIncludePict = _.chain(data).filter(function(tweet) {
                 var hasPict;
                 hasPict = _.has(tweet, 'extended_entities') && !_.isEmpty(tweet.extended_entities.media);

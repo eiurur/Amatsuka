@@ -103,7 +103,7 @@ module.exports = (app) ->
               isContinue = false
               resolve()
 
-            maxId = data[data.length - 1].id_str
+            maxId = my.decStrNum data[data.length - 1].id_str
 
 
             # pictList = pictList.concat(tweetListIncludePict)
