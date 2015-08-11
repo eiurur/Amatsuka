@@ -107,11 +107,9 @@
                 isContinue = false;
                 resolve();
               }
-              maxId = data[data.length - 1].id_str;
+              maxId = my.decStrNum(data[data.length - 1].id_str);
               tweetListIncludePict = _.chain(data).filter(function(tweet) {
-                var hasPict;
-                hasPict = _.has(tweet, 'extended_entities') && !_.isEmpty(tweet.extended_entities.media);
-                return hasPict;
+                return _.has(tweet, 'extended_entities') && !_.isEmpty(tweet.extended_entities.media);
               }).map(function(tweet) {
                 var o;
                 o = {};
@@ -124,7 +122,6 @@
                 return o;
               }).value();
               pictList = pictList.concat(tweetListIncludePict);
-              console.log('pictList.length = ', pictList.length);
               return resolve();
             });
           });
@@ -264,6 +261,21 @@
           return res.json({
             error: error
           });
+        });
+      });
+    });
+    app.get('/api/statuses/show/:id', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterClient(req.session.passport.user);
+      return twitterClient.showStatuses({
+        tweetIdStr: req.params.id
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
         });
       });
     });
