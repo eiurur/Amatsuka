@@ -228,4 +228,5 @@ angular.module "myApp.directives"
 
           # 読み込み前に拡大画像を閉じた場合はcaptionタグを表示させない
           return if _.isEmpty(imageLayer.html())
-          imageLayer.append($compile(imageLayerCaptionHtml)(scope))
+          item = $compile(imageLayerCaptionHtml)(scope).hide().fadeIn(300)
+          imageLayer.append(item)

@@ -127,34 +127,13 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
         }
         h = imageLayerImg[0].naturalHeight;
         w = imageLayerImg[0].naturalWidth;
-        direction = h > w ? 'h' : 'w';
         h_w_percent = h / w * 100;
-        console.log(h, w);
-        console.log(h_w_percent);
-        if ((50 < h_w_percent && h_w_percent < 75)) {
-          console.log('横長', h_w_percent);
-          direction = 'w';
-        } else if ((100 <= h_w_percent && h_w_percent < 125)) {
-          console.log('縦長', h_w_percent);
-          direction = 'h';
-        }
         cH = html[0].clientHeight;
         cW = html[0].clientWidth;
         cH_cW_percent = cH / cW * 100;
-        console.log(cW, cH);
-        console.log('cH_cW_percent = ', cH_cW_percent);
-        if (cH_cW_percent < 75) {
-          console.log('c 横長', cH_cW_percent);
-          direction = 'h';
-        } else if (125 < cH_cW_percent) {
-          console.log('c 縦長', cH_cW_percent);
-          direction = 'w';
-        }
-        imageLayerContainer = angular.element(document).find('.image-layer__container');
+        direction = h_w_percent - cH_cW_percent >= 0 ? 'h' : 'w';
         imageLayerImg.addClass("image-layer__img-" + direction + "-wide");
-        if (direction === 'h') {
-          imageLayerImg.addClass("image-layer__img-h-wide");
-        }
+        imageLayerContainer = angular.element(document).find('.image-layer__container');
         return imageLayerContainer.on('click', function() {
           imageLayer.html('');
           return imageLayer.removeClass('image-layer__overlay');
@@ -1074,14 +1053,15 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         return TweetService.showStatuses({
           tweetIdStr: attrs.tweetIdStr
         }).then(function(data) {
-          var imageLayer, imageLayerCaptionHtml;
+          var imageLayer, imageLayerCaptionHtml, item;
           console.log('showStatuses', data);
           imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__post--footer\">\n    <div class=\"timeline__post--footer--contents\">\n      <div class=\"timeline__post--footer--contents--controls\">\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + data.data.id_str + "\" retweeted=\"" + data.data.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-star icon-star\" tweet-id-str=\"" + data.data.id_str + "\" favorited=\"" + data.data.favorited + "\" favoritable=\"favoritable\"></i>\n        <a><i class=\"fa fa-download\" data-url=\"" + data.data.extended_entities.media[0].media_url_https + ":orig\" filename=\"" + data.data.user.screen_name + "_" + data.data.id_str + "\" download-from-url=\"download-from-url\"></i></a>\n      </div>\n    </div>\n  </div>\n</div>";
           imageLayer = angular.element(document).find('.image-layer');
           if (_.isEmpty(imageLayer.html())) {
             return;
           }
-          return imageLayer.append($compile(imageLayerCaptionHtml)(scope));
+          item = $compile(imageLayerCaptionHtml)(scope).hide().fadeIn(300);
+          return imageLayer.append(item);
         });
       });
     }
