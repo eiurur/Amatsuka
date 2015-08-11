@@ -85,7 +85,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
   ###
   Tweet
   ###
-  showStatus: (params) ->
+  showStatuses: (params) ->
     @getViaAPI
       method: 'statuses'
       type: 'show'
@@ -308,7 +308,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
   # リツイートを解除したいとき
   # -> このAPIに渡すidはリツイート後のtweet_id ( = 自分のtweet_id)。
   destroyStatus: (params) ->
-    @showStatus(params)
+    @showStatuses(params)
     .then (data) =>
       @postViaAPI
         method: 'statuses'

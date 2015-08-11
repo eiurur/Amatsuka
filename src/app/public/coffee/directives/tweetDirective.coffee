@@ -148,7 +148,7 @@ angular.module "myApp.directives"
       element.on 'click', ->
         $rootScope.$broadcast 'isOpened', true
 
-        domUserSidebar         = angular.element(document).find('.user-sidebar')
+        domUserSidebar       = angular.element(document).find('.user-sidebar')
         domUserSidebarHeader = angular.element(document).find('.user-sidebar__header')
 
         # user-sidebarが開かれた状態で呼び出しされたら、
@@ -184,7 +184,6 @@ angular.module "myApp.directives"
 
           $rootScope.$broadcast 'isClosed', true
 
-
   # 動かなくなった。
   .directive 'newTweetLoad', ($rootScope, TweetService) ->
     restrict: 'E'
@@ -202,3 +201,31 @@ angular.module "myApp.directives"
           $rootScope.$broadcast 'newTweet', data.data
           scope.text = '新着を読み込む'
           scope.isProcessing = false
+
+  .directive 'showStatuses', ($compile, TweetService) ->
+    restrict: 'A'
+    link: (scope, element, attrs) ->
+      element.on 'click', (event) ->
+        TweetService.showStatuses(tweetIdStr: attrs.tweetIdStr)
+        .then (data) ->
+          console.log 'showStatuses', data
+
+          imageLayerCaptionHtml = """
+            <div class="image-layer__caption">
+              <div class="timeline__post--footer">
+                <div class="timeline__post--footer--contents">
+                  <div class="timeline__post--footer--contents--controls">
+                    <i class="fa fa-retweet icon-retweet" tweet-id-str="#{data.data.id_str}" retweeted="#{data.data.retweeted}" retweetable="retweetable"></i>
+                    <i class="fa fa-star icon-star" tweet-id-str="#{data.data.id_str}" favorited="#{data.data.favorited}" favoritable="favoritable"></i>
+                    <a><i class="fa fa-download" data-url="#{data.data.extended_entities.media[0].media_url_https}:orig" filename="#{data.data.user.screen_name}_#{data.data.id_str}" download-from-url="download-from-url"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          """
+
+          imageLayer = angular.element(document).find('.image-layer')
+
+          # 読み込み前に拡大画像を閉じた場合はcaptionタグを表示させない
+          return if _.isEmpty(imageLayer.html())
+          imageLayer.append($compile(imageLayerCaptionHtml)(scope))

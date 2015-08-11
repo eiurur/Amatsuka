@@ -108,9 +108,7 @@ module.exports = (app) ->
 
             # pictList = pictList.concat(tweetListIncludePict)
             tweetListIncludePict = _.chain(data)
-            .filter (tweet) ->
-              hasPict = _.has(tweet, 'extended_entities') and !_.isEmpty(tweet.extended_entities.media)
-              hasPict
+            .filter (tweet) -> _.has(tweet, 'extended_entities') and !_.isEmpty(tweet.extended_entities.media) # has pict
             .map (tweet) ->
               o = {}
               o.tweetIdStr = tweet.id_str
@@ -127,8 +125,6 @@ module.exports = (app) ->
             .value()
 
             pictList = pictList.concat(tweetListIncludePict)
-
-            console.log 'pictList.length = ', pictList.length
             resolve()
           return
       )
@@ -253,6 +249,16 @@ module.exports = (app) ->
         res.json data: data
       .catch (error) ->
         res.json error: error
+
+  # user情報を取得
+  app.get '/api/statuses/show/:id', (req, res) ->
+    twitterClient = new TwitterClient(req.session.passport.user)
+    twitterClient.showStatuses
+      tweetIdStr: req.params.id
+    .then (data) ->
+      res.json data: data
+    .catch (error) ->
+      res.json error: error
 
   # user情報を取得
   app.get '/api/users/show/:id', (req, res) ->

@@ -250,6 +250,14 @@ angular.module "myApp.services"
     ###
     User
     ###
+    showStatuses: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/statuses/show/#{params.tweetIdStr}")
+          .success (data) ->
+            return resolve data
+    ###
+    User
+    ###
     showUsers: (params) ->
       # 汎用性は後回し。今はidによるリクエストだけを受け付ける。
       # id = params.twitterIdStr || params.screenName

@@ -17,7 +17,7 @@ dot-loader.user-sidebar__contents--box-loading-init(ng-if='!pictList.items')
       .row.find__pict-tweet--container
         .col-md-12
           .find__pict-tweet--img__container.col-xs-6.col-sm-6.col-md-4.col-lg-3(ng-repeat="pictTweet in pict.pictTweetList | limitTo: 12")
-            .find__pict-tweet--img(style="background-image: url('{{pictTweet.mediaUrl}}:small')", zoom-image="zoom-image", data-img-src="{{pictTweet.mediaUrl}}")
+            .find__pict-tweet--img(style="background-image: url('{{pictTweet.mediaUrl}}:small')", zoom-image="zoom-image", data-img-src="{{pictTweet.mediaUrl}}", tweet-id-str='{{pictTweet.tweetIdStr}}', show-statuses="show-statuses")
 
       .find__divider(ng-show="!$last")
 

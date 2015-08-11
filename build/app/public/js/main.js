@@ -112,11 +112,11 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       element.on('mouseenter', function() {
         var imageLayer;
         imageLayer = angular.element(document).find('.image-layer');
-        html = "<img\n  src=\"" + attrs.imgSrc + ":orig\"\n  class=\"image-layer__img image-layer__img--hidden\" />";
+        html = "<div class=\"image-layer__container\">\n  <img\n    src=\"" + attrs.imgSrc + ":orig\"\n    class=\"image-layer__img image-layer__img--hidden\" />\n\n</div>";
         return imageLayer.html(html);
       });
       return element.on('click', function() {
-        var cH, cH_cW_percent, cW, dirction, h, h_w_percent, imageLayer, imageLayerImg, w;
+        var cH, cH_cW_percent, cW, direction, h, h_w_percent, imageLayer, imageLayerContainer, imageLayerImg, w;
         html = angular.element(document).find('html');
         imageLayer = angular.element(document).find('.image-layer');
         imageLayer.addClass('image-layer__overlay');
@@ -127,29 +127,35 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
         }
         h = imageLayerImg[0].naturalHeight;
         w = imageLayerImg[0].naturalWidth;
-        dirction = h > w ? 'h' : 'w';
-        console.log(h, w);
+        direction = h > w ? 'h' : 'w';
         h_w_percent = h / w * 100;
+        console.log(h, w);
+        console.log(h_w_percent);
         if ((50 < h_w_percent && h_w_percent < 75)) {
           console.log('横長', h_w_percent);
-          dirction = 'w';
+          direction = 'w';
         } else if ((100 <= h_w_percent && h_w_percent < 125)) {
           console.log('縦長', h_w_percent);
-          dirction = 'h';
+          direction = 'h';
         }
         cH = html[0].clientHeight;
         cW = html[0].clientWidth;
         cH_cW_percent = cH / cW * 100;
+        console.log(cW, cH);
         console.log('cH_cW_percent = ', cH_cW_percent);
         if (cH_cW_percent < 75) {
           console.log('c 横長', cH_cW_percent);
-          dirction = 'h';
+          direction = 'h';
         } else if (125 < cH_cW_percent) {
           console.log('c 縦長', cH_cW_percent);
-          dirction = 'w';
+          direction = 'w';
         }
-        imageLayerImg.addClass("image-layer__img-" + dirction + "-wide");
-        return imageLayer.on('click', function() {
+        imageLayerContainer = angular.element(document).find('.image-layer__container');
+        imageLayerImg.addClass("image-layer__img-" + direction + "-wide");
+        if (direction === 'h') {
+          imageLayerImg.addClass("image-layer__img-h-wide");
+        }
+        return imageLayerContainer.on('click', function() {
           imageLayer.html('');
           return imageLayer.removeClass('image-layer__overlay');
         });
@@ -1060,6 +1066,26 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
       });
     }
   };
+}]).directive('showStatuses', ["$compile", "TweetService", function($compile, TweetService) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        return TweetService.showStatuses({
+          tweetIdStr: attrs.tweetIdStr
+        }).then(function(data) {
+          var imageLayer, imageLayerCaptionHtml;
+          console.log('showStatuses', data);
+          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__post--footer\">\n    <div class=\"timeline__post--footer--contents\">\n      <div class=\"timeline__post--footer--contents--controls\">\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + data.data.id_str + "\" retweeted=\"" + data.data.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-star icon-star\" tweet-id-str=\"" + data.data.id_str + "\" favorited=\"" + data.data.favorited + "\" favoritable=\"favoritable\"></i>\n        <a><i class=\"fa fa-download\" data-url=\"" + data.data.extended_entities.media[0].media_url_https + ":orig\" filename=\"" + data.data.user.screen_name + "_" + data.data.id_str + "\" download-from-url=\"download-from-url\"></i></a>\n      </div>\n    </div>\n  </div>\n</div>";
+          imageLayer = angular.element(document).find('.image-layer');
+          if (_.isEmpty(imageLayer.html())) {
+            return;
+          }
+          return imageLayer.append($compile(imageLayerCaptionHtml)(scope));
+        });
+      });
+    }
+  };
 }]);
 
 angular.module("myApp.services").service("AuthService", ["$http", function($http) {
@@ -1561,6 +1587,17 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
     getUserTimeline: function(params) {
       return $q(function(resolve, reject) {
         return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+
+    /*
+    User
+     */
+    showStatuses: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.get("/api/statuses/show/" + params.tweetIdStr).success(function(data) {
           return resolve(data);
         });
       });

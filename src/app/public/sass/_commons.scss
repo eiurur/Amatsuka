@@ -43,6 +43,7 @@
 
 .fa-download
 {
+  color: $link-color;
   &:hover
   {
     color: $download-color !important;
@@ -176,6 +177,26 @@
   width: 0;
   height: 0;
   padding: 0;
+}
+
+.image-layer__container {
+  height: 100%
+}
+
+.image-layer__caption {
+  position: fixed;
+  bottom: 30px;
+  right: 0;
+  margin: 0 30px;
+  z-index: 100000;
+
+  .timeline__post--footer {
+    padding: none;
+  }
+  i {
+    font-size: 130%;
+    margin-right: 24px;
+  }
 }
 
 

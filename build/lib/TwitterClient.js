@@ -112,7 +112,7 @@
     Tweet
      */
 
-    TwitterClient.prototype.showStatus = function(params) {
+    TwitterClient.prototype.showStatuses = function(params) {
       return this.getViaAPI({
         method: 'statuses',
         type: 'show',
@@ -379,7 +379,7 @@
     };
 
     TwitterClient.prototype.destroyStatus = function(params) {
-      return this.showStatus(params).then((function(_this) {
+      return this.showStatuses(params).then((function(_this) {
         return function(data) {
           return _this.postViaAPI({
             method: 'statuses',

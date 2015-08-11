@@ -53,15 +53,18 @@ angular.module "myApp.directives", []
   .directive "zoomImage", ($rootScope, TweetService) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
-      html =  ''
+      html = ''
 
       # 画像プリロード(押してから表示するより体感速度的に高速)
       element.on 'mouseenter', ->
         imageLayer = angular.element(document).find('.image-layer')
         html = """
-          <img
-            src="#{attrs.imgSrc}:orig"
-            class="image-layer__img image-layer__img--hidden" />
+          <div class="image-layer__container">
+            <img
+              src="#{attrs.imgSrc}:orig"
+              class="image-layer__img image-layer__img--hidden" />
+
+          </div>
           """
         imageLayer.html html
 
@@ -84,37 +87,44 @@ angular.module "myApp.directives", []
         # ngTouchとか使ってスマホにも対応。
         h = imageLayerImg[0].naturalHeight
         w = imageLayerImg[0].naturalWidth
-        dirction = if h > w then 'h' else 'w'
+        direction = if h > w then 'h' else 'w'
 
         # 画像の縦横比から調整する
-        console.log h, w
         h_w_percent = h / w * 100
+        console.log h, w
+        console.log h_w_percent
         if 50 < h_w_percent < 75
           # 横長
           console.log '横長', h_w_percent
-          dirction = 'w'
+          direction = 'w'
         else if 100 <= h_w_percent < 125
           # 縦長
           console.log '縦長', h_w_percent
-          dirction = 'h'
+          direction = 'h'
 
         # 画面サイズから調整する
         cH = html[0].clientHeight
         cW = html[0].clientWidth
         cH_cW_percent = cH / cW * 100
+        console.log cW, cH
         console.log 'cH_cW_percent = ', cH_cW_percent
         if cH_cW_percent < 75
           # 横長
           console.log 'c 横長', cH_cW_percent
-          dirction = 'h'
+          direction = 'h'
         else if 125 < cH_cW_percent
           # 縦長
           console.log 'c 縦長', cH_cW_percent
-          dirction = 'w'
+          direction = 'w'
 
-        imageLayerImg.addClass("image-layer__img-#{dirction}-wide")
 
-        imageLayer.on 'click', ->
+        imageLayerContainer = angular.element(document).find('.image-layer__container')
+        imageLayerImg.addClass("image-layer__img-#{direction}-wide")
+
+        if direction is 'h'
+          imageLayerImg.addClass("image-layer__img-h-wide")
+
+        imageLayerContainer.on 'click', ->
           imageLayer.html ''
           imageLayer.removeClass('image-layer__overlay')
 
