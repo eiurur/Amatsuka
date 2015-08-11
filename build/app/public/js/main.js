@@ -11,6 +11,9 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   }).when('/find', {
     templateUrl: 'partials/find',
     controller: 'FindCtrl'
+  }).when('/extract', {
+    templateUrl: 'partials/extract',
+    controller: 'ExtractCtrl'
   }).when('/fav', {
     templateUrl: 'partials/fav',
     controller: 'FavCtrl'
@@ -564,6 +567,15 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
       return console.log(error);
     });
   });
+}]);
+
+angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
+  if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  return $scope.execFilteringPictWithKeyword = function() {
+    return console.log($scope.filter);
+  };
 }]);
 
 angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, Tweets) {

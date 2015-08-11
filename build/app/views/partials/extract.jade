@@ -1,0 +1,25 @@
+.col-md-4
+  h1.external-link Extract
+
+  form
+    .form-group
+      label(for='screenName') Screen name
+      .input-group.input-group-sm.extract-form
+        span.input-group-addon @
+        input#screenName.form-control.search-input(type='text', placeholder='(ex) 9jo_karen', ng-model="filter.screenName")
+
+    .form-group
+      label(for='filterKeyword') Filter Keyword
+      .input-group.input-group-sm.extract-form
+        span.input-group-addon
+          i.fa.fa-font
+        input#filterKeyword.form-control.search-input(type='text', placeholder='(ex) ご注文はうさぎですか？、ごちうさ、ゆるゆり、九条カレン', ng-model="filter.keyword")
+
+    .checkbox
+      label
+        input(type='checkbox', ng-model='filter.isIncludeRetweet')
+        | Include Retweet
+    button.btn.btn-default(type='button', ng-click='execFilteringPictWithKeyword()') Filter Start
+
+.col-md-8
+

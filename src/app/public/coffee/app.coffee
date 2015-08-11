@@ -27,6 +27,9 @@ angular.module('myApp', [
     .when '/find',
       templateUrl: 'partials/find'
       controller: 'FindCtrl'
+    .when '/extract',
+      templateUrl: 'partials/extract'
+      controller: 'ExtractCtrl'
     .when '/fav',
       templateUrl: 'partials/fav'
       controller: 'FavCtrl'

@@ -491,6 +491,10 @@ img {
   cursor: pointer;
 }
 
+label {
+  color: #a1a1a1;
+}
+
 .login__video {
   position: fixed;
   right: 0;
@@ -1308,6 +1312,13 @@ i {
 .find--infinitescroll-message {
   padding: 20px;
   color: #a1a1a1;
+}
+
+.extract-form {
+  width: 100%;
+  max-width: 400px;
+  border-color: #a1a1a1;
+  border-radius: 0;
 }
 
 .help__wrapper--q {
