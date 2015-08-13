@@ -72,7 +72,7 @@
     "gulp-gzip": "^1.0.0",
     "gulp-load-plugins": "^0.6.0",
     "gulp-mocha": "^2.0.1",
-    "gulp-ng-annotate": "^0.4.3",
+    "gulp-ng-annotate": "^1.1.0",
     "gulp-notify": "^2.0.0",
     "gulp-open": "^0.3.0",
     "gulp-pleeease": "^1.0.4",
