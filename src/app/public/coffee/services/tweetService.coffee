@@ -1,5 +1,5 @@
 angular.module "myApp.services"
-  .service "TweetService", ($http, $q, $injector, ConfigService, ToasterService) ->
+  .service "TweetService", ($http, $q, $injector, ConfigService, ToasterService, toaster) ->
 
     activateLink: (t) ->
       t.replace(
@@ -161,6 +161,40 @@ angular.module "myApp.services"
           .error (data) ->
             return reject data
 
+    # For extract. 対象ユーザの画像ツイートを限界まで種痘
+    getAllPict: (params) ->
+      return $q (resolve, reject) =>
+        userAllPict = []
+        maxId = maxId || 0
+        assignUserAllPict = =>
+          @getUserTimeline(twitterIdStr: params.twitterIdStr, maxId: maxId, count: 200)
+          .then (data) ->
+
+            # API制限くらったら return
+            if _.isUndefined(data.data)
+              toaster.pop 'error', 'API制限。15分お待ち下さい。'
+              return resolve userAllPict
+
+            # 全部読み終えたら(残りがないとき、APIは最後のツイートだけ取得する === 1) return
+            if data.data.length < 2
+              toaster.pop 'success', '最後まで読み終えました。'
+              return resolve userAllPict
+
+            maxId = data.data[data.data.length - 1].id_str
+            # 画像付きツイートだけを抽出
+            tweetListIncludePict = _.filter(data.data, (tweet) ->
+              hasPict = _.has(tweet, 'extended_entities') and !_.isEmpty(tweet.extended_entities.media)
+              hasPict
+            )
+            # 並び順の整合性をとるため、totalNumとcreatedAt(created_atだと文字列を含んでおり、バグるため、id_str)の設定を行う。
+            _.each tweetListIncludePict, (tweet) ->
+              tweet.totalNum = tweet.retweet_count + tweet.favorite_count
+              tweet.tweetIdStr = tweet.id_str
+              return
+
+            userAllPict = userAllPict.concat(tweetListIncludePict)
+            assignUserAllPict()
+        do assignUserAllPict
 
     checkError: (statusCode) ->
       console.log statusCode
@@ -262,7 +296,7 @@ angular.module "myApp.services"
       # 汎用性は後回し。今はidによるリクエストだけを受け付ける。
       # id = params.twitterIdStr || params.screenName
       return $q (resolve, reject) ->
-        $http.get("/api/users/show/#{params.twitterIdStr}")
+        $http.get("/api/users/show/#{params.twitterIdStr}/#{params.screenName}")
           .success (data) ->
             return resolve data
 

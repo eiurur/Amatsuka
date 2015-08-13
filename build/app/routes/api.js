@@ -279,11 +279,12 @@
         });
       });
     });
-    app.get('/api/users/show/:id', function(req, res) {
+    app.get('/api/users/show/:id/:screenName?', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.showUsers({
-        twitterIdStr: req.params.id
+        twitterIdStr: req.params.id,
+        screenName: req.params.screenName
       }).then(function(data) {
         return res.json({
           data: data

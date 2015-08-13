@@ -6,3 +6,35 @@
   border-color: $link-color;
   border-radius: 0;
 }
+
+.extract__profile--bio {
+  color: $link-color;
+}
+
+.extract__profile--description {
+    font-size: .8em;
+    line-height: 1.8;
+}
+
+.extract__post--grid {
+    max-width: $timeline__post--width--grid;
+    margin: $timeline__post--margin--grid;
+
+    @media(min-width: 992px) {
+        margin: 0.25%;
+        max-width: 33%;
+    }
+
+    @media(min-width: 1200px) {
+        margin: 0.2%;
+        max-width: 24%;
+    }
+
+    // (100 / 12 ) * 2 = 16.6
+    @media(min-width: 1600px) {
+        margin: 0.1%;
+        max-width: 16%;
+    }
+
+
+}
