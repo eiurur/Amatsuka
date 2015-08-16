@@ -72,7 +72,8 @@ angular.module "myApp.services"
     # 既存のリストからAmatsukaListへコピーするメンバーの属性をあるべき姿に正す(?)
     ###
     nomarlizeMembersForCopy: (members) ->
-      _.each members, (member) ->
+      _.each members, (member) =>
+        member.followStatus            = @isFollow(member)
         member.isPermissionCopy        = true
         member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https)
         return

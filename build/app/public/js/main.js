@@ -1239,10 +1239,13 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
      * 既存のリストからAmatsukaListへコピーするメンバーの属性をあるべき姿に正す(?)
      */
     nomarlizeMembersForCopy: function(members) {
-      return _.each(members, function(member) {
-        member.isPermissionCopy = true;
-        member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https);
-      });
+      return _.each(members, (function(_this) {
+        return function(member) {
+          member.followStatus = _this.isFollow(member);
+          member.isPermissionCopy = true;
+          member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https);
+        };
+      })(this));
     },
     update: function() {
       return TweetService.getListsList({
