@@ -32,8 +32,8 @@ angular.module "myApp.factories", []
 
           @maxId         = TweetService.decStrNum _.last(data.data).id_str
           itemsImageOnly = TweetService.filterIncludeImage data.data
-          itemsNomalized = TweetService.nomalizeTweets itemsImageOnly, ListService.amatsukaList.member
-          resolve itemsNomalized
+          itemsNormalized = TweetService.normalizeTweets itemsImageOnly, ListService.amatsukaList.member
+          resolve itemsNormalized
 
       assignTweet: (tweets) =>
         return new Promise (resolve, reject) =>
@@ -85,8 +85,8 @@ angular.module "myApp.factories", []
           @method
           .then (data) =>
             @normalizeTweet data
-          .then (itemsNomalized) =>
-            @assignTweet itemsNomalized
+          .then (itemsNormalized) =>
+            @assignTweet itemsNormalized
           .catch (error) =>
             @checkError error.statusCode
           return
@@ -136,7 +136,7 @@ angular.module "myApp.factories", []
         TweetService.getFollowingList twitterIdStr: @idStr, count: 5000
         .then (data) =>
           console.log data
-          @members = ListService.nomarlizeMembersForCopy data.data.users
+          @members = ListService.normalizeMembersForCopy data.data.users
 
       copyMember2AmatsukaList: ->
         return $q (resolve, reject) =>
@@ -163,7 +163,7 @@ angular.module "myApp.factories", []
       loadMember: ->
         TweetService.getListsMembers listIdStr: @idStr, count: 1000
         .then (data) =>
-          @members = ListService.nomarlizeMembersForCopy data.data.users
+          @members = ListService.normalizeMembersForCopy data.data.users
 
     List
 
@@ -181,7 +181,7 @@ angular.module "myApp.factories", []
 
         # TODO: 共通の値だからクラス変数にしたい
         @idStr                = (JSON.parse(localStorage.getItem 'amatsukaList') || {}).id_str
-        @amatsukaMemberList   = ListService.nomarlizeMembers(JSON.parse(localStorage.getItem 'amatsukaFollowList')) || []
+        @amatsukaMemberList   = ListService.normalizeMembers(JSON.parse(localStorage.getItem 'amatsukaFollowList')) || []
         @amatsukaMemberLength = @amatsukaMemberList.length
 
         # 古いリストデータの可能性があるのでここで更新する
@@ -191,7 +191,7 @@ angular.module "myApp.factories", []
         ListService.update()
         .then (users) =>
           @idstr                = ListService.amatsukaList.data.id_str
-          @amatsukaMemberList   = ListService.nomarlizeMembers(users)
+          @amatsukaMemberList   = ListService.normalizeMembers(users)
           @amatsukaMemberLength = @amatsukaMemberList.length
 
           # reset

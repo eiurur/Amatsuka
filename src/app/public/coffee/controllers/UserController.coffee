@@ -18,9 +18,9 @@ angular.module "myApp.controllers"
 
   $scope.$on 'userData', (event, args) ->
     return unless $scope.isOpened
-    $scope.user      = ListService.nomarlizeMember args
+    $scope.user      = ListService.normalizeMember args
     $scope.listIdStr = ListService.amatsukaList.data.id_str
-    # ListService.history[history].user = ListService.nomarlizeMember args
+    # ListService.history[history].user = ListService.normalizeMember args
     # ListService.history[history].listIdStr = ListService.amatsukaList.data.id_str
     return
 
@@ -28,9 +28,9 @@ angular.module "myApp.controllers"
     return unless $scope.isOpened
     maxId           = TweetService.decStrNum(_.last(args).id_str)
     tweetsOnlyImage = TweetService.filterIncludeImage args
-    tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage)
+    tweetsNormalized = TweetService.normalizeTweets(tweetsOnlyImage)
     $scope.tweets   =
-      new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user.id_str)
+      new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str)
 
     # ここ要確認
     # TweetService.history[history] = $scope.tweets

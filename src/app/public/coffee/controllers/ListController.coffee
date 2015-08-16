@@ -22,6 +22,8 @@ angular.module "myApp.controllers"
 
 
   # [WIP]
+  # TODO: 個別に設置されたフォローボタンを押下されたら、右側のAmatsukaListにも反映。その逆(remove)も実装。
+  # TODO: まとめてフォローしたとき、全てのSourceListのフォローボタンのフラグをtrueにする
 
   $scope.amatsukaList = new AmatsukaList('Amatsuka')
 
@@ -41,7 +43,6 @@ angular.module "myApp.controllers"
       full_name: "@#{AuthService.user.username}/friends"
       id_str: AuthService.user.id_str
     $scope.ownList.push myFriendParams
-
   .catch (error) ->
     console.log 'listController = ', error
 
@@ -51,18 +52,9 @@ angular.module "myApp.controllers"
     console.log list
     do ->
       $scope.sourceList = {}
-
       $scope.sourceList = if list.name is 'friends' then new Member(list.name, list.id_str) else new List(list.name, list.id_str)
-
       $scope.sourceList.loadMember()
-
-      # TODO: $scope.sourceListに {countChecked: 数} を代入する処理
-
-      console.log $scope.sourceList
       return
-
-  # TODO: $scope.sourceListにisCheck(?)を追加していく
-
 
   $scope.$on 'list:copyMember', (event, args) ->
     console.log 'list:copyMember on', args

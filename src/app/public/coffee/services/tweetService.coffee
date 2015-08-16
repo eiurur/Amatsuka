@@ -39,7 +39,7 @@ angular.module "myApp.services"
         if id_str is twitterIdStr
           tweet.followStatus = true
 
-    nomalizeTweets: (tweets) ->
+    normalizeTweets: (tweets) ->
       console.log tweets
       # do =>
       ListService = $injector.get 'ListService'

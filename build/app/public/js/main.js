@@ -223,7 +223,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
     Tweets.prototype.normalizeTweet = function(data) {
       return new Promise((function(_this) {
         return function(resolve, reject) {
-          var itemsImageOnly, itemsNomalized;
+          var itemsImageOnly, itemsNormalized;
           if (data.error != null) {
             reject(data.error);
           }
@@ -234,8 +234,8 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
           }
           _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
           itemsImageOnly = TweetService.filterIncludeImage(data.data);
-          itemsNomalized = TweetService.nomalizeTweets(itemsImageOnly, ListService.amatsukaList.member);
-          return resolve(itemsNomalized);
+          itemsNormalized = TweetService.normalizeTweets(itemsImageOnly, ListService.amatsukaList.member);
+          return resolve(itemsNormalized);
         };
       })(this));
     };
@@ -311,8 +311,8 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
         return function() {
           _this.method.then(function(data) {
             return _this.normalizeTweet(data);
-          }).then(function(itemsNomalized) {
-            return _this.assignTweet(itemsNomalized);
+          }).then(function(itemsNormalized) {
+            return _this.assignTweet(itemsNormalized);
           })["catch"](function(error) {
             return _this.checkError(error.statusCode);
           });
@@ -379,7 +379,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       }).then((function(_this) {
         return function(data) {
           console.log(data);
-          return _this.members = ListService.nomarlizeMembersForCopy(data.data.users);
+          return _this.members = ListService.normalizeMembersForCopy(data.data.users);
         };
       })(this));
     };
@@ -427,7 +427,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
         count: 1000
       }).then((function(_this) {
         return function(data) {
-          return _this.members = ListService.nomarlizeMembersForCopy(data.data.users);
+          return _this.members = ListService.normalizeMembersForCopy(data.data.users);
         };
       })(this));
     };
@@ -446,7 +446,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       this.members = [];
       this.memberIdx = 0;
       this.idStr = (JSON.parse(localStorage.getItem('amatsukaList')) || {}).id_str;
-      this.amatsukaMemberList = ListService.nomarlizeMembers(JSON.parse(localStorage.getItem('amatsukaFollowList'))) || [];
+      this.amatsukaMemberList = ListService.normalizeMembers(JSON.parse(localStorage.getItem('amatsukaFollowList'))) || [];
       this.amatsukaMemberLength = this.amatsukaMemberList.length;
     }
 
@@ -454,7 +454,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       return ListService.update().then((function(_this) {
         return function(users) {
           _this.idstr = ListService.amatsukaList.data.id_str;
-          _this.amatsukaMemberList = ListService.nomarlizeMembers(users);
+          _this.amatsukaMemberList = ListService.normalizeMembers(users);
           _this.amatsukaMemberLength = _this.amatsukaMemberList.length;
           _this.length = _this.amatsukaMemberLength;
           _this.isLast = true;
@@ -749,7 +749,6 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location
       $scope.sourceList = {};
       $scope.sourceList = list.name === 'friends' ? new Member(list.name, list.id_str) : new List(list.name, list.id_str);
       $scope.sourceList.loadMember();
-      console.log($scope.sourceList);
     })();
   });
   return $scope.$on('list:copyMember', function(event, args) {
@@ -781,18 +780,18 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     if (!$scope.isOpened) {
       return;
     }
-    $scope.user = ListService.nomarlizeMember(args);
+    $scope.user = ListService.normalizeMember(args);
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
   });
   $scope.$on('tweetData', function(event, args) {
-    var maxId, tweetsNomalized, tweetsOnlyImage;
+    var maxId, tweetsNormalized, tweetsOnlyImage;
     if (!$scope.isOpened) {
       return;
     }
     maxId = TweetService.decStrNum(_.last(args).id_str);
     tweetsOnlyImage = TweetService.filterIncludeImage(args);
-    tweetsNomalized = TweetService.nomalizeTweets(tweetsOnlyImage);
-    $scope.tweets = new Tweets(tweetsNomalized, maxId, 'user_timeline', $scope.user.id_str);
+    tweetsNormalized = TweetService.normalizeTweets(tweetsOnlyImage);
+    $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
   });
   $scope.$on('isOpened', function(event, args) {
     $scope.isOpened = true;
@@ -1205,7 +1204,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
         'id_str': targetIdStr
       });
     },
-    nomarlizeMembers: function(members) {
+    normalizeMembers: function(members) {
       return _.each(members, function(member) {
         member.followStatus = true;
         member.description = TweetService.activateLink(member.description);
@@ -1219,7 +1218,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
      * Bioに含まれるリンクをハイパーリンク化
      * アイコン画像を大きいものに差し替え
      */
-    nomarlizeMember: function(member) {
+    normalizeMember: function(member) {
       var expandedUrlListInDescription, expandedUrlListInUrl;
       expandedUrlListInDescription = TweetService.getExpandedURLFromDescription(member.entities);
       expandedUrlListInUrl = TweetService.getExpandedURLFromURL(member.entities);
@@ -1238,7 +1237,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
     /*
      * 既存のリストからAmatsukaListへコピーするメンバーの属性をあるべき姿に正す(?)
      */
-    nomarlizeMembersForCopy: function(members) {
+    normalizeMembersForCopy: function(members) {
       return _.each(members, (function(_this) {
         return function(member) {
           member.followStatus = _this.isFollow(member);
@@ -1350,7 +1349,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
         };
       })(this));
     },
-    nomalizeTweets: function(tweets) {
+    normalizeTweets: function(tweets) {
       var ListService;
       console.log(tweets);
       ListService = $injector.get('ListService');
