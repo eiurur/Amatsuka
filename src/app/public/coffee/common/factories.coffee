@@ -120,11 +120,9 @@ angular.module "myApp.factories", []
     Pict
 
 
-  .factory 'List', ($q, toaster, TweetService, ListService) ->
+  .factory 'Member', ($q, toaster, TweetService, ListService) ->
 
-    # TODO: ListクラスをBaseとする設計でAmatsukaListClassを修正。
-
-    class List
+    class Member
       constructor: (name, idStr) ->
         @name              = name
         @idStr             = idStr
@@ -135,27 +133,14 @@ angular.module "myApp.factories", []
         @amatsukaListIdStr = ListService.amatsukaList.data.id_str
 
       loadMember: ->
-        TweetService.getListsMembers listIdStr: @idStr, count: 1000
+        TweetService.getFollowingList twitterIdStr: @idStr, count: 5000
         .then (data) =>
+          console.log data
           @members = ListService.nomarlizeMembersForCopy data.data.users
 
       copyMember2AmatsukaList: ->
         return $q (resolve, reject) =>
-          # TODO: @isCheckedを1つも持っていなければ何もせずreturn
-          # unless @isChecked then return
-
-          # TODO: isCheckedがfalseのmemberを除外する処理。
-          # @members = _.reject
-
           return reject 'member is nothing' if @members.length is 0
-
-          # TODO: 100人ずつしか追加できないから、lengthを100で割った回数分回す。
-          # promises = []
-          # oneMoreLoopNum = if @members.length % 100 then 1 else 0
-          # console.log 'oneMoreLoopNum = ', oneMoreLoopNum
-          # loopNum = @members.length / 100 + oneMoreLoopNum
-          # for i in loopNum
-          #   [0..loopNum*100]
 
           twitterIdStr = ''
           _.each @members, (user) -> twitterIdStr += "#{user.id_str},"
@@ -165,6 +150,20 @@ angular.module "myApp.factories", []
             return resolve data
           .catch (e) ->
             return reject e
+
+    Member
+
+  .factory 'List', ($q, toaster, TweetService, ListService, Member) ->
+
+    # TODO: ListクラスをBaseとする設計でAmatsukaListClassを修正。
+
+    class List extends Member
+      constructor: (name, idStr) ->
+        super(name, idStr)
+      loadMember: ->
+        TweetService.getListsMembers listIdStr: @idStr, count: 1000
+        .then (data) =>
+          @members = ListService.nomarlizeMembersForCopy data.data.users
 
     List
 

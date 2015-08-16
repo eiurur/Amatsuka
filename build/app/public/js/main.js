@@ -196,7 +196,9 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
   };
 }]);
 
-var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "ToasterService", "TweetService", "ListService", function($http, $q, ToasterService, TweetService, ListService) {
   var Tweets;
@@ -357,10 +359,10 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
 
   })();
   return Pict;
-}]).factory('List', ["$q", "toaster", "TweetService", "ListService", function($q, toaster, TweetService, ListService) {
-  var List;
-  List = (function() {
-    function List(name, idStr) {
+}]).factory('Member', ["$q", "toaster", "TweetService", "ListService", function($q, toaster, TweetService, ListService) {
+  var Member;
+  Member = (function() {
+    function Member(name, idStr) {
       this.name = name;
       this.idStr = idStr;
       this.isLast = false;
@@ -370,18 +372,19 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       this.amatsukaListIdStr = ListService.amatsukaList.data.id_str;
     }
 
-    List.prototype.loadMember = function() {
-      return TweetService.getListsMembers({
-        listIdStr: this.idStr,
-        count: 1000
+    Member.prototype.loadMember = function() {
+      return TweetService.getFollowingList({
+        twitterIdStr: this.idStr,
+        count: 5000
       }).then((function(_this) {
         return function(data) {
+          console.log(data);
           return _this.members = ListService.nomarlizeMembersForCopy(data.data.users);
         };
       })(this));
     };
 
-    List.prototype.copyMember2AmatsukaList = function() {
+    Member.prototype.copyMember2AmatsukaList = function() {
       return $q((function(_this) {
         return function(resolve, reject) {
           var twitterIdStr;
@@ -405,9 +408,33 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       })(this));
     };
 
-    return List;
+    return Member;
 
   })();
+  return Member;
+}]).factory('List', ["$q", "toaster", "TweetService", "ListService", "Member", function($q, toaster, TweetService, ListService, Member) {
+  var List;
+  List = (function(_super) {
+    __extends(List, _super);
+
+    function List(name, idStr) {
+      List.__super__.constructor.call(this, name, idStr);
+    }
+
+    List.prototype.loadMember = function() {
+      return TweetService.getListsMembers({
+        listIdStr: this.idStr,
+        count: 1000
+      }).then((function(_this) {
+        return function(data) {
+          return _this.members = ListService.nomarlizeMembersForCopy(data.data.users);
+        };
+      })(this));
+    };
+
+    return List;
+
+  })(Member);
   return List;
 }]).factory('AmatsukaList', ["TweetService", "ListService", function(TweetService, ListService) {
   var AmatsukaList;
@@ -542,6 +569,12 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$roo
     console.log(status);
     return console.log(data);
   });
+}]);
+
+angular.module("myApp.controllers").controller("AuthCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
+  if (_.isEmpty(AuthService.user)) {
+    return $location.path('/');
+  }
 }]);
 
 angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$location", "AuthService", "TweetService", "ConfigService", "Tweets", function($scope, $location, AuthService, TweetService, ConfigService, Tweets) {
@@ -680,7 +713,7 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$locatio
   });
 }]);
 
-angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "List", "AmatsukaList", function($scope, $location, AuthService, TweetService, ListService, List, AmatsukaList) {
+angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "List", "Member", "AmatsukaList", function($scope, $location, AuthService, TweetService, ListService, List, Member, AmatsukaList) {
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
@@ -693,11 +726,17 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location
   }
   $scope.amatsukaList = new AmatsukaList('Amatsuka');
   TweetService.getListsList(AuthService.user._json.id_str).then(function(data) {
-    var l;
+    var l, myFriendParams;
     l = _.reject(data.data, function(list) {
       return list.full_name === ("@" + AuthService.user.username + "/amatsuka");
     });
-    return $scope.ownList = l;
+    $scope.ownList = l || [];
+    myFriendParams = {
+      name: "friends",
+      full_name: "@" + AuthService.user.username + "/friends",
+      id_str: AuthService.user.id_str
+    };
+    return $scope.ownList.push(myFriendParams);
   })["catch"](function(error) {
     return console.log('listController = ', error);
   });
@@ -708,7 +747,7 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location
     console.log(list);
     return (function() {
       $scope.sourceList = {};
-      $scope.sourceList = new List(list.name, list.id_str);
+      $scope.sourceList = list.name === 'friends' ? new Member(list.name, list.id_str) : new List(list.name, list.id_str);
       $scope.sourceList.loadMember();
       console.log($scope.sourceList);
     })();
@@ -1567,6 +1606,17 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
     getUserTimeline: function(params) {
       return $q(function(resolve, reject) {
         return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+          return resolve(data);
+        });
+      });
+    },
+
+    /*
+    Follow
+     */
+    getFollowingList: function(params) {
+      return $q(function(resolve, reject) {
+        return $http.get("/api/friends/list/" + params.twitterIdStr + "/" + params.count).success(function(data) {
           return resolve(data);
         });
       });

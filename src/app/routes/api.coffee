@@ -271,6 +271,19 @@ module.exports = (app) ->
       res.json error: error
 
 
+  # GET フォローイングの取得
+  app.get '/api/friends/list/:id?/:count?', (req, res) ->
+    twitterClient = new TwitterClient(req.session.passport.user)
+    twitterClient.getFollowingList
+      twitterIdStr: req.params.id
+      count: req.params.count
+    .then (data) ->
+      res.json data: data
+    .catch (error) ->
+      res.json error: error
+
+
+
   # GET フォロー状況の取得
 
   # POST フォロー、アンフォロー機能

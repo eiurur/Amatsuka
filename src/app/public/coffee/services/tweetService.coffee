@@ -248,6 +248,15 @@ angular.module "myApp.services"
             return resolve data
 
     ###
+    Follow
+    ###
+    getFollowingList: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/friends/list/#{params.twitterIdStr}/#{params.count}")
+          .success (data) ->
+            return resolve data
+
+    ###
     User
     ###
     showStatuses: (params) ->

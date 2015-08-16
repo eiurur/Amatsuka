@@ -294,6 +294,22 @@
         });
       });
     });
+    app.get('/api/friends/list/:id?/:count?', function(req, res) {
+      var twitterClient;
+      twitterClient = new TwitterClient(req.session.passport.user);
+      return twitterClient.getFollowingList({
+        twitterIdStr: req.params.id,
+        count: req.params.count
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
+        });
+      });
+    });
     app.post('/api/lists/members/create', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterClient(req.session.passport.user);
