@@ -195,10 +195,10 @@ angular.module "myApp.factories", []
           @amatsukaMemberLength = @amatsukaMemberList.length
 
           # reset
-          @length    = @amatsukaMemberLength
-          @isLast = true
-          console.log @members
-          @members   = _.uniq @members.concat(@amatsukaMemberList), 'id_str'
+          @length  = @amatsukaMemberLength
+          @isLast  = true
+          # @members = _.uniq @amatsukaMemberList.concat(user), false, 'id_str'
+          @members = @amatsukaMemberList
           console.log @members
           # @memberIdx = 0
 

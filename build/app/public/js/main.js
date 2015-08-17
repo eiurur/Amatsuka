@@ -458,8 +458,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
           _this.amatsukaMemberLength = _this.amatsukaMemberList.length;
           _this.length = _this.amatsukaMemberLength;
           _this.isLast = true;
-          console.log(_this.members);
-          _this.members = _.uniq(_this.members.concat(_this.amatsukaMemberList), 'id_str');
+          _this.members = _this.amatsukaMemberList;
           return console.log(_this.members);
         };
       })(this));
@@ -733,8 +732,9 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location
     $scope.ownList = l || [];
     myFriendParams = {
       name: "friends",
-      full_name: "@" + AuthService.user.username + "/friends",
-      id_str: AuthService.user.id_str
+      full_name: "friends",
+      id_str: AuthService.user.id_str,
+      uri: '/following'
     };
     return $scope.ownList.push(myFriendParams);
   })["catch"](function(error) {
@@ -751,8 +751,19 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location
       $scope.sourceList.loadMember();
     })();
   });
-  return $scope.$on('list:copyMember', function(event, args) {
+  $scope.$on('list:copyMember', function(event, args) {
     console.log('list:copyMember on', args);
+    $scope.amatsukaList.updateAmatsukaList();
+    if (!_.has(args.data, 'uri')) {
+      return;
+    }
+    $scope.sourceList.members = ListService.changeFollowStatusAllMembers($scope.sourceList.members, true);
+    $('.btn-follow').each(function() {
+      return this.innerText = 'フォロー解除';
+    });
+  });
+  return $scope.$on('list:removeMember', function(event, args) {
+    console.log('list:removeMember on', args);
     $scope.amatsukaList.updateAmatsukaList();
   });
 }]);
@@ -984,7 +995,9 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         if (scope.followStatus === true) {
           element[0].innerText = 'フォロー';
           TweetService.destroyListsMembers(opts).then(function(data) {
+            console.log(data);
             ListService.removeMember(scope.twitterIdStr);
+            $rootScope.$broadcast('list:removeMember', data);
             return scope.isProcessing = false;
           });
         }
@@ -993,6 +1006,7 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
           TweetService.createListsMembers(opts).then(function(data) {
             ListService.addMember(scope.twitterIdStr);
             $rootScope.$broadcast('addMember', scope.twitterIdStr);
+            $rootScope.$broadcast('list:copyMember', data);
             scope.isProcessing = false;
             return TweetService.collect({
               twitterIdStr: scope.twitterIdStr
@@ -1209,6 +1223,12 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
         member.followStatus = true;
         member.description = TweetService.activateLink(member.description);
         member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https);
+      });
+    },
+    changeFollowStatusAllMembers: function(members, bool) {
+      return _.map(members, function(member) {
+        member.followStatus = bool;
+        return member;
       });
     },
 

@@ -42,6 +42,12 @@ angular.module "myApp.services"
         member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https)
         return
 
+    changeFollowStatusAllMembers: (members, bool) ->
+      _.map members, (member) ->
+        member.followStatus = bool
+        return member
+
+
     ###
     # 短縮URLの復元
     # followStatusの代入

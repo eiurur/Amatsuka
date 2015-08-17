@@ -33,7 +33,7 @@
             span.name {{member.name}}
             span.screen-name @{{member.screen_name}}
           span.btn-wrapper
-          a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{member.id_str}}', ng-disabled='isProcessing')
+          a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{amatsukaList.idStr}}', twitter-id-str='{{member.id_str}}', ng-disabled='isProcessing')
       .member__divider
 
 // コピー実行アイコン > (for pc)
