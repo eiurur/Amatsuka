@@ -122,7 +122,7 @@ angular.module "myApp.directives"
           .then (data) ->
             ListService.addMember(scope.twitterIdStr)
             $rootScope.$broadcast 'addMember', scope.twitterIdStr
-            $rootScope.$broadcast 'list:copyMember', data
+            $rootScope.$broadcast 'list:addMember', data
             scope.isProcessing = false
 
             TweetService.collect(twitterIdStr: scope.twitterIdStr)

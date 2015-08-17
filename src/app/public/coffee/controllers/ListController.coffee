@@ -58,13 +58,14 @@ angular.module "myApp.controllers"
       $scope.sourceList.loadMember()
       return
 
+  $scope.$on 'list:addMember', (event, args) ->
+    console.log 'list:copyMember on', args
+    do $scope.amatsukaList.updateAmatsukaList
+    return
+
   $scope.$on 'list:copyMember', (event, args) ->
     console.log 'list:copyMember on', args
     do $scope.amatsukaList.updateAmatsukaList
-
-    # 個別にフォローしたときはこっち
-    return unless _.has args.data, 'uri'
-
     # copyMember to AmatsukaListボタンを押下してまとめてフォローしたとき、ボタン全ての表記を変更させる。
     $scope.sourceList.members = ListService.changeFollowStatusAllMembers $scope.sourceList.members, true
     $('.btn-follow').each -> this.innerText = 'フォロー解除'

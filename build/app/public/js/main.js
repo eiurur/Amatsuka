@@ -762,12 +762,13 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location
       $scope.sourceList.loadMember();
     })();
   });
+  $scope.$on('list:addMember', function(event, args) {
+    console.log('list:copyMember on', args);
+    $scope.amatsukaList.updateAmatsukaList();
+  });
   $scope.$on('list:copyMember', function(event, args) {
     console.log('list:copyMember on', args);
     $scope.amatsukaList.updateAmatsukaList();
-    if (!_.has(args.data, 'uri')) {
-      return;
-    }
     $scope.sourceList.members = ListService.changeFollowStatusAllMembers($scope.sourceList.members, true);
     $('.btn-follow').each(function() {
       return this.innerText = 'フォロー解除';
@@ -1017,7 +1018,7 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
           TweetService.createListsMembers(opts).then(function(data) {
             ListService.addMember(scope.twitterIdStr);
             $rootScope.$broadcast('addMember', scope.twitterIdStr);
-            $rootScope.$broadcast('list:copyMember', data);
+            $rootScope.$broadcast('list:addMember', data);
             scope.isProcessing = false;
             return TweetService.collect({
               twitterIdStr: scope.twitterIdStr
