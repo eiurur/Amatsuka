@@ -367,6 +367,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       this.idStr = idStr;
       this.isLast = false;
       this.count = 20;
+      this.nextCursor = -1;
       this.members = [];
       this.memberIdx = 0;
       this.amatsukaListIdStr = ListService.amatsukaList.data.id_str;
@@ -375,11 +376,21 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
     Member.prototype.loadMember = function() {
       return TweetService.getFollowingList({
         twitterIdStr: this.idStr,
-        count: 5000
+        nextCursor: this.nextCursor,
+        count: 200
       }).then((function(_this) {
         return function(data) {
           console.log(data);
-          return _this.members = ListService.normalizeMembersForCopy(data.data.users);
+          if (_.isEmpty(data.data.users)) {
+            return;
+          }
+          console.log(data.data.next_cursor);
+          _this.members = _this.members.concat(ListService.normalizeMembersForCopy(data.data.users));
+          _this.nextCursor = data.data.next_cursor_str;
+          if (data.data.next_cursor === 0) {
+            return;
+          }
+          return _this.loadMember();
         };
       })(this));
     };
@@ -747,7 +758,7 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location
     console.log(list);
     return (function() {
       $scope.sourceList = {};
-      $scope.sourceList = list.name === 'friends' ? new Member(list.name, list.id_str) : new List(list.name, list.id_str);
+      $scope.sourceList = list.name === 'friends' ? new Member(list.name, AuthService.user._json.id_str) : new List(list.name, list.id_str);
       $scope.sourceList.loadMember();
     })();
   });

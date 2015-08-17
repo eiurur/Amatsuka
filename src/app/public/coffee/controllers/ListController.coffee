@@ -54,7 +54,7 @@ angular.module "myApp.controllers"
     console.log list
     do ->
       $scope.sourceList = {}
-      $scope.sourceList = if list.name is 'friends' then new Member(list.name, list.id_str) else new List(list.name, list.id_str)
+      $scope.sourceList = if list.name is 'friends' then new Member(list.name, AuthService.user._json.id_str) else new List(list.name, list.id_str)
       $scope.sourceList.loadMember()
       return
 

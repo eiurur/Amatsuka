@@ -294,12 +294,13 @@
         });
       });
     });
-    app.get('/api/friends/list/:id?/:count?', function(req, res) {
+    app.get('/api/friends/list/:id?/:cursor?/:count?', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.getFollowingList({
         twitterIdStr: req.params.id,
-        count: req.params.count
+        cursor: req.params.cursor - 0,
+        count: req.params.count - 0
       }).then(function(data) {
         return res.json({
           data: data

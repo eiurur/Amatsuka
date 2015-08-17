@@ -13,17 +13,6 @@ angular.module "myApp.factories", []
         @type         = type
         @twitterIdStr = twitterIdStr || null
 
-      # ###
-      # # キャッシュをとっておき、体感速度を向上させる。
-      # # 死ぬほど面倒だからどうしよう。
-      # ###
-      # saveTweet2LocalStorage: ->
-      #   switch @type
-      #     when 'fav'
-      #       ls.setItem 'favTweetList', JSON.stringify(@items)
-      #     else
-      #       ls.setItem 'amatsukaTweetList', JSON.stringify(@items)
-
 
       normalizeTweet: (data) =>
         return new Promise (resolve, reject) =>
@@ -128,15 +117,22 @@ angular.module "myApp.factories", []
         @idStr             = idStr
         @isLast            = false
         @count             = 20
+        @nextCursor        = -1
         @members           = []
         @memberIdx         = 0
         @amatsukaListIdStr = ListService.amatsukaList.data.id_str
 
       loadMember: ->
-        TweetService.getFollowingList twitterIdStr: @idStr, count: 5000
+        TweetService.getFollowingList twitterIdStr: @idStr, nextCursor: @nextCursor, count: 200
         .then (data) =>
           console.log data
-          @members = ListService.normalizeMembersForCopy data.data.users
+          return if _.isEmpty(data.data.users)
+
+          console.log data.data.next_cursor
+          @members = @members.concat ListService.normalizeMembersForCopy data.data.users
+          @nextCursor = data.data.next_cursor_str
+          return if data.data.next_cursor is 0
+          do @loadMember
 
       copyMember2AmatsukaList: ->
         return $q (resolve, reject) =>
