@@ -5,9 +5,9 @@
 
   path = require('path');
 
-  my = require(path.resolve('build', 'lib', 'my')).my;
-
   TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
+
+  my = require(path.resolve('build', 'lib', 'my')).my;
 
   IllustratorProvider = require(path.resolve('build', 'lib', 'model')).IllustratorProvider;
 

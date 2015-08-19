@@ -1,15 +1,13 @@
 (function() {
-  var async, dir, serve, settings, startTask, tasks4startUp;
+  var async, path, serve, settings, tasks4startUp;
 
-  dir = './lib/';
+  path = require('path');
 
   async = require('async');
 
-  serve = require('./app/serve').serve;
+  serve = require(path.resolve('build', 'app', 'serve')).serve;
 
-  startTask = require("" + dir + "collect/start-task").startTask;
-
-  settings = (process.env.NODE_ENV === "production" ? require("" + dir + "configs/production") : require("" + dir + "configs/development")).settings;
+  settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
 
   tasks4startUp = [
     function(callback) {

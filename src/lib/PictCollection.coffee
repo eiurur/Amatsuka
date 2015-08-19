@@ -1,7 +1,7 @@
-_             = require 'lodash'
-path          = require 'path'
-{my}          = require path.resolve 'build', 'lib', 'my'
-TwitterClient = require path.resolve 'build', 'lib', 'TwitterClient'
+_                     = require 'lodash'
+path                  = require 'path'
+TwitterClient         = require path.resolve 'build', 'lib', 'TwitterClient'
+{my}                  = require path.resolve 'build', 'lib', 'my'
 {IllustratorProvider} = require path.resolve 'build', 'lib', 'model'
 {PictProvider}        = require path.resolve 'build', 'lib', 'model'
 
