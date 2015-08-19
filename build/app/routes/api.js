@@ -1,5 +1,5 @@
 (function() {
-  var ConfigProvider, IllustratorProvider, PictProvider, TwitterClient, UserProvider, moment, my, path, settings, _;
+  var ConfigProvider, PictCollection, PictProvider, TwitterClient, UserProvider, moment, my, path, settings, _;
 
   moment = require('moment');
 
@@ -7,15 +7,15 @@
 
   path = require('path');
 
-  my = require(path.resolve('build', 'lib', 'my')).my;
-
   TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
+
+  PictCollection = require(path.resolve('build', 'lib', 'PictCollection'));
+
+  my = require(path.resolve('build', 'lib', 'my')).my;
 
   UserProvider = require(path.resolve('build', 'lib', 'model')).UserProvider;
 
   ConfigProvider = require(path.resolve('build', 'lib', 'model')).ConfigProvider;
-
-  IllustratorProvider = require(path.resolve('build', 'lib', 'model')).IllustratorProvider;
 
   PictProvider = require(path.resolve('build', 'lib', 'model')).PictProvider;
 
@@ -55,90 +55,22 @@
       });
     });
     app.post('/api/collect', function(req, res) {
-      var maxId, twitterClient, userData;
-      console.log("\n========> Collect\n");
-      userData = null;
-      maxId = null;
-      twitterClient = new TwitterClient(req.session.passport.user);
-      return twitterClient.showUsers({
-        twitterIdStr: req.body.twitterIdStr
+      var pictCollection;
+      pictCollection = new PictCollection(req.session.passport.user, req.body.twitterIdStr);
+      return pictCollection.getIllustratorTwitterProfile().then(function(data) {
+        return pictCollection.setIllustratorRawData(data);
+      }).then(function() {
+        return pictCollection.setUserTimelineMaxId(pictCollection.getIllustratorRawData().status.id_str);
+      }).then(function() {
+        return pictCollection.normalizeIllustratorData();
+      }).then(function() {
+        return pictCollection.updateIllustratorData();
       }).then(function(data) {
-        maxId = data.status.id_str;
-        return new Promise(function(resolve, reject) {
-          var illustrator;
-          illustrator = {
-            twitterIdStr: data.id_str,
-            name: data.name,
-            screenName: data.screen_name,
-            icon: data.profile_image_url_https,
-            url: data.url,
-            description: data.description
-          };
-          return IllustratorProvider.findOneAndUpdate({
-            illustrator: illustrator
-          }, function(err, data) {
-            if (err) {
-              return reject(err);
-            }
-            return resolve(data);
-          });
-        });
-      }).then(function(user) {
-        var isContinue, pictList;
-        userData = user;
-        pictList = [];
-        isContinue = true;
-        return my.promiseWhile((function() {
-          return isContinue;
-        }), function() {
-          return new Promise(function(resolve, reject) {
-            twitterClient.getUserTimeline({
-              twitterIdStr: user.twitterIdStr,
-              maxId: maxId,
-              count: '200',
-              includeRetweet: false
-            }).then(function(data) {
-              var tweetListIncludePict;
-              if (_.isUndefined(data)) {
-                isContinue = false;
-                reject();
-              }
-              if (data.length < 2) {
-                isContinue = false;
-                resolve();
-              }
-              maxId = my.decStrNum(data[data.length - 1].id_str);
-              tweetListIncludePict = _.chain(data).filter(function(tweet) {
-                return _.has(tweet, 'extended_entities') && !_.isEmpty(tweet.extended_entities.media);
-              }).map(function(tweet) {
-                var o;
-                o = {};
-                o.tweetIdStr = tweet.id_str;
-                o.totalNum = tweet.retweet_count + tweet.favorite_count;
-                o.mediaUrl = tweet.extended_entities.media[0].media_url_https;
-                o.mediaOrigUrl = tweet.extended_entities.media[0].media_url_https + ':orig';
-                o.displayUrl = tweet.extended_entities.media[0].display_url;
-                o.expandedUrl = tweet.extended_entities.media[0].expanded_url;
-                return o;
-              }).value();
-              pictList = pictList.concat(tweetListIncludePict);
-              return resolve();
-            });
-          });
-        }).then(function(data) {
-          var pictListTop10;
-          console.log('Done');
-          pictListTop10 = _.chain(pictList).sortBy('totalNum').reverse().slice(0, 12).value();
-          console.log(pictListTop10);
-          console.log(pictListTop10.length);
-          return pictListTop10;
-        });
-      }).then(function(data) {
-        console.log('End getUserTimeline ', data.length);
-        return PictProvider.findOneAndUpdate({
-          postedBy: userData._id,
-          pictTweetList: data
-        });
+        return pictCollection.setIllustratorDBData(data);
+      }).then(function() {
+        return pictCollection.aggregatePict();
+      }).then(function(pickupedPictList) {
+        return pictCollection.updatePictListData(pickupedPictList);
       }).then(function(data) {
         console.log('End PictProvider.findOneAndUpdate data = ', data);
         return res.send(data);
