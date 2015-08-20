@@ -35,12 +35,18 @@ angular.module "myApp.services"
 
 
     # 今のところ、Member.jadeで使う関数なので isFollow を全部　true　にしても構わない
-    nomarlizeMembers: (members) ->
+    normalizeMembers: (members) ->
       _.each members, (member) ->
         member.followStatus            = true
         member.description             = TweetService.activateLink(member.description)
         member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https)
         return
+
+    changeFollowStatusAllMembers: (members, bool) ->
+      _.map members, (member) ->
+        member.followStatus = bool
+        return member
+
 
     ###
     # 短縮URLの復元
@@ -48,7 +54,7 @@ angular.module "myApp.services"
     # Bioに含まれるリンクをハイパーリンク化
     # アイコン画像を大きいものに差し替え
     ###
-    nomarlizeMember: (member) ->
+    normalizeMember: (member) ->
 
       # TODO: 関数化
       # TODO: urkとdescriptionだけでなく、tweetにも対応
@@ -71,8 +77,9 @@ angular.module "myApp.services"
     ###
     # 既存のリストからAmatsukaListへコピーするメンバーの属性をあるべき姿に正す(?)
     ###
-    nomarlizeMembersForCopy: (members) ->
-      _.each members, (member) ->
+    normalizeMembersForCopy: (members) ->
+      _.each members, (member) =>
+        member.followStatus            = @isFollow(member)
         member.isPermissionCopy        = true
         member.profile_image_url_https = TweetService.iconBigger(member.profile_image_url_https)
         return

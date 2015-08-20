@@ -230,16 +230,15 @@ module.exports = class TwitterClient extends TwitterClientDefine
   #       count: params.count || settings.FRINEDS_LIST_COUNT
 
   # フォローイング
-  getFollowingList: ->
+  getFollowingList: (params) ->
     @getViaAPI
       method: 'friends'
       type: 'list'
       params:
         user_id: params.twitterIdStr || ''
-        scren_name: params.screenName || ''
         count: params.count || settings.FRINEDS_LIST_COUNT
 
-  getMyFollowingList: ->
+  getMyFollowingList: (params) ->
     @getViaAPI
       method: 'friends'
       type: 'list'
@@ -256,7 +255,7 @@ module.exports = class TwitterClient extends TwitterClientDefine
         user_id: params.twitterIdStr || ''
         scren_name: params.screenName || ''
 
-  getMyFollowersList: ->
+  getMyFollowersList: (params) ->
     @getViaAPI
       method: 'followers'
       type: 'list'

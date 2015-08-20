@@ -1409,6 +1409,7 @@ a.dropdown-toggle {
 .navbar-icon {
   border-radius: 100%;
   margin-right: 5px;
+  padding-bottom: 5px;
   width: 20px;
 }
 

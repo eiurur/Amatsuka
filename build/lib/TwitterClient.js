@@ -281,19 +281,18 @@
     Follow
      */
 
-    TwitterClient.prototype.getFollowingList = function() {
+    TwitterClient.prototype.getFollowingList = function(params) {
       return this.getViaAPI({
         method: 'friends',
         type: 'list',
         params: {
           user_id: params.twitterIdStr || '',
-          scren_name: params.screenName || '',
           count: params.count || settings.FRINEDS_LIST_COUNT
         }
       });
     };
 
-    TwitterClient.prototype.getMyFollowingList = function() {
+    TwitterClient.prototype.getMyFollowingList = function(params) {
       return this.getViaAPI({
         method: 'friends',
         type: 'list',
@@ -315,7 +314,7 @@
       });
     };
 
-    TwitterClient.prototype.getMyFollowersList = function() {
+    TwitterClient.prototype.getMyFollowersList = function(params) {
       return this.getViaAPI({
         method: 'followers',
         type: 'list',

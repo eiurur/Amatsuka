@@ -111,7 +111,9 @@ angular.module "myApp.directives"
           element[0].innerText = 'フォロー'
           TweetService.destroyListsMembers(opts)
           .then (data) ->
+            console.log data
             ListService.removeMember(scope.twitterIdStr)
+            $rootScope.$broadcast 'list:removeMember', data
             scope.isProcessing = false
 
         if scope.followStatus is false
@@ -120,6 +122,7 @@ angular.module "myApp.directives"
           .then (data) ->
             ListService.addMember(scope.twitterIdStr)
             $rootScope.$broadcast 'addMember', scope.twitterIdStr
+            $rootScope.$broadcast 'list:addMember', data
             scope.isProcessing = false
 
             TweetService.collect(twitterIdStr: scope.twitterIdStr)
@@ -127,6 +130,7 @@ angular.module "myApp.directives"
             console.log data
 
         scope.followStatus = !scope.followStatus
+
 
   .directive 'showTweet', ($rootScope, TweetService) ->
     restrict: 'A'

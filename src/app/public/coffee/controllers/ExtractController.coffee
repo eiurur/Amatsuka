@@ -30,7 +30,7 @@ angular.module "myApp.controllers"
     TweetService.showUsers(screenName: $scope.filter.screenName)
 
     # ユーザデータを$scopeに追加
-    .then (data) -> $scope.extract.user = ListService.nomarlizeMember data.data
+    .then (data) -> $scope.extract.user = ListService.normalizeMember data.data
 
     # 対象ユーザの画像ツイートを3200件取得(1)
     .then (user) -> TweetService.getAllPict(twitterIdStr: user.id_str)
@@ -54,7 +54,7 @@ angular.module "myApp.controllers"
     # (7)のツイートを$scopeに代入
     .then (data) ->
       console.log data
-      $scope.extract.tweets = TweetService.nomalizeTweets data, ListService.amatsukaList.member
+      $scope.extract.tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
       console.log $scope.extract.tweets
       $scope.isLoading = false;
 

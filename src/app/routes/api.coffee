@@ -1,13 +1,13 @@
-moment                = require 'moment'
-_                     = require 'lodash'
-path                  = require 'path'
-{my}                  = require path.resolve 'build', 'lib', 'my'
-TwitterClient         = require path.resolve 'build', 'lib', 'TwitterClient'
-{UserProvider}        = require path.resolve 'build', 'lib', 'model'
-{ConfigProvider}      = require path.resolve 'build', 'lib', 'model'
-{IllustratorProvider} = require path.resolve 'build', 'lib', 'model'
-{PictProvider}        = require path.resolve 'build', 'lib', 'model'
-settings              = if process.env.NODE_ENV is 'production'
+moment           = require 'moment'
+_                = require 'lodash'
+path             = require 'path'
+TwitterClient    = require path.resolve 'build', 'lib', 'TwitterClient'
+PictCollection   = require path.resolve 'build', 'lib', 'PictCollection'
+{my}             = require path.resolve 'build', 'lib', 'my'
+{UserProvider}   = require path.resolve 'build', 'lib', 'model'
+{ConfigProvider} = require path.resolve 'build', 'lib', 'model'
+{PictProvider}   = require path.resolve 'build', 'lib', 'model'
+settings         = if process.env.NODE_ENV is 'production'
   require path.resolve 'build', 'lib', 'configs', 'production'
 else
   require path.resolve 'build', 'lib', 'configs', 'development'
@@ -42,112 +42,18 @@ module.exports = (app) ->
       skip: req.params.skip - 0
       limit: req.params.limit - 0
     .then (data) ->
-      # console.log data
       res.send data
 
   app.post '/api/collect', (req, res) ->
-    console.log "\n========> Collect\n"
-
-    userData = null
-    maxId = null
-
-    twitterClient = new TwitterClient(req.session.passport.user)
-
-    twitterClient.showUsers
-      twitterIdStr: req.body.twitterIdStr
-    .then (data) ->
-
-      maxId = data.status.id_str
-
-      # TODO: 関数化
-      return new Promise (resolve, reject) ->
-        illustrator =
-          twitterIdStr: data.id_str
-          name: data.name
-          screenName: data.screen_name
-          icon: data.profile_image_url_https
-          url: data.url
-          description: data.description
-
-        IllustratorProvider.findOneAndUpdate
-          illustrator: illustrator
-        , (err, data) ->
-          return reject err  if err
-          return resolve data
-    .then (user) ->
-
-      userData = user
-      pictList = []
-
-      isContinue = true
-
-      my.promiseWhile((->
-        # Condition for stopping
-        isContinue
-      ), ->
-        # Action to run, should return a promise
-        new Promise((resolve, reject) ->
-          twitterClient.getUserTimeline
-            twitterIdStr: user.twitterIdStr
-            maxId: maxId
-            count: '200'
-            includeRetweet: false
-          .then (data) ->
-            # API制限くらったら return
-            if _.isUndefined(data)
-              isContinue = false
-              reject()
-
-            # 全部読み終えたら(残りがないとき、APIは最後のツイートだけ取得する === 1) return
-            if data.length < 2
-              isContinue = false
-              resolve()
-
-            maxId = my.decStrNum data[data.length - 1].id_str
-
-
-            # pictList = pictList.concat(tweetListIncludePict)
-            tweetListIncludePict = _.chain(data)
-            .filter (tweet) -> _.has(tweet, 'extended_entities') and !_.isEmpty(tweet.extended_entities.media) # has pict
-            .map (tweet) ->
-              o = {}
-              o.tweetIdStr = tweet.id_str
-              # o.twitterIdStr = tweet.user.id_str
-              # o.favNum = tweet.favorite_count
-              # o.retweetNum = tweet.retweet_count
-              # o.fileName = "#{tweet.user.screen_name}_#{tweet.id_str}"
-              o.totalNum = tweet.retweet_count + tweet.favorite_count
-              o.mediaUrl = tweet.extended_entities.media[0].media_url_https
-              o.mediaOrigUrl = tweet.extended_entities.media[0].media_url_https+':orig'
-              o.displayUrl = tweet.extended_entities.media[0].display_url
-              o.expandedUrl = tweet.extended_entities.media[0].expanded_url
-              return o
-            .value()
-
-            pictList = pictList.concat(tweetListIncludePict)
-            resolve()
-          return
-      )
-      ).then (data) ->
-        console.log 'Done'
-
-        # pictListTop10 = _.chain(pictList).sortBy('totalNum').reverse().slice(0,10).value()
-        pictListTop10 = _.chain(pictList)
-        .sortBy('totalNum')
-        .reverse()
-        .slice(0, 12)
-        .value()
-
-        console.log pictListTop10
-        console.log pictListTop10.length
-
-        return pictListTop10
-
-    .then (data) ->
-      console.log 'End getUserTimeline ', data.length
-      PictProvider.findOneAndUpdate
-        postedBy: userData._id
-        pictTweetList: data
+    pictCollection = new PictCollection(req.session.passport.user, req.body.twitterIdStr)
+    pictCollection.getIllustratorTwitterProfile()
+    .then (data) -> pictCollection.setIllustratorRawData(data)
+    .then -> pictCollection.setUserTimelineMaxId(pictCollection.getIllustratorRawData().status.id_str)
+    .then -> pictCollection.normalizeIllustratorData()
+    .then -> pictCollection.updateIllustratorData()
+    .then (data) -> pictCollection.setIllustratorDBData(data)
+    .then -> pictCollection.aggregatePict()
+    .then (pickupedPictList) -> pictCollection.updatePictListData(pickupedPictList)
     .then (data) ->
       console.log 'End PictProvider.findOneAndUpdate data = ', data
       res.send data
@@ -270,6 +176,20 @@ module.exports = (app) ->
       res.json data: data
     .catch (error) ->
       res.json error: error
+
+
+  # GET フォローイングの取得
+  app.get '/api/friends/list/:id?/:cursor?/:count?', (req, res) ->
+    twitterClient = new TwitterClient(req.session.passport.user)
+    twitterClient.getFollowingList
+      twitterIdStr: req.params.id
+      cursor: req.params.cursor - 0
+      count: req.params.count - 0
+    .then (data) ->
+      res.json data: data
+    .catch (error) ->
+      res.json error: error
+
 
 
   # GET フォロー状況の取得

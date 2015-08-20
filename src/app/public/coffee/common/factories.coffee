@@ -13,17 +13,6 @@ angular.module "myApp.factories", []
         @type         = type
         @twitterIdStr = twitterIdStr || null
 
-      # ###
-      # # キャッシュをとっておき、体感速度を向上させる。
-      # # 死ぬほど面倒だからどうしよう。
-      # ###
-      # saveTweet2LocalStorage: ->
-      #   switch @type
-      #     when 'fav'
-      #       ls.setItem 'favTweetList', JSON.stringify(@items)
-      #     else
-      #       ls.setItem 'amatsukaTweetList', JSON.stringify(@items)
-
 
       normalizeTweet: (data) =>
         return new Promise (resolve, reject) =>
@@ -32,8 +21,8 @@ angular.module "myApp.factories", []
 
           @maxId         = TweetService.decStrNum _.last(data.data).id_str
           itemsImageOnly = TweetService.filterIncludeImage data.data
-          itemsNomalized = TweetService.nomalizeTweets itemsImageOnly, ListService.amatsukaList.member
-          resolve itemsNomalized
+          itemsNormalized = TweetService.normalizeTweets itemsImageOnly, ListService.amatsukaList.member
+          resolve itemsNormalized
 
       assignTweet: (tweets) =>
         return new Promise (resolve, reject) =>
@@ -85,8 +74,8 @@ angular.module "myApp.factories", []
           @method
           .then (data) =>
             @normalizeTweet data
-          .then (itemsNomalized) =>
-            @assignTweet itemsNomalized
+          .then (itemsNormalized) =>
+            @assignTweet itemsNormalized
           .catch (error) =>
             @checkError error.statusCode
           return
@@ -120,42 +109,34 @@ angular.module "myApp.factories", []
     Pict
 
 
-  .factory 'List', ($q, toaster, TweetService, ListService) ->
+  .factory 'Member', ($q, toaster, TweetService, ListService) ->
 
-    # TODO: ListクラスをBaseとする設計でAmatsukaListClassを修正。
-
-    class List
+    class Member
       constructor: (name, idStr) ->
         @name              = name
         @idStr             = idStr
         @isLast            = false
         @count             = 20
+        @nextCursor        = -1
         @members           = []
         @memberIdx         = 0
         @amatsukaListIdStr = ListService.amatsukaList.data.id_str
 
       loadMember: ->
-        TweetService.getListsMembers listIdStr: @idStr, count: 1000
+        TweetService.getFollowingList twitterIdStr: @idStr, nextCursor: @nextCursor, count: 200
         .then (data) =>
-          @members = ListService.nomarlizeMembersForCopy data.data.users
+          console.log data
+          return if _.isEmpty(data.data.users)
+
+          console.log data.data.next_cursor
+          @members = @members.concat ListService.normalizeMembersForCopy data.data.users
+          @nextCursor = data.data.next_cursor_str
+          return if data.data.next_cursor is 0
+          do @loadMember
 
       copyMember2AmatsukaList: ->
         return $q (resolve, reject) =>
-          # TODO: @isCheckedを1つも持っていなければ何もせずreturn
-          # unless @isChecked then return
-
-          # TODO: isCheckedがfalseのmemberを除外する処理。
-          # @members = _.reject
-
           return reject 'member is nothing' if @members.length is 0
-
-          # TODO: 100人ずつしか追加できないから、lengthを100で割った回数分回す。
-          # promises = []
-          # oneMoreLoopNum = if @members.length % 100 then 1 else 0
-          # console.log 'oneMoreLoopNum = ', oneMoreLoopNum
-          # loopNum = @members.length / 100 + oneMoreLoopNum
-          # for i in loopNum
-          #   [0..loopNum*100]
 
           twitterIdStr = ''
           _.each @members, (user) -> twitterIdStr += "#{user.id_str},"
@@ -165,6 +146,20 @@ angular.module "myApp.factories", []
             return resolve data
           .catch (e) ->
             return reject e
+
+    Member
+
+  .factory 'List', ($q, toaster, TweetService, ListService, Member) ->
+
+    # TODO: ListクラスをBaseとする設計でAmatsukaListClassを修正。
+
+    class List extends Member
+      constructor: (name, idStr) ->
+        super(name, idStr)
+      loadMember: ->
+        TweetService.getListsMembers listIdStr: @idStr, count: 1000
+        .then (data) =>
+          @members = ListService.normalizeMembersForCopy data.data.users
 
     List
 
@@ -182,7 +177,7 @@ angular.module "myApp.factories", []
 
         # TODO: 共通の値だからクラス変数にしたい
         @idStr                = (JSON.parse(localStorage.getItem 'amatsukaList') || {}).id_str
-        @amatsukaMemberList   = ListService.nomarlizeMembers(JSON.parse(localStorage.getItem 'amatsukaFollowList')) || []
+        @amatsukaMemberList   = ListService.normalizeMembers(JSON.parse(localStorage.getItem 'amatsukaFollowList')) || []
         @amatsukaMemberLength = @amatsukaMemberList.length
 
         # 古いリストデータの可能性があるのでここで更新する
@@ -192,14 +187,14 @@ angular.module "myApp.factories", []
         ListService.update()
         .then (users) =>
           @idstr                = ListService.amatsukaList.data.id_str
-          @amatsukaMemberList   = ListService.nomarlizeMembers(users)
+          @amatsukaMemberList   = ListService.normalizeMembers(users)
           @amatsukaMemberLength = @amatsukaMemberList.length
 
           # reset
-          @length    = @amatsukaMemberLength
-          @isLast = true
-          console.log @members
-          @members   = _.uniq @members.concat(@amatsukaMemberList), 'id_str'
+          @length  = @amatsukaMemberLength
+          @isLast  = true
+          # @members = _.uniq @amatsukaMemberList.concat(user), false, 'id_str'
+          @members = @amatsukaMemberList
           console.log @members
           # @memberIdx = 0
 

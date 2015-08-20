@@ -39,7 +39,7 @@ angular.module "myApp.services"
         if id_str is twitterIdStr
           tweet.followStatus = true
 
-    nomalizeTweets: (tweets) ->
+    normalizeTweets: (tweets) ->
       console.log tweets
       # do =>
       ListService = $injector.get 'ListService'
@@ -278,6 +278,15 @@ angular.module "myApp.services"
     getUserTimeline: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/timeline/#{params.twitterIdStr}/#{params.maxId}/#{params.count}")
+          .success (data) ->
+            return resolve data
+
+    ###
+    Follow
+    ###
+    getFollowingList: (params) ->
+      return $q (resolve, reject) ->
+        $http.get("/api/friends/list/#{params.twitterIdStr}/#{params.count}")
           .success (data) ->
             return resolve data
 
