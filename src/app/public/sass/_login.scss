@@ -26,9 +26,9 @@
   height: 100%;
   /* 背景画像が読み込まれる前に表示される背景のカラー */
 
-  // background-color: $body__bg-color;
+  background-color: $body__bg-color;
   /* 画像ファイルの指定 */
-  // background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_ver2.gif);
+  background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_ver2.gif);
   /* 画像をタイル状に繰り返し表示しない */
   background-repeat: no-repeat;
   /* コンテンツの高さが画像の高さより大きい時、動かないように固定 */
@@ -37,6 +37,16 @@
   background-position: center center;
   /* 表示するコンテナの大きさに基づいて、背景画像を調整 */
   background-size: cover;
+
+  @include animation(0.5s fadein);
+  @include keyframes(fadein) {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 }
 
 
