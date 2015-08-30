@@ -1391,7 +1391,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           isRT = _.has(tweet, 'retweeted_status');
           tweet.isRT = isRT;
           tweet.followStatus = ListService.isFollow(tweet, isRT);
-          tweet.text = _this.activateLink(_this.get(tweet, 'text', isRT));
+          tweet.text = _this.expandTweetUrl(tweet, isRT);
           tweet.time = _this.fromNow(_this.get(tweet, 'tweet.created_at', false));
           tweet.retweetNum = _this.get(tweet, 'tweet.retweet_count', isRT);
           tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);
@@ -1487,6 +1487,24 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
         default:
           return null;
       }
+    },
+    expandTweetUrl: function(tweet, isRT) {
+      var expandedUrlListInTweet;
+      tweet.text = this.get(tweet, 'text', isRT);
+      expandedUrlListInTweet = this.getExpandedURLFromTweet(tweet.entities);
+      _.each(expandedUrlListInTweet, (function(_this) {
+        return function(urls) {
+          tweet.text = tweet.text.replace(urls.url, urls.expanded_url);
+        };
+      })(this));
+      tweet.text = this.activateLink(tweet.text);
+      return tweet.text;
+    },
+    getExpandedURLFromTweet: function(entities) {
+      if (!_.has(entities, 'urls')) {
+        return '';
+      }
+      return entities.urls;
     },
     getExpandedURLFromURL: function(entities) {
       if (!_.has(entities, 'url')) {
