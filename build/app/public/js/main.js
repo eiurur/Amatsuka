@@ -141,7 +141,7 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       });
     }
   };
-}]).directive('downloadFromUrl', ["$q", "toaster", "DownloadService", "ConvertService", function($q, toaster, DownloadService, ConvertService) {
+}]).directive('downloadFromUrl', ["$q", "toaster", "DownloadService", function($q, toaster, DownloadService) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
@@ -150,26 +150,10 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
         urlList = attrs.url.indexOf('[') === -1 ? [attrs.url] : JSON.parse(attrs.url);
         promises = [];
         toaster.pop('wait', "Now Downloading ...", '', 0, 'trustedHtml');
-        promises = urlList.map(function(url) {
-          return {
-            url: url,
-            func: DownloadService.exec(url)
-          };
+        urlList.forEach(function(url, idx) {
+          return promises.push(DownloadService.exec(url, attrs.filename, idx));
         });
-        console.log(promises);
-        console.log(_.pluck(promises, 'func'));
-        return $q.all(_.pluck(promises, 'func')).then(function(resultList) {
-          console.log(resultList);
-          console.log(promises);
-          resultList.forEach(function(result, idx) {
-            var blob, ext, filename, url;
-            blob = ConvertService.base64toBlob(result.data.base64Data);
-            url = promises[idx].url;
-            ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1];
-            filename = "" + attrs.filename + "_" + idx + "." + ext;
-            console.log(idx, url, ext, filename);
-            return DownloadService.saveAs(blob, filename);
-          });
+        return $q.all(promises).then(function(datas) {
           toaster.clear();
           return toaster.pop('success', "Finished Download", '', 2000, 'trustedHtml');
         });
@@ -544,12 +528,20 @@ angular.module("myApp.services", []).service("CommonService", function() {
       return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
     }
   };
-}]).service('DownloadService', ["$http", function($http) {
+}]).service('DownloadService', ["$http", "ConvertService", function($http, ConvertService) {
   return {
-    exec: function(url) {
+    exec: function(url, filename, idx) {
       return $http.post('/api/download', {
         url: url
-      });
+      }).success((function(_this) {
+        return function(data) {
+          var blob, ext;
+          blob = ConvertService.base64toBlob(data.base64Data);
+          ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1];
+          filename = "" + filename + "_" + idx + "." + ext;
+          return _this.saveAs(blob, filename);
+        };
+      })(this));
     },
     saveAs: function(blob, filename) {
       var a;
