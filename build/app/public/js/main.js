@@ -141,18 +141,35 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       });
     }
   };
-}]).directive('downloadFromUrl', ["toaster", "DownloadService", "ConvertService", function(toaster, DownloadService, ConvertService) {
+}]).directive('downloadFromUrl', ["$q", "toaster", "DownloadService", "ConvertService", function($q, toaster, DownloadService, ConvertService) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
+        var promises, urlList;
+        urlList = attrs.url.indexOf('[') === -1 ? [attrs.url] : JSON.parse(attrs.url);
+        promises = [];
         toaster.pop('wait', "Now Downloading ...", '', 0, 'trustedHtml');
-        return DownloadService.exec(attrs.url).success(function(data) {
-          var blob, ext, filename;
-          blob = ConvertService.base64toBlob(data.base64Data);
-          ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(attrs.url)[1];
-          filename = "" + attrs.filename + "." + ext;
-          saveAs(blob, filename);
+        promises = urlList.map(function(url) {
+          return {
+            url: url,
+            func: DownloadService.exec(url)
+          };
+        });
+        console.log(promises);
+        console.log(_.pluck(promises, 'func'));
+        return $q.all(_.pluck(promises, 'func')).then(function(resultList) {
+          console.log(resultList);
+          console.log(promises);
+          resultList.forEach(function(result, idx) {
+            var blob, ext, filename, url;
+            blob = ConvertService.base64toBlob(result.data.base64Data);
+            url = promises[idx].url;
+            ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1];
+            filename = "" + attrs.filename + "_" + idx + "." + ext;
+            console.log(idx, url, ext, filename);
+            return DownloadService.saveAs(blob, filename);
+          });
           toaster.clear();
           return toaster.pop('success', "Finished Download", '', 2000, 'trustedHtml');
         });
@@ -533,6 +550,19 @@ angular.module("myApp.services", []).service("CommonService", function() {
       return $http.post('/api/download', {
         url: url
       });
+    },
+    saveAs: function(blob, filename) {
+      var a;
+      if (navigator.appVersion.toString().indexOf('.NET') > 0) {
+        return window.navigator.msSaveBlob(blob, filename);
+      } else {
+        a = document.createElement('a');
+        document.body.appendChild(a);
+        a.style = 'display: none';
+        a.href = window.URL.createObjectURL(blob);
+        a.download = filename;
+        return a.click();
+      }
     }
   };
 }]).service('ConvertService', function() {

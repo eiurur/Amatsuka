@@ -101,26 +101,72 @@ angular.module "myApp.directives", []
           imageLayer.html ''
           imageLayer.removeClass('image-layer__overlay')
 
-  .directive 'downloadFromUrl', (toaster, DownloadService, ConvertService) ->
+  .directive 'downloadFromUrl', ($q, toaster, DownloadService, ConvertService) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
+
+
       element.on 'click', (event) ->
 
-        # download属性に比べてはるかに時間がかかるので通知を出す。
-        toaster.pop 'wait', "Now Downloading ...", '', 0, 'trustedHtml'
+        # findは単発固定 + 文字列で渡される -> JSON.parseすると ["h", "t", ~]の形になり以降の処理に失敗する
+        # その他からは"[~]"の形で渡されるため、そこで処理を分岐させる。
+        urlList = if attrs.url.indexOf('[') is -1 then [attrs.url] else JSON.parse(attrs.url)
+        promises = []
 
-        DownloadService.exec(attrs.url)
-        .success (data) ->
-          blob = ConvertService.base64toBlob data.base64Data
-          ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(attrs.url)[1]
-          filename = "#{attrs.filename}.#{ext}"
-          saveAs blob, filename
+        # promises = urlList.map (url, idx) ->
+        #   console.log idx url
+        #   _.partial exec, url , idx
+
+        toaster.pop 'wait', "Now Downloading ...", '', 0, 'trustedHtml'
+        # urlList.forEach (url, idx) ->
+        #   # exec.bind(null, url, idx)()
+        #   DownloadService.exec(url, idx)
+
+
+        # for url, idx in urlList then do (url, idx) ->
+        #   console.log idx, url
+        #   DownloadService.exec(attrs.filename, url, idx)
+
+        # url = null
+        # idx = null
+
+        # console.log promises
+        # #   exec.bind(null, url, idx)()
+        #   # promises.push exec.bind(null, url, idx)
+
+        #   # # これがないと動かない
+        #   # promises[idx]()
+
+        # # download属性に比べてはるかに時間がかかるので通知を出す。
+        # toaster.pop 'wait', "Now Downloading ...", '', 0, 'trustedHtml'
+        promises = urlList.map (url) -> url: url, func: DownloadService.exec(url)
+        console.log promises
+        console.log _.pluck(promises, 'func')
+        $q.all _.pluck(promises, 'func')
+        # Promise.all(promises)
+        .then (resultList) ->
+          console.log resultList
+          console.log promises
+          resultList.forEach (result, idx) ->
+            blob = ConvertService.base64toBlob result.data.base64Data
+            url = promises[idx].url
+            ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1]
+            filename = "#{attrs.filename}_#{idx}.#{ext}"
+            console.log idx, url, ext, filename
+            DownloadService.saveAs blob, filename
 
           # Fix: 複数DL中に一つ終えると全部のtoasterが消える。
           toaster.clear()
 
           # DL終了を通知
           toaster.pop 'success', "Finished Download", '', 2000, 'trustedHtml'
+
+            # DownloadService.exec(url)
+            # .success (data) ->
+            #   blob = ConvertService.base64toBlob data.base64Data
+            #   ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1]
+            #   filename = "#{attrs.filename}_#{idx}.#{ext}"
+            #   saveAs blob, filename
 
   .directive 'icNavAutoclose', ->
     console.log 'icNavAutoclose'

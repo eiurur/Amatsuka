@@ -16,6 +16,32 @@ angular.module "myApp.services", []
     exec: (url) ->
       $http.post '/api/download', url: url
 
+    # saveAs: (files) ->
+    #   i = 0
+    #   while i < files.length
+    #     blob = new Blob([ files[i].data ])
+    #     if navigator.appVersion.toString().indexOf('.NET') > 0
+    #       window.navigator.msSaveBlob blob, filename
+    #     else
+    #       a = document.createElement('a')
+    #       document.body.appendChild a
+    #       a.style = 'display: none'
+    #       a.href = window.URL.createObjectURL(blob)
+    #       a.download = files[i].filename
+    #       a.click()
+    #     i++
+
+    saveAs: (blob, filename) ->
+      if navigator.appVersion.toString().indexOf('.NET') > 0
+        window.navigator.msSaveBlob blob, filename
+      else
+        a = document.createElement('a')
+        document.body.appendChild a
+        a.style = 'display: none'
+        a.href = window.URL.createObjectURL(blob)
+        a.download = filename
+        a.click()
+
   .service 'ConvertService', ->
     base64toBlob: (_base64) ->
       i = undefined
