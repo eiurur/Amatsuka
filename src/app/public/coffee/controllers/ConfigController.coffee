@@ -28,8 +28,12 @@ angular.module "myApp.controllers"
     do ConfigService.init
   .finally ->
     $scope.config = ConfigService.config
+    console.log '$scope.config', $scope.config
 
-  $scope.$watch 'config.includeRetweet', (includeRetweet) ->
+  $scope.$watch 'config', (newData, oldData) ->
+    if JSON.stringify(newData) is JSON.stringify(oldData) then return
+    console.log 'newData', newData
+    console.log 'oldData', oldData
     do ConfigService.update
     ConfigService.save2DB()
     .then (data) ->
@@ -37,6 +41,7 @@ angular.module "myApp.controllers"
     .catch (error) ->
       console.log error
     return
+  , true
 
 
   # # For ng

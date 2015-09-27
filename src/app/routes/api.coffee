@@ -4,6 +4,7 @@ path             = require 'path'
 TwitterClient    = require path.resolve 'build', 'lib', 'TwitterClient'
 PictCollection   = require path.resolve 'build', 'lib', 'PictCollection'
 {my}             = require path.resolve 'build', 'lib', 'my'
+{twitterUtils}   = require path.resolve 'build', 'lib', 'twitterUtils'
 {UserProvider}   = require path.resolve 'build', 'lib', 'model'
 {ConfigProvider} = require path.resolve 'build', 'lib', 'model'
 {PictProvider}   = require path.resolve 'build', 'lib', 'model'
@@ -126,9 +127,12 @@ module.exports = (app) ->
         maxId: req.params.maxId
         count: req.params.count
         includeRetweet: config.includeRetweet
-      .then (data) ->
-        console.log '/api/lists/list/:id/:count data.length = ', data.length
-        res.json data: data
+      .then (tweets) ->
+        console.log '/api/lists/list/:id/:count tweets.length = ', tweets.length
+
+        tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser tweets, config.ngUsername
+        tweetsCleaned         = twitterUtils.excludeTweetBasedOnNgWord tweetsExcluededNgUser, config.ngWord
+        res.json data: tweetsCleaned
       .catch (error) ->
         console.log '/api/lists/list/:id/:count error ', error
         res.json error: error
@@ -151,9 +155,11 @@ module.exports = (app) ->
         maxId: req.params.maxId
         count: req.params.count
         includeRetweet: config.includeRetweet
-      .then (data) ->
-        console.log '/api/timeline/:id/:count data.length = ', data.length
-        res.json data: data
+      .then (tweets) ->
+        console.log '/api/timeline/:id/:count tweets.length = ', tweets.length
+        tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser tweets, config.ngUsername
+        tweetsCleaned         = twitterUtils.excludeTweetBasedOnNgWord tweetsExcluededNgUser, config.ngWord
+        res.json data: tweetsCleaned
       .catch (error) ->
         res.json error: error
 

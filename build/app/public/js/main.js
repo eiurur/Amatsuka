@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'toaster', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).value('THROTTLE_MILLISECONDS', 300).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
+angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'toaster', 'ngTagsInput', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).value('THROTTLE_MILLISECONDS', 300).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/index',
     controller: 'IndexCtrl'
@@ -619,16 +619,22 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
     console.log(e);
     return ConfigService.init();
   })["finally"](function() {
-    return $scope.config = ConfigService.config;
+    $scope.config = ConfigService.config;
+    return console.log('$scope.config', $scope.config);
   });
-  return $scope.$watch('config.includeRetweet', function(includeRetweet) {
+  return $scope.$watch('config', function(newData, oldData) {
+    if (JSON.stringify(newData) === JSON.stringify(oldData)) {
+      return;
+    }
+    console.log('newData', newData);
+    console.log('oldData', oldData);
     ConfigService.update();
     ConfigService.save2DB().then(function(data) {
       return console.log(data);
     })["catch"](function(error) {
       return console.log(error);
     });
-  });
+  }, true);
 }]);
 
 angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, Tweets) {
@@ -1175,21 +1181,38 @@ angular.module("myApp.services").service("ConfigService", ["$http", "$q", functi
     set: function(config) {
       return this.config = config;
     },
+    get: function() {
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          console.log('get @pconfig = ', _this.config);
+          if (!_.isEmpty(_this.config)) {
+            return resolve(_this.config);
+          }
+          return _this.getFromDB().then(function(config) {
+            console.log('get @getFromDB() config = ', config);
+            _this.set(config);
+            return resolve(config);
+          });
+        };
+      })(this));
+    },
     update: function() {
       localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
     },
     init: function() {
       this.config = {
-        includeRetweet: true
+        includeRetweet: true,
+        ngUsername: [],
+        ngWord: []
       };
-      localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
-      return this.save2DB().then(function(data) {});
+      return localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
     },
     getFromDB: function() {
       return $q(function(resolve, reject) {
         return $http.get('/api/config').success(function(data) {
-          console.log(_.isEmpty(JSON.parse(data.data.configStr)));
-          if (_.isEmpty(JSON.parse(data.data.configStr))) {
+          console.log(data);
+          console.log(_.isNull(data.data));
+          if (_.isNull(data.data)) {
             return reject('Not found data');
           }
           return resolve(JSON.parse(data.data.configStr));
