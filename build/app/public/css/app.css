@@ -1338,6 +1338,28 @@ i {
   color: #a1a1a1;
 }
 
+tags-input .tags {
+  color: white;
+  border-color: #a1a1a1;
+  background: transparent;
+  border-radius: 0;
+}
+
+tags-input .tags .input {
+  background-color: transparent;
+}
+
+tags-input .tags .tag-item {
+  color: #f2446f;
+  background: transparent;
+  border: 1px solid #f2446f;
+  border-radius: 4px;
+}
+
+tags-input .tags .tag-item .remove-button {
+  color: #f2446f;
+}
+
 .help__wrapper--q {
   color: #f2446f;
 }
