@@ -65,8 +65,8 @@ module.exports =
       # 'bower_components/bootflat/css/bootflat.css'
       'bower_components/angular/angular-csp.css'
       'bower_components/angularjs-toaster/toaster.min.css'
-      'bower_components/ng-tags-input/ng-tags-input.min.css'
-      'bower_components/ng-tags-input/ng-tags-input.bootstrap.min.css'
+      'bower_components/ng-tags-input/ng-tags-input.css'
+      'bower_components/ng-tags-input/ng-tags-input.bootstrap.css'
     ]
     dest: dest + app_public + "/css/vendors/"
 
