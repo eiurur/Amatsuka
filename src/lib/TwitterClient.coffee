@@ -98,13 +98,16 @@ module.exports = class TwitterClient extends TwitterClientDefine
   User
   ###
   showUsers: (params) ->
+    console.log params
+    opts = include_entities: true
+    unless params.twitterIdStr is 'undefined'
+      opts.user_id = params.twitterIdStr
+    else
+      opts.screen_name = params.screenName
     @getViaAPI
       method: 'users'
       type: 'show'
-      params:
-        user_id: params.twitterIdStr || ''
-        # scren_name: params.screenName || ''
-        include_entities: true
+      params: opts
 
 
   # 自分の指定のリストのツイートから画像だけを表示

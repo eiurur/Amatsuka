@@ -186,6 +186,24 @@
     max-width: $timeline__post--width--grid;
     margin: $timeline__post--margin--grid;
     padding-top: $timeline__post--padding-vertical;
+
+    // @media(min-width: 992px) {
+    //     margin: 0.25%;
+    //     max-width: 33%;
+    // }
+
+    // @media(min-width: 1200px) {
+    //     margin: 0.2%;
+    //     max-width: 24%;
+    // }
+
+    // // (100 / 12 ) * 2 = 16.6
+    // @media(min-width: 1600px) {
+    //     margin: 0.1%;
+    //     max-width: 16%;
+    // }
+
+
 }
 
 .timeline__post--header--grid

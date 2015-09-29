@@ -11,6 +11,9 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   }).when('/find', {
     templateUrl: 'partials/find',
     controller: 'FindCtrl'
+  }).when('/extract/:id?', {
+    templateUrl: 'partials/extract',
+    controller: 'ExtractCtrl'
   }).when('/fav', {
     templateUrl: 'partials/fav',
     controller: 'FavCtrl'
@@ -633,6 +636,105 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
       return console.log(error);
     });
   }, true);
+}]);
+
+angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$routeParams", "$location", "Tweets", "AuthService", "TweetService", "ListService", function($scope, $routeParams, $location, Tweets, AuthService, TweetService, ListService) {
+  var params;
+  if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  ListService.amatsukaList = {
+    data: JSON.parse(localStorage.getItem('amatsukaList')) || {},
+    member: JSON.parse(localStorage.getItem('amatsukaFollowList')) || []
+  };
+  if (!ListService.hasListData()) {
+    $location.path('/');
+  }
+  $scope.listIdStr = ListService.amatsukaList.data.id_str;
+  $scope.filter = {
+    screenName: '',
+    keyword: '',
+    isIncludeRetweet: false
+  };
+  $scope.extract = {};
+  $scope.extract.tweets = [];
+  if ($routeParams.id === void 0) {
+    console.log('undefined');
+  } else {
+    console.log($scope.filter.keyword);
+    if ($routeParams.id.indexOf('@' === -1)) {
+      console.log('@ScreenName');
+      params = {
+        screenName: $routeParams.id
+      };
+    } else {
+      console.log('id_str');
+      params = {
+        twitterIdStr: $routeParams.id
+      };
+    }
+    $scope.isLoading = true;
+    TweetService.showUsers(params).then(function(data) {
+      return $scope.extract.user = ListService.normalizeMember(data.data);
+    }).then(function(user) {
+      return TweetService.getAllPict({
+        twitterIdStr: user.id_str,
+        isIncludeRetweet: $scope.filter.isIncludeRetweet
+      });
+    }).then(function(tweetListContainedImage) {
+      console.log(tweetListContainedImage);
+      return _.chain(tweetListContainedImage).filter(function(tweet) {
+        return ~tweet.text.indexOf($scope.filter.keyword);
+      }).value();
+    }).then(function(data) {
+      var tweets;
+      console.log(data);
+      tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
+      $scope.extract.tweets = tweets.sort(function(a, b) {
+        return b.totalNum - a.totalNum;
+      });
+      console.log($scope.extract.tweets);
+      return $scope.isLoading = false;
+    });
+  }
+  $scope.execFilteringPictWithKeyword = function() {
+    console.log($scope.filter);
+    $scope.isLoading = true;
+    return TweetService.showUsers({
+      screenName: $scope.filter.screenName
+    }).then(function(data) {
+      return $scope.extract.user = ListService.normalizeMember(data.data);
+    }).then(function(user) {
+      return TweetService.getAllPict({
+        twitterIdStr: user.id_str,
+        isIncludeRetweet: $scope.filter.isIncludeRetweet
+      });
+    }).then(function(tweetListContainedImage) {
+      console.log(tweetListContainedImage);
+      return _.chain(tweetListContainedImage).filter(function(tweet) {
+        return ~tweet.text.indexOf($scope.filter.keyword);
+      }).value();
+    }).then(function(data) {
+      var tweets;
+      console.log(data);
+      tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
+      $scope.extract.tweets = tweets.sort(function(a, b) {
+        return b.totalNum - a.totalNum;
+      });
+      console.log($scope.extract.tweets);
+      return $scope.isLoading = false;
+    });
+  };
+  $scope.$on('addMember', function(event, args) {
+    console.log('index addMember on ', args);
+    TweetService.applyFollowStatusChange($scope.extract.tweets, args);
+  });
+  return $scope.$on('resize::resize', function(event, args) {
+    console.log('index resize::resize on ', args.layoutType);
+    $scope.$apply(function() {
+      $scope.layoutType = args.layoutType;
+    });
+  });
 }]);
 
 angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, Tweets) {
@@ -1397,7 +1499,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
   };
 }]);
 
-angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injector", "ConfigService", "ToasterService", function($http, $q, $injector, ConfigService, ToasterService) {
+angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injector", "ConfigService", "ToasterService", "toaster", function($http, $q, $injector, ConfigService, ToasterService, toaster) {
   return {
     activateLink: function(t) {
       return t.replace(/((ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&amp;%@!&#45;\/]))?)/g, "<a href=\"$1\" target=\"_blank\">$1</a>").replace(/(^|\s)(@|＠)(\w+)/g, "$1<a href=\"http://www.twitter.com/$3\" target=\"_blank\">@$3</a>").replace(/(?:^|[^ーー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9&_\/>]+)[#＃]([ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z]+[ー゛゜々ヾヽぁ-ヶ一-龠ａ-ｚＡ-Ｚ０-９a-zA-Z0-9_]*)/g, ' <a href="http://twitter.com/search?q=%23$1" target="_blank">#$1</a>');
@@ -1606,6 +1708,47 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
         });
       });
     },
+    getAllPict: function(params) {
+      console.log('getAllPict params = ', params);
+      return $q((function(_this) {
+        return function(resolve, reject) {
+          var assignUserAllPict, maxId, userAllPict;
+          userAllPict = [];
+          maxId = maxId || 0;
+          assignUserAllPict = function() {
+            return _this.getUserTimeline({
+              twitterIdStr: params.twitterIdStr,
+              maxId: maxId,
+              count: 200,
+              isIncludeRetweet: params.isIncludeRetweet
+            }).then(function(data) {
+              var tweetListIncludePict;
+              if (_.isUndefined(data.data)) {
+                toaster.pop('error', 'API制限。15分お待ち下さい。');
+                return resolve(userAllPict);
+              }
+              if (data.data.length < 2) {
+                toaster.pop('success', '最後まで読み終えました。');
+                return resolve(userAllPict);
+              }
+              maxId = data.data[data.data.length - 1].id_str;
+              tweetListIncludePict = _.filter(data.data, function(tweet) {
+                var hasPict;
+                hasPict = _.has(tweet, 'extended_entities') && !_.isEmpty(tweet.extended_entities.media);
+                return hasPict;
+              });
+              _.each(tweetListIncludePict, function(tweet) {
+                tweet.totalNum = tweet.retweet_count + tweet.favorite_count;
+                tweet.tweetIdStr = tweet.id_str;
+              });
+              userAllPict = userAllPict.concat(tweetListIncludePict);
+              return assignUserAllPict();
+            });
+          };
+          return assignUserAllPict();
+        };
+      })(this));
+    },
     checkError: function(statusCode) {
       console.log(statusCode);
       switch (statusCode) {
@@ -1700,7 +1843,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
      */
     getUserTimeline: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count + "?isIncludeRetweet=" + params.isIncludeRetweet).success(function(data) {
           return resolve(data);
         });
       });
@@ -1733,7 +1876,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
      */
     showUsers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/users/show/" + params.twitterIdStr).success(function(data) {
+        return $http.get("/api/users/show/" + params.twitterIdStr + "/" + params.screenName).success(function(data) {
           return resolve(data);
         });
       });

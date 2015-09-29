@@ -40,6 +40,11 @@
   color: #29A7E1 !important;
 }
 
+.i__center-padding {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
 /**
  * seaerch box
  */
@@ -452,6 +457,17 @@
     width: 100%;
   }
 }
+/**
+ * divider
+ */
+.section--divider {
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(122, 122, 122, 0.75), rgba(0, 0, 0, 0));
+  width: 33.3%;
+  margin: 48px auto;
+}
+
 html, body {
   height: 100%;
 }
@@ -489,6 +505,10 @@ select {
 
 img {
   cursor: pointer;
+}
+
+label {
+  color: #a1a1a1;
 }
 
 .login__video {
@@ -928,7 +948,7 @@ i {
 
 .timeline__post--grid {
   max-width: 300px;
-  margin: 10px;
+  margin: 10px 10px 0 0;
   padding-top: 15px;
 }
 
@@ -1144,6 +1164,11 @@ i {
   transition: .3s ease;
 }
 
+.user-sidebar__controll .btn {
+  margin-top: 10px;
+  margin-right: 5px;
+}
+
 .user-sidebar__btn-follow:hover {
   color: white;
   background-color: #CCD1D9;
@@ -1336,6 +1361,45 @@ i {
 .find--infinitescroll-message {
   padding: 20px;
   color: #a1a1a1;
+}
+
+.extract-form {
+  width: 100%;
+  max-width: 400px;
+  border-color: #a1a1a1;
+  border-radius: 0;
+}
+
+.extract__profile--bio {
+  color: #a1a1a1;
+}
+
+.extract__profile--description {
+  font-size: .8em;
+  line-height: 1.8;
+}
+
+.extract__post--grid {
+  max-width: 300px;
+  margin: 10px 10px 0 0;
+}
+@media (min-width: 992px) {
+  .extract__post--grid {
+    margin: 0.25%;
+    max-width: 33%;
+  }
+}
+@media (min-width: 1200px) {
+  .extract__post--grid {
+    margin: 0.2%;
+    max-width: 24%;
+  }
+}
+@media (min-width: 1600px) {
+  .extract__post--grid {
+    margin: 0.1%;
+    max-width: 16%;
+  }
 }
 
 tags-input .tags {

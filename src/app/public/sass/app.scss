@@ -32,6 +32,9 @@
 // find.jade
 @import "find";
 
+// extract.jade
+@import "extract";
+
 // Config
 @import "config";
 
@@ -71,6 +74,7 @@
 .text {
   color: $link-color;
 }
+
 
 /**
  * _navbar.scss?ファイルに移動

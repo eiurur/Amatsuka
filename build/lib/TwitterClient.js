@@ -130,13 +130,20 @@
      */
 
     TwitterClient.prototype.showUsers = function(params) {
+      var opts;
+      console.log(params);
+      opts = {
+        include_entities: true
+      };
+      if (params.twitterIdStr !== 'undefined') {
+        opts.user_id = params.twitterIdStr;
+      } else {
+        opts.screen_name = params.screenName;
+      }
       return this.getViaAPI({
         method: 'users',
         type: 'show',
-        params: {
-          user_id: params.twitterIdStr || '',
-          include_entities: true
-        }
+        params: opts
       });
     };
 
