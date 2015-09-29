@@ -1,5 +1,5 @@
 (function() {
-  var ConfigProvider, PictCollection, PictProvider, TwitterClient, UserProvider, moment, my, path, settings, _;
+  var ConfigProvider, PictCollection, PictProvider, TwitterClient, UserProvider, moment, my, path, settings, twitterUtils, _;
 
   moment = require('moment');
 
@@ -12,6 +12,8 @@
   PictCollection = require(path.resolve('build', 'lib', 'PictCollection'));
 
   my = require(path.resolve('build', 'lib', 'my')).my;
+
+  twitterUtils = require(path.resolve('build', 'lib', 'twitterUtils')).twitterUtils;
 
   UserProvider = require(path.resolve('build', 'lib', 'model')).UserProvider;
 
@@ -39,8 +41,9 @@
     APIs
      */
     app.post('/api/download', function(req, res) {
-      console.log("\n========> download\n");
+      console.log("\n========> download, " + req.body.url + "\n");
       return my.loadBase64Data(req.body.url).then(function(base64Data) {
+        console.log('base64toBlob', base64Data.length);
         return res.json({
           base64Data: base64Data
         });
@@ -157,10 +160,13 @@
           maxId: req.params.maxId,
           count: req.params.count,
           includeRetweet: config.includeRetweet
-        }).then(function(data) {
-          console.log('/api/lists/list/:id/:count data.length = ', data.length);
+        }).then(function(tweets) {
+          var tweetsCleaned, tweetsExcluededNgUser;
+          console.log('/api/lists/list/:id/:count tweets.length = ', tweets.length);
+          tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser(tweets, config.ngUsername);
+          tweetsCleaned = twitterUtils.excludeTweetBasedOnNgWord(tweetsExcluededNgUser, config.ngWord);
           return res.json({
-            data: data
+            data: tweetsCleaned
           });
         })["catch"](function(error) {
           console.log('/api/lists/list/:id/:count error ', error);
@@ -184,10 +190,13 @@
           maxId: req.params.maxId,
           count: req.params.count,
           includeRetweet: config.includeRetweet
-        }).then(function(data) {
-          console.log('/api/timeline/:id/:count data.length = ', data.length);
+        }).then(function(tweets) {
+          var tweetsCleaned, tweetsExcluededNgUser;
+          console.log('/api/timeline/:id/:count tweets.length = ', tweets.length);
+          tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser(tweets, config.ngUsername);
+          tweetsCleaned = twitterUtils.excludeTweetBasedOnNgWord(tweetsExcluededNgUser, config.ngWord);
           return res.json({
-            data: data
+            data: tweetsCleaned
           });
         })["catch"](function(error) {
           return res.json({

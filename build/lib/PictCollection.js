@@ -104,6 +104,28 @@
 
 
     /*
+    Utils (From Front. TweetService)
+     */
+
+    PictCollection.prototype.getExpandedURLFromURL = function(entities) {
+      if (!_.has(entities, 'url')) {
+        return '';
+      }
+      return entities.url.urls;
+    };
+
+    PictCollection.prototype.restoreProfileUrl = function() {
+      var expandedUrlListInUrl;
+      expandedUrlListInUrl = this.getExpandedURLFromURL(this.illustratorRawData.entities);
+      return _.each(expandedUrlListInUrl, (function(_this) {
+        return function(urls) {
+          return _this.illustratorRawData.url = _this.illustratorRawData.url.replace(urls.url, urls.expanded_url);
+        };
+      })(this));
+    };
+
+
+    /*
     Illustrator
      */
 
@@ -126,6 +148,7 @@
     };
 
     PictCollection.prototype.normalizeIllustratorData = function() {
+      this.restoreProfileUrl();
       return this.illustrator = {
         twitterIdStr: this.illustratorRawData.id_str,
         name: this.illustratorRawData.name,

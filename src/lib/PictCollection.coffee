@@ -92,6 +92,20 @@ module.exports = class PictCollection
   setUserTimelineMaxId: (maxId) ->
     @userTimelineMaxId = maxId
 
+
+  ###
+  Utils (From Front. TweetService)
+  ###
+  getExpandedURLFromURL: (entities) ->
+    if !_.has(entities, 'url') then return ''
+    entities.url.urls
+
+  restoreProfileUrl: ->
+    expandedUrlListInUrl = @getExpandedURLFromURL(@illustratorRawData.entities)
+    _.each expandedUrlListInUrl, (urls) =>
+      @illustratorRawData.url = @illustratorRawData.url.replace(urls.url, urls.expanded_url)
+
+
   ###
   Illustrator
   ###
@@ -109,8 +123,11 @@ module.exports = class PictCollection
 
   #getIllustratorDBData: ->
 
+
   # Setの方が統一感ある? 意味的には正規化なんだけど
   normalizeIllustratorData: ->
+    @restoreProfileUrl()
+
     @illustrator =
       twitterIdStr: @illustratorRawData.id_str
       name: @illustratorRawData.name

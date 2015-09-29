@@ -48,7 +48,8 @@ angular.module "myApp.services"
         # @hasOrigParameter tweet
         tweet.isRT                         = isRT
         tweet.followStatus                 = ListService.isFollow(tweet, isRT)
-        tweet.text                         = @activateLink(@get(tweet, 'text', isRT))
+        tweet.text                         = @expandTweetUrl(tweet, isRT)
+        # tweet.text                         = @activateLink(@get(tweet, 'text', isRT))
         tweet.time                         = @fromNow(@get(tweet, 'tweet.created_at', false))
         tweet.retweetNum                   = @get(tweet, 'tweet.retweet_count', isRT)
         tweet.favNum                       = @get(tweet, 'tweet.favorite_count', isRT)
@@ -107,6 +108,19 @@ angular.module "myApp.services"
         when 'user.lang' then t.user.lang
         when 'user.url' then t.user.url
         else null
+
+    expandTweetUrl: (tweet, isRT) ->
+      tweet.text = @get(tweet, 'text', isRT)
+      expandedUrlListInTweet = @getExpandedURLFromTweet(tweet.entities)
+      _.each expandedUrlListInTweet, (urls) =>
+        tweet.text = tweet.text.replace(urls.url, urls.expanded_url)
+        return
+      tweet.text = @activateLink tweet.text
+      tweet.text
+
+    getExpandedURLFromTweet: (entities) ->
+      if !_.has(entities, 'urls') then return ''
+      entities.urls
 
     # https://t.co -> https://pixiv ~ (url ver)
     getExpandedURLFromURL: (entities) ->

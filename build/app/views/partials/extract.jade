@@ -1,7 +1,7 @@
 .col-md-6
   form
     .form-group
-      label(for='screenName') Screen name
+      label(for='screenName') Screen Name
       .input-group.input-group-sm.extract-form
         span.input-group-addon @
         input#screenName.form-control.search-input(type='text', placeholder='(ex) 9jo_karen', ng-model="filter.screenName")
@@ -20,23 +20,22 @@
     button.btn.btn-default(type='button', ng-click='execFilteringPictWithKeyword()') Filter Start
 
 .col-md-6
-  .user-sidebar__header
-    .media(ng-if='extract.user.name')
-      .media
-        a.pull-left
-          img.media-object.thumbnail-img.fade(ng-src='{{extract.user.profile_image_url_https}}', img-preload="img-preload")
-        .media-body
-          h4.media-heading
-            span.name {{extract.user.name}}
-            span.screen-name @{{extract.user.screen_name}}
-          span.btn-wrapper
-          a.btn.btn-sm.btn-follow(followable, follow-status='extract.user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{extract.user.id_str}}')
+  .media(ng-if='extract.user.name')
+    .media
+      a.pull-left
+        img.media-object.thumbnail-img.fade(ng-src='{{extract.user.profile_image_url_https}}', img-preload="img-preload", show-tweet="show-tweet", twitter-id-str="{{extract.user.id_str}}")
+      .media-body
+        h4.media-heading
+          span.name {{extract.user.name}}
+          span.screen-name @{{extract.user.screen_name}}
+        span.btn-wrapper
+        a.btn.btn-sm.btn-follow(followable, follow-status='extract.user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{extract.user.id_str}}')
 
-      .media-body.extract__profile--bio
-        .extract__profile--description(ng-bind-html='extract.user.description | newlines')
-        .user-sidebar__profile--url(ng-hide="extract.user.url == null")
-          i.fa.fa-link
-          a(href="{{extract.user.url}}", target="_blank") {{extract.user.url}}
+    .media-body.extract__profile--bio
+      .extract__profile--description(ng-bind-html='extract.user.description | newlines')
+      .user-sidebar__profile--url(ng-hide="extract.user.url == null")
+        i.fa.fa-link
+        a(href="{{extract.user.url}}", target="_blank") {{extract.user.url}}
 
 .col-md-12
   .section--divider

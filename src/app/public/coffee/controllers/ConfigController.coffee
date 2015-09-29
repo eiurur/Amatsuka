@@ -3,22 +3,9 @@ angular.module "myApp.controllers"
     $scope
     $location
     AuthService
-    TweetService
     ConfigService
-    Tweets
     ) ->
   if _.isEmpty AuthService.user then $location.path '/'
-
-  # [WIP]
-
-  # ConfigService.config = JSON.parse(localStorage.getItem 'amatsuka.config') || {}
-  # if _.isEmpty ConfigService.config
-  #   ConfigService.getFromDB()
-  #   .then (config) ->
-  #     console.log config
-  #   .catch (e) ->
-  #     console.log e
-  #     do ConfigService.init
 
   ConfigService.getFromDB()
   .then (config) ->
@@ -28,24 +15,21 @@ angular.module "myApp.controllers"
     do ConfigService.init
   .finally ->
     $scope.config = ConfigService.config
+    console.log '$scope.config', $scope.config
 
-  $scope.$watch 'config.includeRetweet', (includeRetweet) ->
+  $scope.$watch 'config', (newData, oldData) ->
+
+    # この判定がないとConfigページを開くたびに設定がリセットされてしまう。
+    return if JSON.stringify(newData) is JSON.stringify(oldData)
+
+    # localStorageのデータを更新
     do ConfigService.update
+
+    # データベースのデータを更新
     ConfigService.save2DB()
     .then (data) ->
       console.log data
     .catch (error) ->
       console.log error
     return
-
-
-  # # For ng
-  # $scope.$watch 'config', (newVal, oldVal) ->
-  #   do ConfigService.update
-  #   ConfigService.save2DB()
-  #   .then (data) ->
-  #     console.log data
-  #   .catch (error) ->
-  #     console.log error
-  #   return
-  # , true
+  , true

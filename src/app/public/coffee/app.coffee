@@ -5,7 +5,7 @@ angular.module('myApp', [
   'infinite-scroll'
   'wu.masonry'
   'toaster'
-  # 'ngTagsInput'
+  'ngTagsInput'
   'myApp.controllers'
   'myApp.filters'
   'myApp.services'
@@ -27,7 +27,7 @@ angular.module('myApp', [
     .when '/find',
       templateUrl: 'partials/find'
       controller: 'FindCtrl'
-    .when '/extract',
+    .when '/extract/:id?',
       templateUrl: 'partials/extract'
       controller: 'ExtractCtrl'
     .when '/fav',

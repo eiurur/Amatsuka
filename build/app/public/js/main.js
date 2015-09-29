@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'toaster', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).value('THROTTLE_MILLISECONDS', 300).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
+angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'toaster', 'ngTagsInput', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).value('THROTTLE_MILLISECONDS', 300).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/index',
     controller: 'IndexCtrl'
@@ -11,7 +11,7 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   }).when('/find', {
     templateUrl: 'partials/find',
     controller: 'FindCtrl'
-  }).when('/extract', {
+  }).when('/extract/:id?', {
     templateUrl: 'partials/extract',
     controller: 'ExtractCtrl'
   }).when('/fav', {
@@ -30,6 +30,25 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   });
   return $locationProvider.html5Mode(true);
 }]);
+
+
+/*
+Logの拡張
+ */
+var i, methods, _fn;
+
+methods = ["log", "warn", "error", "info", "debug", "dir"];
+
+_fn = function(m) {
+  if (console[m]) {
+    window[m] = console[m].bind(console);
+  } else {
+    window[m] = log;
+  }
+};
+for (i in methods) {
+  _fn(methods[i]);
+}
 
 angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
   return $rootScope.$on('$locationChangeStart', function(event, next, current) {
@@ -125,18 +144,19 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       });
     }
   };
-}]).directive('downloadFromUrl', ["toaster", "DownloadService", "ConvertService", function(toaster, DownloadService, ConvertService) {
+}]).directive('downloadFromUrl', ["$q", "toaster", "DownloadService", function($q, toaster, DownloadService) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
+        var promises, urlList;
+        urlList = attrs.url.indexOf('[') === -1 ? [attrs.url] : JSON.parse(attrs.url);
+        promises = [];
         toaster.pop('wait', "Now Downloading ...", '', 0, 'trustedHtml');
-        return DownloadService.exec(attrs.url).success(function(data) {
-          var blob, ext, filename;
-          blob = ConvertService.base64toBlob(data.base64Data);
-          ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(attrs.url)[1];
-          filename = "" + attrs.filename + "." + ext;
-          saveAs(blob, filename);
+        urlList.forEach(function(url, idx) {
+          return promises.push(DownloadService.exec(url, attrs.filename, idx));
+        });
+        return $q.all(promises).then(function(datas) {
           toaster.clear();
           return toaster.pop('success', "Finished Download", '', 2000, 'trustedHtml');
         });
@@ -511,12 +531,33 @@ angular.module("myApp.services", []).service("CommonService", function() {
       return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
     }
   };
-}]).service('DownloadService', ["$http", function($http) {
+}]).service('DownloadService', ["$http", "ConvertService", function($http, ConvertService) {
   return {
-    exec: function(url) {
+    exec: function(url, filename, idx) {
       return $http.post('/api/download', {
         url: url
-      });
+      }).success((function(_this) {
+        return function(data) {
+          var blob, ext;
+          blob = ConvertService.base64toBlob(data.base64Data);
+          ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1];
+          filename = "" + filename + "_" + idx + "." + ext;
+          return _this.saveAs(blob, filename);
+        };
+      })(this));
+    },
+    saveAs: function(blob, filename) {
+      var a;
+      if (navigator.appVersion.toString().indexOf('.NET') > 0) {
+        return window.navigator.msSaveBlob(blob, filename);
+      } else {
+        a = document.createElement('a');
+        document.body.appendChild(a);
+        a.style = 'display: none';
+        a.href = window.URL.createObjectURL(blob);
+        a.download = filename;
+        return a.click();
+      }
     }
   };
 }]).service('ConvertService', function() {
@@ -540,25 +581,6 @@ angular.module("myApp.services", []).service("CommonService", function() {
     }
   };
 });
-
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
 
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$location", "$log", "AuthService", function($scope, $rootScope, $location, $log, AuthService) {
   $scope.isLoaded = false;
@@ -590,7 +612,7 @@ angular.module("myApp.controllers").controller("AuthCtrl", ["$scope", "$location
   }
 }]);
 
-angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$location", "AuthService", "TweetService", "ConfigService", "Tweets", function($scope, $location, AuthService, TweetService, ConfigService, Tweets) {
+angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$location", "AuthService", "ConfigService", function($scope, $location, AuthService, ConfigService) {
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
@@ -600,19 +622,24 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
     console.log(e);
     return ConfigService.init();
   })["finally"](function() {
-    return $scope.config = ConfigService.config;
+    $scope.config = ConfigService.config;
+    return console.log('$scope.config', $scope.config);
   });
-  return $scope.$watch('config.includeRetweet', function(includeRetweet) {
+  return $scope.$watch('config', function(newData, oldData) {
+    if (JSON.stringify(newData) === JSON.stringify(oldData)) {
+      return;
+    }
     ConfigService.update();
     ConfigService.save2DB().then(function(data) {
       return console.log(data);
     })["catch"](function(error) {
       return console.log(error);
     });
-  });
+  }, true);
 }]);
 
-angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$location", "Tweets", "AuthService", "TweetService", "ListService", function($scope, $location, Tweets, AuthService, TweetService, ListService) {
+angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$routeParams", "$location", "Tweets", "AuthService", "TweetService", "ListService", function($scope, $routeParams, $location, Tweets, AuthService, TweetService, ListService) {
+  var params;
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
@@ -630,6 +657,39 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$locat
   };
   $scope.extract = {};
   $scope.extract.tweets = [];
+  if ($routeParams.id === void 0) {
+    console.log('undefined');
+  } else {
+    if ($routeParams.id.indexOf('@' === -1)) {
+      console.log('@ScreenName');
+      params = {
+        screenName: $routeParams.id
+      };
+    } else {
+      console.log('id_str');
+      params = {
+        twitterIdStr: $routeParams.id
+      };
+    }
+    $scope.isLoading = true;
+    TweetService.showUsers(params).then(function(data) {
+      return $scope.extract.user = ListService.normalizeMember(data.data);
+    }).then(function(user) {
+      return TweetService.getAllPict({
+        twitterIdStr: user.id_str
+      });
+    }).then(function(tweetListContainedImage) {
+      console.log(tweetListContainedImage);
+      return _.chain(tweetListContainedImage).filter(function(tweet) {
+        return ~tweet.text.indexOf($scope.filter.keyword);
+      }).sortBy('id_str').value();
+    }).then(function(data) {
+      console.log(data);
+      $scope.extract.tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
+      console.log($scope.extract.tweets);
+      return $scope.isLoading = false;
+    });
+  }
   $scope.execFilteringPictWithKeyword = function() {
     $scope.isLoading = true;
     return TweetService.showUsers({
@@ -1208,21 +1268,38 @@ angular.module("myApp.services").service("ConfigService", ["$http", "$q", functi
     set: function(config) {
       return this.config = config;
     },
+    get: function() {
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          console.log('get @pconfig = ', _this.config);
+          if (!_.isEmpty(_this.config)) {
+            return resolve(_this.config);
+          }
+          return _this.getFromDB().then(function(config) {
+            console.log('get @getFromDB() config = ', config);
+            _this.set(config);
+            return resolve(config);
+          });
+        };
+      })(this));
+    },
     update: function() {
       localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
     },
     init: function() {
       this.config = {
-        includeRetweet: true
+        includeRetweet: true,
+        ngUsername: [],
+        ngWord: []
       };
-      localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
-      return this.save2DB().then(function(data) {});
+      return localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
     },
     getFromDB: function() {
       return $q(function(resolve, reject) {
         return $http.get('/api/config').success(function(data) {
-          console.log(_.isEmpty(JSON.parse(data.data.configStr)));
-          if (_.isEmpty(JSON.parse(data.data.configStr))) {
+          console.log(data);
+          console.log(_.isNull(data.data));
+          if (_.isNull(data.data)) {
             return reject('Not found data');
           }
           return resolve(JSON.parse(data.data.configStr));
@@ -1446,7 +1523,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           isRT = _.has(tweet, 'retweeted_status');
           tweet.isRT = isRT;
           tweet.followStatus = ListService.isFollow(tweet, isRT);
-          tweet.text = _this.activateLink(_this.get(tweet, 'text', isRT));
+          tweet.text = _this.expandTweetUrl(tweet, isRT);
           tweet.time = _this.fromNow(_this.get(tweet, 'tweet.created_at', false));
           tweet.retweetNum = _this.get(tweet, 'tweet.retweet_count', isRT);
           tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);
@@ -1542,6 +1619,24 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
         default:
           return null;
       }
+    },
+    expandTweetUrl: function(tweet, isRT) {
+      var expandedUrlListInTweet;
+      tweet.text = this.get(tweet, 'text', isRT);
+      expandedUrlListInTweet = this.getExpandedURLFromTweet(tweet.entities);
+      _.each(expandedUrlListInTweet, (function(_this) {
+        return function(urls) {
+          tweet.text = tweet.text.replace(urls.url, urls.expanded_url);
+        };
+      })(this));
+      tweet.text = this.activateLink(tweet.text);
+      return tweet.text;
+    },
+    getExpandedURLFromTweet: function(entities) {
+      if (!_.has(entities, 'urls')) {
+        return '';
+      }
+      return entities.urls;
     },
     getExpandedURLFromURL: function(entities) {
       if (!_.has(entities, 'url')) {

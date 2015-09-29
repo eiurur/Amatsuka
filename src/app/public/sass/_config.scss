@@ -1,2 +1,23 @@
 @charset "utf-8";
 
+tags-input .tags {
+  color: white;
+  border-color: $scrollbar-color;
+  background: transparent;
+  border-radius: 0;
+}
+
+tags-input .tags .input {
+  background-color: transparent;
+}
+
+tags-input .tags .tag-item {
+  color: $amatsuka-color;
+  background: transparent;
+  border: 1px solid $amatsuka-color;
+  border-radius: 4px;
+}
+
+tags-input .tags .tag-item .remove-button {
+  color: $amatsuka-color;
+}

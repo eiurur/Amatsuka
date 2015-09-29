@@ -101,26 +101,25 @@ angular.module "myApp.directives", []
           imageLayer.html ''
           imageLayer.removeClass('image-layer__overlay')
 
-  .directive 'downloadFromUrl', (toaster, DownloadService, ConvertService) ->
+  .directive 'downloadFromUrl', ($q, toaster, DownloadService) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
       element.on 'click', (event) ->
 
-        # download属性に比べてはるかに時間がかかるので通知を出す。
+        # findページでダウンロードボタンが押された場合は単発固定 + 文字列で渡される よってJSON.parseすると ["h", "t", ~]の形になり以降の処理に失敗する
+        # その他からは"[~]"の形で渡されるため、処理を分岐させる。
+        urlList = if attrs.url.indexOf('[') is -1 then [attrs.url] else JSON.parse(attrs.url)
+        promises = []
+
         toaster.pop 'wait', "Now Downloading ...", '', 0, 'trustedHtml'
+        urlList.forEach (url, idx) ->
+          promises.push DownloadService.exec(url, attrs.filename, idx)
 
-        DownloadService.exec(attrs.url)
-        .success (data) ->
-          blob = ConvertService.base64toBlob data.base64Data
-          ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(attrs.url)[1]
-          filename = "#{attrs.filename}.#{ext}"
-          saveAs blob, filename
-
-          # Fix: 複数DL中に一つ終えると全部のtoasterが消える。
+        $q.all promises
+        .then (datas) ->
           toaster.clear()
-
-          # DL終了を通知
           toaster.pop 'success', "Finished Download", '', 2000, 'trustedHtml'
+
 
   .directive 'icNavAutoclose', ->
     console.log 'icNavAutoclose'

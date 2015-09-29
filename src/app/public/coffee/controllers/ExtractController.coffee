@@ -1,6 +1,7 @@
 angular.module "myApp.controllers"
   .controller "ExtractCtrl", (
     $scope
+    $routeParams
     $location
     Tweets
     AuthService
@@ -22,6 +23,41 @@ angular.module "myApp.controllers"
   $scope.filter = screenName: 'mangatimekirara', keyword: 'ご注文はうさぎですか？'
   $scope.extract = {}
   $scope.extract.tweets = []
+
+
+  # Extractページを直接開いたとき
+  if $routeParams.id is undefined
+
+    # 何もしない
+    console.log 'undefined'
+
+  # 他のページからid_strまたはscreenNameをもらって遷移したとき
+  else
+    if $routeParams.id.indexOf '@' is -1
+      console.log '@ScreenName'
+      params = screenName: $routeParams.id
+    else
+      console.log 'id_str'
+      params = twitterIdStr: $routeParams.id
+
+    # todo: 下のコードをコピペした。あとでまとめて。
+    $scope.isLoading = true
+    TweetService.showUsers(params)
+    .then (data) -> $scope.extract.user = ListService.normalizeMember data.data
+    .then (user) -> TweetService.getAllPict(twitterIdStr: user.id_str)
+    .then (tweetListContainedImage) ->
+      console.log tweetListContainedImage
+      _.chain(tweetListContainedImage)
+        .filter (tweet) -> ~tweet.text.indexOf($scope.filter.keyword)
+        .sortBy('id_str')
+        .value()
+    .then (data) ->
+      console.log data
+      $scope.extract.tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
+      console.log $scope.extract.tweets
+      $scope.isLoading = false
+
+
 
   $scope.execFilteringPictWithKeyword = ->
     $scope.isLoading = true;
@@ -56,7 +92,7 @@ angular.module "myApp.controllers"
       console.log data
       $scope.extract.tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
       console.log $scope.extract.tweets
-      $scope.isLoading = false;
+      $scope.isLoading = false
 
 
   $scope.$on 'addMember', (event, args) ->
