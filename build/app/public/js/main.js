@@ -609,7 +609,7 @@ angular.module("myApp.controllers").controller("AuthCtrl", ["$scope", "$location
   }
 }]);
 
-angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$location", "AuthService", "TweetService", "ConfigService", "Tweets", function($scope, $location, AuthService, TweetService, ConfigService, Tweets) {
+angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$location", "AuthService", "ConfigService", function($scope, $location, AuthService, ConfigService) {
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
@@ -626,8 +626,6 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
     if (JSON.stringify(newData) === JSON.stringify(oldData)) {
       return;
     }
-    console.log('newData', newData);
-    console.log('oldData', oldData);
     ConfigService.update();
     ConfigService.save2DB().then(function(data) {
       return console.log(data);

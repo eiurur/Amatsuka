@@ -4,11 +4,6 @@ angular.module "myApp.services"
 
     config: {}
 
-    # registerConfig2LocalStorage: ->
-    #   ls = localStorage
-    #   ls.setItem 'amatsuka.config', JSON.stringify(@config)
-    #   return
-
     set: (config) ->
       @config = config
 
@@ -32,7 +27,6 @@ angular.module "myApp.services"
         ngUsername: []
         ngWord: []
       localStorage.setItem 'amatsuka.config', JSON.stringify(@config)
-      # @save2DB().then (data) -> console.log 'save2DB ok'
 
     getFromDB: ->
       return $q (resolve, reject) ->
