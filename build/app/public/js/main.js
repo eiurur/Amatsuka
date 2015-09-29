@@ -685,13 +685,14 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
       console.log(tweetListContainedImage);
       return _.chain(tweetListContainedImage).filter(function(tweet) {
         return ~tweet.text.indexOf($scope.filter.keyword);
-      }).sortBy('id_str').value();
+      }).value();
     }).then(function(data) {
-      var a;
+      var tweets;
       console.log(data);
-      $scope.extract.tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
-      a = $scope.extract.tweets.pop();
-      $scope.extract.tweets.push(a);
+      tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
+      $scope.extract.tweets = tweets.sort(function(a, b) {
+        return b.totalNum - a.totalNum;
+      });
       console.log($scope.extract.tweets);
       return $scope.isLoading = false;
     });
@@ -712,13 +713,14 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
       console.log(tweetListContainedImage);
       return _.chain(tweetListContainedImage).filter(function(tweet) {
         return ~tweet.text.indexOf($scope.filter.keyword);
-      }).sortBy('id_str').value();
+      }).value();
     }).then(function(data) {
-      var a;
+      var tweets;
       console.log(data);
-      $scope.extract.tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
-      a = $scope.extract.tweets.pop();
-      $scope.extract.tweets.push(a);
+      tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
+      $scope.extract.tweets = tweets.sort(function(a, b) {
+        return b.totalNum - a.totalNum;
+      });
       console.log($scope.extract.tweets);
       return $scope.isLoading = false;
     });

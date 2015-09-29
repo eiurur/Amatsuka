@@ -50,15 +50,12 @@ angular.module "myApp.controllers"
       console.log tweetListContainedImage
       _.chain(tweetListContainedImage)
         .filter (tweet) -> ~tweet.text.indexOf($scope.filter.keyword)
-        .sortBy('id_str')
+        # .sortBy('id_str')
         .value()
     .then (data) ->
       console.log data
-      $scope.extract.tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
-
-      # タイルが重なるため、いったんリセット
-      a = $scope.extract.tweets.pop()
-      $scope.extract.tweets.push(a)
+      tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
+      $scope.extract.tweets = tweets.sort (a, b) -> b.totalNum - a.totalNum
       console.log $scope.extract.tweets
       $scope.isLoading = false
 
@@ -83,7 +80,7 @@ angular.module "myApp.controllers"
       console.log tweetListContainedImage
       _.chain(tweetListContainedImage)
         .filter (tweet) -> ~tweet.text.indexOf($scope.filter.keyword)
-        .sortBy('id_str')
+        # .sortBy('id_str')
         .value()
 
     # (3)のツイートを形態素解析し、名詞とハッシュタグを抽出(4)
@@ -97,11 +94,8 @@ angular.module "myApp.controllers"
     # (7)のツイートを$scopeに代入
     .then (data) ->
       console.log data
-      $scope.extract.tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
-
-      # タイルが重なるため、いったんリセット
-      a = $scope.extract.tweets.pop()
-      $scope.extract.tweets.push(a)
+      tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
+      $scope.extract.tweets = tweets.sort (a, b) -> b.totalNum - a.totalNum
       console.log $scope.extract.tweets
       $scope.isLoading = false
 

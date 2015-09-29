@@ -47,7 +47,7 @@
     //-       source(ng-src="{{tweet.video_url | trusted}}", type="video/mp4")
 
   .timeline.timeline--grid(masonry='masonry', preserve-order)
-    .masonry-brick.timeline__post.timeline__post--grid(ng-repeat='tweet in extract.tweets | orderBy: "totalNum": true')
+    .masonry-brick.timeline__post.timeline__post--grid(ng-repeat='tweet in extract.tweets')
       .timeline__post--header.timeline__post--header--grid
         .timeline__post--header--info.timeline__post--header--info--grid
           .timeline__post--header--link.timeline__post--header--link--grid
