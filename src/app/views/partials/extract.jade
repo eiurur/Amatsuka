@@ -4,7 +4,7 @@
       label(for='screenName') Screen Name
       .input-group.input-group-sm.extract-form
         span.input-group-addon @
-        input#screenName.form-control.search-input(type='text', placeholder='(ex) 9karenbot', ng-model="filter.screenName", ng-disabled="isLoading")
+        input#screenName.form-control.search-input(type='text', placeholder='(ex) shiratamacaron', ng-model="filter.screenName", ng-disabled="isLoading")
 
     .form-group
       label(for='filterKeyword') Filter Keyword
@@ -81,6 +81,6 @@
             i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
             // aタグがないとtextとcontrolsの間の余白がなくなり、レイアウトが崩れる。
             a
-              i.fa.fa-download(data-url="{{tweet.picOrigUrlList}}", filename="{{tweet.fileName}}", download-from-url='download-from-url')
+              i.fa.fa-download(data-url="{{tweet.extended_entities.media[0].media_url}}:orig", filename="{{tweet.fileName}}", download-from-url='download-from-url')
 
     dot-loader.user-sidebar__contents--infinitescroll-message(ng-if='isLoading')
