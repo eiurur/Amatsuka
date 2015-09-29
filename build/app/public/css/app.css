@@ -40,6 +40,11 @@
   color: #29A7E1 !important;
 }
 
+.i__center-padding {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
 /**
  * seaerch box
  */
@@ -1159,6 +1164,11 @@ i {
   transition: .3s ease;
 }
 
+.user-sidebar__controll .btn {
+  margin-top: 10px;
+  margin-right: 5px;
+}
+
 .user-sidebar__btn-follow:hover {
   color: white;
   background-color: #CCD1D9;
@@ -1443,10 +1453,6 @@ tags-input .tags .tag-item .remove-button {
 
 .text {
   color: #a1a1a1;
-}
-
-.media {
-  min-height: 80px;
 }
 
 /**

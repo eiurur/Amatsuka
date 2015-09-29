@@ -10,7 +10,10 @@ div(ng-controller="UserCtrl")
           span.user-sidebar__profile--name {{user.name}}
           span.screen-name @{{user.screen_name}}
         span.btn-wrapper
-        a.btn.btn-sm.btn-follow.user-sidebar__btn-follow(followable, follow-status='user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{user.id_str}}', ng-disabled='isProcessing')
+        a.btn.btn-sm.user-sidebar__btn-follow(followable, follow-status='user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{user.id_str}}', ng-disabled='isProcessing')
+        a.btn.btn-sm(href="/extract/@{{user.screen_name}}", target="_blank")
+          イラストを全て見る
+          i.fa.fa-external-link-square.i__center-padding
 
   #scroll.user-sidebar.user-sidebar--fixed
 
