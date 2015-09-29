@@ -183,13 +183,17 @@
         var config, m, twitterClient;
         config = _.isNull(data) ? {} : JSON.parse(data.configStr);
         console.log('api timeline config = ', config);
+        console.log(typeof req.query.isIncludeRetweet);
+        console.log(req.query.isIncludeRetweet);
+        console.log(config.includeRetweet);
+        console.log(req.query.isIncludeRetweet || config.includeRetweet);
         m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
         twitterClient = new TwitterClient(req.session.passport.user);
         return twitterClient[m]({
           twitterIdStr: req.params.id,
           maxId: req.params.maxId,
           count: req.params.count,
-          includeRetweet: config.includeRetweet
+          includeRetweet: req.query.isIncludeRetweet || config.includeRetweet
         }).then(function(tweets) {
           var tweetsCleaned, tweetsExcluededNgUser;
           console.log('/api/timeline/:id/:count tweets.length = ', tweets.length);

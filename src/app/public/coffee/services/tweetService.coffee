@@ -177,11 +177,12 @@ angular.module "myApp.services"
 
     # For extract. 対象ユーザの画像ツイートを限界まで種痘
     getAllPict: (params) ->
+      console.log 'getAllPict params = ', params
       return $q (resolve, reject) =>
         userAllPict = []
         maxId = maxId || 0
         assignUserAllPict = =>
-          @getUserTimeline(twitterIdStr: params.twitterIdStr, maxId: maxId, count: 200)
+          @getUserTimeline(twitterIdStr: params.twitterIdStr, maxId: maxId, count: 200, isIncludeRetweet: params.isIncludeRetweet)
           .then (data) ->
 
             # API制限くらったら return
@@ -291,7 +292,7 @@ angular.module "myApp.services"
     ###
     getUserTimeline: (params) ->
       return $q (resolve, reject) ->
-        $http.get("/api/timeline/#{params.twitterIdStr}/#{params.maxId}/#{params.count}")
+        $http.get("/api/timeline/#{params.twitterIdStr}/#{params.maxId}/#{params.count}?isIncludeRetweet=#{params.isIncludeRetweet}")
           .success (data) ->
             return resolve data
 

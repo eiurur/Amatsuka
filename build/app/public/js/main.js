@@ -652,14 +652,16 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
   }
   $scope.listIdStr = ListService.amatsukaList.data.id_str;
   $scope.filter = {
-    screenName: 'mangatimekirara',
-    keyword: 'ご注文はうさぎですか？'
+    screenName: '',
+    keyword: '',
+    isIncludeRetweet: false
   };
   $scope.extract = {};
   $scope.extract.tweets = [];
   if ($routeParams.id === void 0) {
     console.log('undefined');
   } else {
+    console.log($scope.filter.keyword);
     if ($routeParams.id.indexOf('@' === -1)) {
       console.log('@ScreenName');
       params = {
@@ -676,7 +678,8 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
       return $scope.extract.user = ListService.normalizeMember(data.data);
     }).then(function(user) {
       return TweetService.getAllPict({
-        twitterIdStr: user.id_str
+        twitterIdStr: user.id_str,
+        isIncludeRetweet: $scope.filter.isIncludeRetweet
       });
     }).then(function(tweetListContainedImage) {
       console.log(tweetListContainedImage);
@@ -684,13 +687,17 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
         return ~tweet.text.indexOf($scope.filter.keyword);
       }).sortBy('id_str').value();
     }).then(function(data) {
+      var a;
       console.log(data);
       $scope.extract.tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
+      a = $scope.extract.tweets.pop();
+      $scope.extract.tweets.push(a);
       console.log($scope.extract.tweets);
       return $scope.isLoading = false;
     });
   }
   $scope.execFilteringPictWithKeyword = function() {
+    console.log($scope.filter);
     $scope.isLoading = true;
     return TweetService.showUsers({
       screenName: $scope.filter.screenName
@@ -698,7 +705,8 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
       return $scope.extract.user = ListService.normalizeMember(data.data);
     }).then(function(user) {
       return TweetService.getAllPict({
-        twitterIdStr: user.id_str
+        twitterIdStr: user.id_str,
+        isIncludeRetweet: $scope.filter.isIncludeRetweet
       });
     }).then(function(tweetListContainedImage) {
       console.log(tweetListContainedImage);
@@ -706,8 +714,11 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
         return ~tweet.text.indexOf($scope.filter.keyword);
       }).sortBy('id_str').value();
     }).then(function(data) {
+      var a;
       console.log(data);
       $scope.extract.tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
+      a = $scope.extract.tweets.pop();
+      $scope.extract.tweets.push(a);
       console.log($scope.extract.tweets);
       return $scope.isLoading = false;
     });
@@ -1696,6 +1707,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
       });
     },
     getAllPict: function(params) {
+      console.log('getAllPict params = ', params);
       return $q((function(_this) {
         return function(resolve, reject) {
           var assignUserAllPict, maxId, userAllPict;
@@ -1705,7 +1717,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
             return _this.getUserTimeline({
               twitterIdStr: params.twitterIdStr,
               maxId: maxId,
-              count: 200
+              count: 200,
+              isIncludeRetweet: params.isIncludeRetweet
             }).then(function(data) {
               var tweetListIncludePict;
               if (_.isUndefined(data.data)) {
@@ -1828,7 +1841,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
      */
     getUserTimeline: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count + "?isIncludeRetweet=" + params.isIncludeRetweet).success(function(data) {
           return resolve(data);
         });
       });

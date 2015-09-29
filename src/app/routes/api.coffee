@@ -140,6 +140,7 @@ module.exports = (app) ->
   # GET タイムラインの情報(home_timeline, user_timeline)
   app.get '/api/timeline/:id/:maxId?/:count?', (req, res) ->
 
+
     # HACK: 重複
     ConfigProvider.findOneById
       twitterIdStr: req.session.passport.user._json.id_str
@@ -148,13 +149,18 @@ module.exports = (app) ->
       config = if _.isNull data then {} else JSON.parse(data.configStr)
       console.log 'api timeline config = ', config
 
+      console.log typeof req.query.isIncludeRetweet
+      console.log req.query.isIncludeRetweet
+      console.log config.includeRetweet
+      console.log req.query.isIncludeRetweet or config.includeRetweet
+
       m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
       twitterClient = new TwitterClient(req.session.passport.user)
       twitterClient[m]
         twitterIdStr: req.params.id
         maxId: req.params.maxId
         count: req.params.count
-        includeRetweet: config.includeRetweet
+        includeRetweet: req.query.isIncludeRetweet or config.includeRetweet
       .then (tweets) ->
         console.log '/api/timeline/:id/:count tweets.length = ', tweets.length
         tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser tweets, config.ngUsername

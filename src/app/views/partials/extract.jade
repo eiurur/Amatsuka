@@ -4,20 +4,20 @@
       label(for='screenName') Screen Name
       .input-group.input-group-sm.extract-form
         span.input-group-addon @
-        input#screenName.form-control.search-input(type='text', placeholder='(ex) 9jo_karen', ng-model="filter.screenName")
+        input#screenName.form-control.search-input(type='text', placeholder='(ex) 9jo_karen', ng-model="filter.screenName", ng-disabled="isLoading")
 
     .form-group
       label(for='filterKeyword') Filter Keyword
       .input-group.input-group-sm.extract-form
         span.input-group-addon
           i.fa.fa-font
-        input#filterKeyword.form-control.search-input(type='text', placeholder='(ex) ご注文はうさぎですか？、ごちうさ、ゆるゆり、九条カレン', ng-model="filter.keyword")
+        input#filterKeyword.form-control.search-input(type='text', placeholder='(ex) ご注文はうさぎですか？、ごちうさ、ゆるゆり、九条カレン', ng-model="filter.keyword", ng-disabled="isLoading")
 
     .checkbox
       label
-        input(type='checkbox', ng-model='filter.isIncludeRetweet')
+        input(type='checkbox', ng-model='filter.isIncludeRetweet', ng-disabled="isLoading")
         | Include Retweet
-    button.btn.btn-default(type='button', ng-click='execFilteringPictWithKeyword()') Filter Start
+    button.btn.btn-default(type='button', ng-click='execFilteringPictWithKeyword()', ng-disabled="isLoading") Filter Start
 
 .col-md-6
   .media(ng-if='extract.user.name')
@@ -46,7 +46,7 @@
     //-     video(ng-if="tweet.video_url", poster="{{picUrl}}", autoplay, loop, controls, muted)
     //-       source(ng-src="{{tweet.video_url | trusted}}", type="video/mp4")
 
-  .timeline.timeline--grid(masonry='masonry')
+  .timeline.timeline--grid(masonry='masonry', preserve-order)
     .masonry-brick.timeline__post.timeline__post--grid(ng-repeat='tweet in extract.tweets | orderBy: "totalNum": true')
       .timeline__post--header.timeline__post--header--grid
         .timeline__post--header--info.timeline__post--header--info--grid

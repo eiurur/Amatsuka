@@ -20,7 +20,7 @@ angular.module "myApp.controllers"
   $scope.listIdStr = ListService.amatsukaList.data.id_str
 
 
-  $scope.filter = screenName: 'mangatimekirara', keyword: 'ご注文はうさぎですか？'
+  $scope.filter = screenName: '', keyword: '', isIncludeRetweet: false
   $scope.extract = {}
   $scope.extract.tweets = []
 
@@ -33,6 +33,7 @@ angular.module "myApp.controllers"
 
   # 他のページからid_strまたはscreenNameをもらって遷移したとき
   else
+    console.log $scope.filter.keyword
     if $routeParams.id.indexOf '@' is -1
       console.log '@ScreenName'
       params = screenName: $routeParams.id
@@ -44,7 +45,7 @@ angular.module "myApp.controllers"
     $scope.isLoading = true
     TweetService.showUsers(params)
     .then (data) -> $scope.extract.user = ListService.normalizeMember data.data
-    .then (user) -> TweetService.getAllPict(twitterIdStr: user.id_str)
+    .then (user) -> TweetService.getAllPict(twitterIdStr: user.id_str, isIncludeRetweet: $scope.filter.isIncludeRetweet)
     .then (tweetListContainedImage) ->
       console.log tweetListContainedImage
       _.chain(tweetListContainedImage)
@@ -54,12 +55,18 @@ angular.module "myApp.controllers"
     .then (data) ->
       console.log data
       $scope.extract.tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
+
+      # タイルが重なるため、いったんリセット
+      a = $scope.extract.tweets.pop()
+      $scope.extract.tweets.push(a)
       console.log $scope.extract.tweets
       $scope.isLoading = false
 
 
 
   $scope.execFilteringPictWithKeyword = ->
+    console.log $scope.filter
+
     $scope.isLoading = true;
 
     # screenNameからuserDataを取得(id_strが必要)
@@ -69,7 +76,7 @@ angular.module "myApp.controllers"
     .then (data) -> $scope.extract.user = ListService.normalizeMember data.data
 
     # 対象ユーザの画像ツイートを3200件取得(1)
-    .then (user) -> TweetService.getAllPict(twitterIdStr: user.id_str)
+    .then (user) -> TweetService.getAllPict(twitterIdStr: user.id_str, isIncludeRetweet: $scope.filter.isIncludeRetweet)
 
     # 画像だけのツイートから、対象キーワードを含むツイートだけを抽出(3)
     .then (tweetListContainedImage) ->
@@ -91,6 +98,10 @@ angular.module "myApp.controllers"
     .then (data) ->
       console.log data
       $scope.extract.tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
+
+      # タイルが重なるため、いったんリセット
+      a = $scope.extract.tweets.pop()
+      $scope.extract.tweets.push(a)
       console.log $scope.extract.tweets
       $scope.isLoading = false
 
