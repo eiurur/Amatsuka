@@ -81,6 +81,6 @@
             i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
             // aタグがないとtextとcontrolsの間の余白がなくなり、レイアウトが崩れる。
             a
-              i.fa.fa-download(data-url="{{tweet.extended_entities.media[0].media_url}}:orig", filename="{{tweet.fileName}}", download-from-url='download-from-url')
+              i.fa.fa-download(data-url="{{tweet.picOrigUrlList}}", filename="{{tweet.fileName}}", download-from-url='download-from-url')
 
     dot-loader.user-sidebar__contents--infinitescroll-message(ng-if='isLoading')
