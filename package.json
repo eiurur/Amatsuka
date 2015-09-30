@@ -40,7 +40,7 @@
     "method-override": "^1.0.0",
     "mocha": "^2.2.1",
     "moment": "^2.8.4",
-    "mongoose": "^3.8.15",
+    "mongoose": "^4.1.9",
     "morgan": "^1.0.0",
     "node-cache": "^1.0.3",
     "node-twitter-api": "^1.5.0",
