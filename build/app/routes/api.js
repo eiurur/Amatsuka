@@ -70,10 +70,6 @@
         return pictCollection.updateIllustratorData();
       }).then(function(data) {
         return pictCollection.setIllustratorDBData(data);
-      }).then(function() {
-        return pictCollection.aggregatePict();
-      }).then(function(pickupedPictList) {
-        return pictCollection.updatePictListData(pickupedPictList);
       }).then(function(data) {
         console.log('End PictProvider.findOneAndUpdate data = ', data);
         return res.send(data);

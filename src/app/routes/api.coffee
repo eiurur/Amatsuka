@@ -54,8 +54,8 @@ module.exports = (app) ->
     .then -> pictCollection.normalizeIllustratorData()
     .then -> pictCollection.updateIllustratorData()
     .then (data) -> pictCollection.setIllustratorDBData(data)
-    .then -> pictCollection.aggregatePict()
-    .then (pickupedPictList) -> pictCollection.updatePictListData(pickupedPictList)
+    # .then -> pictCollection.aggregatePict()
+    # .then (pickupedPictList) -> pictCollection.updatePictListData(pickupedPictList)
     .then (data) ->
       console.log 'End PictProvider.findOneAndUpdate data = ', data
       res.send data
