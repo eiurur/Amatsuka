@@ -50,55 +50,55 @@ angular.module "myApp.directives", []
         , 200
         return
 
-  .directive "zoomImage", ($rootScope, TweetService) ->
+  .directive "zoomImage", ($compile, $rootScope, TweetService) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
-      html = ''
-
-      # 画像プリロード(押してから表示するより体感速度的に高速)
-      element.on 'mouseenter', ->
-        imageLayer = angular.element(document).find('.image-layer')
-        html = """
-          <div class="image-layer__container">
-            <img
-              src="#{attrs.imgSrc}:orig"
-              class="image-layer__img image-layer__img--hidden" />
-
-          </div>
-          """
-        imageLayer.html html
-
       element.on 'click', ->
 
         # windowのサイズを取得
         html = angular.element(document).find('html')
 
-        # 画面全体をオーバーレイで覆う
         imageLayer = angular.element(document).find('.image-layer')
+        containerHTML = """
+          <div class="image-layer__container">
+            <img class="image-layer__img"/>
+          </div>
+          """
+        imageLayer.html containerHTML
+
+        # 画面全体をオーバーレイで覆う
         imageLayer.addClass('image-layer__overlay')
 
-        # 拡大画像の表示
         imageLayerImg = angular.element(document).find('.image-layer__img')
-        imageLayerImg.removeClass('image-layer__img--hidden')
-        return unless imageLayerImg[0].naturalHeight?
 
-        # 拡大画像の伸長方向の決定
-        h = imageLayerImg[0].naturalHeight
-        w = imageLayerImg[0].naturalWidth
-        h_w_percent = h / w * 100
+        # 画像はいったん非表示(横に伸びた画像が表示された後にリサイズされる動作をするのだけど、それが煩い)
+        imageLayerImg.hide()
 
-        cH = html[0].clientHeight
-        cW = html[0].clientWidth
-        cH_cW_percent = cH / cW * 100
+        imageLayerImg
+        .attr 'src', "#{attrs.imgSrc}:orig"
+        .load ->
 
-        direction = if h_w_percent - cH_cW_percent >= 0 then 'h' else 'w'
+          # 拡大画像の伸長方向の決定
+          h = imageLayerImg[0].naturalHeight
+          w = imageLayerImg[0].naturalWidth
+          h_w_percent = h / w * 100
 
-        imageLayerImg.addClass("image-layer__img-#{direction}-wide")
+          cH = html[0].clientHeight
+          cW = html[0].clientWidth
+          cH_cW_percent = cH / cW * 100
+
+          direction = if h_w_percent - cH_cW_percent >= 0 then 'h' else 'w'
+
+          imageLayerImg.addClass("image-layer__img-#{direction}-wide")
+
+          # 満を持して表示
+          imageLayerImg.fadeIn(1)
+
 
         # オーバーレイ部分をクリックしたら生成した要素は全て削除する
         imageLayerContainer = angular.element(document).find('.image-layer__container')
         imageLayerContainer.on 'click', ->
-          imageLayer.html ''
+          imageLayerContainer.remove()
           imageLayer.removeClass('image-layer__overlay')
 
   .directive 'downloadFromUrl', ($q, toaster, DownloadService) ->

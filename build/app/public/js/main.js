@@ -106,39 +106,34 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
       });
     }
   };
-}]).directive("zoomImage", ["$rootScope", "TweetService", function($rootScope, TweetService) {
+}]).directive("zoomImage", ["$compile", "$rootScope", "TweetService", function($compile, $rootScope, TweetService) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
-      var html;
-      html = '';
-      element.on('mouseenter', function() {
-        var imageLayer;
-        imageLayer = angular.element(document).find('.image-layer');
-        html = "<div class=\"image-layer__container\">\n  <img\n    src=\"" + attrs.imgSrc + ":orig\"\n    class=\"image-layer__img image-layer__img--hidden\" />\n\n</div>";
-        return imageLayer.html(html);
-      });
       return element.on('click', function() {
-        var cH, cH_cW_percent, cW, direction, h, h_w_percent, imageLayer, imageLayerContainer, imageLayerImg, w;
+        var containerHTML, html, imageLayer, imageLayerContainer, imageLayerImg;
         html = angular.element(document).find('html');
         imageLayer = angular.element(document).find('.image-layer');
+        containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n</div>";
+        imageLayer.html(containerHTML);
         imageLayer.addClass('image-layer__overlay');
         imageLayerImg = angular.element(document).find('.image-layer__img');
-        imageLayerImg.removeClass('image-layer__img--hidden');
-        if (imageLayerImg[0].naturalHeight == null) {
-          return;
-        }
-        h = imageLayerImg[0].naturalHeight;
-        w = imageLayerImg[0].naturalWidth;
-        h_w_percent = h / w * 100;
-        cH = html[0].clientHeight;
-        cW = html[0].clientWidth;
-        cH_cW_percent = cH / cW * 100;
-        direction = h_w_percent - cH_cW_percent >= 0 ? 'h' : 'w';
-        imageLayerImg.addClass("image-layer__img-" + direction + "-wide");
+        imageLayerImg.hide();
+        imageLayerImg.attr('src', "" + attrs.imgSrc + ":orig").load(function() {
+          var cH, cH_cW_percent, cW, direction, h, h_w_percent, w;
+          h = imageLayerImg[0].naturalHeight;
+          w = imageLayerImg[0].naturalWidth;
+          h_w_percent = h / w * 100;
+          cH = html[0].clientHeight;
+          cW = html[0].clientWidth;
+          cH_cW_percent = cH / cW * 100;
+          direction = h_w_percent - cH_cW_percent >= 0 ? 'h' : 'w';
+          imageLayerImg.addClass("image-layer__img-" + direction + "-wide");
+          return imageLayerImg.fadeIn(1);
+        });
         imageLayerContainer = angular.element(document).find('.image-layer__container');
         return imageLayerContainer.on('click', function() {
-          imageLayer.html('');
+          imageLayerContainer.remove();
           return imageLayer.removeClass('image-layer__overlay');
         });
       });
