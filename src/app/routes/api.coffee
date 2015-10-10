@@ -48,12 +48,16 @@ module.exports = (app) ->
 
   app.post '/api/collect', (req, res) ->
     pictCollection = new PictCollection(req.session.passport.user, req.body.twitterIdStr)
+
+    # フォローしたユーザをデータベースに保存
     pictCollection.getIllustratorTwitterProfile()
     .then (data) -> pictCollection.setIllustratorRawData(data)
     .then -> pictCollection.setUserTimelineMaxId(pictCollection.getIllustratorRawData().status.id_str)
     .then -> pictCollection.normalizeIllustratorData()
     .then -> pictCollection.updateIllustratorData()
     .then (data) -> pictCollection.setIllustratorDBData(data)
+
+    #　そのユーザの人気の画像を収集してデータベースに保存
     # .then -> pictCollection.aggregatePict()
     # .then (pickupedPictList) -> pictCollection.updatePictListData(pickupedPictList)
     .then (data) ->
