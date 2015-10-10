@@ -111,16 +111,18 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function() {
-        var containerHTML, html, imageLayer, imageLayerContainer, imageLayerImg;
+        var containerHTML, html, imageLayer, imageLayerContainer, imageLayerImg, imageLayerLoading;
         html = angular.element(document).find('html');
         imageLayer = angular.element(document).find('.image-layer');
-        containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n</div>";
+        containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n  <div class=\"image-layer__loading\">\n    <img src=\"./images/loaders/tail-spin.svg\" />\n  </div>\n</div>";
         imageLayer.html(containerHTML);
         imageLayer.addClass('image-layer__overlay');
         imageLayerImg = angular.element(document).find('.image-layer__img');
+        imageLayerLoading = angular.element(document).find('.image-layer__loading');
         imageLayerImg.hide();
         imageLayerImg.attr('src', "" + attrs.imgSrc + ":orig").load(function() {
           var cH, cH_cW_percent, cW, direction, h, h_w_percent, w;
+          imageLayerLoading.remove();
           h = imageLayerImg[0].naturalHeight;
           w = imageLayerImg[0].naturalWidth;
           h_w_percent = h / w * 100;

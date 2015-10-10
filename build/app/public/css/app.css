@@ -129,6 +129,19 @@
   justify-content: center;
 }
 
+.image-layer__loading {
+  vertical-align: middle;
+  text-align: center;
+  z-index: 140001;
+  height: 100%;
+}
+.image-layer__loading img {
+  position: absolute;
+  width: 50px;
+  height: 100%;
+  z-index: 1400000;
+}
+
 .image-layer__img-h-wide {
   width: auto;
   height: 100%;

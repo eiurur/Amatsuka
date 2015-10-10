@@ -62,6 +62,9 @@ angular.module "myApp.directives", []
         containerHTML = """
           <div class="image-layer__container">
             <img class="image-layer__img"/>
+            <div class="image-layer__loading">
+              <img src="./images/loaders/tail-spin.svg" />
+            </div>
           </div>
           """
         imageLayer.html containerHTML
@@ -70,6 +73,7 @@ angular.module "myApp.directives", []
         imageLayer.addClass('image-layer__overlay')
 
         imageLayerImg = angular.element(document).find('.image-layer__img')
+        imageLayerLoading = angular.element(document).find('.image-layer__loading')
 
         # 画像はいったん非表示(横に伸びた画像が表示された後にリサイズされる動作をするのだけど、それが煩い)
         imageLayerImg.hide()
@@ -77,6 +81,7 @@ angular.module "myApp.directives", []
         imageLayerImg
         .attr 'src', "#{attrs.imgSrc}:orig"
         .load ->
+          imageLayerLoading.remove()
 
           # 拡大画像の伸長方向の決定
           h = imageLayerImg[0].naturalHeight
