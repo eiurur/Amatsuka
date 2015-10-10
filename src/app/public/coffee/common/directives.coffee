@@ -103,7 +103,7 @@ angular.module "myApp.directives", []
         # オーバーレイ部分をクリックしたら生成した要素は全て削除する
         imageLayerContainer = angular.element(document).find('.image-layer__container')
         imageLayerContainer.on 'click', ->
-          imageLayerContainer.remove()
+          imageLayer.html ''
           imageLayer.removeClass('image-layer__overlay')
 
   .directive 'downloadFromUrl', ($q, toaster, DownloadService) ->

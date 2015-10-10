@@ -135,7 +135,7 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
         });
         imageLayerContainer = angular.element(document).find('.image-layer__container');
         return imageLayerContainer.on('click', function() {
-          imageLayerContainer.remove();
+          imageLayer.html('');
           return imageLayer.removeClass('image-layer__overlay');
         });
       });
