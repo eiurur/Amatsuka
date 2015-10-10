@@ -9,7 +9,7 @@
     input.form-control.search-input(type='text', placeholder='Search', ng-model="searchWord.screen_name", ng-model-options="{debounce: 300}")
 
   div(infinite-scroll='list.loadMoreMember()')
-    .col-md-4.col-sm-6(ng-repeat="member in list.members | filter:searchWord")
+    .col-md-4.col-sm-6(ng-repeat="member in list.members")
       .member__divider
       .media
         a.pull-left(twitter-id-str="{{member.id_str}}", show-tweet="show-tweet")

@@ -511,6 +511,31 @@ angular.module("myApp.filters", []).filter("interpolate", ["version", function(v
   return function(url) {
     return $sce.trustAsResourceUrl(url);
   };
+}]).filter('filteringMember', ["AmatsukaList", function(AmatsukaList) {
+  return function(members, searchWord) {
+    var list, newMembers;
+    console.log('===========> ');
+    console.log(list = new AmatsukaList('Amatsuka'));
+    console.log('searchWord', searchWord);
+    if (!searchWord) {
+      return members;
+    }
+    if (!searchWord.screen_name) {
+      return members;
+    }
+    console.log('AKAKAK');
+    newMembers = [];
+    list.amatsukaMemberList.forEach(function(element, index, array) {
+      if (newMembers.length > 20) {
+        return;
+      }
+      console.log('newMembers = ', newMembers);
+      if (element.screen_name.indexOf(searchWord.screen_name) !== -1) {
+        return newMembers.push(element);
+      }
+    });
+    return newMembers;
+  };
 }]);
 
 angular.module("myApp.services", []).service("CommonService", function() {
@@ -916,7 +941,30 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$locati
   if (!ListService.hasListData()) {
     $location.path('/');
   }
-  return $scope.list = new AmatsukaList('Amatsuka');
+  $scope.list = new AmatsukaList('Amatsuka');
+  return $scope.$watch('searchWord.screen_name', function(newData, oldData) {
+    var idx, member, _i, _len, _ref;
+    if (newData === oldData) {
+      return;
+    }
+    if (newData === '') {
+      $scope.list.members = [];
+      $scope.list.memberIdx = 0;
+      _ref = $scope.list.amatsukaMemberList;
+      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+        member = _ref[idx];
+        if (idx > 20) {
+          return;
+        }
+        $scope.list.members.push(member);
+        $scope.list.memberIdx++;
+      }
+      return;
+    }
+    return $scope.list.members = $scope.list.amatsukaMemberList.filter(function(element, index, array) {
+      return element.screen_name.indexOf(newData) !== -1;
+    });
+  });
 }]);
 
 angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, $location, AuthService, TweetService, ListService, Tweets) {
