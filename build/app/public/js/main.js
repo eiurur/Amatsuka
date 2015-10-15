@@ -511,31 +511,6 @@ angular.module("myApp.filters", []).filter("interpolate", ["version", function(v
   return function(url) {
     return $sce.trustAsResourceUrl(url);
   };
-}]).filter('filteringMember', ["AmatsukaList", function(AmatsukaList) {
-  return function(members, searchWord) {
-    var list, newMembers;
-    console.log('===========> ');
-    console.log(list = new AmatsukaList('Amatsuka'));
-    console.log('searchWord', searchWord);
-    if (!searchWord) {
-      return members;
-    }
-    if (!searchWord.screen_name) {
-      return members;
-    }
-    console.log('AKAKAK');
-    newMembers = [];
-    list.amatsukaMemberList.forEach(function(element, index, array) {
-      if (newMembers.length > 20) {
-        return;
-      }
-      console.log('newMembers = ', newMembers);
-      if (element.screen_name.indexOf(searchWord.screen_name) !== -1) {
-        return newMembers.push(element);
-      }
-    });
-    return newMembers;
-  };
 }]);
 
 angular.module("myApp.services", []).service("CommonService", function() {
