@@ -1,10 +1,10 @@
 .col-md-6
-  form
+  form(name="extractForm")
     .form-group
       label(for='screenName') Screen Name
       .input-group.input-group-sm.extract-form
         span.input-group-addon @
-        input#screenName.form-control.search-input(type='text', placeholder='(ex) shiratamacaron', ng-model="filter.screenName", ng-disabled="isLoading")
+        input#screenName.form-control.search-input(type='text', name='screenName', placeholder='(ex) shiratamacaron', ng-model="filter.screenName", ng-disabled="isLoading", required)
 
     .form-group
       label(for='filterKeyword') Filter Keyword
@@ -17,7 +17,7 @@
       label
         input(type='checkbox', ng-model='filter.isIncludeRetweet', ng-disabled="isLoading")
         | Include Retweet
-    button.btn.btn-default(type='button', ng-click='execFilteringPictWithKeyword()', ng-disabled="isLoading") Filter Start
+    button.btn.btn-default(type='button', ng-click='execFilteringPictWithKeyword()', ng-disabled="isLoading || extractForm.screenName.$error.required") Filter Start
 
 .col-md-6
   .media(ng-if='extract.user.name')
