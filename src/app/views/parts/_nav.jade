@@ -42,8 +42,8 @@ nav.navbar-default.navbar-fixed-top(ic-nav-autoclose)
         li.dropdown
           a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
             //- i.fa.fa-caret-down
-            img.navbar-icon(ng-src="{{user._json.profile_image_url_https}}")
-            | {{user.username}}
+            img.navbar-icon(ng-src="{{::user._json.profile_image_url_https}}")
+            | {{::user.username}}
             //- | @{{user.username}}
             //- span.caret
           ul.dropdown-menu
@@ -56,9 +56,9 @@ nav.navbar-default.navbar-fixed-top(ic-nav-autoclose)
                 i.fa.fa-question-circle
                 | Help
             li
-              a.menu-user(href='https://twitter.com/{{user.username}}', target='_blank')
+              a.menu-user(href='https://twitter.com/{{::user.username}}', target='_blank')
                 i.fa.fa-twitter
-                | @{{user.username}}
+                | @{{::user.username}}
             li.divider(role='separator')
             li
               a(href='/logout', target='_self')

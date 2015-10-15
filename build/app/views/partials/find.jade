@@ -7,17 +7,17 @@ dot-loader.user-sidebar__contents--box-loading-init(ng-if='!pictList.items')
       .row
         .col-sm-12
           .media.find__media
-            a.pull-left(twitter-id-str="{{pict.postedBy.twitterIdStr}}", show-tweet="show-tweet")
-              img.media-object.thumbnail-img.fade(ng-src='{{pict.postedBy.icon}}', img-preload="img-preload")
+            a.pull-left(twitter-id-str="{{::pict.postedBy.twitterIdStr}}", show-tweet="show-tweet")
+              img.media-object.thumbnail-img.fade(ng-src='{{::pict.postedBy.icon}}', img-preload="img-preload")
             .media-body
               h4.media-heading
-                span.name {{pict.postedBy.name}}
-                span.screen-name @{{pict.postedBy.screenName}}
-              a.link(href='{{pict.postedBy.url}}', target='_blank') {{pict.postedBy.url}}
+                span.name {{::pict.postedBy.name}}
+                span.screen-name @{{::pict.postedBy.screenName}}
+              a.link(href='{{::pict.postedBy.url}}', target='_blank') {{::pict.postedBy.url}}
       .row.find__pict-tweet--container
         .col-md-12
           .find__pict-tweet--img__container.col-xs-6.col-sm-6.col-md-4.col-lg-3(ng-repeat="pictTweet in pict.pictTweetList | limitTo: 12")
-            .find__pict-tweet--img(style="background-image: url('{{pictTweet.mediaUrl}}:small')", zoom-image="zoom-image", data-img-src="{{pictTweet.mediaUrl}}", tweet-id-str='{{pictTweet.tweetIdStr}}', show-statuses="show-statuses")
+            .find__pict-tweet--img(style="background-image: url('{{::pictTweet.mediaUrl}}:small')", zoom-image="zoom-image", data-img-src="{{::pictTweet.mediaUrl}}", tweet-id-str='{{::pictTweet.tweetIdStr}}', show-statuses="show-statuses")
 
       .find__divider(ng-show="!$last")
 
