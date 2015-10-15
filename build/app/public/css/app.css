@@ -335,13 +335,13 @@
 }
 
 .box-loading-padding-vertical {
-  padding: 10px 0;
+  padding: 30px 0;
 }
 
 .loading-bar {
   width: 100%;
   max-width: 540px;
-  padding-top: 20px;
+  padding: 30px 0;
   color: #a1a1a1;
 }
 
