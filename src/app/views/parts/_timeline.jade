@@ -33,7 +33,7 @@ span(ng-if='layoutType == "grid"')
         .timeline__post--footer--contents
           .timeline__post--footer--contents--controls
             i.fa.fa-retweet.icon-retweet(retweet-num="tweet.retweetNum", retweeted='tweet.retweeted', tweet-id-str='{{::tweet.tweetIdStr}}', retweetable='retweetable')  {{tweet.retweetNum}}
-            i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{::tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
+            i.fa.fa-heart.icon-heart(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{::tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
             // aタグがないとtextとcontrolsの間の余白がなくなり、レイアウトが崩れる。
             a
               i.fa.fa-download(data-url="{{::tweet.picOrigUrlList}}", filename="{{::tweet.fileName}}", download-from-url='download-from-url')
@@ -74,7 +74,7 @@ span(ng-if='layoutType == "list"')
         .timeline__post--footer--contents
           .timeline__post--footer--contents--controls
             i.fa.fa-retweet.icon-retweet(retweet-num="tweet.retweetNum", retweeted='tweet.retweeted', tweet-id-str='{{::tweet.tweetIdStr}}', retweetable='retweetable')  {{tweet.retweetNum}}
-            i.fa.fa-star.icon-star(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{::tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
+            i.fa.fa-heart.icon-heart(fav-num="tweet.favNum", favorited='tweet.favorited', tweet-id-str='{{::tweet.tweetIdStr}}', favoritable='favoritable')  {{tweet.favNum}}
             a
               i.fa.fa-download(data-url="{{::tweet.extended_entities.media[0].media_url}}:orig", filename="{{::tweet.fileName}}", download-from-url='download-from-url')
     .loading-bar

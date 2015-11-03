@@ -22,15 +22,15 @@
   color: #5C913B !important;
 }
 
-.icon-star {
+.icon-heart {
   cursor: pointer;
 }
-.icon-star:hover {
-  color: #FFAC33 !important;
+.icon-heart:hover {
+  color: #E2264D !important;
 }
 
 .favorited {
-  color: #FFAC33 !important;
+  color: #E2264D !important;
 }
 
 .fa-download {
