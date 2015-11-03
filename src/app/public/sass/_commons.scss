@@ -449,13 +449,19 @@
 
 
 /**
- * Button
+ * For Smartphone
  */
 @media(max-width:480px)
 {
   .btn-stretch
   {
     width: 100%;
+  }
+
+  .arrow-top {
+    right: 15px;
+    bottom: 15px;
+    padding: 15px;
   }
 }
 

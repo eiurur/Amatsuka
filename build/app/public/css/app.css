@@ -464,11 +464,17 @@
 }
 
 /**
- * Button
+ * For Smartphone
  */
 @media (max-width: 480px) {
   .btn-stretch {
     width: 100%;
+  }
+
+  .arrow-top {
+    right: 15px;
+    bottom: 15px;
+    padding: 15px;
   }
 }
 /**
@@ -1030,6 +1036,7 @@ i {
 
   .timeline__post {
     padding-top: 15px;
+    border-radius: 0;
   }
 
   .timeline__post--header {
@@ -1140,7 +1147,7 @@ i {
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  width: 80%;
+  width: 90%;
   max-width: 600px;
   height: 100%;
   background: white;
@@ -1189,6 +1196,10 @@ i {
   background-color: #CCD1D9;
 }
 
+.user-sidebar__icon-all-view:before {
+  content: "イラストを全て見る";
+}
+
 .user-sidebar__contents {
   width: 100%;
   margin: 0 auto;
@@ -1197,7 +1208,6 @@ i {
 
 .user-sidebar__profile {
   width: 100%;
-  min-height: 150px;
   padding: 100px 30px 20px;
   color: #292929;
 }
@@ -1259,8 +1269,11 @@ i {
   }
 
   .user-sidebar__profile {
-    padding: 0 15px;
-    min-height: 100px;
+    padding: 15px;
+  }
+
+  .user-sidebar__profile--description {
+    padding-top: 25px;
   }
 
   .user-sidebar__post {
@@ -1271,12 +1284,17 @@ i {
    * プロフィール群
    */
   .user-sidebar__controll {
-    width: 80%;
-    padding: 20px 15px 0;
+    width: 90%;
+    padding: 15px;
+    min-height: 0px;
   }
 
   .media .thumbnail-img {
     max-width: 48px;
+  }
+
+  .media .media-body {
+    padding-left: 0;
   }
 
   .media-heading {
@@ -1285,6 +1303,10 @@ i {
 
   .btn-follow {
     margin: 0;
+  }
+
+  .user-sidebar__icon-all-view:before {
+    content: "全て見る";
   }
 
   .user-sidebar__profile--description {

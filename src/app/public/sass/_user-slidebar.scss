@@ -12,7 +12,7 @@
   // 慣性スクロールを有効にする
   -webkit-overflow-scrolling: touch;
 
-  width: 80%;
+  width: 90%;
   max-width: 600px;
   height: 100%;
   background: white;
@@ -81,6 +81,11 @@
   }
 }
 
+
+.user-sidebar__icon-all-view:before {
+  content: "イラストを全て見る";
+}
+
 .user-sidebar__contents
 {
   // width: 620px;
@@ -92,7 +97,7 @@
 .user-sidebar__profile
 {
   width: 100%;
-  min-height: 150px;
+  // min-height: 150px;
   padding: 100px 30px 20px;
 
   color: $sidebar-color;
@@ -173,8 +178,12 @@
   }
 
   .user-sidebar__profile {
-    padding: 0 $timeline__post--padding-horizontal;
-    min-height: 100px;
+    padding: $timeline__post--padding-horizontal;
+    // min-height: 100px;
+  }
+
+  .user-sidebar__profile--description {
+      padding-top: 25px;
   }
 
   .user-sidebar__post
@@ -188,13 +197,19 @@
   .user-sidebar__controll
   {
     // padding: 10px 60px 0 0;
-    width: 80%;
-    padding: 20px 15px 0;
+    width: 90%;
+    padding: 15px;
+    min-height: 0px;
   }
 
   .media .thumbnail-img
   {
     max-width: 48px;
+  }
+
+  .media .media-body
+  {
+    padding-left: 0;  // reset
   }
 
   .media-heading
@@ -204,6 +219,10 @@
 
   .btn-follow  {
     margin: 0;
+  }
+
+  .user-sidebar__icon-all-view:before {
+    content: "全て見る";
   }
 
   .user-sidebar__profile--description {
