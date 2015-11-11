@@ -1,5 +1,12 @@
 @charset "utf-8";
 
+
+// リセット
+.timeline__container {
+    margin-right: 0;
+    margin-left: 0;
+}
+
 .timeline
 {
     //width:  540px;
@@ -283,6 +290,12 @@
  */
 @media(max-width:480px)
 {
+
+    .timeline__container {
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+
     .timeline
     {
         // アイコン表示するならこっち
@@ -293,6 +306,7 @@
     .timeline__post
     {
         padding-top: $timeline__post--padding-vertical;
+        border-radius: 0; // reset用
     }
 
     // スマホ用のtumblrっぽいレイアウトにするならこれ
