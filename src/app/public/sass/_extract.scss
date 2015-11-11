@@ -35,6 +35,17 @@
         margin: 0.1%;
         max-width: 16%;
     }
+}
 
 
+/**
+ * [width description]
+ * Under 480px
+ * For iPhone6, etc.
+ */
+@media(max-width:480px)
+{
+  .extract__form-profile-between-padding {
+    padding-top: 70px;
+  }
 }

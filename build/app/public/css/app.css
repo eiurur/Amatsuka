@@ -1448,6 +1448,16 @@ i {
   }
 }
 
+/**
+ * [width description]
+ * Under 480px
+ * For iPhone6, etc.
+ */
+@media (max-width: 480px) {
+  .extract__form-profile-between-padding {
+    padding-top: 70px;
+  }
+}
 tags-input .tags {
   color: white;
   border-color: #a1a1a1;
