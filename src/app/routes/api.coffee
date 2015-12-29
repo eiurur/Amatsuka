@@ -39,6 +39,13 @@ module.exports = (app) ->
       res.json base64Data: base64Data
 
 
+  app.get '/api/collect/count', (req, res) ->
+    PictProvider.count()
+    .then (count) ->
+      res.json count: count
+    .catch (err) ->
+      console.log err
+
   app.get '/api/collect/:skip?/:limit?', (req, res) ->
     PictProvider.find
       skip: req.params.skip - 0
@@ -143,7 +150,6 @@ module.exports = (app) ->
 
   # GET タイムラインの情報(home_timeline, user_timeline)
   app.get '/api/timeline/:id/:maxId?/:count?', (req, res) ->
-
 
     # HACK: 重複
     ConfigProvider.findOneById

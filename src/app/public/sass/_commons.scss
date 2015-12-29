@@ -156,6 +156,8 @@
   height: 100%;
   // padding: 30px;
 
+  box-shadow: rgb(0, 0, 0) 0px 4px 30px;
+
   @include align-items(center);
   @include display-flex();
   @include justify-content(center);

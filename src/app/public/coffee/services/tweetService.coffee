@@ -175,6 +175,14 @@ angular.module "myApp.services"
           .error (data) ->
             return reject data
 
+    getPictCount: ->
+      return $q (resolve, reject) ->
+        $http.get("/api/collect/count")
+          .success (data) ->
+            return resolve data.count
+          .error (data) ->
+            return reject data
+
     # For extract. 対象ユーザの画像ツイートを限界まで種痘
     getAllPict: (params) ->
       console.log 'getAllPict params = ', params

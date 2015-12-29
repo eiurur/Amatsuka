@@ -49,6 +49,15 @@
         });
       });
     });
+    app.get('/api/collect/count', function(req, res) {
+      return PictProvider.count().then(function(count) {
+        return res.json({
+          count: count
+        });
+      })["catch"](function(err) {
+        return console.log(err);
+      });
+    });
     app.get('/api/collect/:skip?/:limit?', function(req, res) {
       return PictProvider.find({
         skip: req.params.skip - 0,

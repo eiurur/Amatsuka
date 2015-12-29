@@ -187,6 +187,16 @@ class PictProvider
         if err then return reject err
         return resolve data
 
+  count: ->
+    return new Promise (resolve, reject) ->
+      console.log "\n============> Pict count\n"
+      console.time 'Pict count'
+      Pict.count {}, (err, count) ->
+        console.log count
+        console.timeEnd 'Pict count'
+        if err then return reject err
+        return resolve count
+
 
 class TLProvider
 

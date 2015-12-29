@@ -334,24 +334,50 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       this.limit = 10;
       this.skip = 0;
       this.items = [];
+      this.numIllustorator = 0;
+      this.numMaxSkip = 0;
+      this.doneSkip = [];
     }
 
-    Pict.prototype.load = function() {
-      if (this.busy || this.isLast) {
-        return;
+    Pict.prototype.randomAccess = function() {
+      var skip;
+      while (true) {
+        skip = _.sample(_.range(this.numMaxSkip));
+        if (!this.doneSkip.includes(skip) || this.doneSkip.length >= this.numMaxSkip) {
+          break;
+        }
       }
-      this.busy = true;
-      return TweetService.getPict({
+      this.doneSkip.push(skip);
+      this.skip = skip * this.limit;
+      TweetService.getPict({
         skip: this.skip,
         limit: this.limit
       }).then((function(_this) {
         return function(data) {
           _this.items = _this.items.concat(data);
           _this.skip += _this.limit;
-          if (data.length === 0) {
+          if (_this.doneSkip.length >= _this.numMaxSkip) {
             _this.isLast = true;
           }
-          _this.busy = false;
+          return _this.busy = false;
+        };
+      })(this));
+    };
+
+    Pict.prototype.load = function() {
+      if (this.busy || this.isLast) {
+        return;
+      }
+      this.busy = true;
+      if (this.numIllustorator !== 0) {
+        this.randomAccess();
+        return;
+      }
+      return TweetService.getPictCount().then((function(_this) {
+        return function(count) {
+          _this.numIllustorator = count;
+          _this.numMaxSkip = (_this.numIllustorator - 1) / _this.limit;
+          return _this.randomAccess();
         };
       })(this));
     };
@@ -1723,6 +1749,15 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
       return $q(function(resolve, reject) {
         return $http.get("/api/collect/" + params.skip + "/" + params.limit).success(function(data) {
           return resolve(data);
+        }).error(function(data) {
+          return reject(data);
+        });
+      });
+    },
+    getPictCount: function() {
+      return $q(function(resolve, reject) {
+        return $http.get("/api/collect/count").success(function(data) {
+          return resolve(data.count);
         }).error(function(data) {
           return reject(data);
         });

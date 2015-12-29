@@ -238,6 +238,21 @@
       });
     };
 
+    PictProvider.prototype.count = function() {
+      return new Promise(function(resolve, reject) {
+        console.log("\n============> Pict count\n");
+        console.time('Pict count');
+        return Pict.count({}, function(err, count) {
+          console.log(count);
+          console.timeEnd('Pict count');
+          if (err) {
+            return reject(err);
+          }
+          return resolve(count);
+        });
+      });
+    };
+
     return PictProvider;
 
   })();
