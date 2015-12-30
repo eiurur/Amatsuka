@@ -8,24 +8,24 @@ PictCollection        = require path.resolve 'build', 'lib', 'PictCollection'
 else
   require path.resolve 'build', 'lib', 'configs', 'development'
 
-console.log '\n====================> Get Repository Data from Database'
-IllustratorProvider.find()
-.then (profileList) ->
-  console.log profileList
-  console.log profileList.length
+exports.cronTaskCollectPicts = ->
+  IllustratorProvider.find()
+  .then (profileList) ->
+    console.log profileList
+    console.log profileList.length
 
-  user =
-    _json:
-      id_str: settings.TW_ID_STR
-    twitter_token: settings.TW_AT
-    twitter_token_secret: settings.TW_AS
+    user =
+      _json:
+        id_str: settings.TW_ID_STR
+      twitter_token: settings.TW_AT
+      twitter_token_secret: settings.TW_AS
 
-  promises = profileList.map (profile) -> return pictCollection = new PictCollection(user, profile.twitterIdStr)
+    promises = profileList.map (profile) -> return pictCollection = new PictCollection(user, profile.twitterIdStr)
 
-  Promise.each promises, (pictCollectiont) -> pictCollectiont.collectProfileAndPicts()
-  .then ->
-    console.log 'Succeeded!'
-    return
-  .catch (err) ->
-    console.error 'Failed.', err
-    return
+    Promise.each promises, (pictCollectiont) -> pictCollectiont.collectProfileAndPicts()
+    .then ->
+      console.log 'Succeeded!'
+      return
+    .catch (err) ->
+      console.error 'Failed.', err
+      return

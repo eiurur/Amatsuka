@@ -17,9 +17,10 @@ module.exports = class PictCollection
     @isContinue = true
     @REQUEST_INTERVAL = 5 * 1000
 
+  # For Cron task
   collectProfileAndPicts: ->
     return new Promise (resolve, reject) =>
-      console.log 'start collect'
+      # console.log 'start collect'
       my.delayPromise @REQUEST_INTERVAL
       .then => @getIllustratorTwitterProfile()
       .then (data) => @setIllustratorRawData(data)
@@ -79,9 +80,9 @@ module.exports = class PictCollection
             return o
           .value()
 
-          console.log "\n\n=============>"
-          console.log tweetListIncludePict
-          console.log tweetListIncludePict.length
+          # console.log "\n\n=============>"
+          # console.log tweetListIncludePict
+          # console.log tweetListIncludePict.length
 
           @pictList = @pictList.concat(tweetListIncludePict)
           resolve()
@@ -89,9 +90,9 @@ module.exports = class PictCollection
 
     ).then (data) =>
 
-      console.log "\n\nAll =============>"
-      console.log @pictList
-      console.log @pictList.length
+      # console.log "\n\nAll =============>"
+      # console.log @pictList
+      # console.log @pictList.length
 
       @pickupPictListTop12(@pictList)
 

@@ -1,11 +1,13 @@
 (function() {
-  var async, path, serve, settings, tasks4startUp;
+  var async, manageCron, path, serve, settings, tasks4startUp;
 
   path = require('path');
 
   async = require('async');
 
   serve = require(path.resolve('build', 'app', 'serve')).serve;
+
+  manageCron = require(path.resolve('build', 'lib', 'manageCron')).manageCron;
 
   settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
 
@@ -16,6 +18,12 @@
       setTimeout((function() {
         return callback(null, "Serve\n");
       }), settings.GRACE_TIME_SERVER);
+    }, function(callback) {
+      console.log("■ collect profile and picts task start");
+      manageCron(null, "setup cron");
+      setTimeout((function() {
+        return callback(null, "Done! collect task\n");
+      }), 0);
     }
   ];
 
