@@ -3,6 +3,7 @@ TW_CK         = process.env.TW_CK
 TW_CS         = process.env.TW_CS
 TW_AT         = process.env.TW_AT
 TW_AS         = process.env.TW_AS
+TW_ID_STR     = process.env.TW_ID_STR
 CALLBACK_URL  = process.env.CALLBACK_URL
 COOKIE_SECRET = process.env.COOKIE_SECRET
 
@@ -11,6 +12,7 @@ exports.settings =
   TW_CS: TW_CS
   TW_AT: TW_AT
   TW_AS: TW_AS
+  TW_ID_STR: TW_ID_STR
   CALLBACK_URL: CALLBACK_URL
   COOKIE_SECRET: COOKIE_SECRET
   GRACE_TIME_SERVER: 0
