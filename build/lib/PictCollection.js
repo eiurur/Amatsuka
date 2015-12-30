@@ -24,7 +24,7 @@
       this.pictList = [];
       this.userTimelineMaxId = null;
       this.isContinue = true;
-      this.REQUEST_INTERVAL = 5 * 1000;
+      this.REQUEST_INTERVAL = 10 * 1000;
     }
 
     PictCollection.prototype.collectProfileAndPicts = function() {
@@ -83,10 +83,22 @@
               if (_.isUndefined(data)) {
                 _this.isContinue = false;
                 reject();
+                return;
               }
               if (data.length < 2) {
                 _this.isContinue = false;
                 resolve();
+                return;
+              }
+              if (_.isNull(data[data.length - 1]) || _.isUndefined(data[data.length - 1])) {
+                _this.isContinue = false;
+                console.log('_.isNull(data[data.length - 1]) or _.isUndefined(data[data.length - 1])');
+                console.log(' _.isEmpty @pictList = ', _.isEmpty(_this.pictList));
+                if (_.isEmpty(_this.pictList)) {
+                  reject();
+                }
+                resolve();
+                return;
               }
               _this.setUserTimelineMaxId(my.decStrNum(data[data.length - 1].id_str));
               tweetListIncludePict = _.chain(data).filter(function(tweet) {
@@ -109,6 +121,13 @@
         };
       })(this)).then((function(_this) {
         return function(data) {
+          console.log("\n\nAll =============>");
+          console.log(_this.pictList.length);
+          return _this.pickupPictListTop12(_this.pictList);
+        };
+      })(this))["catch"]((function(_this) {
+        return function(err) {
+          console.log('Reject aggregatePict');
           return _this.pickupPictListTop12(_this.pictList);
         };
       })(this));
@@ -120,16 +139,17 @@
     };
 
     PictCollection.prototype.updatePictListData = function(pickupedPictList) {
+      console.log('===> updatePictListData :: ', pickupedPictList);
+      console.log('===> @illustratorDBData._id :: ', this.illustratorDBData._id);
       return new Promise((function(_this) {
         return function(resolve, reject) {
           return PictProvider.findOneAndUpdate({
             postedBy: _this.illustratorDBData._id,
             pictTweetList: pickupedPictList
-          }, function(err, data) {
-            if (err) {
-              return reject(err);
-            }
+          }).then(function(data) {
             return resolve(data);
+          })["catch"](function(err) {
+            return reject(err);
           });
         };
       })(this));

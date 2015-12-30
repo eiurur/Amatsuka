@@ -15,7 +15,7 @@ module.exports = class PictCollection
     @pictList = []
     @userTimelineMaxId = null
     @isContinue = true
-    @REQUEST_INTERVAL = 5 * 1000
+    @REQUEST_INTERVAL = 10 * 1000
 
   # For Cron task
   collectProfileAndPicts: ->
@@ -55,11 +55,21 @@ module.exports = class PictCollection
           if _.isUndefined(data)
             @isContinue = false
             reject()
+            return
 
-          # 全部読み終えたら(残りがないとき、APIは最後のツイートだけ取得する === 1) return
+          # 全部読み終えたら(残りがないとき、APIは最後のツイートだけ取得する === 1)
           if data.length < 2
             @isContinue = false
             resolve()
+            return
+
+          if _.isNull(data[data.length - 1]) or _.isUndefined(data[data.length - 1])
+            @isContinue = false
+            console.log '_.isNull(data[data.length - 1]) or _.isUndefined(data[data.length - 1])'
+            console.log ' _.isEmpty @pictList = ',  _.isEmpty @pictList
+            reject() if _.isEmpty @pictList
+            resolve()
+            return
 
           @setUserTimelineMaxId my.decStrNum data[data.length - 1].id_str
 
@@ -91,10 +101,12 @@ module.exports = class PictCollection
 
     ).then (data) =>
 
-      # console.log "\n\nAll =============>"
-      # console.log @pictList
-      # console.log @pictList.length
+      console.log "\n\nAll =============>"
+      console.log @pictList.length
 
+      @pickupPictListTop12(@pictList)
+    .catch (err) =>
+      console.log 'Reject aggregatePict'
       @pickupPictListTop12(@pictList)
 
   pickupPictListTop12: (pictList) ->
@@ -105,13 +117,14 @@ module.exports = class PictCollection
     .value()
 
   updatePictListData: (pickupedPictList) ->
+    console.log '===> updatePictListData :: ', pickupedPictList
+    console.log '===> @illustratorDBData._id :: ', @illustratorDBData._id
     return new Promise (resolve, reject) =>
       PictProvider.findOneAndUpdate
         postedBy: @illustratorDBData._id
         pictTweetList: pickupedPictList
-      , (err, data) ->
-        return reject err  if err
-        return resolve data
+      .then (data) -> return resolve data
+      .catch (err) -> return reject err
 
   setUserTimelineMaxId: (maxId) ->
     @userTimelineMaxId = maxId
