@@ -1,19 +1,17 @@
 (function() {
-  var Promise, UserProvider, dir, moment, my, settings, _;
+  var UserProvider, moment, my, path, settings, _;
 
-  dir = '../../lib/';
+  path = require('path');
 
   moment = require('moment');
 
   _ = require('lodash');
 
-  Promise = require('es6-promise').Promise;
+  my = require(path.resolve('build', 'lib', 'my')).my;
 
-  my = require(dir + 'my');
+  UserProvider = require(path.resolve('build', 'lib', 'model')).UserProvider;
 
-  UserProvider = require(dir + 'model').UserProvider;
-
-  settings = process.env.NODE_ENV === 'production' ? require(dir + 'configs/production') : require(dir + 'configs/development');
+  settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
 
   module.exports = function(app) {
     app.get('/logout', function(req, res) {

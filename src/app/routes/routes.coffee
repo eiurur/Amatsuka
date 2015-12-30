@@ -1,13 +1,12 @@
-dir              = '../../lib/'
+path             = require 'path'
 moment           = require 'moment'
 _                = require 'lodash'
-{Promise}        = require 'es6-promise'
-my               = require dir + 'my'
-{UserProvider}   = require dir + 'model'
+{my}             = require path.resolve 'build', 'lib', 'my'
+{UserProvider}   = require path.resolve 'build', 'lib', 'model'
 settings         = if process.env.NODE_ENV is 'production'
-  require dir + 'configs/production'
+  require path.resolve 'build', 'lib', 'configs', 'production'
 else
-  require dir + 'configs/development'
+  require path.resolve 'build', 'lib', 'configs', 'development'
 
 module.exports = (app) ->
 

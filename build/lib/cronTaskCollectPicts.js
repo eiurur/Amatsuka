@@ -16,7 +16,6 @@
   exports.cronTaskCollectPicts = function() {
     return IllustratorProvider.find().then(function(profileList) {
       var promises, user;
-      console.log(profileList);
       console.log(profileList.length);
       user = {
         _json: {

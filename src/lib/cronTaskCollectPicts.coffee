@@ -11,7 +11,6 @@ else
 exports.cronTaskCollectPicts = ->
   IllustratorProvider.find()
   .then (profileList) ->
-    console.log profileList
     console.log profileList.length
 
     user =
