@@ -53,7 +53,7 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
 
-  app.post '/api/collect', (req, res) ->
+  app.post '/api/collect/profile', (req, res) ->
     pictCollection = new PictCollection(req.session.passport.user, req.body.twitterIdStr)
 
     # フォローしたユーザをデータベースに保存
@@ -63,16 +63,11 @@ module.exports = (app) ->
     .then -> pictCollection.normalizeIllustratorData()
     .then -> pictCollection.updateIllustratorData()
     .then (data) -> pictCollection.setIllustratorDBData(data)
-
-    #　そのユーザの人気の画像を収集してデータベースに保存
-    # .then -> pictCollection.aggregatePict()
-    # .then (pickupedPictList) -> pictCollection.updatePictListData(pickupedPictList)
     .then (data) ->
       console.log 'End PictProvider.findOneAndUpdate data = ', data
       res.send data
     .catch (err) ->
       console.log err
-
 
   ###
   Twitter

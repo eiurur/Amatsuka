@@ -173,6 +173,11 @@
         };
         process.nextTick(loop_);
         return resolver.promise;
+      },
+      delayPromise: function(ms) {
+        return new Promise(function(resolve) {
+          return setTimeout(resolve, ms);
+        });
       }
     };
   };

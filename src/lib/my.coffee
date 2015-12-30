@@ -155,4 +155,8 @@ my = ->
     process.nextTick loop_
     resolver.promise
 
+  delayPromise: (ms) ->
+    return new Promise (resolve) -> setTimeout resolve, ms
+
+
 exports.my = my()

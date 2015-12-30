@@ -159,9 +159,9 @@ angular.module "myApp.services"
         !_.has(tweet, 'extended_entities') or
         _.isEmpty(tweet.extended_entities.media)
 
-    collect: (params) ->
+    collectProfile: (params) ->
       return $q (resolve, reject) ->
-        $http.post('/api/collect', params)
+        $http.post('/api/collect/profile', params)
           .success (data) ->
             return resolve data
           .error (data) ->

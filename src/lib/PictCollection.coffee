@@ -15,6 +15,22 @@ module.exports = class PictCollection
     @pictList = []
     @userTimelineMaxId = null
     @isContinue = true
+    @REQUEST_INTERVAL = 5 * 1000
+
+  collectProfileAndPicts: ->
+    return new Promise (resolve, reject) =>
+      console.log 'start collect'
+      my.delayPromise @REQUEST_INTERVAL
+      .then => @getIllustratorTwitterProfile()
+      .then (data) => @setIllustratorRawData(data)
+      .then => @setUserTimelineMaxId(@getIllustratorRawData().status.id_str)
+      .then => @normalizeIllustratorData()
+      .then => @updateIllustratorData()
+      .then (data) => @setIllustratorDBData(data)
+      .then => @aggregatePict()
+      .then (pickupedPictList) => @updatePictListData(pickupedPictList)
+      .then (data) -> return resolve 'Fin'
+      .catch (err) -> return reject err
 
   ###
   Pict
@@ -24,11 +40,13 @@ module.exports = class PictCollection
       @isContinue
     ), =>
       new Promise (resolve, reject) =>
-        @twitterClient.getUserTimeline
-          twitterIdStr: @illustrator.twitterIdStr
-          maxId: @userTimelineMaxId
-          count: '200'
-          includeRetweet: false
+        my.delayPromise @REQUEST_INTERVAL
+        .then (data) =>
+          @twitterClient.getUserTimeline
+            twitterIdStr: @illustrator.twitterIdStr
+            maxId: @userTimelineMaxId
+            count: '200'
+            includeRetweet: false
         .then (data) =>
 
           # API制限くらったら return

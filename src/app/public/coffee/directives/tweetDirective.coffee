@@ -85,7 +85,7 @@ angular.module "myApp.directives"
             $rootScope.$broadcast 'addMember', twitterIdStr
             console.log 'E followable createListsMembers data', data
 
-            TweetService.collect(twitterIdStr: twitterIdStr)
+            TweetService.collectProfile(twitterIdStr: twitterIdStr)
           .then (data) ->
             console.log data
 
@@ -125,7 +125,7 @@ angular.module "myApp.directives"
             $rootScope.$broadcast 'list:addMember', data
             scope.isProcessing = false
 
-            TweetService.collect(twitterIdStr: scope.twitterIdStr)
+            TweetService.collectProfile(twitterIdStr: scope.twitterIdStr)
           .then (data) ->
             console.log data
 

@@ -66,7 +66,7 @@
         return res.send(data);
       });
     });
-    app.post('/api/collect', function(req, res) {
+    app.post('/api/collect/profile', function(req, res) {
       var pictCollection;
       pictCollection = new PictCollection(req.session.passport.user, req.body.twitterIdStr);
       return pictCollection.getIllustratorTwitterProfile().then(function(data) {

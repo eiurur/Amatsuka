@@ -24,7 +24,37 @@
       this.pictList = [];
       this.userTimelineMaxId = null;
       this.isContinue = true;
+      this.REQUEST_INTERVAL = 5 * 1000;
     }
+
+    PictCollection.prototype.collectProfileAndPicts = function() {
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          console.log('start collect');
+          return my.delayPromise(_this.REQUEST_INTERVAL).then(function() {
+            return _this.getIllustratorTwitterProfile();
+          }).then(function(data) {
+            return _this.setIllustratorRawData(data);
+          }).then(function() {
+            return _this.setUserTimelineMaxId(_this.getIllustratorRawData().status.id_str);
+          }).then(function() {
+            return _this.normalizeIllustratorData();
+          }).then(function() {
+            return _this.updateIllustratorData();
+          }).then(function(data) {
+            return _this.setIllustratorDBData(data);
+          }).then(function() {
+            return _this.aggregatePict();
+          }).then(function(pickupedPictList) {
+            return _this.updatePictListData(pickupedPictList);
+          }).then(function(data) {
+            return resolve('Fin');
+          })["catch"](function(err) {
+            return reject(err);
+          });
+        };
+      })(this));
+    };
 
 
     /*
@@ -39,11 +69,13 @@
       })(this)), (function(_this) {
         return function() {
           return new Promise(function(resolve, reject) {
-            _this.twitterClient.getUserTimeline({
-              twitterIdStr: _this.illustrator.twitterIdStr,
-              maxId: _this.userTimelineMaxId,
-              count: '200',
-              includeRetweet: false
+            my.delayPromise(_this.REQUEST_INTERVAL).then(function(data) {
+              return _this.twitterClient.getUserTimeline({
+                twitterIdStr: _this.illustrator.twitterIdStr,
+                maxId: _this.userTimelineMaxId,
+                count: '200',
+                includeRetweet: false
+              });
             }).then(function(data) {
               var tweetListIncludePict;
               if (_.isUndefined(data)) {

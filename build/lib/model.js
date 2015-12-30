@@ -168,6 +168,22 @@
   IllustratorProvider = (function() {
     function IllustratorProvider() {}
 
+    IllustratorProvider.prototype.find = function(params, callback) {
+      return new Promise(function(resolve, reject) {
+        console.log("\n============> Illustrator find\n");
+        console.time('Illustrator find');
+        return Illustrator.find({}).sort({
+          updatedAt: -1
+        }).exec(function(err, illustratorList) {
+          console.timeEnd('Illustrator find');
+          if (err) {
+            return reject(err);
+          }
+          return resolve(illustratorList);
+        });
+      });
+    };
+
     IllustratorProvider.prototype.findById = function(params, callback) {
       console.log("\n============> Illustrator findUserByID\n");
       console.log(params);

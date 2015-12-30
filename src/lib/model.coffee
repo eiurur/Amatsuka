@@ -134,6 +134,17 @@ class UserProvider
 
 class IllustratorProvider
 
+  find: (params, callback) ->
+    return new Promise (resolve, reject) ->
+      console.log "\n============> Illustrator find\n"
+      console.time 'Illustrator find'
+      Illustrator.find {}
+      .sort updatedAt: -1
+      .exec (err, illustratorList) ->
+        console.timeEnd 'Illustrator find'
+        if err then return reject err
+        return resolve illustratorList
+
   findById: (params, callback) ->
     console.log "\n============> Illustrator findUserByID\n"
     console.log params
@@ -170,7 +181,6 @@ class PictProvider
         console.timeEnd 'Pict find'
         if err then return reject err
         return resolve pictList
-
 
   findOneAndUpdate: (params) ->
     return new Promise (resolve, reject) ->
