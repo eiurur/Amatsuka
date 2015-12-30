@@ -138,6 +138,7 @@ class IllustratorProvider
     return new Promise (resolve, reject) ->
       console.log "\n============> Illustrator find\n"
       console.time 'Illustrator find'
+      # Illustrator.find  {twitterIdStr: 906372890}
       Illustrator.find {}
       .sort updatedAt: -1
       .exec (err, illustratorList) ->

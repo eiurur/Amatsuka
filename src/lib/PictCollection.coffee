@@ -24,7 +24,8 @@ module.exports = class PictCollection
       my.delayPromise @REQUEST_INTERVAL
       .then => @getIllustratorTwitterProfile()
       .then (data) => @setIllustratorRawData(data)
-      .then => @setUserTimelineMaxId(@getIllustratorRawData().status.id_str)
+      .then => @getIllustratorRawData()
+      .then (illustratorRawData) => @setUserTimelineMaxId(illustratorRawData.status.id_str)
       .then => @normalizeIllustratorData()
       .then => @updateIllustratorData()
       .then (data) => @setIllustratorDBData(data)
@@ -104,9 +105,13 @@ module.exports = class PictCollection
     .value()
 
   updatePictListData: (pickupedPictList) ->
-    PictProvider.findOneAndUpdate
-      postedBy: @illustratorDBData._id
-      pictTweetList: pickupedPictList
+    return new Promise (resolve, reject) =>
+      PictProvider.findOneAndUpdate
+        postedBy: @illustratorDBData._id
+        pictTweetList: pickupedPictList
+      , (err, data) ->
+        return reject err  if err
+        return resolve data
 
   setUserTimelineMaxId: (maxId) ->
     @userTimelineMaxId = maxId
@@ -137,8 +142,13 @@ module.exports = class PictCollection
   setIllustratorRawData: (data) ->
     @illustratorRawData = data
 
+  # Twitterユーザがいないとき、@illustratorRawData.status.id_strが参照できず、エラーが生じて落ちる。
+  # ちゃんとrejectionがハンドルできる形にするためPromiseで囲う
   getIllustratorRawData: ->
-    @illustratorRawData
+    return new Promise (resolve, reject) =>
+      if @illustratorRawData.status?.id_str?
+        return resolve @illustratorRawData
+      return reject 'getIllustratorRawData Error ::'
 
   setIllustratorDBData: (data) ->
     @illustratorDBData = data

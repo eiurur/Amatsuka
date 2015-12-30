@@ -36,7 +36,9 @@
           }).then(function(data) {
             return _this.setIllustratorRawData(data);
           }).then(function() {
-            return _this.setUserTimelineMaxId(_this.getIllustratorRawData().status.id_str);
+            return _this.getIllustratorRawData();
+          }).then(function(illustratorRawData) {
+            return _this.setUserTimelineMaxId(illustratorRawData.status.id_str);
           }).then(function() {
             return _this.normalizeIllustratorData();
           }).then(function() {
@@ -118,10 +120,19 @@
     };
 
     PictCollection.prototype.updatePictListData = function(pickupedPictList) {
-      return PictProvider.findOneAndUpdate({
-        postedBy: this.illustratorDBData._id,
-        pictTweetList: pickupedPictList
-      });
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          return PictProvider.findOneAndUpdate({
+            postedBy: _this.illustratorDBData._id,
+            pictTweetList: pickupedPictList
+          }, function(err, data) {
+            if (err) {
+              return reject(err);
+            }
+            return resolve(data);
+          });
+        };
+      })(this));
     };
 
     PictCollection.prototype.setUserTimelineMaxId = function(maxId) {
@@ -174,7 +185,15 @@
     };
 
     PictCollection.prototype.getIllustratorRawData = function() {
-      return this.illustratorRawData;
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          var _ref;
+          if (((_ref = _this.illustratorRawData.status) != null ? _ref.id_str : void 0) != null) {
+            return resolve(_this.illustratorRawData);
+          }
+          return reject('getIllustratorRawData Error ::');
+        };
+      })(this));
     };
 
     PictCollection.prototype.setIllustratorDBData = function(data) {
