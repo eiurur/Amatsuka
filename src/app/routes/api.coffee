@@ -58,8 +58,9 @@ module.exports = (app) ->
 
     # フォローしたユーザをデータベースに保存
     pictCollection.getIllustratorTwitterProfile()
-    .then (data) -> pictCollection.setIllustratorRawData(data)
-    .then -> pictCollection.setUserTimelineMaxId(pictCollection.getIllustratorRawData().status.id_str)
+    .then (data) => pictCollection.setIllustratorRawData(data)
+    .then => pictCollection.getIllustratorRawData()
+    .then (illustratorRawData) => pictCollection.setUserTimelineMaxId(illustratorRawData.status.id_str)
     .then -> pictCollection.normalizeIllustratorData()
     .then -> pictCollection.updateIllustratorData()
     .then (data) -> pictCollection.setIllustratorDBData(data)
