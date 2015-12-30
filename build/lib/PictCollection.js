@@ -30,6 +30,7 @@
     PictCollection.prototype.collectProfileAndPicts = function() {
       return new Promise((function(_this) {
         return function(resolve, reject) {
+          console.log('start collect');
           return my.delayPromise(_this.REQUEST_INTERVAL).then(function() {
             return _this.getIllustratorTwitterProfile();
           }).then(function(data) {
@@ -155,9 +156,17 @@
      */
 
     PictCollection.prototype.getIllustratorTwitterProfile = function() {
-      return this.twitterClient.showUsers({
-        twitterIdStr: this.illustrator.twitterIdStr
-      });
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          return _this.twitterClient.showUsers({
+            twitterIdStr: _this.illustrator.twitterIdStr
+          }).then(function(data) {
+            return resolve(data);
+          })["catch"](function(err) {
+            return reject(err);
+          });
+        };
+      })(this));
     };
 
     PictCollection.prototype.setIllustratorRawData = function(data) {

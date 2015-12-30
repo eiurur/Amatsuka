@@ -28,7 +28,7 @@
         var pictCollection;
         return pictCollection = new PictCollection(user, profile.twitterIdStr);
       });
-      return Promise.each(promises, function(pictCollectiont) {
+      return Promise.mapSeries(promises, function(pictCollectiont) {
         return pictCollectiont.collectProfileAndPicts();
       }).then(function() {
         console.log('Succeeded!');

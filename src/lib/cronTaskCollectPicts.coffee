@@ -21,7 +21,7 @@ exports.cronTaskCollectPicts = ->
 
     promises = profileList.map (profile) -> return pictCollection = new PictCollection(user, profile.twitterIdStr)
 
-    Promise.each promises, (pictCollectiont) -> pictCollectiont.collectProfileAndPicts()
+    Promise.mapSeries promises, (pictCollectiont) -> pictCollectiont.collectProfileAndPicts()
     .then ->
       console.log 'Succeeded!'
       return

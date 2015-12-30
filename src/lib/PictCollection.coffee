@@ -20,7 +20,7 @@ module.exports = class PictCollection
   # For Cron task
   collectProfileAndPicts: ->
     return new Promise (resolve, reject) =>
-      # console.log 'start collect'
+      console.log 'start collect'
       my.delayPromise @REQUEST_INTERVAL
       .then => @getIllustratorTwitterProfile()
       .then (data) => @setIllustratorRawData(data)
@@ -129,7 +129,10 @@ module.exports = class PictCollection
   Illustrator
   ###
   getIllustratorTwitterProfile: ->
-    @twitterClient.showUsers twitterIdStr: @illustrator.twitterIdStr
+    return new Promise (resolve, reject) =>
+      @twitterClient.showUsers twitterIdStr: @illustrator.twitterIdStr
+      .then (data) -> return resolve data
+      .catch (err) -> return reject err
 
   setIllustratorRawData: (data) ->
     @illustratorRawData = data
