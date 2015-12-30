@@ -30,7 +30,6 @@
     PictCollection.prototype.collectProfileAndPicts = function() {
       return new Promise((function(_this) {
         return function(resolve, reject) {
-          console.log('start collect');
           return my.delayPromise(_this.REQUEST_INTERVAL).then(function() {
             return _this.getIllustratorTwitterProfile();
           }).then(function(data) {
@@ -100,9 +99,6 @@
                 o.expandedUrl = tweet.extended_entities.media[0].expanded_url;
                 return o;
               }).value();
-              console.log("\n\n=============>");
-              console.log(tweetListIncludePict);
-              console.log(tweetListIncludePict.length);
               _this.pictList = _this.pictList.concat(tweetListIncludePict);
               return resolve();
             });
@@ -110,9 +106,6 @@
         };
       })(this)).then((function(_this) {
         return function(data) {
-          console.log("\n\nAll =============>");
-          console.log(_this.pictList);
-          console.log(_this.pictList.length);
           return _this.pickupPictListTop12(_this.pictList);
         };
       })(this));

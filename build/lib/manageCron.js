@@ -1,11 +1,9 @@
 (function() {
-  var CRON_JOBS, cronJob, cronTaskCollectPicts, my, path, settings;
+  var CRON_JOBS, cronJob, cronTaskCollectPicts, path, settings;
 
   path = require('path');
 
   cronJob = require('cron').CronJob;
-
-  my = require('./my');
 
   cronTaskCollectPicts = require(path.resolve('build', 'lib', 'cronTaskCollectPicts')).cronTaskCollectPicts;
 
@@ -13,17 +11,16 @@
 
   CRON_JOBS = [
     {
-      time: '*/1 * * * *',
+      time: '0 0 * * 4',
       job: cronTaskCollectPicts
     }
   ];
 
   exports.manageCron = function() {
-    var job;
-    job = void 0;
-    CRON_JOBS.forEach(function(item, index) {
+    return CRON_JOBS.forEach(function(item, index) {
+      var job;
       console.log(item);
-      job = new cronJob({
+      return job = new cronJob({
         cronTime: item.time,
         onTick: function() {
           item.job.call();
@@ -36,7 +33,5 @@
       });
     });
   };
-
-  return;
 
 }).call(this);
