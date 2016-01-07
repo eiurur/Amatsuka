@@ -7,7 +7,7 @@ TwitterClient         = require path.resolve 'build', 'lib', 'TwitterClient'
 
 # TODO: illustratorと分離させる
 module.exports = class PictCollection
-  constructor: (user, illustratorTwitterIdStr) ->
+  constructor: (user, illustratorTwitterIdStr, idx = 0) ->
     @twitterClient = new TwitterClient(user)
     @illustrator = twitterIdStr: illustratorTwitterIdStr
     @illustratorRawData = null
@@ -15,13 +15,14 @@ module.exports = class PictCollection
     @pictList = []
     @userTimelineMaxId = null
     @isContinue = true
-    @REQUEST_INTERVAL = 10 * 1000
+    @PROFILE_REQUEST_INTERVAL = 60 * 1000 * idx
+    @USER_TIMELINE_REQUEST_INTERVAL = 60 * 1000
 
   # For Cron task
   collectProfileAndPicts: ->
     return new Promise (resolve, reject) =>
-      console.log 'start collect'
-      my.delayPromise @REQUEST_INTERVAL
+      console.log 'start collect, @PROFILE_REQUEST_INTERVAL = ', @PROFILE_REQUEST_INTERVAL
+      my.delayPromise @PROFILE_REQUEST_INTERVAL
       .then => @getIllustratorTwitterProfile()
       .then (data) => @setIllustratorRawData(data)
       .then => @getIllustratorRawData()
@@ -42,7 +43,7 @@ module.exports = class PictCollection
       @isContinue
     ), =>
       new Promise (resolve, reject) =>
-        my.delayPromise @REQUEST_INTERVAL
+        my.delayPromise @USER_TIMELINE_REQUEST_INTERVAL
         .then (data) =>
           @twitterClient.getUserTimeline
             twitterIdStr: @illustrator.twitterIdStr

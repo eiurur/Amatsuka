@@ -24,13 +24,13 @@
         twitter_token: settings.TW_AT,
         twitter_token_secret: settings.TW_AS
       };
-      promises = profileList.map(function(profile) {
+      promises = [];
+      profileList.forEach(function(profile, idx) {
         var pictCollection;
-        return pictCollection = new PictCollection(user, profile.twitterIdStr);
+        pictCollection = new PictCollection(user, profile.twitterIdStr, idx);
+        return promises.push(pictCollection.collectProfileAndPicts());
       });
-      return Promise.mapSeries(promises, function(pictCollectiont) {
-        return pictCollectiont.collectProfileAndPicts();
-      }).then(function() {
+      return Promise.all(promises).then(function(resultList) {
         console.log('Succeeded!');
       })["catch"](function(err) {
         console.error('Failed.', err);

@@ -14,7 +14,10 @@
   PictProvider = require(path.resolve('build', 'lib', 'model')).PictProvider;
 
   module.exports = PictCollection = (function() {
-    function PictCollection(user, illustratorTwitterIdStr) {
+    function PictCollection(user, illustratorTwitterIdStr, idx) {
+      if (idx == null) {
+        idx = 0;
+      }
       this.twitterClient = new TwitterClient(user);
       this.illustrator = {
         twitterIdStr: illustratorTwitterIdStr
@@ -24,14 +27,15 @@
       this.pictList = [];
       this.userTimelineMaxId = null;
       this.isContinue = true;
-      this.REQUEST_INTERVAL = 10 * 1000;
+      this.PROFILE_REQUEST_INTERVAL = 60 * 1000 * idx;
+      this.USER_TIMELINE_REQUEST_INTERVAL = 60 * 1000;
     }
 
     PictCollection.prototype.collectProfileAndPicts = function() {
       return new Promise((function(_this) {
         return function(resolve, reject) {
-          console.log('start collect');
-          return my.delayPromise(_this.REQUEST_INTERVAL).then(function() {
+          console.log('start collect, @PROFILE_REQUEST_INTERVAL = ', _this.PROFILE_REQUEST_INTERVAL);
+          return my.delayPromise(_this.PROFILE_REQUEST_INTERVAL).then(function() {
             return _this.getIllustratorTwitterProfile();
           }).then(function(data) {
             return _this.setIllustratorRawData(data);
@@ -71,7 +75,7 @@
       })(this)), (function(_this) {
         return function() {
           return new Promise(function(resolve, reject) {
-            my.delayPromise(_this.REQUEST_INTERVAL).then(function(data) {
+            my.delayPromise(_this.USER_TIMELINE_REQUEST_INTERVAL).then(function(data) {
               return _this.twitterClient.getUserTimeline({
                 twitterIdStr: _this.illustrator.twitterIdStr,
                 maxId: _this.userTimelineMaxId,
