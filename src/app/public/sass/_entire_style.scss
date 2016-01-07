@@ -1,0 +1,31 @@
+@charset "utf-8";
+
+.h100per {
+  height: 100%;
+}
+
+.btn {
+  background: rgba(0,0,0, 0);
+  border-color: $link-color;
+  color: $link-color;
+  transition: .2s ease;
+  &:hover {
+    background-color: $link-color;
+  }
+}
+
+.site-main {
+  position: relative;
+  // tinelineだけなら下のでよかった。
+  // memberページを設けたところ、左側に大幅な空白ができたため、
+  // timeline.scssで設定することにした。
+  // padding-left: $sidebar-width + 85px + 21px;
+
+  // padding-left: $sidebar-width + 40px;
+  padding-bottom: 30px;
+  // padding-right: $sidebar-width + 40px;
+}
+
+.text {
+  color: $link-color;
+}

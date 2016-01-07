@@ -1485,10 +1485,6 @@ tags-input .tags .tag-item .remove-button {
   color: #f2446f;
 }
 
-/**
- * TODO: ファイルに分ける
- * other
- */
 .h100per {
   height: 100%;
 }
@@ -1512,9 +1508,6 @@ tags-input .tags .tag-item .remove-button {
   color: #a1a1a1;
 }
 
-/**
- * _navbar.scss?ファイルに移動
- */
 a.dropdown-toggle {
   height: 50px;
 }
