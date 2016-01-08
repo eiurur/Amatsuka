@@ -30,12 +30,3 @@ exports.cronTaskCollectPicts = ->
     .catch (err) ->
       console.error 'Failed.', err
       return
-
-    # promises = profileList.map (profile) -> return pictCollection = new PictCollection(user, profile.twitterIdStr)
-    # Promise.mapSeries promises, (pictCollectiont) -> pictCollectiont.collectProfileAndPicts()
-    # .then ->
-    #   console.log 'Succeeded!'
-    #   return
-    # .catch (err) ->
-    #   console.error 'Failed.', err
-    #   return

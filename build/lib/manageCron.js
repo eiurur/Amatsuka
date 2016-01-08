@@ -11,7 +11,7 @@
 
   CRON_JOBS = [
     {
-      time: '0 3 * * 5',
+      time: '10 0 5 * *',
       job: cronTaskCollectPicts
     }
   ];
