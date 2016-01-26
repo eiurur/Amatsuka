@@ -79,7 +79,7 @@ angular.module "myApp.directives", []
         imageLayerImg.hide()
 
         imageLayerImg
-        .attr 'src', "#{attrs.imgSrc}:orig"
+        .attr 'src', "#{attrs.imgSrc}".replace ':small', ':orig'
         .load ->
           imageLayerLoading.remove()
 

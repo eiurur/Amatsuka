@@ -43,7 +43,7 @@ angular.module "myApp.services"
       console.log tweets
       # do =>
       ListService = $injector.get 'ListService'
-      _.each tweets, (tweet) =>
+      _.map tweets, (tweet) =>
         isRT = _.has tweet, 'retweeted_status'
         # @hasOrigParameter tweet
         tweet.isRT                         = isRT
@@ -55,12 +55,12 @@ angular.module "myApp.services"
         tweet.favNum                       = @get(tweet, 'tweet.favorite_count', isRT)
         tweet.tweetIdStr                   = @get(tweet, 'tweet.id_str', isRT)
         tweet.sourceUrl                    = @get(tweet, 'display_url', isRT)
-        tweet.picUrlList                   = @get(tweet, 'media_url_https', isRT)
+        tweet.picUrlList                   = @get(tweet, 'media_url_https:small', isRT)
         tweet.picOrigUrlList               = @get(tweet, 'media_url_https:orig', isRT)
         tweet.video_url                    = @get(tweet, 'video_url', isRT)
         tweet.fileName                     = @get(tweet, 'screen_name', isRT) + '_' + @get(tweet, 'tweet.id_str', isRT)
         tweet.user.profile_image_url_https = @iconBigger(tweet.user.profile_image_url_https)
-        return
+        tweet
 
     isRT: (tweet) ->
       _.has tweet, 'retweeted_status'
@@ -84,6 +84,8 @@ angular.module "myApp.services"
           _.map t.extended_entities.media, (media) -> media.media_url+':orig'
         when 'media_url_https:orig'
           _.map t.extended_entities.media, (media) -> media.media_url_https+':orig'
+        when 'media_url_https:small'
+          _.map t.extended_entities.media, (media) -> media.media_url_https+':small'
         when 'video_url'
           # videoは一件のみ
           t.extended_entities?.media[0]?.video_info?.variants[0].url

@@ -58,9 +58,9 @@ module.exports = (app) ->
 
     # フォローしたユーザをデータベースに保存
     pictCollection.getIllustratorTwitterProfile()
-    .then (data) => pictCollection.setIllustratorRawData(data)
-    .then => pictCollection.getIllustratorRawData()
-    .then (illustratorRawData) => pictCollection.setUserTimelineMaxId(illustratorRawData.status.id_str)
+    .then (data) -> pictCollection.setIllustratorRawData(data)
+    .then -> pictCollection.getIllustratorRawData()
+    .then (illustratorRawData) -> pictCollection.setUserTimelineMaxId(illustratorRawData.status.id_str)
     .then -> pictCollection.normalizeIllustratorData()
     .then -> pictCollection.updateIllustratorData()
     .then (data) -> pictCollection.setIllustratorDBData(data)
@@ -121,6 +121,7 @@ module.exports = (app) ->
   app.get '/api/lists/statuses/:id/:maxId?/:count?', (req, res) ->
 
     # HACK: 重複
+    # memo: ConfigProvider.findOneByIdの実行「時間を計測したところ2msとかでした
     ConfigProvider.findOneById
       twitterIdStr: req.session.passport.user._json.id_str
     , (err, data) ->

@@ -54,11 +54,13 @@ twitterUtils = ->
 
   excludeTweetBasedOnNgUser: (tweets, ngUserList = []) ->
     console.log 'ngUserList = ', ngUserList
+    # memo: excludeTweetBasedOnNgUser: 0ms
     _.reject tweets, (tweet) =>
       ngUserList.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
 
   excludeTweetBasedOnNgWord: (tweets, ngWordList = []) ->
     console.log 'ngWordList = ', ngWordList
+    # memo: excludeTweetBasedOnNgWord: 0ms
     _.reject tweets, (tweet) =>
       ngWordList.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
 

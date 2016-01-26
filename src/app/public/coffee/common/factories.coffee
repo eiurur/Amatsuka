@@ -19,8 +19,8 @@ angular.module "myApp.factories", []
           if data.error? then reject data.error
           if _.isEmpty(data.data) then reject statusCode: 10100
 
-          @maxId         = TweetService.decStrNum _.last(data.data).id_str
-          itemsImageOnly = TweetService.filterIncludeImage data.data
+          @maxId          = TweetService.decStrNum _.last(data.data).id_str
+          itemsImageOnly  = TweetService.filterIncludeImage data.data
           itemsNormalized = TweetService.normalizeTweets itemsImageOnly, ListService.amatsukaList.member
           resolve itemsNormalized
 

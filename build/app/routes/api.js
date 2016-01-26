@@ -69,19 +69,13 @@
     app.post('/api/collect/profile', function(req, res) {
       var pictCollection;
       pictCollection = new PictCollection(req.session.passport.user, req.body.twitterIdStr);
-      return pictCollection.getIllustratorTwitterProfile().then((function(_this) {
-        return function(data) {
-          return pictCollection.setIllustratorRawData(data);
-        };
-      })(this)).then((function(_this) {
-        return function() {
-          return pictCollection.getIllustratorRawData();
-        };
-      })(this)).then((function(_this) {
-        return function(illustratorRawData) {
-          return pictCollection.setUserTimelineMaxId(illustratorRawData.status.id_str);
-        };
-      })(this)).then(function() {
+      return pictCollection.getIllustratorTwitterProfile().then(function(data) {
+        return pictCollection.setIllustratorRawData(data);
+      }).then(function() {
+        return pictCollection.getIllustratorRawData();
+      }).then(function(illustratorRawData) {
+        return pictCollection.setUserTimelineMaxId(illustratorRawData.status.id_str);
+      }).then(function() {
         return pictCollection.normalizeIllustratorData();
       }).then(function() {
         return pictCollection.updateIllustratorData();

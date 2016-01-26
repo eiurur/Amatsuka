@@ -120,7 +120,7 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
         imageLayerImg = angular.element(document).find('.image-layer__img');
         imageLayerLoading = angular.element(document).find('.image-layer__loading');
         imageLayerImg.hide();
-        imageLayerImg.attr('src', "" + attrs.imgSrc + ":orig").load(function() {
+        imageLayerImg.attr('src', ("" + attrs.imgSrc).replace(':small', ':orig')).load(function() {
           var cH, cH_cW_percent, cW, direction, h, h_w_percent, w;
           imageLayerLoading.remove();
           h = imageLayerImg[0].naturalHeight;
@@ -605,6 +605,303 @@ angular.module("myApp.services", []).service("CommonService", function() {
   };
 });
 
+angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
+  return function(scope, elm, attrs) {
+    elm.text(version);
+  };
+}]);
+
+angular.module("myApp.directives").directive('copyMember', ["$rootScope", "toaster", "TweetService", function($rootScope, toaster, TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      sourceList: '='
+    },
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        if (element.hasClass('disabled')) {
+          return;
+        }
+        if (window.confirm('コピーしてもよろしいですか？')) {
+          element.addClass('disabled');
+          toaster.pop('wait', "Now Copying ...", '', 0, 'trustedHtml');
+          return scope.sourceList.copyMember2AmatsukaList().then(function(data) {
+            element.removeClass('disabled');
+            toaster.clear();
+            $rootScope.$broadcast('list:copyMember', data);
+            return toaster.pop('success', "Finished copy member", '', 2000, 'trustedHtml');
+          });
+        }
+      });
+    }
+  };
+}]);
+
+angular.module("myApp.directives").directive('favoritable', ["TweetService", function(TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      favNum: '=',
+      favorited: '=',
+      tweetIdStr: '@'
+    },
+    link: function(scope, element, attrs) {
+      if (scope.favorited) {
+        element.addClass('favorited');
+      }
+      return element.on('click', function(event) {
+        console.log('favorited = ', scope.favorited);
+        if (scope.favorited) {
+          element.removeClass('favorited');
+          return TweetService.destroyFav({
+            tweetIdStr: scope.tweetIdStr
+          }).then(function(data) {
+            scope.favNum -= 1;
+            return scope.favorited = !scope.favorited;
+          });
+        } else {
+          element.addClass('favorited');
+          return TweetService.createFav({
+            tweetIdStr: scope.tweetIdStr
+          }).then(function(data) {
+            scope.favNum += 1;
+            return scope.favorited = !scope.favorited;
+          });
+        }
+      });
+    }
+  };
+}]).directive('retweetable', ["TweetService", function(TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      retweetNum: '=',
+      retweeted: '=',
+      tweetIdStr: '@'
+    },
+    link: function(scope, element, attrs) {
+      if (scope.retweeted) {
+        element.addClass('retweeted');
+      }
+      return element.on('click', function(event) {
+        if (scope.retweeted) {
+          element.removeClass('retweeted');
+          return TweetService.destroyStatus({
+            tweetIdStr: scope.tweetIdStr
+          }).then(function(data) {
+            scope.retweetNum -= 1;
+            return scope.retweeted = !scope.retweeted;
+          });
+        } else if (window.confirm('リツイートしてもよろしいですか？')) {
+          element.addClass('retweeted');
+          return TweetService.retweetStatus({
+            tweetIdStr: scope.tweetIdStr
+          }).then(function(data) {
+            scope.retweetNum += 1;
+            return scope.retweeted = !scope.retweeted;
+          });
+        }
+      });
+    }
+  };
+}]).directive('followable', ["$rootScope", "ListService", "TweetService", function($rootScope, ListService, TweetService) {
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
+      listIdStr: '@',
+      tweet: '@',
+      followStatus: '='
+    },
+    template: '<span class="label label-default timeline__post--header--label">{{content}}</span>',
+    link: function(scope, element, attrs) {
+      var isRT, tweetParsed, twitterIdStr;
+      tweetParsed = JSON.parse(scope.tweet);
+      isRT = TweetService.isRT(tweetParsed);
+      twitterIdStr = TweetService.get(tweetParsed, 'user.id_str', isRT);
+      if (scope.followStatus === false) {
+        scope.content = '+';
+      }
+      element.on('mouseover', function(e) {
+        scope.content = 'フォロー';
+        return scope.$apply();
+      });
+      element.on('mouseout', function(e) {
+        scope.content = '+';
+        return scope.$apply();
+      });
+      return element.on('click', function() {
+        var opts;
+        console.log(scope.listIdStr);
+        console.log(twitterIdStr);
+        opts = {
+          listIdStr: scope.listIdStr,
+          twitterIdStr: twitterIdStr
+        };
+        if (scope.followStatus === false) {
+          element.addClass('label-success');
+          element.fadeOut(200);
+          return TweetService.createListsMembers(opts).then(function(data) {
+            ListService.addMember(twitterIdStr);
+            $rootScope.$broadcast('addMember', twitterIdStr);
+            console.log('E followable createListsMembers data', data);
+            return TweetService.collectProfile({
+              twitterIdStr: twitterIdStr
+            });
+          }).then(function(data) {
+            return console.log(data);
+          });
+        }
+      });
+    }
+  };
+}]).directive('followable', ["$rootScope", "ListService", "TweetService", function($rootScope, ListService, TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      listIdStr: '@',
+      twitterIdStr: '@',
+      followStatus: '='
+    },
+    link: function(scope, element, attrs) {
+      element[0].innerText = scope.followStatus ? 'フォロー解除' : 'フォロー';
+      return element.on('click', function() {
+        var opts;
+        console.log(scope.listIdStr);
+        console.log(scope.twitterIdStr);
+        opts = {
+          listIdStr: scope.listIdStr,
+          twitterIdStr: scope.twitterIdStr
+        };
+        scope.isProcessing = true;
+        if (scope.followStatus === true) {
+          element[0].innerText = 'フォロー';
+          TweetService.destroyListsMembers(opts).then(function(data) {
+            console.log(data);
+            ListService.removeMember(scope.twitterIdStr);
+            $rootScope.$broadcast('list:removeMember', data);
+            return scope.isProcessing = false;
+          });
+        }
+        if (scope.followStatus === false) {
+          element[0].innerText = 'フォロー解除';
+          TweetService.createListsMembers(opts).then(function(data) {
+            ListService.addMember(scope.twitterIdStr);
+            $rootScope.$broadcast('addMember', scope.twitterIdStr);
+            $rootScope.$broadcast('list:addMember', data);
+            scope.isProcessing = false;
+            return TweetService.collectProfile({
+              twitterIdStr: scope.twitterIdStr
+            });
+          }).then(function(data) {
+            return console.log(data);
+          });
+        }
+        return scope.followStatus = !scope.followStatus;
+      });
+    }
+  };
+}]).directive('showTweet', ["$rootScope", "TweetService", function($rootScope, TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      twitterIdStr: '@'
+    },
+    link: function(scope, element, attrs) {
+      var showTweet;
+      showTweet = function() {
+        return TweetService.showUsers({
+          twitterIdStr: scope.twitterIdStr
+        }).then(function(data) {
+          console.log(data);
+          $rootScope.$broadcast('userData', data.data);
+          return TweetService.getUserTimeline({
+            twitterIdStr: scope.twitterIdStr
+          });
+        }).then(function(data) {
+          console.log(data.data);
+          return $rootScope.$broadcast('tweetData', data.data);
+        });
+      };
+      return element.on('click', function() {
+        var body, domUserSidebar, domUserSidebarHeader, isOpenedSidebar, layer;
+        $rootScope.$broadcast('isOpened', true);
+        domUserSidebar = angular.element(document).find('.user-sidebar');
+        domUserSidebarHeader = angular.element(document).find('.user-sidebar__header');
+        isOpenedSidebar = 　domUserSidebar[0].className.indexOf('.user-sidebar-in') !== -1;
+        if (isOpenedSidebar) {
+          showTweet();
+          return;
+        }
+
+        /*
+        初回(サイドバーは見えない状態が初期状態)
+         */
+        domUserSidebar.addClass('user-sidebar-in');
+        domUserSidebarHeader.removeClass('user-sidebar-out');
+        body = angular.element(document).find('body');
+        body.addClass('scrollbar-y-hidden');
+        layer = angular.element(document).find('.layer');
+        layer.addClass('fullscreen-overlay');
+        showTweet();
+        return layer.on('click', function() {
+          body.removeClass('scrollbar-y-hidden');
+          layer.removeClass('fullscreen-overlay');
+          domUserSidebar.removeClass('user-sidebar-in');
+          domUserSidebarHeader.addClass('user-sidebar-out');
+          return $rootScope.$broadcast('isClosed', true);
+        });
+      });
+    }
+  };
+}]).directive('newTweetLoad', ["$rootScope", "TweetService", function($rootScope, TweetService) {
+  return {
+    restrict: 'E',
+    scope: {
+      listIdStr: '@'
+    },
+    template: '<a class="btn" ng-disabled="isProcessing">{{text}}</a>',
+    link: function(scope, element, attrs) {
+      scope.text = '新着を読み込む';
+      return element.on('click', function() {
+        var params;
+        scope.isProcessing = true;
+        params = {
+          listIdStr: scope.listIdStr,
+          count: 50
+        };
+        return TweetService.getListsStatuses(params).then(function(data) {
+          console.log('getListsStatuses', data.data);
+          $rootScope.$broadcast('newTweet', data.data);
+          scope.text = '新着を読み込む';
+          return scope.isProcessing = false;
+        });
+      });
+    }
+  };
+}]).directive('showStatuses', ["$compile", "TweetService", function($compile, TweetService) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        return TweetService.showStatuses({
+          tweetIdStr: attrs.tweetIdStr
+        }).then(function(data) {
+          var imageLayer, imageLayerCaptionHtml, item;
+          console.log('showStatuses', data);
+          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__post--footer\">\n    <div class=\"timeline__post--footer--contents\">\n      <div class=\"timeline__post--footer--contents--controls\">\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + data.data.id_str + "\" retweeted=\"" + data.data.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + data.data.id_str + "\" favorited=\"" + data.data.favorited + "\" favoritable=\"favoritable\"></i>\n        <a><i class=\"fa fa-download\" data-url=\"" + data.data.extended_entities.media[0].media_url_https + ":orig\" filename=\"" + data.data.user.screen_name + "_" + data.data.id_str + "\" download-from-url=\"download-from-url\"></i></a>\n      </div>\n    </div>\n  </div>\n</div>";
+          imageLayer = angular.element(document).find('.image-layer');
+          if (_.isEmpty(imageLayer.html())) {
+            return;
+          }
+          item = $compile(imageLayerCaptionHtml)(scope).hide().fadeIn(300);
+          return imageLayer.append(item);
+        });
+      });
+    }
+  };
+}]);
+
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$location", "$log", "AuthService", function($scope, $rootScope, $location, $log, AuthService) {
   $scope.isLoaded = false;
   $scope.isAuthenticated = AuthService.status.isAuthenticated;
@@ -1009,303 +1306,6 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
   });
 }]);
 
-angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
-  return function(scope, elm, attrs) {
-    elm.text(version);
-  };
-}]);
-
-angular.module("myApp.directives").directive('copyMember', ["$rootScope", "toaster", "TweetService", function($rootScope, toaster, TweetService) {
-  return {
-    restrict: 'A',
-    scope: {
-      sourceList: '='
-    },
-    link: function(scope, element, attrs) {
-      return element.on('click', function(event) {
-        if (element.hasClass('disabled')) {
-          return;
-        }
-        if (window.confirm('コピーしてもよろしいですか？')) {
-          element.addClass('disabled');
-          toaster.pop('wait', "Now Copying ...", '', 0, 'trustedHtml');
-          return scope.sourceList.copyMember2AmatsukaList().then(function(data) {
-            element.removeClass('disabled');
-            toaster.clear();
-            $rootScope.$broadcast('list:copyMember', data);
-            return toaster.pop('success', "Finished copy member", '', 2000, 'trustedHtml');
-          });
-        }
-      });
-    }
-  };
-}]);
-
-angular.module("myApp.directives").directive('favoritable', ["TweetService", function(TweetService) {
-  return {
-    restrict: 'A',
-    scope: {
-      favNum: '=',
-      favorited: '=',
-      tweetIdStr: '@'
-    },
-    link: function(scope, element, attrs) {
-      if (scope.favorited) {
-        element.addClass('favorited');
-      }
-      return element.on('click', function(event) {
-        console.log('favorited = ', scope.favorited);
-        if (scope.favorited) {
-          element.removeClass('favorited');
-          return TweetService.destroyFav({
-            tweetIdStr: scope.tweetIdStr
-          }).then(function(data) {
-            scope.favNum -= 1;
-            return scope.favorited = !scope.favorited;
-          });
-        } else {
-          element.addClass('favorited');
-          return TweetService.createFav({
-            tweetIdStr: scope.tweetIdStr
-          }).then(function(data) {
-            scope.favNum += 1;
-            return scope.favorited = !scope.favorited;
-          });
-        }
-      });
-    }
-  };
-}]).directive('retweetable', ["TweetService", function(TweetService) {
-  return {
-    restrict: 'A',
-    scope: {
-      retweetNum: '=',
-      retweeted: '=',
-      tweetIdStr: '@'
-    },
-    link: function(scope, element, attrs) {
-      if (scope.retweeted) {
-        element.addClass('retweeted');
-      }
-      return element.on('click', function(event) {
-        if (scope.retweeted) {
-          element.removeClass('retweeted');
-          return TweetService.destroyStatus({
-            tweetIdStr: scope.tweetIdStr
-          }).then(function(data) {
-            scope.retweetNum -= 1;
-            return scope.retweeted = !scope.retweeted;
-          });
-        } else if (window.confirm('リツイートしてもよろしいですか？')) {
-          element.addClass('retweeted');
-          return TweetService.retweetStatus({
-            tweetIdStr: scope.tweetIdStr
-          }).then(function(data) {
-            scope.retweetNum += 1;
-            return scope.retweeted = !scope.retweeted;
-          });
-        }
-      });
-    }
-  };
-}]).directive('followable', ["$rootScope", "ListService", "TweetService", function($rootScope, ListService, TweetService) {
-  return {
-    restrict: 'E',
-    replace: true,
-    scope: {
-      listIdStr: '@',
-      tweet: '@',
-      followStatus: '='
-    },
-    template: '<span class="label label-default timeline__post--header--label">{{content}}</span>',
-    link: function(scope, element, attrs) {
-      var isRT, tweetParsed, twitterIdStr;
-      tweetParsed = JSON.parse(scope.tweet);
-      isRT = TweetService.isRT(tweetParsed);
-      twitterIdStr = TweetService.get(tweetParsed, 'user.id_str', isRT);
-      if (scope.followStatus === false) {
-        scope.content = '+';
-      }
-      element.on('mouseover', function(e) {
-        scope.content = 'フォロー';
-        return scope.$apply();
-      });
-      element.on('mouseout', function(e) {
-        scope.content = '+';
-        return scope.$apply();
-      });
-      return element.on('click', function() {
-        var opts;
-        console.log(scope.listIdStr);
-        console.log(twitterIdStr);
-        opts = {
-          listIdStr: scope.listIdStr,
-          twitterIdStr: twitterIdStr
-        };
-        if (scope.followStatus === false) {
-          element.addClass('label-success');
-          element.fadeOut(200);
-          return TweetService.createListsMembers(opts).then(function(data) {
-            ListService.addMember(twitterIdStr);
-            $rootScope.$broadcast('addMember', twitterIdStr);
-            console.log('E followable createListsMembers data', data);
-            return TweetService.collectProfile({
-              twitterIdStr: twitterIdStr
-            });
-          }).then(function(data) {
-            return console.log(data);
-          });
-        }
-      });
-    }
-  };
-}]).directive('followable', ["$rootScope", "ListService", "TweetService", function($rootScope, ListService, TweetService) {
-  return {
-    restrict: 'A',
-    scope: {
-      listIdStr: '@',
-      twitterIdStr: '@',
-      followStatus: '='
-    },
-    link: function(scope, element, attrs) {
-      element[0].innerText = scope.followStatus ? 'フォロー解除' : 'フォロー';
-      return element.on('click', function() {
-        var opts;
-        console.log(scope.listIdStr);
-        console.log(scope.twitterIdStr);
-        opts = {
-          listIdStr: scope.listIdStr,
-          twitterIdStr: scope.twitterIdStr
-        };
-        scope.isProcessing = true;
-        if (scope.followStatus === true) {
-          element[0].innerText = 'フォロー';
-          TweetService.destroyListsMembers(opts).then(function(data) {
-            console.log(data);
-            ListService.removeMember(scope.twitterIdStr);
-            $rootScope.$broadcast('list:removeMember', data);
-            return scope.isProcessing = false;
-          });
-        }
-        if (scope.followStatus === false) {
-          element[0].innerText = 'フォロー解除';
-          TweetService.createListsMembers(opts).then(function(data) {
-            ListService.addMember(scope.twitterIdStr);
-            $rootScope.$broadcast('addMember', scope.twitterIdStr);
-            $rootScope.$broadcast('list:addMember', data);
-            scope.isProcessing = false;
-            return TweetService.collectProfile({
-              twitterIdStr: scope.twitterIdStr
-            });
-          }).then(function(data) {
-            return console.log(data);
-          });
-        }
-        return scope.followStatus = !scope.followStatus;
-      });
-    }
-  };
-}]).directive('showTweet', ["$rootScope", "TweetService", function($rootScope, TweetService) {
-  return {
-    restrict: 'A',
-    scope: {
-      twitterIdStr: '@'
-    },
-    link: function(scope, element, attrs) {
-      var showTweet;
-      showTweet = function() {
-        return TweetService.showUsers({
-          twitterIdStr: scope.twitterIdStr
-        }).then(function(data) {
-          console.log(data);
-          $rootScope.$broadcast('userData', data.data);
-          return TweetService.getUserTimeline({
-            twitterIdStr: scope.twitterIdStr
-          });
-        }).then(function(data) {
-          console.log(data.data);
-          return $rootScope.$broadcast('tweetData', data.data);
-        });
-      };
-      return element.on('click', function() {
-        var body, domUserSidebar, domUserSidebarHeader, isOpenedSidebar, layer;
-        $rootScope.$broadcast('isOpened', true);
-        domUserSidebar = angular.element(document).find('.user-sidebar');
-        domUserSidebarHeader = angular.element(document).find('.user-sidebar__header');
-        isOpenedSidebar = 　domUserSidebar[0].className.indexOf('.user-sidebar-in') !== -1;
-        if (isOpenedSidebar) {
-          showTweet();
-          return;
-        }
-
-        /*
-        初回(サイドバーは見えない状態が初期状態)
-         */
-        domUserSidebar.addClass('user-sidebar-in');
-        domUserSidebarHeader.removeClass('user-sidebar-out');
-        body = angular.element(document).find('body');
-        body.addClass('scrollbar-y-hidden');
-        layer = angular.element(document).find('.layer');
-        layer.addClass('fullscreen-overlay');
-        showTweet();
-        return layer.on('click', function() {
-          body.removeClass('scrollbar-y-hidden');
-          layer.removeClass('fullscreen-overlay');
-          domUserSidebar.removeClass('user-sidebar-in');
-          domUserSidebarHeader.addClass('user-sidebar-out');
-          return $rootScope.$broadcast('isClosed', true);
-        });
-      });
-    }
-  };
-}]).directive('newTweetLoad', ["$rootScope", "TweetService", function($rootScope, TweetService) {
-  return {
-    restrict: 'E',
-    scope: {
-      listIdStr: '@'
-    },
-    template: '<a class="btn" ng-disabled="isProcessing">{{text}}</a>',
-    link: function(scope, element, attrs) {
-      scope.text = '新着を読み込む';
-      return element.on('click', function() {
-        var params;
-        scope.isProcessing = true;
-        params = {
-          listIdStr: scope.listIdStr,
-          count: 50
-        };
-        return TweetService.getListsStatuses(params).then(function(data) {
-          console.log('getListsStatuses', data.data);
-          $rootScope.$broadcast('newTweet', data.data);
-          scope.text = '新着を読み込む';
-          return scope.isProcessing = false;
-        });
-      });
-    }
-  };
-}]).directive('showStatuses', ["$compile", "TweetService", function($compile, TweetService) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      return element.on('click', function(event) {
-        return TweetService.showStatuses({
-          tweetIdStr: attrs.tweetIdStr
-        }).then(function(data) {
-          var imageLayer, imageLayerCaptionHtml, item;
-          console.log('showStatuses', data);
-          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__post--footer\">\n    <div class=\"timeline__post--footer--contents\">\n      <div class=\"timeline__post--footer--contents--controls\">\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + data.data.id_str + "\" retweeted=\"" + data.data.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + data.data.id_str + "\" favorited=\"" + data.data.favorited + "\" favoritable=\"favoritable\"></i>\n        <a><i class=\"fa fa-download\" data-url=\"" + data.data.extended_entities.media[0].media_url_https + ":orig\" filename=\"" + data.data.user.screen_name + "_" + data.data.id_str + "\" download-from-url=\"download-from-url\"></i></a>\n      </div>\n    </div>\n  </div>\n</div>";
-          imageLayer = angular.element(document).find('.image-layer');
-          if (_.isEmpty(imageLayer.html())) {
-            return;
-          }
-          item = $compile(imageLayerCaptionHtml)(scope).hide().fadeIn(300);
-          return imageLayer.append(item);
-        });
-      });
-    }
-  };
-}]);
-
 angular.module("myApp.services").service("AuthService", ["$http", function($http) {
   return {
     isAuthenticated: function() {
@@ -1576,7 +1576,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
       var ListService;
       console.log(tweets);
       ListService = $injector.get('ListService');
-      return _.each(tweets, (function(_this) {
+      return _.map(tweets, (function(_this) {
         return function(tweet) {
           var isRT;
           isRT = _.has(tweet, 'retweeted_status');
@@ -1588,11 +1588,12 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
           tweet.favNum = _this.get(tweet, 'tweet.favorite_count', isRT);
           tweet.tweetIdStr = _this.get(tweet, 'tweet.id_str', isRT);
           tweet.sourceUrl = _this.get(tweet, 'display_url', isRT);
-          tweet.picUrlList = _this.get(tweet, 'media_url_https', isRT);
+          tweet.picUrlList = _this.get(tweet, 'media_url_https:small', isRT);
           tweet.picOrigUrlList = _this.get(tweet, 'media_url_https:orig', isRT);
           tweet.video_url = _this.get(tweet, 'video_url', isRT);
           tweet.fileName = _this.get(tweet, 'screen_name', isRT) + '_' + _this.get(tweet, 'tweet.id_str', isRT);
           tweet.user.profile_image_url_https = _this.iconBigger(tweet.user.profile_image_url_https);
+          return tweet;
         };
       })(this));
     },
@@ -1632,6 +1633,10 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
         case 'media_url_https:orig':
           return _.map(t.extended_entities.media, function(media) {
             return media.media_url_https + ':orig';
+          });
+        case 'media_url_https:small':
+          return _.map(t.extended_entities.media, function(media) {
+            return media.media_url_https + ':small';
           });
         case 'video_url':
           return (_ref5 = t.extended_entities) != null ? (_ref6 = _ref5.media[0]) != null ? (_ref7 = _ref6.video_info) != null ? _ref7.variants[0].url : void 0 : void 0 : void 0;
