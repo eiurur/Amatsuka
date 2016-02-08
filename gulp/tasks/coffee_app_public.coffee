@@ -17,7 +17,7 @@ gulp.task 'coffee_app_public', ->
     .pipe gulp.dest config.dest
     .pipe $.stripDebug()
     .pipe $.rename suffix: '.min'
-    .pipe $.uglify mangle: false
+    .pipe $.uglify()
     .pipe gulp.dest config.dest
     .pipe $.gzip()
     .pipe gulp.dest config.dest
