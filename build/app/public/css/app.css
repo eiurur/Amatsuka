@@ -11,6 +11,14 @@
 /**
  * zurui font awesome button
  */
+.icon-twitter {
+  color: #a1a1a1;
+  cursor: pointer;
+}
+.icon-twitter:hover {
+  color: #00aced !important;
+}
+
 .icon-retweet {
   cursor: pointer;
 }

@@ -1,13 +1,12 @@
-_         = require 'lodash'
-util      = require 'util'
-atob      = require 'atob'
-moment    = require 'moment'
-crypto    = require 'crypto'
-request   = require 'request'
-Promise   = require 'bluebird'
+_       = require 'lodash'
+util    = require 'util'
+atob    = require 'atob'
+moment  = require 'moment'
+crypto  = require 'crypto'
+request = require 'request'
+Promise = require 'bluebird'
 
 my = ->
-# module.exports = class My
 
   c: (desciption, str) ->
     desciption = desciption || ''
@@ -143,7 +142,6 @@ my = ->
         else
           return reject err
 
-
   promiseWhile: (condition, action) ->
     resolver = Promise.defer()
 
@@ -157,6 +155,5 @@ my = ->
 
   delayPromise: (ms) ->
     return new Promise (resolve) -> setTimeout resolve, ms
-
 
 exports.my = my()

@@ -219,6 +219,9 @@ angular.module "myApp.directives"
               <div class="timeline__post--footer">
                 <div class="timeline__post--footer--contents">
                   <div class="timeline__post--footer--contents--controls">
+                    <a href="#{data.data.entities.media[0].expanded_url}" target="_blank">
+                      <i class="fa fa-twitter icon-twitter"></i>
+                    </a>
                     <i class="fa fa-retweet icon-retweet" tweet-id-str="#{data.data.id_str}" retweeted="#{data.data.retweeted}" retweetable="retweetable"></i>
                     <i class="fa fa-heart icon-heart" tweet-id-str="#{data.data.id_str}" favorited="#{data.data.favorited}" favoritable="favoritable"></i>
                     <a><i class="fa fa-download" data-url="#{data.data.extended_entities.media[0].media_url_https}:orig" filename="#{data.data.user.screen_name}_#{data.data.id_str}" download-from-url="download-from-url"></i></a>

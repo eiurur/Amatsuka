@@ -13,6 +13,15 @@
 //   margin-right: 5px;
 // }
 
+.icon-twitter {
+  color: #a1a1a1;
+  cursor: pointer;
+  &:hover
+  {
+    color: $twitter-color !important;
+  }
+}
+
 .icon-retweet
 {
   cursor: pointer;
