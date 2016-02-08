@@ -7,7 +7,7 @@ angular.module "myApp.factories", []
         @busy         = false
         @isLast       = false
         @method       = null
-        @count        = 50
+        @count        = 20
         @items        = items
         @maxId        = maxId
         @type         = type
