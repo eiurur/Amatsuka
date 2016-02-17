@@ -26,11 +26,9 @@ angular.module "myApp.controllers"
 
   $scope.$on 'tweetData', (event, args) ->
     return unless $scope.isOpened
-    maxId           = TweetService.decStrNum(_.last(args).id_str)
-    # tweetsOnlyImage = TweetService.filterIncludeImage args
-    tweetsNormalized = TweetService.normalizeTweets(tweetsOnlyImage)
-    $scope.tweets   =
-      new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str)
+    maxId            = TweetService.decStrNum(_.last(args).id_str)
+    tweetsNormalized = TweetService.normalizeTweets(args)
+    $scope.tweets    = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str)
 
     # ここ要確認
     # TweetService.history[history] = $scope.tweets

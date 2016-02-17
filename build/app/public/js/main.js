@@ -989,7 +989,7 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
       return;
     }
     maxId = TweetService.decStrNum(_.last(args).id_str);
-    tweetsNormalized = TweetService.normalizeTweets(tweetsOnlyImage);
+    tweetsNormalized = TweetService.normalizeTweets(args);
     $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
   });
   $scope.$on('isOpened', function(event, args) {
