@@ -12,4 +12,5 @@ gulp.task 'build', [
   'sass'
   'jade_copy'
   'images_copy'
+  'videos_copy'
 ]

@@ -54,6 +54,10 @@ module.exports =
     src: src + app_public + "/images/**"
     dest: dest + app_public + '/images/'
 
+  videos_copy:
+    src: src + app_public + "/videos/**"
+    dest: dest + app_public + '/videos/'
+
   sass:
     src: [src + app_public + "/sass/**//!(_)*"] # ファイル名の先頭がアンスコはビルド対象外にする
     dest: dest + app_public + "/css/"
@@ -118,3 +122,4 @@ module.exports =
     sass: relativeSrcPath + app_public + "/sass/**"
     jade_copy: relativeSrcPath + app + "/views/**"
     images_copy: relativeSrcPath + app_public + "/images/**"
+    videos_copy: relativeSrcPath + app_public + "/videos/**"
