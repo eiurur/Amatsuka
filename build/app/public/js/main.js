@@ -652,7 +652,7 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
     if (JSON.stringify(newData) === JSON.stringify(oldData)) {
       return;
     }
-    if (!_.isNumber(newData.favlowerLimit)) {
+    if (!_.isNumber(newData.favLowerLimit)) {
       return;
     }
     ConfigService.update();

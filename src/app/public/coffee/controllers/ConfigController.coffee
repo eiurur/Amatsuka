@@ -19,14 +19,16 @@ angular.module "myApp.controllers"
     # この判定がないとConfigページを開くたびに設定がリセットされてしまう。
     return if JSON.stringify(newData) is JSON.stringify(oldData)
 
-    return unless _.isNumber newData.favlowerLimit
+    return unless _.isNumber newData.favLowerLimit
 
     # localStorageのデータを更新
     do ConfigService.update
 
     # データベースのデータを更新
     ConfigService.save2DB()
-    .then (data) -> console.log data
-    .catch (error) -> console.log error
+    .then (data) ->
+      console.log data
+    .catch (error) ->
+      console.log error
     return
   , true
