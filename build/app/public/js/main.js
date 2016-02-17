@@ -224,7 +224,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
     Tweets.prototype.normalizeTweet = function(data) {
       return new Promise((function(_this) {
         return function(resolve, reject) {
-          var itemsImageOnly, itemsNormalized;
+          var itemsNormalized;
           if (data.error != null) {
             reject(data.error);
           }
@@ -234,8 +234,9 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
             });
           }
           _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
-          itemsImageOnly = TweetService.filterIncludeImage(data.data);
-          itemsNormalized = TweetService.normalizeTweets(itemsImageOnly, ListService.amatsukaList.member);
+          console.time('normalize_tweets');
+          itemsNormalized = TweetService.normalizeTweets(data.data, ListService.amatsukaList.member);
+          console.timeEnd('normalize_tweets');
           return resolve(itemsNormalized);
         };
       })(this));
@@ -1230,10 +1231,11 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
         });
       };
       return element.on('click', function() {
-        var body, domUserSidebar, domUserSidebarHeader, isOpenedSidebar, layer;
+        var $document, body, domUserSidebar, domUserSidebarHeader, isOpenedSidebar, layer;
         $rootScope.$broadcast('isOpened', true);
-        domUserSidebar = angular.element(document).find('.user-sidebar');
-        domUserSidebarHeader = angular.element(document).find('.user-sidebar__header');
+        $document = angular.element(document);
+        domUserSidebar = $document.find('.user-sidebar');
+        domUserSidebarHeader = $document.find('.user-sidebar__header');
         isOpenedSidebar = 　domUserSidebar[0].className.indexOf('.user-sidebar-in') !== -1;
         if (isOpenedSidebar) {
           showTweet();
@@ -1245,9 +1247,9 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
          */
         domUserSidebar.addClass('user-sidebar-in');
         domUserSidebarHeader.removeClass('user-sidebar-out');
-        body = angular.element(document).find('body');
+        body = $document.find('body');
         body.addClass('scrollbar-y-hidden');
-        layer = angular.element(document).find('.layer');
+        layer = $document.find('.layer');
         layer.addClass('fullscreen-overlay');
         showTweet();
         return layer.on('click', function() {

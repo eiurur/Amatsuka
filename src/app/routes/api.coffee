@@ -138,10 +138,13 @@ module.exports = (app) ->
       .then (tweets) ->
         console.log '/api/lists/list/:id/:count tweets.length = ', tweets.length
 
-        tweetsExcluededFavLower = twitterUtils.excludeTweetBasedFavLowerLimit tweets, config.favlowerLimit
-        tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser tweetsExcluededFavLower, config.ngUsername
-        tweetsCleaned         = twitterUtils.excludeTweetBasedOnNgWord tweetsExcluededNgUser, config.ngWord
-        res.json data: tweetsCleaned
+        # tweetsExcluededFavLower        = twitterUtils.excludeTweetBasedFavLowerLimit tweets, config.favlowerLimit
+        # tweetsExcluededNgUser          = twitterUtils.excludeTweetBasedOnNgUser tweetsExcluededFavLower, config.ngUsername
+        # tweetsExcluededNgUserAndNgWord = twitterUtils.excludeTweetBasedOnNgWord tweetsExcluededNgUser, config.ngWord
+        # tweetsCleaned                  = twitterUtils.filterIncludeImage tweetsExcluededNgUserAndNgWord
+
+        tweetsNormalized = twitterUtils.normalizeTweets tweets, config
+        res.json data: tweetsNormalized
       .catch (error) ->
         console.log '/api/lists/list/:id/:count error ', error
         res.json error: error
@@ -155,12 +158,12 @@ module.exports = (app) ->
     , (err, data) ->
       # 設定データが未登録
       config = if _.isNull data then {} else JSON.parse(data.configStr)
-      console.log 'api timeline config = ', config
+      # console.log 'api timeline config = ', config
 
-      console.log typeof req.query.isIncludeRetweet
-      console.log req.query.isIncludeRetweet
-      console.log config.includeRetweet
-      console.log req.query.isIncludeRetweet or config.includeRetweet
+      # console.log typeof req.query.isIncludeRetweet
+      # console.log req.query.isIncludeRetweet
+      # console.log config.includeRetweet
+      # console.log req.query.isIncludeRetweet or config.includeRetweet
 
       m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
       twitterClient = new TwitterClient(req.session.passport.user)
@@ -168,12 +171,19 @@ module.exports = (app) ->
         twitterIdStr: req.params.id
         maxId: req.params.maxId
         count: req.params.count
-        includeRetweet: req.query.isIncludeRetweet or config.includeRetweet
+        includeRetweet: config.includeRetweet
       .then (tweets) ->
         console.log '/api/timeline/:id/:count tweets.length = ', tweets.length
-        tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser tweets, config.ngUsername
-        tweetsCleaned         = twitterUtils.excludeTweetBasedOnNgWord tweetsExcluededNgUser, config.ngWord
-        res.json data: tweetsCleaned
+        # console.time 'four_loop'
+        # tweetsExcluededFavLower        = twitterUtils.excludeTweetBasedFavLowerLimit tweets, config.favlowerLimit
+        # tweetsExcluededNgUser          = twitterUtils.excludeTweetBasedOnNgUser tweetsExcluededFavLower, config.ngUsername
+        # tweetsExcluededNgUserAndNgWord = twitterUtils.excludeTweetBasedOnNgWord tweetsExcluededNgUser, config.ngWord
+        # tweetsCleaned                  = twitterUtils.filterIncludeImage tweetsExcluededNgUserAndNgWord
+        # console.timeEnd 'four_loop'
+        console.time 'one_loop'
+        tweetsNormalized = twitterUtils.normalizeTweets tweets, config
+        console.timeEnd 'one_loop'
+        res.json data: tweetsNormalized
       .catch (error) ->
         res.json error: error
 

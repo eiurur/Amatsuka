@@ -52,6 +52,24 @@ twitterUtils = ->
       when 'user.url' then t.user.url
       else null
 
+  normalizeTweets: (tweets, config) ->
+    config.ngUserList or= []
+    config.ngWordList or= []
+    config.lowerLimit or= 0
+    console.log(config)
+
+    _.reject tweets, (tweet) =>
+      includeNgUser = config.ngUserList.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
+      includeNgWord = config.ngWordList.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
+      isFavLowerLimit = @get(tweet, 'tweet.favorite_count', @isRT(tweet)) < config.lowerLimit
+      isOnlyTextTweet = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
+      includeNgUser or includeNgWord or isOnlyTextTweet or isOnlyTextTweet
+
+  filterIncludeImage: (tweets) ->
+    _.reject tweets, (tweet) ->
+      !_.has(tweet, 'extended_entities') or
+      _.isEmpty(tweet.extended_entities.media)
+
   excludeTweetBasedOnNgUser: (tweets, ngUserList = []) ->
     console.log 'ngUserList = ', ngUserList
     # memo: excludeTweetBasedOnNgUser: 0ms

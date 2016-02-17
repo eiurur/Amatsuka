@@ -94,6 +94,31 @@
             return null;
         }
       },
+      normalizeTweets: function(tweets, config) {
+        config.ngUserList || (config.ngUserList = []);
+        config.ngWordList || (config.ngWordList = []);
+        config.lowerLimit || (config.lowerLimit = 0);
+        console.log(config);
+        return _.reject(tweets, (function(_this) {
+          return function(tweet) {
+            var includeNgUser, includeNgWord, isFavLowerLimit, isOnlyTextTweet;
+            includeNgUser = config.ngUserList.some(function(element, index) {
+              return _this.get(tweet, 'screen_name', _this.isRT(tweet)).indexOf(element.text) !== -1;
+            });
+            includeNgWord = config.ngWordList.some(function(element, index) {
+              return _this.get(tweet, 'text', _this.isRT(tweet)).indexOf(element.text) !== -1;
+            });
+            isFavLowerLimit = _this.get(tweet, 'tweet.favorite_count', _this.isRT(tweet)) < config.lowerLimit;
+            isOnlyTextTweet = !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
+            return includeNgUser || includeNgWord || isOnlyTextTweet || isOnlyTextTweet;
+          };
+        })(this));
+      },
+      filterIncludeImage: function(tweets) {
+        return _.reject(tweets, function(tweet) {
+          return !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
+        });
+      },
       excludeTweetBasedOnNgUser: function(tweets, ngUserList) {
         if (ngUserList == null) {
           ngUserList = [];

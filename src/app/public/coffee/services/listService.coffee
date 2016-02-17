@@ -57,7 +57,7 @@ angular.module "myApp.services"
     normalizeMember: (member) ->
 
       # TODO: 関数化
-      # TODO: urkとdescriptionだけでなく、tweetにも対応
+      # TODO: urlとdescriptionだけでなく、tweetにも対応
       expandedUrlListInDescription = TweetService.getExpandedURLFromDescription(member.entities)
       expandedUrlListInUrl         = TweetService.getExpandedURLFromURL(member.entities)
 

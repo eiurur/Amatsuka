@@ -151,9 +151,10 @@ angular.module "myApp.directives"
 
       element.on 'click', ->
         $rootScope.$broadcast 'isOpened', true
+        $document = angular.element(document)
 
-        domUserSidebar       = angular.element(document).find('.user-sidebar')
-        domUserSidebarHeader = angular.element(document).find('.user-sidebar__header')
+        domUserSidebar       =  $document.find('.user-sidebar')
+        domUserSidebarHeader =  $document.find('.user-sidebar__header')
 
         # user-sidebarが開かれた状態で呼び出しされたら、
         # サイドバーを維持したまま他のユーザのツイートとプロフィールを表示
@@ -169,11 +170,11 @@ angular.module "myApp.directives"
         domUserSidebarHeader.removeClass('user-sidebar-out')
 
         # bodyのスクロールバーを除去
-        body = angular.element(document).find('body')
+        body =  $document.find('body')
         body.addClass('scrollbar-y-hidden')
 
         # 背景を半透明黒くして邪魔なものを隠す
-        layer = angular.element(document).find('.layer')
+        layer =  $document.find('.layer')
         layer.addClass('fullscreen-overlay')
 
         # 表示

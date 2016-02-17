@@ -168,13 +168,11 @@
           count: req.params.count,
           includeRetweet: config.includeRetweet
         }).then(function(tweets) {
-          var tweetsCleaned, tweetsExcluededFavLower, tweetsExcluededNgUser;
+          var tweetsNormalized;
           console.log('/api/lists/list/:id/:count tweets.length = ', tweets.length);
-          tweetsExcluededFavLower = twitterUtils.excludeTweetBasedFavLowerLimit(tweets, config.favlowerLimit);
-          tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser(tweetsExcluededFavLower, config.ngUsername);
-          tweetsCleaned = twitterUtils.excludeTweetBasedOnNgWord(tweetsExcluededNgUser, config.ngWord);
+          tweetsNormalized = twitterUtils.normalizeTweets(tweets, config);
           return res.json({
-            data: tweetsCleaned
+            data: tweetsNormalized
           });
         })["catch"](function(error) {
           console.log('/api/lists/list/:id/:count error ', error);
@@ -190,25 +188,21 @@
       }, function(err, data) {
         var config, m, twitterClient;
         config = _.isNull(data) ? {} : JSON.parse(data.configStr);
-        console.log('api timeline config = ', config);
-        console.log(typeof req.query.isIncludeRetweet);
-        console.log(req.query.isIncludeRetweet);
-        console.log(config.includeRetweet);
-        console.log(req.query.isIncludeRetweet || config.includeRetweet);
         m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
         twitterClient = new TwitterClient(req.session.passport.user);
         return twitterClient[m]({
           twitterIdStr: req.params.id,
           maxId: req.params.maxId,
           count: req.params.count,
-          includeRetweet: req.query.isIncludeRetweet || config.includeRetweet
+          includeRetweet: config.includeRetweet
         }).then(function(tweets) {
-          var tweetsCleaned, tweetsExcluededNgUser;
+          var tweetsNormalized;
           console.log('/api/timeline/:id/:count tweets.length = ', tweets.length);
-          tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser(tweets, config.ngUsername);
-          tweetsCleaned = twitterUtils.excludeTweetBasedOnNgWord(tweetsExcluededNgUser, config.ngWord);
+          console.time('one_loop');
+          tweetsNormalized = twitterUtils.normalizeTweets(tweets, config);
+          console.timeEnd('one_loop');
           return res.json({
-            data: tweetsCleaned
+            data: tweetsNormalized
           });
         })["catch"](function(error) {
           return res.json({

@@ -20,8 +20,10 @@ angular.module "myApp.factories", []
           if _.isEmpty(data.data) then reject statusCode: 10100
 
           @maxId          = TweetService.decStrNum _.last(data.data).id_str
-          itemsImageOnly  = TweetService.filterIncludeImage data.data
-          itemsNormalized = TweetService.normalizeTweets itemsImageOnly, ListService.amatsukaList.member
+          # itemsImageOnly  = TweetService.filterIncludeImage data.data
+          console.time('normalize_tweets')
+          itemsNormalized = TweetService.normalizeTweets data.data, ListService.amatsukaList.member
+          console.timeEnd('normalize_tweets')
           resolve itemsNormalized
 
       assignTweet: (tweets) =>
@@ -29,9 +31,7 @@ angular.module "myApp.factories", []
           if _.isEmpty tweets then reject statusCode: 100110
 
           do =>
-            # @items = @items.concat tweets
-            # @busy = false
-
+            # console.time('assignTweet') assignTweet: 0.108ms
             $q.all tweets.map (tweet) =>
               [@items][0].push tweet
             .then (result) =>
