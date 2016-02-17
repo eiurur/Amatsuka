@@ -183,12 +183,20 @@
           res.json({
             data: null
           });
+          return;
       }
       twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient[queryType](params).then(function(tweets) {
         var tweetsNormalized;
+        console.log("" + queryType + " ", tweets.length);
+        if (tweets.length === 0) {
+          res.json({
+            data: []
+          });
+        }
         maxId = my.decStrNum(_.last(tweets).id_str);
         tweetsNormalized = twitterUtils.normalizeTweets(tweets, config);
+        console.log("" + queryType + " !_.isEmpty tweetsNormalized = ", !_.isEmpty(tweetsNormalized));
         if (!_.isEmpty(tweetsNormalized)) {
           res.json({
             data: tweetsNormalized

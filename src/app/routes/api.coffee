@@ -139,6 +139,7 @@ module.exports = (app) ->
           includeRetweet: req.query.isIncludeRetweet or config.includeRetweet
       else
         res.json data: null
+        return
 
     # console.log chalk.blue 'Before params =============> '
     # console.log "#{queryType} ", params
@@ -146,10 +147,14 @@ module.exports = (app) ->
     twitterClient[queryType](params)
     .then (tweets) ->
       # console.log chalk.cyan 'tweets.length =============> '
-      # console.log "#{queryType} ", tweets.length
+      console.log "#{queryType} ", tweets.length
+      if tweets.length is 0 then res.json data: []
+
       maxId = my.decStrNum _.last(tweets).id_str
       tweetsNormalized = twitterUtils.normalizeTweets tweets, config
+      console.log "#{queryType} !_.isEmpty tweetsNormalized = ", !_.isEmpty tweetsNormalized
       if !_.isEmpty tweetsNormalized then res.json data: tweetsNormalized
+
       fetchTweet(req, res, queryType, maxId, config)
     .catch (error) ->
       res.json error: error
