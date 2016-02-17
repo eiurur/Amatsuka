@@ -52,7 +52,7 @@ twitterUtils = ->
       when 'user.url' then t.user.url
       else null
 
-  normalizeTweets: (tweets, config) ->
+  normalizeTweets: (tweets, config = {}) ->
     config.ngUsername or= []
     config.ngWord or= []
     config.favLowerLimit or= 0

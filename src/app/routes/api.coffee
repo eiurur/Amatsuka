@@ -118,9 +118,13 @@ module.exports = (app) ->
     .catch (error) ->
       res.json error: error
 
+
   #
   fetchTweet = (req, res, queryType, maxId, config) ->
     # console.log chalk.bgGreen 'fetchTWeet =============> '
+    # console.log chalk.green 'maxId =============> '
+    # console.log maxId
+    # console.log req.params.maxId
     maxId = maxId or req.params.maxId
 
     params = {}
@@ -137,6 +141,11 @@ module.exports = (app) ->
           maxId: maxId
           count: req.params.count
           includeRetweet: req.query.isIncludeRetweet or config.includeRetweet
+      when 'getFavLists'
+        params =
+          twitterIdStr: req.params.id
+          maxId: req.params.maxId
+          count: req.params.count
       else
         res.json data: null
         return
@@ -147,15 +156,23 @@ module.exports = (app) ->
     twitterClient[queryType](params)
     .then (tweets) ->
       # console.log chalk.cyan 'tweets.length =============> '
-      console.log "#{queryType} ", tweets.length
+      # console.log "#{queryType} ", tweets.length
+
+      # API限界まで読み終えたとき
       if tweets.length is 0 then res.json data: []
 
-      maxId = my.decStrNum _.last(tweets).id_str
+      nextMaxId = my.decStrNum _.last(tweets).id_str
       tweetsNormalized = twitterUtils.normalizeTweets tweets, config
-      console.log "#{queryType} !_.isEmpty tweetsNormalized = ", !_.isEmpty tweetsNormalized
+      # console.log "#{queryType} !_.isEmpty tweetsNormalized = ", !_.isEmpty tweetsNormalized
+
       if !_.isEmpty tweetsNormalized then res.json data: tweetsNormalized
 
-      fetchTweet(req, res, queryType, maxId, config)
+      # console.log chalk.red 'maxId, nextMaxId =============> '
+      # console.log maxId
+      # console.log nextMaxId
+      if maxId is nextMaxId then res.json data: []
+
+      fetchTweet(req, res, queryType, nextMaxId, config)
     .catch (error) ->
       res.json error: error
 
@@ -255,15 +272,16 @@ module.exports = (app) ->
   Fav
   ###
   app.get '/api/favorites/lists/:id/:maxId?/:count?', (req, res) ->
-    twitterClient = new TwitterClient(req.session.passport.user)
-    twitterClient.getFavLists
-      twitterIdStr: req.params.id
-      maxId: req.params.maxId
-      count: req.params.count
-    .then (data) ->
-      res.json data: data
-    .catch (error) ->
-      res.json error: error
+    fetchTweet(req, res, 'getFavLists', null, null)
+    # twitterClient = new TwitterClient(req.session.passport.user)
+    # twitterClient.getFavLists
+    #   twitterIdStr: req.params.id
+    #   maxId: req.params.maxId
+    #   count: req.params.count
+    # .then (data) ->
+    #   res.json data: data
+    # .catch (error) ->
+    #   res.json error: error
 
   app.post '/api/favorites/create', (req, res) ->
     twitterClient = new TwitterClient(req.session.passport.user)

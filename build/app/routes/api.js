@@ -179,6 +179,13 @@
             includeRetweet: req.query.isIncludeRetweet || config.includeRetweet
           };
           break;
+        case 'getFavLists':
+          params = {
+            twitterIdStr: req.params.id,
+            maxId: req.params.maxId,
+            count: req.params.count
+          };
+          break;
         default:
           res.json({
             data: null
@@ -187,22 +194,25 @@
       }
       twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient[queryType](params).then(function(tweets) {
-        var tweetsNormalized;
-        console.log("" + queryType + " ", tweets.length);
+        var nextMaxId, tweetsNormalized;
         if (tweets.length === 0) {
           res.json({
             data: []
           });
         }
-        maxId = my.decStrNum(_.last(tweets).id_str);
+        nextMaxId = my.decStrNum(_.last(tweets).id_str);
         tweetsNormalized = twitterUtils.normalizeTweets(tweets, config);
-        console.log("" + queryType + " !_.isEmpty tweetsNormalized = ", !_.isEmpty(tweetsNormalized));
         if (!_.isEmpty(tweetsNormalized)) {
           res.json({
             data: tweetsNormalized
           });
         }
-        return fetchTweet(req, res, queryType, maxId, config);
+        if (maxId === nextMaxId) {
+          res.json({
+            data: []
+          });
+        }
+        return fetchTweet(req, res, queryType, nextMaxId, config);
       })["catch"](function(error) {
         return res.json({
           error: error
@@ -329,21 +339,7 @@
     Fav
      */
     app.get('/api/favorites/lists/:id/:maxId?/:count?', function(req, res) {
-      var twitterClient;
-      twitterClient = new TwitterClient(req.session.passport.user);
-      return twitterClient.getFavLists({
-        twitterIdStr: req.params.id,
-        maxId: req.params.maxId,
-        count: req.params.count
-      }).then(function(data) {
-        return res.json({
-          data: data
-        });
-      })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
-      });
+      return fetchTweet(req, res, 'getFavLists', null, null);
     });
     app.post('/api/favorites/create', function(req, res) {
       var twitterClient;

@@ -95,6 +95,9 @@
         }
       },
       normalizeTweets: function(tweets, config) {
+        if (config == null) {
+          config = {};
+        }
         config.ngUsername || (config.ngUsername = []);
         config.ngWord || (config.ngWord = []);
         config.favLowerLimit || (config.favLowerLimit = 0);
