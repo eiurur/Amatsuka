@@ -97,7 +97,7 @@
       normalizeTweets: function(tweets, config) {
         config.ngUsername || (config.ngUsername = []);
         config.ngWord || (config.ngWord = []);
-        config.favlowerLimit || (config.favlowerLimit = 0);
+        config.favLowerLimit || (config.favLowerLimit = 0);
         console.log(config);
         return _.reject(tweets, (function(_this) {
           return function(tweet) {
@@ -108,9 +108,9 @@
             includeNgWord = config.ngWord.some(function(element, index) {
               return _this.get(tweet, 'text', _this.isRT(tweet)).indexOf(element.text) !== -1;
             });
-            isFavLowerLimit = _this.get(tweet, 'tweet.favorite_count', _this.isRT(tweet)) < config.favlowerLimit;
+            isFavLowerLimit = _this.get(tweet, 'tweet.favorite_count', _this.isRT(tweet)) < config.favLowerLimit;
             isOnlyTextTweet = !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
-            return includeNgUser || includeNgWord || isOnlyTextTweet || isOnlyTextTweet;
+            return includeNgUser || includeNgWord || isFavLowerLimit || isOnlyTextTweet;
           };
         })(this));
       }

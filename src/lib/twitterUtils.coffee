@@ -55,15 +55,15 @@ twitterUtils = ->
   normalizeTweets: (tweets, config) ->
     config.ngUsername or= []
     config.ngWord or= []
-    config.favlowerLimit or= 0
+    config.favLowerLimit or= 0
     console.log(config)
 
     _.reject tweets, (tweet) =>
       includeNgUser = config.ngUsername.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
       includeNgWord = config.ngWord.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
-      isFavLowerLimit = @get(tweet, 'tweet.favorite_count', @isRT(tweet)) < config.favlowerLimit
+      isFavLowerLimit = @get(tweet, 'tweet.favorite_count', @isRT(tweet)) < config.favLowerLimit
       isOnlyTextTweet = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
-      includeNgUser or includeNgWord or isOnlyTextTweet or isOnlyTextTweet
+      includeNgUser or includeNgWord or isFavLowerLimit or isOnlyTextTweet
 
   ###
   上のnormalizeでまとめて行う。(4ループ -> 1ループ)
