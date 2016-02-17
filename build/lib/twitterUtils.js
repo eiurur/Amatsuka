@@ -113,49 +113,13 @@
             return includeNgUser || includeNgWord || isOnlyTextTweet || isOnlyTextTweet;
           };
         })(this));
-      },
-      filterIncludeImage: function(tweets) {
-        return _.reject(tweets, function(tweet) {
-          return !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
-        });
-      },
-      excludeTweetBasedOnNgUser: function(tweets, ngUserList) {
-        if (ngUserList == null) {
-          ngUserList = [];
-        }
-        console.log('ngUserList = ', ngUserList);
-        return _.reject(tweets, (function(_this) {
-          return function(tweet) {
-            return ngUserList.some(function(element, index) {
-              return _this.get(tweet, 'screen_name', _this.isRT(tweet)).indexOf(element.text) !== -1;
-            });
-          };
-        })(this));
-      },
-      excludeTweetBasedOnNgWord: function(tweets, ngWordList) {
-        if (ngWordList == null) {
-          ngWordList = [];
-        }
-        console.log('ngWordList = ', ngWordList);
-        return _.reject(tweets, (function(_this) {
-          return function(tweet) {
-            return ngWordList.some(function(element, index) {
-              return _this.get(tweet, 'text', _this.isRT(tweet)).indexOf(element.text) !== -1;
-            });
-          };
-        })(this));
-      },
-      excludeTweetBasedFavLowerLimit: function(tweets, lowerLimit) {
-        if (lowerLimit == null) {
-          lowerLimit = 0;
-        }
-        return _.filter(tweets, (function(_this) {
-          return function(tweet) {
-            return _this.get(tweet, 'tweet.favorite_count', _this.isRT(tweet)) >= lowerLimit;
-          };
-        })(this));
       }
     };
+
+    /*
+    上のnormalizeでまとめて行う。(4ループ -> 1ループ)
+    処理時間が1/3まで減少したので効果はあった、。
+     */
   };
 
   exports.twitterUtils = twitterUtils();

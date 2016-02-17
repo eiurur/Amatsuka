@@ -137,12 +137,6 @@ module.exports = (app) ->
         includeRetweet: config.includeRetweet
       .then (tweets) ->
         console.log '/api/lists/list/:id/:count tweets.length = ', tweets.length
-
-        # tweetsExcluededFavLower        = twitterUtils.excludeTweetBasedFavLowerLimit tweets, config.favlowerLimit
-        # tweetsExcluededNgUser          = twitterUtils.excludeTweetBasedOnNgUser tweetsExcluededFavLower, config.ngUsername
-        # tweetsExcluededNgUserAndNgWord = twitterUtils.excludeTweetBasedOnNgWord tweetsExcluededNgUser, config.ngWord
-        # tweetsCleaned                  = twitterUtils.filterIncludeImage tweetsExcluededNgUserAndNgWord
-
         tweetsNormalized = twitterUtils.normalizeTweets tweets, config
         res.json data: tweetsNormalized
       .catch (error) ->
@@ -158,13 +152,6 @@ module.exports = (app) ->
     , (err, data) ->
       # 設定データが未登録
       config = if _.isNull data then {} else JSON.parse(data.configStr)
-      # console.log 'api timeline config = ', config
-
-      # console.log typeof req.query.isIncludeRetweet
-      # console.log req.query.isIncludeRetweet
-      # console.log config.includeRetweet
-      # console.log req.query.isIncludeRetweet or config.includeRetweet
-
       m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
       twitterClient = new TwitterClient(req.session.passport.user)
       twitterClient[m]
@@ -174,15 +161,7 @@ module.exports = (app) ->
         includeRetweet: config.includeRetweet
       .then (tweets) ->
         console.log '/api/timeline/:id/:count tweets.length = ', tweets.length
-        # console.time 'four_loop'
-        # tweetsExcluededFavLower        = twitterUtils.excludeTweetBasedFavLowerLimit tweets, config.favlowerLimit
-        # tweetsExcluededNgUser          = twitterUtils.excludeTweetBasedOnNgUser tweetsExcluededFavLower, config.ngUsername
-        # tweetsExcluededNgUserAndNgWord = twitterUtils.excludeTweetBasedOnNgWord tweetsExcluededNgUser, config.ngWord
-        # tweetsCleaned                  = twitterUtils.filterIncludeImage tweetsExcluededNgUserAndNgWord
-        # console.timeEnd 'four_loop'
-        console.time 'one_loop'
         tweetsNormalized = twitterUtils.normalizeTweets tweets, config
-        console.timeEnd 'one_loop'
         res.json data: tweetsNormalized
       .catch (error) ->
         res.json error: error

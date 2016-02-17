@@ -65,24 +65,28 @@ twitterUtils = ->
       isOnlyTextTweet = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
       includeNgUser or includeNgWord or isOnlyTextTweet or isOnlyTextTweet
 
-  filterIncludeImage: (tweets) ->
-    _.reject tweets, (tweet) ->
-      !_.has(tweet, 'extended_entities') or
-      _.isEmpty(tweet.extended_entities.media)
+  ###
+  上のnormalizeでまとめて行う。(4ループ -> 1ループ)
+  処理時間が1/3まで減少したので効果はあった、。
+  ###
+  # filterIncludeImage: (tweets) ->
+  #   _.reject tweets, (tweet) ->
+  #     !_.has(tweet, 'extended_entities') or
+  #     _.isEmpty(tweet.extended_entities.media)
 
-  excludeTweetBasedOnNgUser: (tweets, ngUserList = []) ->
-    console.log 'ngUserList = ', ngUserList
-    # memo: excludeTweetBasedOnNgUser: 0ms
-    _.reject tweets, (tweet) =>
-      ngUserList.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
+  # excludeTweetBasedOnNgUser: (tweets, ngUserList = []) ->
+  #   console.log 'ngUserList = ', ngUserList
+  #   # memo: excludeTweetBasedOnNgUser: 0ms
+  #   _.reject tweets, (tweet) =>
+  #     ngUserList.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
 
-  excludeTweetBasedOnNgWord: (tweets, ngWordList = []) ->
-    console.log 'ngWordList = ', ngWordList
-    # memo: excludeTweetBasedOnNgWord: 0ms
-    _.reject tweets, (tweet) =>
-      ngWordList.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
+  # excludeTweetBasedOnNgWord: (tweets, ngWordList = []) ->
+  #   console.log 'ngWordList = ', ngWordList
+  #   # memo: excludeTweetBasedOnNgWord: 0ms
+  #   _.reject tweets, (tweet) =>
+  #     ngWordList.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
 
-  excludeTweetBasedFavLowerLimit: (tweets, lowerLimit = 0) ->
-    _.filter tweets, (tweet) => @get(tweet, 'tweet.favorite_count', @isRT(tweet)) >= lowerLimit
+  # excludeTweetBasedFavLowerLimit: (tweets, lowerLimit = 0) ->
+  #   _.filter tweets, (tweet) => @get(tweet, 'tweet.favorite_count', @isRT(tweet)) >= lowerLimit
 
 exports.twitterUtils = twitterUtils()

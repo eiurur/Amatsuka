@@ -198,9 +198,7 @@
         }).then(function(tweets) {
           var tweetsNormalized;
           console.log('/api/timeline/:id/:count tweets.length = ', tweets.length);
-          console.time('one_loop');
           tweetsNormalized = twitterUtils.normalizeTweets(tweets, config);
-          console.timeEnd('one_loop');
           return res.json({
             data: tweetsNormalized
           });
