@@ -214,7 +214,7 @@ angular.module("myApp.factories", []).factory('Tweets', ["$http", "$q", "Toaster
       this.busy = false;
       this.isLast = false;
       this.method = null;
-      this.count = 20;
+      this.count = 40;
       this.items = items;
       this.maxId = maxId;
       this.type = type;

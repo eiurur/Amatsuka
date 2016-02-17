@@ -1,6 +1,7 @@
 moment           = require 'moment'
 _                = require 'lodash'
 path             = require 'path'
+chalk            = require 'chalk'
 TwitterClient    = require path.resolve 'build', 'lib', 'TwitterClient'
 PictCollection   = require path.resolve 'build', 'lib', 'PictCollection'
 {my}             = require path.resolve 'build', 'lib', 'my'
@@ -117,54 +118,61 @@ module.exports = (app) ->
     .catch (error) ->
       res.json error: error
 
-  # GET リストのタイムラインを取得
-  app.get '/api/lists/statuses/:id/:maxId?/:count?', (req, res) ->
+  #
+  fetchTweet = (req, res, queryType, maxId, config) ->
+    # console.log chalk.bgGreen 'fetchTWeet =============> '
+    maxId = maxId or req.params.maxId
 
-    # HACK: 重複
-    # memo: ConfigProvider.findOneByIdの実行「時間を計測したところ2msとかでした
+    params = {}
+    switch queryType
+      when 'getListsStatuses'
+        params =
+          listIdStr: req.params.id
+          maxId: maxId
+          count: req.params.count
+          includeRetweet: config.includeRetweet
+      when 'getHomeTimeline', 'getUserTimeline'
+        params =
+          twitterIdStr: req.params.id
+          maxId: maxId
+          count: req.params.count
+          includeRetweet: req.query.isIncludeRetweet or config.includeRetweet
+      else
+        res.json data: null
+
+    # console.log chalk.blue 'Before params =============> '
+    # console.log "#{queryType} ", params
+    twitterClient = new TwitterClient(req.session.passport.user)
+    twitterClient[queryType](params)
+    .then (tweets) ->
+      # console.log chalk.cyan 'tweets.length =============> '
+      # console.log "#{queryType} ", tweets.length
+      maxId = my.decStrNum _.last(tweets).id_str
+      tweetsNormalized = twitterUtils.normalizeTweets tweets, config
+      if !_.isEmpty tweetsNormalized then res.json data: tweetsNormalized
+      fetchTweet(req, res, queryType, maxId, config)
+    .catch (error) ->
+      res.json error: error
+
+  # GET リストのタイムラインを取得
+  # memo: ConfigProvider.findOneByIdの実行「時間を計測したところ2msとかでした
+  app.get '/api/lists/statuses/:id/:maxId?/:count?', (req, res) ->
     ConfigProvider.findOneById
       twitterIdStr: req.session.passport.user._json.id_str
     , (err, data) ->
       # 設定データが未登録
       config = if _.isNull data then {} else JSON.parse(data.configStr)
-      console.log 'api lists config = ', config
-
-      twitterClient = new TwitterClient(req.session.passport.user)
-      twitterClient.getListsStatuses
-        listIdStr: req.params.id
-        maxId: req.params.maxId
-        count: req.params.count
-        includeRetweet: config.includeRetweet
-      .then (tweets) ->
-        console.log '/api/lists/list/:id/:count tweets.length = ', tweets.length
-        tweetsNormalized = twitterUtils.normalizeTweets tweets, config
-        res.json data: tweetsNormalized
-      .catch (error) ->
-        console.log '/api/lists/list/:id/:count error ', error
-        res.json error: error
+      fetchTweet(req, res, 'getListsStatuses', null, config)
 
   # GET タイムラインの情報(home_timeline, user_timeline)
   app.get '/api/timeline/:id/:maxId?/:count?', (req, res) ->
-
-    # HACK: 重複
     ConfigProvider.findOneById
       twitterIdStr: req.session.passport.user._json.id_str
     , (err, data) ->
       # 設定データが未登録
       config = if _.isNull data then {} else JSON.parse(data.configStr)
-      m = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
-      twitterClient = new TwitterClient(req.session.passport.user)
-      twitterClient[m]
-        twitterIdStr: req.params.id
-        maxId: req.params.maxId
-        count: req.params.count
-        includeRetweet: config.includeRetweet
-      .then (tweets) ->
-        console.log '/api/timeline/:id/:count tweets.length = ', tweets.length
-        tweetsNormalized = twitterUtils.normalizeTweets tweets, config
-        res.json data: tweetsNormalized
-      .catch (error) ->
-        res.json error: error
+      queryType = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
+      fetchTweet(req, res, queryType, null, config)
 
   # ツイート情報を取得
   app.get '/api/statuses/show/:id', (req, res) ->

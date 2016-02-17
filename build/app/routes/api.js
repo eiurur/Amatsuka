@@ -1,11 +1,13 @@
 (function() {
-  var ConfigProvider, PictCollection, PictProvider, TwitterClient, UserProvider, moment, my, path, settings, twitterUtils, _;
+  var ConfigProvider, PictCollection, PictProvider, TwitterClient, UserProvider, chalk, moment, my, path, settings, twitterUtils, _;
 
   moment = require('moment');
 
   _ = require('lodash');
 
   path = require('path');
+
+  chalk = require('chalk');
 
   TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
 
@@ -28,6 +30,7 @@
     /*
     Middleware
      */
+    var fetchTweet;
     app.use('/api/?', function(req, res, next) {
       console.log("======> " + req.originalUrl);
       if (!_.isUndefined(req.session.passport.user)) {
@@ -154,59 +157,67 @@
         });
       });
     });
+    fetchTweet = function(req, res, queryType, maxId, config) {
+      var params, twitterClient;
+      maxId = maxId || req.params.maxId;
+      params = {};
+      switch (queryType) {
+        case 'getListsStatuses':
+          params = {
+            listIdStr: req.params.id,
+            maxId: maxId,
+            count: req.params.count,
+            includeRetweet: config.includeRetweet
+          };
+          break;
+        case 'getHomeTimeline':
+        case 'getUserTimeline':
+          params = {
+            twitterIdStr: req.params.id,
+            maxId: maxId,
+            count: req.params.count,
+            includeRetweet: req.query.isIncludeRetweet || config.includeRetweet
+          };
+          break;
+        default:
+          res.json({
+            data: null
+          });
+      }
+      twitterClient = new TwitterClient(req.session.passport.user);
+      return twitterClient[queryType](params).then(function(tweets) {
+        var tweetsNormalized;
+        maxId = my.decStrNum(_.last(tweets).id_str);
+        tweetsNormalized = twitterUtils.normalizeTweets(tweets, config);
+        if (!_.isEmpty(tweetsNormalized)) {
+          res.json({
+            data: tweetsNormalized
+          });
+        }
+        return fetchTweet(req, res, queryType, maxId, config);
+      })["catch"](function(error) {
+        return res.json({
+          error: error
+        });
+      });
+    };
     app.get('/api/lists/statuses/:id/:maxId?/:count?', function(req, res) {
       return ConfigProvider.findOneById({
         twitterIdStr: req.session.passport.user._json.id_str
       }, function(err, data) {
-        var config, twitterClient;
+        var config;
         config = _.isNull(data) ? {} : JSON.parse(data.configStr);
-        console.log('api lists config = ', config);
-        twitterClient = new TwitterClient(req.session.passport.user);
-        return twitterClient.getListsStatuses({
-          listIdStr: req.params.id,
-          maxId: req.params.maxId,
-          count: req.params.count,
-          includeRetweet: config.includeRetweet
-        }).then(function(tweets) {
-          var tweetsNormalized;
-          console.log('/api/lists/list/:id/:count tweets.length = ', tweets.length);
-          tweetsNormalized = twitterUtils.normalizeTweets(tweets, config);
-          return res.json({
-            data: tweetsNormalized
-          });
-        })["catch"](function(error) {
-          console.log('/api/lists/list/:id/:count error ', error);
-          return res.json({
-            error: error
-          });
-        });
+        return fetchTweet(req, res, 'getListsStatuses', null, config);
       });
     });
     app.get('/api/timeline/:id/:maxId?/:count?', function(req, res) {
       return ConfigProvider.findOneById({
         twitterIdStr: req.session.passport.user._json.id_str
       }, function(err, data) {
-        var config, m, twitterClient;
+        var config, queryType;
         config = _.isNull(data) ? {} : JSON.parse(data.configStr);
-        m = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
-        twitterClient = new TwitterClient(req.session.passport.user);
-        return twitterClient[m]({
-          twitterIdStr: req.params.id,
-          maxId: req.params.maxId,
-          count: req.params.count,
-          includeRetweet: config.includeRetweet
-        }).then(function(tweets) {
-          var tweetsNormalized;
-          console.log('/api/timeline/:id/:count tweets.length = ', tweets.length);
-          tweetsNormalized = twitterUtils.normalizeTweets(tweets, config);
-          return res.json({
-            data: tweetsNormalized
-          });
-        })["catch"](function(error) {
-          return res.json({
-            error: error
-          });
-        });
+        queryType = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
+        return fetchTweet(req, res, queryType, null, config);
       });
     });
     app.get('/api/statuses/show/:id', function(req, res) {
