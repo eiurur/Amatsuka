@@ -59,6 +59,30 @@ Feature
 - [x] Toggle the tpye of display (only user's tweet or include retweet)
 - [x] Download multiple images
 
+Launch
+======
+
+$ git clone https://github.com/eiurur/Amatsuka
+$ cd Amatsuka
+$ cp src/lib/configs/production.coffee src/lib/configs/development.coffee
+$ vim src/lib/configs/development.coffee
+
+replace
+
+    TW_CK         = 'YOUR_TWITTER_CONSUMER_KEY'
+    TW_CS         = 'YOUR_TWITTER_CONSUMER_SECRET'
+    TW_AT         = 'YOUR_TWITTER_ACCESS_TOKEN'
+    TW_AS         = 'YOUR_TWITTER_ACCESS_SECRET'
+    TW_ID_STR     = 'YOUR_TWITTER_ID_STR'
+    CALLBACK_URL  = 'http://127.0.0.1:4040/auth/twitter/callback'
+    COOKIE_SECRET = 'ANY_STRING'
+
+
+
+$ npm run init
+$ npm gulp
+
+Go http://127.0.0.1:4040
 
 
 Status

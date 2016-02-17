@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - 0.10
+  - 0.12
+env:
+  global:
+    # twitter_idstr
+    - secure: A7I8m6QJql1TXQnuEgHWbQCRqG/dHRO0wFK8MukVujJejaMZfo+gpYdUcZog2dNVpYiM8vR5R0yXQh5+0dArl7xiOd59BIqpqvi7ItLdjWDYBNgNMOIHx9pQceeWroVDNwVPUUkdJjVQ+K6KS9768XAEMPS5XWLUu2QKI61gh9M=
+    # twitter_token
+    - secure: "azwygzp3WvFAHY2yR1xUyW4rmVX6lq5a55vLSHk2+9aZz5MTCwIMOzqkznQP58//VfGpmwD8bVXoOs+snqRByHG/aK2fMgxh4I4vN2k01qFZxTkV1K3wehjgTuo0UBXSRB+zvoPJILCagwGj0Vg/8Mf4Ki7o8Iyhv78N3QNJm/I="
+    # twitter_token_sercet
+    - secure: "jOGytZHwcgQsG7No0Oqs9UJuGP85aauDmJA3vCBiy+i3E8wxEFwxmuVRbWnpyC8KnK+WR7Uw9/1UFBjmPlYzjUECwpvI/O96WFPqCvUY/lBzudTRzOjcFNJpm5np+my8jqqcAp6eXpEsTSERvT6zEW7HeJMsOrjO/NqpZDHLEd4="

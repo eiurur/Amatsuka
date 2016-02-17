@@ -984,12 +984,11 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
   });
   $scope.$on('tweetData', function(event, args) {
-    var maxId, tweetsNormalized, tweetsOnlyImage;
+    var maxId, tweetsNormalized;
     if (!$scope.isOpened) {
       return;
     }
     maxId = TweetService.decStrNum(_.last(args).id_str);
-    tweetsOnlyImage = TweetService.filterIncludeImage(args);
     tweetsNormalized = TweetService.normalizeTweets(tweetsOnlyImage);
     $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
   });

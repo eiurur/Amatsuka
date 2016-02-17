@@ -53,15 +53,15 @@ twitterUtils = ->
       else null
 
   normalizeTweets: (tweets, config) ->
-    config.ngUserList or= []
-    config.ngWordList or= []
-    config.lowerLimit or= 0
+    config.ngUsername or= []
+    config.ngWord or= []
+    config.favlowerLimit or= 0
     console.log(config)
 
     _.reject tweets, (tweet) =>
-      includeNgUser = config.ngUserList.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
-      includeNgWord = config.ngWordList.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
-      isFavLowerLimit = @get(tweet, 'tweet.favorite_count', @isRT(tweet)) < config.lowerLimit
+      includeNgUser = config.ngUsername.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
+      includeNgWord = config.ngWord.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
+      isFavLowerLimit = @get(tweet, 'tweet.favorite_count', @isRT(tweet)) < config.favlowerLimit
       isOnlyTextTweet = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
       includeNgUser or includeNgWord or isOnlyTextTweet or isOnlyTextTweet
 
