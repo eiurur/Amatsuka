@@ -75,14 +75,17 @@
   @include round(0px);
 }
 
-.search-form
-{
+.form {
   width: 100%;
   max-width: $member__divider--width;
-  margin: 70px 0 35px 0;
-
   border-color: $link-color;
   border-radius: 0;
+
+}
+
+.search-form
+{
+  margin: 70px 0 35px 0;
 }
 
 .search-input

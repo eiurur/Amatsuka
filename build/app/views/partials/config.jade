@@ -6,6 +6,10 @@
     .form-group
       label.text(for='inputNGWord') NG word
       tags-input.bootstrap(ng-model='config.ngWord', placeholder='Add a ng-word (ex) #ハッシュタグ, 名前, 禁止ワード', replace-spaces-with-dashes='false', min-length="1")
+    .form-group
+      label.text(for='inputFavLowerLimit') Favorite Lower Limit
+      .input-group.form
+        input.form-control.search-input.form__input--fav-lower-limit(type='number', ng-model='config.favlowerLimit', min='0')
     .checkbox
       label.text
         input(type='checkbox', ng-model='config.includeRetweet')

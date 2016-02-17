@@ -21,3 +21,7 @@ tags-input .tags .tag-item {
 tags-input .tags .tag-item .remove-button {
   color: $amatsuka-color;
 }
+
+.form__input--fav-lower-limit {
+  max-width: 100px;
+}

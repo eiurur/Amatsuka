@@ -76,19 +76,6 @@ my = ->
     algorithm = algorithm or "sha256"
     crypto.createHash(algorithm).update(key).digest "hex"
 
-  # 指定された文字列と生成したいサイズ数でユニークIDを生成
-  # http://blog.fkei.me/2012/03/nodejs-uid.html
-  createUID: (size, base) ->
-    size = size or 32
-    base = base or "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    len = base.length
-    buf = []
-    i = 0
-    while i < size
-      buf.push base[Math.floor(Math.random() * len)]
-      ++i
-    buf.join ""
-
   random: (array) ->
     array[Math.floor(Math.random() * array.length)]
 
@@ -120,7 +107,7 @@ my = ->
     while i > -1
       if n[i] == '0'
         result = result.substring(0, i) + '9' + result.substring(i + 1)
-        i--
+        i -= 1
       else
         result =
           result.substring(0, i) +
@@ -135,12 +122,10 @@ my = ->
         url: url
         encoding: null
       , (err, res, body) ->
-        if !err and res.statusCode is 200
-          base64prefix = 'data:' + res.headers['content-type'] + ';base64,'
-          image = body.toString('base64')
-          return resolve(base64prefix + image)
-        else
-          return reject err
+        if err or res.statusCode isnt 200 then return reject err
+        base64prefix = 'data:' + res.headers['content-type'] + ';base64,'
+        image = body.toString('base64')
+        return resolve(base64prefix + image)
 
   promiseWhile: (condition, action) ->
     resolver = Promise.defer()

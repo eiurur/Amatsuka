@@ -3,7 +3,7 @@
     a.external-link(href='https://twitter.com/{{::user.username}}/lists/amatsuka', target='_blank')
       / {{::list.name}} ({{::list.amatsukaMemberLength}}人)
 
-  .input-group.input-group-sm.search-form
+  .input-group.input-group-sm.form.search-form
     span.input-group-addon
       i.fa.fa-search
     input.form-control.search-input(type='text', placeholder='Search', ng-model="searchWord.screen_name", ng-model-options="{debounce: 300}")

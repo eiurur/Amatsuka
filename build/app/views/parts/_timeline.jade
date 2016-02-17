@@ -1,7 +1,7 @@
 include _loading_init
 
 span(ng-if='layoutType == "grid"')
-  .timeline.timeline--grid(infinite-scroll='tweets.nextPage()', infinite-scroll-distance='8', infinite-scroll-disabled='tweets.busy', masonry='masonry', preserve-order)
+  .timeline.timeline--grid(infinite-scroll='tweets.nextPage()', infinite-scroll-distance='4', infinite-scroll-disabled='tweets.busy', masonry='masonry', preserve-order)
     .masonry-brick.timeline__post.timeline__post--grid(ng-repeat='tweet in tweets.items')
       .timeline__post--header.timeline__post--header--grid
         .timeline__post--header--info.timeline__post--header--info--grid
@@ -42,7 +42,7 @@ span(ng-if='layoutType == "grid"')
     include _loading_fin
 
 span(ng-if='layoutType == "list"')
-  .timeline.timeline--list(infinite-scroll='tweets.nextPage()', infinite-scroll-distance='8', infinite-scroll-disabled='tweets.busy')
+  .timeline.timeline--list(infinite-scroll='tweets.nextPage()', infinite-scroll-distance='4', infinite-scroll-disabled='tweets.busy')
     .timeline__post(ng-repeat='tweet in tweets.items')
       .timeline__post--header
         .timeline__post--header--info

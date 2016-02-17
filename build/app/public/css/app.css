@@ -60,12 +60,15 @@
   border-radius: 0px;
 }
 
-.search-form {
+.form {
   width: 100%;
   max-width: 400px;
-  margin: 70px 0 35px 0;
   border-color: #a1a1a1;
   border-radius: 0;
+}
+
+.search-form {
+  margin: 70px 0 35px 0;
 }
 
 .search-input {
@@ -1487,6 +1490,10 @@ tags-input .tags .tag-item {
 
 tags-input .tags .tag-item .remove-button {
   color: #f2446f;
+}
+
+.form__input--fav-lower-limit {
+  max-width: 100px;
 }
 
 .help__wrapper--q {

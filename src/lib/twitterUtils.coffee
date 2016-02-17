@@ -64,4 +64,7 @@ twitterUtils = ->
     _.reject tweets, (tweet) =>
       ngWordList.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
 
+  excludeTweetBasedFavLowerLimit: (tweets, lowerLimit = 0) ->
+    _.filter tweets, (tweet) => @get(tweet, 'tweet.favorite_count', @isRT(tweet)) >= lowerLimit
+
 exports.twitterUtils = twitterUtils()

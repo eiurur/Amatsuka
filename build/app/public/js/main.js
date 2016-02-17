@@ -642,7 +642,6 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
   ConfigService.getFromDB().then(function(config) {
     return ConfigService.set(config);
   })["catch"](function(e) {
-    console.log(e);
     return ConfigService.init();
   })["finally"](function() {
     $scope.config = ConfigService.config;
@@ -650,6 +649,9 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
   });
   return $scope.$watch('config', function(newData, oldData) {
     if (JSON.stringify(newData) === JSON.stringify(oldData)) {
+      return;
+    }
+    if (!_.isNumber(newData.favlowerLimit)) {
       return;
     }
     ConfigService.update();

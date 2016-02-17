@@ -8,11 +8,8 @@ angular.module "myApp.controllers"
   if _.isEmpty AuthService.user then $location.path '/'
 
   ConfigService.getFromDB()
-  .then (config) ->
-    ConfigService.set config
-  .catch (e) ->
-    console.log e
-    do ConfigService.init
+  .then (config) -> ConfigService.set config
+  .catch (e) -> do ConfigService.init
   .finally ->
     $scope.config = ConfigService.config
     console.log '$scope.config', $scope.config
@@ -22,14 +19,14 @@ angular.module "myApp.controllers"
     # この判定がないとConfigページを開くたびに設定がリセットされてしまう。
     return if JSON.stringify(newData) is JSON.stringify(oldData)
 
+    return unless _.isNumber newData.favlowerLimit
+
     # localStorageのデータを更新
     do ConfigService.update
 
     # データベースのデータを更新
     ConfigService.save2DB()
-    .then (data) ->
-      console.log data
-    .catch (error) ->
-      console.log error
+    .then (data) -> console.log data
+    .catch (error) -> console.log error
     return
   , true

@@ -156,6 +156,7 @@ angular.module "myApp.services"
     fromNow: (time) ->
       moment(time).fromNow(true)
 
+    # TODO: filterって名前なのにrejectしてるぞこの関数。リネームしろ。
     filterIncludeImage: (tweets) ->
       _.reject tweets, (tweet) ->
         !_.has(tweet, 'extended_entities') or

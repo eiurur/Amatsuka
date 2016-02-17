@@ -119,6 +119,16 @@
             });
           };
         })(this));
+      },
+      excludeTweetBasedFavLowerLimit: function(tweets, lowerLimit) {
+        if (lowerLimit == null) {
+          lowerLimit = 0;
+        }
+        return _.filter(tweets, (function(_this) {
+          return function(tweet) {
+            return _this.get(tweet, 'tweet.favorite_count', _this.isRT(tweet)) >= lowerLimit;
+          };
+        })(this));
       }
     };
   };

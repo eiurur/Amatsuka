@@ -96,19 +96,6 @@
         algorithm = algorithm || "sha256";
         return crypto.createHash(algorithm).update(key).digest("hex");
       },
-      createUID: function(size, base) {
-        var buf, i, len;
-        size = size || 32;
-        base = base || "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        len = base.length;
-        buf = [];
-        i = 0;
-        while (i < size) {
-          buf.push(base[Math.floor(Math.random() * len)]);
-          ++i;
-        }
-        return buf.join("");
-      },
       random: function(array) {
         return array[Math.floor(Math.random() * array.length)];
       },
@@ -137,7 +124,7 @@
         while (i > -1) {
           if (n[i] === '0') {
             result = result.substring(0, i) + '9' + result.substring(i + 1);
-            i--;
+            i -= 1;
           } else {
             result = result.substring(0, i) + (parseInt(n[i], 10) - 1).toString() + result.substring(i + 1);
             return result;
@@ -152,13 +139,12 @@
             encoding: null
           }, function(err, res, body) {
             var base64prefix, image;
-            if (!err && res.statusCode === 200) {
-              base64prefix = 'data:' + res.headers['content-type'] + ';base64,';
-              image = body.toString('base64');
-              return resolve(base64prefix + image);
-            } else {
+            if (err || res.statusCode !== 200) {
               return reject(err);
             }
+            base64prefix = 'data:' + res.headers['content-type'] + ';base64,';
+            image = body.toString('base64');
+            return resolve(base64prefix + image);
           });
         });
       },

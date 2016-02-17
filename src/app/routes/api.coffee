@@ -138,7 +138,8 @@ module.exports = (app) ->
       .then (tweets) ->
         console.log '/api/lists/list/:id/:count tweets.length = ', tweets.length
 
-        tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser tweets, config.ngUsername
+        tweetsExcluededFavLower = twitterUtils.excludeTweetBasedFavLowerLimit tweets, config.favlowerLimit
+        tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser tweetsExcluededFavLower, config.ngUsername
         tweetsCleaned         = twitterUtils.excludeTweetBasedOnNgWord tweetsExcluededNgUser, config.ngWord
         res.json data: tweetsCleaned
       .catch (error) ->

@@ -168,9 +168,10 @@
           count: req.params.count,
           includeRetweet: config.includeRetweet
         }).then(function(tweets) {
-          var tweetsCleaned, tweetsExcluededNgUser;
+          var tweetsCleaned, tweetsExcluededFavLower, tweetsExcluededNgUser;
           console.log('/api/lists/list/:id/:count tweets.length = ', tweets.length);
-          tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser(tweets, config.ngUsername);
+          tweetsExcluededFavLower = twitterUtils.excludeTweetBasedFavLowerLimit(tweets, config.favlowerLimit);
+          tweetsExcluededNgUser = twitterUtils.excludeTweetBasedOnNgUser(tweetsExcluededFavLower, config.ngUsername);
           tweetsCleaned = twitterUtils.excludeTweetBasedOnNgWord(tweetsExcluededNgUser, config.ngWord);
           return res.json({
             data: tweetsCleaned
