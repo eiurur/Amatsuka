@@ -1,13 +1,8 @@
-moment           = require 'moment'
 _                = require 'lodash'
 path             = require 'path'
-chalk            = require 'chalk'
 TwitterClient    = require path.resolve 'build', 'lib', 'TwitterClient'
-TweetFetcher     = require path.resolve 'build', 'lib', 'TweetFetcher'
 {my}             = require path.resolve 'build', 'lib', 'my'
-{twitterUtils}   = require path.resolve 'build', 'lib', 'twitterUtils'
 {UserProvider}   = require path.resolve 'build', 'lib', 'model'
-{ConfigProvider} = require path.resolve 'build', 'lib', 'model'
 settings         = if process.env.NODE_ENV is 'production'
   require path.resolve 'build', 'lib', 'configs', 'production'
 else
@@ -39,6 +34,8 @@ module.exports = (app) ->
 
   (require './api/statuses')(app)
 
+  (require './api/timeline')(app)
+
   (require './api/config')(app)
 
 
@@ -61,16 +58,6 @@ module.exports = (app) ->
       twitterIdStr: req.session.passport.user._json.id_str
     , (err, data) ->
       res.json data: data
-
-  # GET タイムラインの情報(home_timeline, user_timeline)
-  app.get '/api/timeline/:id/:maxId?/:count?', (req, res) ->
-    ConfigProvider.findOneById
-      twitterIdStr: req.session.passport.user._json.id_str
-    , (err, data) ->
-      # 設定データが未登録
-      config = if _.isNull data then {} else JSON.parse(data.configStr)
-      queryType = if req.params.id is 'home'then 'getHomeTimeline' else 'getUserTimeline'
-      new TweetFetcher(req, res, queryType, null, config).fetchTweet()
 
 
   # user情報を取得
