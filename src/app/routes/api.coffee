@@ -3,12 +3,10 @@ _                = require 'lodash'
 path             = require 'path'
 chalk            = require 'chalk'
 TwitterClient    = require path.resolve 'build', 'lib', 'TwitterClient'
-PictCollection   = require path.resolve 'build', 'lib', 'PictCollection'
 {my}             = require path.resolve 'build', 'lib', 'my'
 {twitterUtils}   = require path.resolve 'build', 'lib', 'twitterUtils'
 {UserProvider}   = require path.resolve 'build', 'lib', 'model'
 {ConfigProvider} = require path.resolve 'build', 'lib', 'model'
-{PictProvider}   = require path.resolve 'build', 'lib', 'model'
 settings         = if process.env.NODE_ENV is 'production'
   require path.resolve 'build', 'lib', 'configs', 'production'
 else
@@ -32,44 +30,19 @@ module.exports = (app) ->
   ###
   APIs
   ###
+  (require './api/collect')(app)
+
+
+
+  ###
+  APIs
+  ###
   app.post '/api/download', (req, res) ->
     console.log "\n========> download, #{req.body.url}\n"
     my.loadBase64Data req.body.url
     .then (base64Data) ->
       console.log 'base64toBlob', base64Data.length
       res.json base64Data: base64Data
-
-
-  app.get '/api/collect/count', (req, res) ->
-    PictProvider.count()
-    .then (count) ->
-      res.json count: count
-    .catch (err) ->
-      console.log err
-
-  app.get '/api/collect/:skip?/:limit?', (req, res) ->
-    PictProvider.find
-      skip: req.params.skip - 0
-      limit: req.params.limit - 0
-    .then (data) ->
-      res.send data
-
-  app.post '/api/collect/profile', (req, res) ->
-    pictCollection = new PictCollection(req.session.passport.user, req.body.twitterIdStr)
-
-    # フォローしたユーザをデータベースに保存
-    pictCollection.getIllustratorTwitterProfile()
-    .then (data) -> pictCollection.setIllustratorRawData(data)
-    .then -> pictCollection.getIllustratorRawData()
-    .then (illustratorRawData) -> pictCollection.setUserTimelineMaxId(illustratorRawData.status.id_str)
-    .then -> pictCollection.normalizeIllustratorData()
-    .then -> pictCollection.updateIllustratorData()
-    .then (data) -> pictCollection.setIllustratorDBData(data)
-    .then (data) ->
-      console.log 'End PictProvider.findOneAndUpdate data = ', data
-      res.send data
-    .catch (err) ->
-      console.log err
 
   ###
   Twitter
@@ -231,11 +204,6 @@ module.exports = (app) ->
       res.json error: error
 
 
-
-  # GET フォロー状況の取得
-
-  # POST フォロー、アンフォロー機能
-
   # POST 仮想フォロー、仮想アンフォロー機能( = Amatsukaリストへの追加、削除)
   app.post '/api/lists/members/create', (req, res) ->
     twitterClient = new TwitterClient(req.session.passport.user)
@@ -273,15 +241,6 @@ module.exports = (app) ->
   ###
   app.get '/api/favorites/lists/:id/:maxId?/:count?', (req, res) ->
     fetchTweet(req, res, 'getFavLists', null, null)
-    # twitterClient = new TwitterClient(req.session.passport.user)
-    # twitterClient.getFavLists
-    #   twitterIdStr: req.params.id
-    #   maxId: req.params.maxId
-    #   count: req.params.count
-    # .then (data) ->
-    #   res.json data: data
-    # .catch (error) ->
-    #   res.json error: error
 
   app.post '/api/favorites/create', (req, res) ->
     twitterClient = new TwitterClient(req.session.passport.user)

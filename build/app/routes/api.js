@@ -1,5 +1,5 @@
 (function() {
-  var ConfigProvider, PictCollection, PictProvider, TwitterClient, UserProvider, chalk, moment, my, path, settings, twitterUtils, _;
+  var ConfigProvider, TwitterClient, UserProvider, chalk, moment, my, path, settings, twitterUtils, _;
 
   moment = require('moment');
 
@@ -11,8 +11,6 @@
 
   TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
 
-  PictCollection = require(path.resolve('build', 'lib', 'PictCollection'));
-
   my = require(path.resolve('build', 'lib', 'my')).my;
 
   twitterUtils = require(path.resolve('build', 'lib', 'twitterUtils')).twitterUtils;
@@ -20,8 +18,6 @@
   UserProvider = require(path.resolve('build', 'lib', 'model')).UserProvider;
 
   ConfigProvider = require(path.resolve('build', 'lib', 'model')).ConfigProvider;
-
-  PictProvider = require(path.resolve('build', 'lib', 'model')).PictProvider;
 
   settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
 
@@ -43,6 +39,11 @@
     /*
     APIs
      */
+    (require('./api/collect'))(app);
+
+    /*
+    APIs
+     */
     app.post('/api/download', function(req, res) {
       console.log("\n========> download, " + req.body.url + "\n");
       return my.loadBase64Data(req.body.url).then(function(base64Data) {
@@ -50,45 +51,6 @@
         return res.json({
           base64Data: base64Data
         });
-      });
-    });
-    app.get('/api/collect/count', function(req, res) {
-      return PictProvider.count().then(function(count) {
-        return res.json({
-          count: count
-        });
-      })["catch"](function(err) {
-        return console.log(err);
-      });
-    });
-    app.get('/api/collect/:skip?/:limit?', function(req, res) {
-      return PictProvider.find({
-        skip: req.params.skip - 0,
-        limit: req.params.limit - 0
-      }).then(function(data) {
-        return res.send(data);
-      });
-    });
-    app.post('/api/collect/profile', function(req, res) {
-      var pictCollection;
-      pictCollection = new PictCollection(req.session.passport.user, req.body.twitterIdStr);
-      return pictCollection.getIllustratorTwitterProfile().then(function(data) {
-        return pictCollection.setIllustratorRawData(data);
-      }).then(function() {
-        return pictCollection.getIllustratorRawData();
-      }).then(function(illustratorRawData) {
-        return pictCollection.setUserTimelineMaxId(illustratorRawData.status.id_str);
-      }).then(function() {
-        return pictCollection.normalizeIllustratorData();
-      }).then(function() {
-        return pictCollection.updateIllustratorData();
-      }).then(function(data) {
-        return pictCollection.setIllustratorDBData(data);
-      }).then(function(data) {
-        console.log('End PictProvider.findOneAndUpdate data = ', data);
-        return res.send(data);
-      })["catch"](function(err) {
-        return console.log(err);
       });
     });
 
