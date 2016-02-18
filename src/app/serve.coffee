@@ -38,6 +38,10 @@ exports.serve = ->
         'html'
         'css'
         'js'
+        'jpg'
+        'png'
+        'gif'
+        'mp4'
       ]
       index: false
       maxAge: 0
