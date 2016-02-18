@@ -31,6 +31,7 @@
     APIs
      */
     (require('./api/collect'))(app);
+    (require('./api/users'))(app);
     (require('./api/lists'))(app);
     (require('./api/favorites'))(app);
     (require('./api/statuses'))(app);
@@ -38,7 +39,7 @@
     (require('./api/config'))(app);
 
     /*
-    APIs
+    分類不明
      */
     app.post('/api/download', function(req, res) {
       console.log("\n========> download, " + req.body.url + "\n");
@@ -49,10 +50,6 @@
         });
       });
     });
-
-    /*
-    Twitter
-     */
     app.post('/api/findUserById', function(req, res) {
       console.log("\n============> findUserById in API\n");
       return UserProvider.findUserById({
@@ -60,22 +57,6 @@
       }, function(err, data) {
         return res.json({
           data: data
-        });
-      });
-    });
-    app.get('/api/users/show/:id/:screenName?', function(req, res) {
-      var twitterClient;
-      twitterClient = new TwitterClient(req.session.passport.user);
-      return twitterClient.showUsers({
-        twitterIdStr: req.params.id,
-        screenName: req.params.screenName
-      }).then(function(data) {
-        return res.json({
-          data: data
-        });
-      })["catch"](function(error) {
-        return res.json({
-          error: error
         });
       });
     });

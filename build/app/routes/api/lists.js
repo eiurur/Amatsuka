@@ -1,5 +1,5 @@
 (function() {
-  var ConfigProvider, TweetFetcher, TwitterClient, chalk, my, path, settings, twitterUtils, _;
+  var ConfigProvider, TweetFetcher, TwitterClient, chalk, my, path, settings, _;
 
   _ = require('lodash');
 
@@ -12,8 +12,6 @@
   TweetFetcher = require(path.resolve('build', 'lib', 'TweetFetcher'));
 
   my = require(path.resolve('build', 'lib', 'my')).my;
-
-  twitterUtils = require(path.resolve('build', 'lib', 'twitterUtils')).twitterUtils;
 
   ConfigProvider = require(path.resolve('build', 'lib', 'model')).ConfigProvider;
 

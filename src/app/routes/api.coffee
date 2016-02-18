@@ -28,6 +28,8 @@ module.exports = (app) ->
   ###
   (require './api/collect')(app)
 
+  (require './api/users')(app)
+
   (require './api/lists')(app)
 
   (require './api/favorites')(app)
@@ -40,7 +42,7 @@ module.exports = (app) ->
 
 
   ###
-  APIs
+  分類不明
   ###
   app.post '/api/download', (req, res) ->
     console.log "\n========> download, #{req.body.url}\n"
@@ -49,27 +51,12 @@ module.exports = (app) ->
       console.log 'base64toBlob', base64Data.length
       res.json base64Data: base64Data
 
-  ###
-  Twitter
-  ###
   app.post '/api/findUserById', (req, res) ->
     console.log "\n============> findUserById in API\n"
     UserProvider.findUserById
       twitterIdStr: req.session.passport.user._json.id_str
     , (err, data) ->
       res.json data: data
-
-
-  # user情報を取得
-  app.get '/api/users/show/:id/:screenName?', (req, res) ->
-    twitterClient = new TwitterClient(req.session.passport.user)
-    twitterClient.showUsers
-      twitterIdStr: req.params.id
-      screenName: req.params.screenName
-    .then (data) ->
-      res.json data: data
-    .catch (error) ->
-      res.json error: error
 
 
   # GET フォローイングの取得
