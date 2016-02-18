@@ -40,6 +40,7 @@
     APIs
      */
     (require('./api/collect'))(app);
+    (require('./api/config'))(app);
 
     /*
     APIs
@@ -348,7 +349,7 @@
         });
       });
     });
-    app.post('/api/statuses/destroy', function(req, res) {
+    return app.post('/api/statuses/destroy', function(req, res) {
       var twitterClient;
       twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.destroyStatus({
@@ -360,32 +361,6 @@
       })["catch"](function(error) {
         return res.json({
           error: error
-        });
-      });
-    });
-
-    /*
-     * Config
-     */
-    app.get('/api/config', function(req, res) {
-      return ConfigProvider.findOneById({
-        twitterIdStr: req.session.passport.user._json.id_str
-      }, function(err, data) {
-        console.log('get config: ', data);
-        return res.json({
-          data: data
-        });
-      });
-    });
-    return app.post('/api/config', function(req, res) {
-      console.log(req.body);
-      return ConfigProvider.upsert({
-        twitterIdStr: req.session.passport.user._json.id_str,
-        config: req.body.config
-      }, function(err, data) {
-        console.log('post config: ', data);
-        return res.json({
-          data: data
         });
       });
     });

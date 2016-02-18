@@ -32,6 +32,8 @@ module.exports = (app) ->
   ###
   (require './api/collect')(app)
 
+  (require './api/config')(app)
+
 
 
   ###
@@ -279,24 +281,3 @@ module.exports = (app) ->
       res.json data: data
     .catch (error) ->
       res.json error: error
-
-
-  ###
-  # Config
-  ###
-  app.get '/api/config', (req, res) ->
-    ConfigProvider.findOneById
-      twitterIdStr: req.session.passport.user._json.id_str
-    , (err, data) ->
-      console.log 'get config: ', data
-      res.json data: data
-
-  app.post '/api/config', (req, res) ->
-    console.log req.body
-    ConfigProvider.upsert
-      twitterIdStr: req.session.passport.user._json.id_str
-      config: req.body.config
-    , (err, data) ->
-      console.log 'post config: ', data
-      res.json data: data
-
