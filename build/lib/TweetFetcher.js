@@ -83,9 +83,6 @@
               data: tweetsNormalized
             });
           }
-          console.log(chalk.red('maxId, nextMaxId =============> '));
-          console.log(maxId);
-          console.log(nextMaxId);
           if (_this.maxId === nextMaxId) {
             _this.res.json({
               data: []

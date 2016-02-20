@@ -665,7 +665,7 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
 }]);
 
 angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$routeParams", "$location", "Tweets", "AuthService", "TweetService", "ListService", function($scope, $routeParams, $location, Tweets, AuthService, TweetService, ListService) {
-  var params;
+  var filterPic, params;
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
@@ -684,23 +684,14 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
   };
   $scope.extract = {};
   $scope.extract.tweets = [];
-  if ($routeParams.id === void 0) {
-    console.log('undefined');
-  } else {
-    console.log($scope.filter.keyword);
-    if ($routeParams.id.indexOf('@' === -1)) {
-      console.log('@ScreenName');
+  filterPic = function(params) {
+    if (params == null) {
       params = {
-        screenName: $routeParams.id
-      };
-    } else {
-      console.log('id_str');
-      params = {
-        twitterIdStr: $routeParams.id
+        screenName: $scope.filter.screenName
       };
     }
     $scope.isLoading = true;
-    TweetService.showUsers(params).then(function(data) {
+    return TweetService.showUsers(params).then(function(data) {
       return $scope.extract.user = ListService.normalizeMember(data.data);
     }).then(function(user) {
       return TweetService.getAllPict({
@@ -722,34 +713,27 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
       console.log($scope.extract.tweets);
       return $scope.isLoading = false;
     });
+  };
+  if ($routeParams.id === void 0) {
+    console.log('undefined');
+  } else {
+    console.log($scope.filter.keyword);
+    if ($routeParams.id.indexOf('@' === -1)) {
+      console.log('@ScreenName');
+      params = {
+        screenName: $routeParams.id
+      };
+    } else {
+      console.log('id_str');
+      params = {
+        twitterIdStr: $routeParams.id
+      };
+    }
+    filterPic(params);
   }
   $scope.execFilteringPictWithKeyword = function() {
     console.log($scope.filter);
-    $scope.isLoading = true;
-    return TweetService.showUsers({
-      screenName: $scope.filter.screenName
-    }).then(function(data) {
-      return $scope.extract.user = ListService.normalizeMember(data.data);
-    }).then(function(user) {
-      return TweetService.getAllPict({
-        twitterIdStr: user.id_str,
-        isIncludeRetweet: $scope.filter.isIncludeRetweet
-      });
-    }).then(function(tweetListContainedImage) {
-      console.log(tweetListContainedImage);
-      return _.chain(tweetListContainedImage).uniq('id_str').filter(function(tweet) {
-        return ~tweet.text.indexOf($scope.filter.keyword);
-      }).value();
-    }).then(function(data) {
-      var tweets;
-      console.log(data);
-      tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
-      $scope.extract.tweets = tweets.sort(function(a, b) {
-        return b.totalNum - a.totalNum;
-      });
-      console.log($scope.extract.tweets);
-      return $scope.isLoading = false;
-    });
+    return filterPic();
   };
   $scope.$on('addMember', function(event, args) {
     console.log('index addMember on ', args);
@@ -1789,11 +1773,11 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
                 toaster.pop('error', 'API制限。15分お待ち下さい。');
                 return resolve(userAllPict);
               }
-              if (data.data.length < 2) {
+              if (data.data.length === 0) {
                 toaster.pop('success', '最後まで読み終えました。');
                 return resolve(userAllPict);
               }
-              maxId = data.data[data.data.length - 1].id_str;
+              maxId = _this.decStrNum(data.data[data.data.length - 1].id_str);
               _.each(data.data, function(tweet) {
                 tweet.totalNum = tweet.retweet_count + tweet.favorite_count;
                 tweet.tweetIdStr = tweet.id_str;

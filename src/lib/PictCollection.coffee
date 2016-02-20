@@ -22,7 +22,11 @@ module.exports = class PictCollection
   collectProfileAndPicts: ->
     return new Promise (resolve, reject) =>
       console.log 'start collect, @PROFILE_REQUEST_INTERVAL = ', @PROFILE_REQUEST_INTERVAL
+
+      # 間隔を空ける
       my.delayPromise @PROFILE_REQUEST_INTERVAL
+
+      # イラストレーターのプロフィール情報を更新
       .then => @getIllustratorTwitterProfile()
       .then (data) => @setIllustratorRawData(data)
       .then => @getIllustratorRawData()
@@ -30,6 +34,8 @@ module.exports = class PictCollection
       .then => @normalizeIllustratorData()
       .then => @updateIllustratorData()
       .then (data) => @setIllustratorDBData(data)
+
+      # イラストをAPI限界まで収集して人気順にソートし、上位12件分をDBに保存
       .then => @aggregatePict()
       .then (pickupedPictList) => @updatePictListData(pickupedPictList)
       .then (data) -> return resolve 'Fin'

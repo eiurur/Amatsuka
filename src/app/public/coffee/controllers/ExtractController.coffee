@@ -25,49 +25,11 @@ angular.module "myApp.controllers"
   $scope.extract.tweets = []
 
 
-  # Extractページを直接開いたとき
-  if $routeParams.id is undefined
-
-    # 何もしない
-    console.log 'undefined'
-
-  # 他のページからid_strまたはscreenNameをもらって遷移したとき
-  else
-    console.log $scope.filter.keyword
-    if $routeParams.id.indexOf '@' is -1
-      console.log '@ScreenName'
-      params = screenName: $routeParams.id
-    else
-      console.log 'id_str'
-      params = twitterIdStr: $routeParams.id
-
-    # todo: 下のコードをコピペした。あとでまとめて。
-    $scope.isLoading = true
-    TweetService.showUsers(params)
-    .then (data) -> $scope.extract.user = ListService.normalizeMember data.data
-    .then (user) -> TweetService.getAllPict(twitterIdStr: user.id_str, isIncludeRetweet: $scope.filter.isIncludeRetweet)
-    .then (tweetListContainedImage) ->
-      console.log tweetListContainedImage
-      _.chain(tweetListContainedImage)
-        .filter (tweet) -> ~tweet.text.indexOf($scope.filter.keyword)
-        # .sortBy('id_str')
-        .value()
-    .then (data) ->
-      console.log data
-      tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
-      $scope.extract.tweets = tweets.sort (a, b) -> b.totalNum - a.totalNum
-      console.log $scope.extract.tweets
-      $scope.isLoading = false
-
-
-
-  $scope.execFilteringPictWithKeyword = ->
-    console.log $scope.filter
-
+  filterPic = (params = screenName: $scope.filter.screenName) ->
     $scope.isLoading = true;
 
     # screenNameからuserDataを取得(id_strが必要)
-    TweetService.showUsers(screenName: $scope.filter.screenName)
+    TweetService.showUsers(params)
 
     # ユーザデータを$scopeに追加
     .then (data) -> $scope.extract.user = ListService.normalizeMember data.data
@@ -79,9 +41,7 @@ angular.module "myApp.controllers"
     .then (tweetListContainedImage) ->
       console.log tweetListContainedImage
       _.chain(tweetListContainedImage)
-        .uniq 'id_str'  # FIXME: 重複が発生している。原因の特定に失敗したので応急処置としてuniq関数にを通す
         .filter (tweet) -> ~tweet.text.indexOf($scope.filter.keyword)
-        # .sortBy('id_str')
         .value()
 
     # (3)のツイートを形態素解析し、名詞とハッシュタグを抽出(4)
@@ -99,6 +59,28 @@ angular.module "myApp.controllers"
       $scope.extract.tweets = tweets.sort (a, b) -> b.totalNum - a.totalNum
       console.log $scope.extract.tweets
       $scope.isLoading = false
+
+
+  # Extractページを直接開いたとき
+  if $routeParams.id is undefined
+
+    # 何もしない
+    console.log 'undefined'
+
+  # 他のページからid_strまたはscreenNameをもらって遷移したとき
+  else
+    console.log $scope.filter.keyword
+    if $routeParams.id.indexOf '@' is -1
+      console.log '@ScreenName'
+      params = screenName: $routeParams.id
+    else
+      console.log 'id_str'
+      params = twitterIdStr: $routeParams.id
+    filterPic(params)
+
+  $scope.execFilteringPictWithKeyword = ->
+    console.log $scope.filter
+    filterPic()
 
 
   $scope.$on 'addMember', (event, args) ->

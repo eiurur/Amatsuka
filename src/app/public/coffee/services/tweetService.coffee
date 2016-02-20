@@ -195,9 +195,6 @@ angular.module "myApp.services"
         assignUserAllPict = =>
           @getUserTimeline(twitterIdStr: params.twitterIdStr, maxId: maxId, count: 200, isIncludeRetweet: params.isIncludeRetweet)
           .then (data) =>
-            # console.log 'assignUserAllPict ============> '
-            # console.log 'userAllPict = ', userAllPict
-            # console.log 'data.data = ', data.data
 
             # API制限くらったら return
             if _.isUndefined(data.data)
@@ -205,11 +202,11 @@ angular.module "myApp.services"
               return resolve userAllPict
 
             # 全部読み終えたら(残りがないとき、APIは最後のツイートだけ取得する === 1) return
-            if data.data.length < 2
+            if data.data.length is 0
               toaster.pop 'success', '最後まで読み終えました。'
               return resolve userAllPict
 
-            maxId = data.data[data.data.length - 1].id_str
+            maxId = @decStrNum data.data[data.data.length - 1].id_str
 
             # 並び順の整合性をとるため、totalNumとcreatedAt(created_atだと文字列を含んでおり、バグるため、id_str)の設定を行う。
             _.each data.data, (tweet) ->
