@@ -26,7 +26,9 @@ angular.module "myApp.controllers"
 
   $scope.$on 'tweetData', (event, args) ->
     return unless $scope.isOpened
-    maxId            = TweetService.decStrNum(_.last(args).id_str)
+
+    # _.last(args)? is 画像ツイートが0
+    maxId            = if _.last(args)? then TweetService.decStrNum(_.last(args).id_str) else 0
     tweetsNormalized = TweetService.normalizeTweets(args)
     $scope.tweets    = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str)
 

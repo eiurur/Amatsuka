@@ -972,7 +972,7 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     if (!$scope.isOpened) {
       return;
     }
-    maxId = TweetService.decStrNum(_.last(args).id_str);
+    maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
     tweetsNormalized = TweetService.normalizeTweets(args);
     $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
   });
