@@ -26,19 +26,19 @@
     .media(ng-if='extract.user.name')
       .media
         a.pull-left
-          img.media-object.thumbnail-img.fade(ng-src='{{::extract.user.profile_image_url_https}}', img-preload="img-preload", show-tweet="show-tweet", twitter-id-str="{{::extract.user.id_str}}")
+          img.media-object.thumbnail-img.fade(ng-src='{{extract.user.profile_image_url_https}}', img-preload="img-preload", show-tweet="show-tweet", twitter-id-str="{{extract.user.id_str}}")
         .media-body
           h4.media-heading
             span.name {{extract.user.name}}
             span.screen-name @{{extract.user.screen_name}}
           span.btn-wrapper
-          a.btn.btn-sm.btn-follow(followable, follow-status='extract.user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{::extract.user.id_str}}')
+          a.btn.btn-sm.btn-follow(followable, follow-status='extract.user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{extract.user.id_str}}')
 
       .media-body.extract__profile--bio
         .extract__profile--description(ng-bind-html='extract.user.description | newlines')
         .user-sidebar__profile--url(ng-hide="extract.user.url == null")
           i.fa.fa-link
-          a(href="{{::extract.user.url}}", target="_blank") {{::extract.user.url}}
+          a(href="{{extract.user.url}}", target="_blank") {{extract.user.url}}
 
 
 .timeline__container
