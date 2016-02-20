@@ -79,6 +79,7 @@ angular.module "myApp.controllers"
     .then (tweetListContainedImage) ->
       console.log tweetListContainedImage
       _.chain(tweetListContainedImage)
+        .uniq 'id_str'  # FIXME: 重複が発生している。原因の特定に失敗したので応急処置としてuniq関数にを通す
         .filter (tweet) -> ~tweet.text.indexOf($scope.filter.keyword)
         # .sortBy('id_str')
         .value()

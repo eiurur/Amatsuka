@@ -1,13 +1,17 @@
 (function() {
-  var ConfigProvider, TweetFetcher, TwitterClient, path, _;
+  var ConfigProvider, TweetFetcher, TwitterClient, chalk, my, path, _;
 
   _ = require('lodash');
 
   path = require('path');
 
+  chalk = require('chalk');
+
   TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
 
   TweetFetcher = require(path.resolve('build', 'lib', 'TweetFetcher'));
+
+  my = require(path.resolve('build', 'lib', 'my')).my;
 
   ConfigProvider = require(path.resolve('build', 'lib', 'model')).ConfigProvider;
 
@@ -16,10 +20,11 @@
       return ConfigProvider.findOneById({
         twitterIdStr: req.session.passport.user._json.id_str
       }, function(err, data) {
-        var config, queryType;
+        var config, maxId, queryType;
         config = _.isNull(data) ? {} : JSON.parse(data.configStr);
         queryType = req.params.id === 'home' ? 'getHomeTimeline' : 'getUserTimeline';
-        return new TweetFetcher(req, res, queryType, null, config).fetchTweet();
+        maxId = _.isNaN(req.params.maxId - 0) ? null : req.params.maxId - 0;
+        return new TweetFetcher(req, res, queryType, maxId, config).fetchTweet();
       });
     });
   };

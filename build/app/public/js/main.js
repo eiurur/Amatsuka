@@ -737,7 +737,7 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
       });
     }).then(function(tweetListContainedImage) {
       console.log(tweetListContainedImage);
-      return _.chain(tweetListContainedImage).filter(function(tweet) {
+      return _.chain(tweetListContainedImage).uniq('id_str').filter(function(tweet) {
         return ~tweet.text.indexOf($scope.filter.keyword);
       }).value();
     }).then(function(data) {
@@ -1785,7 +1785,6 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
               count: 200,
               isIncludeRetweet: params.isIncludeRetweet
             }).then(function(data) {
-              var tweetListIncludePict;
               if (_.isUndefined(data.data)) {
                 toaster.pop('error', 'API制限。15分お待ち下さい。');
                 return resolve(userAllPict);
@@ -1795,16 +1794,11 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
                 return resolve(userAllPict);
               }
               maxId = data.data[data.data.length - 1].id_str;
-              tweetListIncludePict = _.filter(data.data, function(tweet) {
-                var hasPict;
-                hasPict = _.has(tweet, 'extended_entities') && !_.isEmpty(tweet.extended_entities.media);
-                return hasPict;
-              });
-              _.each(tweetListIncludePict, function(tweet) {
+              _.each(data.data, function(tweet) {
                 tweet.totalNum = tweet.retweet_count + tweet.favorite_count;
                 tweet.tweetIdStr = tweet.id_str;
               });
-              userAllPict = userAllPict.concat(tweetListIncludePict);
+              userAllPict = userAllPict.concat(data.data);
               return assignUserAllPict();
             });
           };
@@ -1908,6 +1902,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
       return $q(function(resolve, reject) {
         return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count + "?isIncludeRetweet=" + params.isIncludeRetweet).success(function(data) {
           return resolve(data);
+        }).error(function(data) {
+          return reject(data);
         });
       });
     },

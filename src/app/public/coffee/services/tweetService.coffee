@@ -194,7 +194,10 @@ angular.module "myApp.services"
         maxId = maxId || 0
         assignUserAllPict = =>
           @getUserTimeline(twitterIdStr: params.twitterIdStr, maxId: maxId, count: 200, isIncludeRetweet: params.isIncludeRetweet)
-          .then (data) ->
+          .then (data) =>
+            # console.log 'assignUserAllPict ============> '
+            # console.log 'userAllPict = ', userAllPict
+            # console.log 'data.data = ', data.data
 
             # API制限くらったら return
             if _.isUndefined(data.data)
@@ -207,18 +210,14 @@ angular.module "myApp.services"
               return resolve userAllPict
 
             maxId = data.data[data.data.length - 1].id_str
-            # 画像付きツイートだけを抽出
-            tweetListIncludePict = _.filter(data.data, (tweet) ->
-              hasPict = _.has(tweet, 'extended_entities') and !_.isEmpty(tweet.extended_entities.media)
-              hasPict
-            )
+
             # 並び順の整合性をとるため、totalNumとcreatedAt(created_atだと文字列を含んでおり、バグるため、id_str)の設定を行う。
-            _.each tweetListIncludePict, (tweet) ->
+            _.each data.data, (tweet) ->
               tweet.totalNum = tweet.retweet_count + tweet.favorite_count
               tweet.tweetIdStr = tweet.id_str
               return
 
-            userAllPict = userAllPict.concat(tweetListIncludePict)
+            userAllPict = userAllPict.concat(data.data)
             assignUserAllPict()
         do assignUserAllPict
 
@@ -306,6 +305,8 @@ angular.module "myApp.services"
         $http.get("/api/timeline/#{params.twitterIdStr}/#{params.maxId}/#{params.count}?isIncludeRetweet=#{params.isIncludeRetweet}")
           .success (data) ->
             return resolve data
+          .error (data) ->
+            return reject data
 
     ###
     Follow

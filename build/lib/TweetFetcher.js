@@ -70,25 +70,29 @@
       twitterClient = new TwitterClient(this.req.session.passport.user);
       return twitterClient[this.queryType](params).then((function(_this) {
         return function(tweets) {
-          var nextMaxId, tweetsNormalized;
+          var nextMaxId, nextMaxIdDeced, tweetsNormalized;
           if (tweets.length === 0) {
             _this.res.json({
               data: []
             });
           }
-          nextMaxId = my.decStrNum(_.last(tweets).id_str);
+          nextMaxId = _.last(tweets).id_str;
           tweetsNormalized = twitterUtils.normalizeTweets(tweets, _this.config);
           if (!_.isEmpty(tweetsNormalized)) {
             _this.res.json({
               data: tweetsNormalized
             });
           }
+          console.log(chalk.red('maxId, nextMaxId =============> '));
+          console.log(maxId);
+          console.log(nextMaxId);
           if (_this.maxId === nextMaxId) {
             _this.res.json({
               data: []
             });
           }
-          return _this.fetchTweet(nextMaxId);
+          nextMaxIdDeced = my.decStrNum(nextMaxId);
+          return _this.fetchTweet(nextMaxIdDeced);
         };
       })(this))["catch"]((function(_this) {
         return function(error) {

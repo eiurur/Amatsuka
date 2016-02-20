@@ -39,38 +39,45 @@ module.exports = class TweetFetcher
         else
       return params
 
+
     fetchTweet: (maxId) ->
       # console.log chalk.bgGreen 'fetchTWeet =============> '
       # console.log chalk.green 'maxId =============> '
       # console.log maxId
-      # console.log req.params.maxId
+      # console.log @req.params.maxId
       @maxId = maxId or @req.params.maxId
 
       params = @getRequestParams()
       if _.isEmpty params then res.json data: {}
 
       # console.log chalk.blue 'Before params =============> '
-      # console.log "#{queryType} ", params
+      # console.log "#{@queryType} ", params
+
       twitterClient = new TwitterClient(@req.session.passport.user)
       twitterClient[@queryType](params)
       .then (tweets) =>
         # console.log chalk.cyan 'tweets.length =============> '
-        # console.log "#{queryType} ", tweets.length
+        # console.log "#{@queryType} ", tweets.length
 
         # API限界まで読み終えたとき
         if tweets.length is 0 then @res.json data: []
 
-        nextMaxId = my.decStrNum _.last(tweets).id_str
+        nextMaxId = _.last(tweets).id_str
+
         tweetsNormalized = twitterUtils.normalizeTweets tweets, @config
-        # console.log "#{queryType} !_.isEmpty tweetsNormalized = ", !_.isEmpty tweetsNormalized
+
+        # console.log "#{@queryType} !_.isEmpty tweetsNormalized = ", !_.isEmpty tweetsNormalized
 
         if !_.isEmpty tweetsNormalized then @res.json data: tweetsNormalized
 
-        # console.log chalk.red 'maxId, nextMaxId =============> '
-        # console.log maxId
-        # console.log nextMaxId
+        console.log chalk.red 'maxId, nextMaxId =============> '
+        console.log maxId
+        console.log nextMaxId
+
         if @maxId is nextMaxId then @res.json data: []
 
-        @fetchTweet(nextMaxId)
+        nextMaxIdDeced = my.decStrNum nextMaxId
+
+        @fetchTweet(nextMaxIdDeced)
       .catch (error) =>
         @res.json error: error
