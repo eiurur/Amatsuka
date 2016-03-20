@@ -789,6 +789,8 @@ angular.module("myApp.controllers").controller("FindCtrl", ["$scope", "$location
   return $scope.pictList = new Pict();
 }]);
 
+
+
 angular.module("myApp.controllers").controller("HelpCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
   if (_.isEmpty(AuthService.user)) {
     return $location.path('/');
@@ -844,6 +846,10 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$locatio
   }).then(function(error) {
     return console.log('catch isSame User error = ', error);
   })["finally"](function() {
+    ConfigService.getFromDB().then(function(data) {
+      $scope.config = data;
+      return console.log('finally config = ', $scope.config);
+    });
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
     $scope.isLoaded = true;
     $scope.message = '';
@@ -955,11 +961,12 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$locati
   });
 }]);
 
-angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, $location, AuthService, TweetService, ListService, Tweets) {
+angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScope", "$location", "AuthService", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $rootScope, $location, AuthService, ConfigService, TweetService, ListService, Tweets) {
   if (_.isEmpty(AuthService.user)) {
     return;
   }
   $scope.isOpened = false;
+  $scope.config = {};
   $scope.$on('userData', function(event, args) {
     if (!$scope.isOpened) {
       return;
@@ -972,6 +979,9 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$rootScop
     if (!$scope.isOpened) {
       return;
     }
+    ConfigService.getFromDB().then(function(data) {
+      return $scope.config = data;
+    });
     maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
     tweetsNormalized = TweetService.normalizeTweets(args);
     $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);

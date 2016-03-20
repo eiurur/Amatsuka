@@ -84,6 +84,9 @@ angular.module "myApp.controllers"
   .then (error) ->
     console.log 'catch isSame User error = ', error
   .finally ->
+    ConfigService.getFromDB().then (data) ->
+      $scope.config = data
+      console.log 'finally config = ', $scope.config
     $scope.listIdStr = ListService.amatsukaList.data.id_str
     $scope.isLoaded  = true
     $scope.message   = ''

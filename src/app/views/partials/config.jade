@@ -12,5 +12,9 @@
         input.form-control.search-input.form__input--fav-lower-limit(type='number', ng-model='config.favLowerLimit', min='0')
     .checkbox
       label.text
-        input(type='checkbox', ng-model='config.includeRetweet')
+        input(type='checkbox', ng-model='config.isIncludeRetweet')
         | Include Retweet
+    .checkbox
+      label.text
+        input(type='checkbox', ng-model='config.isShowOnlyImage')
+        | Show only Image

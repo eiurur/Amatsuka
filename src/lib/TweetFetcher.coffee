@@ -24,13 +24,13 @@ module.exports = class TweetFetcher
             listIdStr: @req.params.id
             maxId: @maxId
             count: @req.params.count
-            includeRetweet: @config.includeRetweet
+            includeRetweet: @config.isIncludeRetweet
         when 'getHomeTimeline', 'getUserTimeline'
           params =
             twitterIdStr: @req.params.id
             maxId: @maxId
             count: @req.params.count
-            includeRetweet: @req.query.isIncludeRetweet or @config.includeRetweet
+            includeRetweet: @req.query.isIncludeRetweet or @config.isIncludeRetweet
         when 'getFavLists'
           params =
             twitterIdStr: @req.params.id

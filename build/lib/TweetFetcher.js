@@ -35,7 +35,7 @@
             listIdStr: this.req.params.id,
             maxId: this.maxId,
             count: this.req.params.count,
-            includeRetweet: this.config.includeRetweet
+            includeRetweet: this.config.isIncludeRetweet
           };
           break;
         case 'getHomeTimeline':
@@ -44,7 +44,7 @@
             twitterIdStr: this.req.params.id,
             maxId: this.maxId,
             count: this.req.params.count,
-            includeRetweet: this.req.query.isIncludeRetweet || this.config.includeRetweet
+            includeRetweet: this.req.query.isIncludeRetweet || this.config.isIncludeRetweet
           };
           break;
         case 'getFavLists':

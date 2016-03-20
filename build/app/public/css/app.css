@@ -983,7 +983,7 @@ i {
 }
 
 .timeline__post--grid {
-  max-width: 300px;
+  width: 300px;
   margin: 10px 10px 0 0;
   padding-top: 15px;
 }

@@ -43,13 +43,14 @@ div(ng-controller="UserCtrl")
           img.fade(ng-if="!tweet.video_url", ng-src="{{::picUrl}}", img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{::picUrl}}")
           video(ng-if="tweet.video_url", poster="{{::picUrl}}", autoplay, loop, controls, muted)
             source(ng-src="{{::tweet.video_url | trusted}}", type="video/mp4")
-        .timeline__post--text(ng-if="!tweet.retweeted_status", ng-bind-html='tweet.text | newlines')
-        .timeline__post--blockquote(ng-if="tweet.retweeted_status")
-          p
-            a(twitter-id-str="{{::tweet.retweeted_status.user.id_str}}", show-tweet="show-tweet")
-              {{::tweet.retweeted_status.user.screen_name}}
-          blockquote
-            .timeline__post--text(ng-bind-html='tweet.text | newlines')
+        .timeline__post__text__container(ng-if="!config.isShowOnlyImage")
+          .timeline__post--text(ng-if="!tweet.retweeted_status", ng-bind-html='tweet.text | newlines')
+          .timeline__post--blockquote(ng-if="tweet.retweeted_status")
+            p
+              a(twitter-id-str="{{::tweet.retweeted_status.user.id_str}}", show-tweet="show-tweet")
+                {{::tweet.retweeted_status.user.screen_name}}
+            blockquote
+              .timeline__post--text(ng-bind-html='tweet.text | newlines')
         .timeline__post--footer
           .timeline__post--footer--contents
             .timeline__post--footer--contents--controls

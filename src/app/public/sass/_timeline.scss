@@ -190,7 +190,8 @@
 
 
 .timeline__post--grid {
-    max-width: $timeline__post--width--grid;
+    // max-width: $timeline__post--width--grid;
+    width: $timeline__post--width--grid;
     margin: $timeline__post--margin--grid;
     padding-top: $timeline__post--padding-vertical;
 

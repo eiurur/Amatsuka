@@ -4,6 +4,7 @@ angular.module "myApp.controllers"
     $rootScope
     $location
     AuthService
+    ConfigService
     TweetService
     ListService
     Tweets
@@ -15,6 +16,7 @@ angular.module "myApp.controllers"
 
 
   $scope.isOpened = false
+  $scope.config = {}
 
   $scope.$on 'userData', (event, args) ->
     return unless $scope.isOpened
@@ -26,6 +28,9 @@ angular.module "myApp.controllers"
 
   $scope.$on 'tweetData', (event, args) ->
     return unless $scope.isOpened
+
+    # HACK: ゴリ押し。コピペ。
+    ConfigService.getFromDB().then (data) -> $scope.config = data
 
     # _.last(args)? is 画像ツイートが0
     maxId            = if _.last(args)? then TweetService.decStrNum(_.last(args).id_str) else 0
