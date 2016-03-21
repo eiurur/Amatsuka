@@ -39,10 +39,13 @@ angular.module "myApp.controllers"
     data: amatsukaList
     member: amatsukaFollowList
 
-  ListService.isSameUser()
-  .then (isSame) ->
 
-    if isSame
+  # localStorageに保存されているAmatsukaListが別のアカウントかどうかチェックする
+  ListService.isSameAmatsukaList()
+  .then (_isSameAmatsukaList) ->
+    console.log '=> _isSameAmatsukaList = ', _isSameAmatsukaList
+
+    if _isSameAmatsukaList
       $scope.tweets = new Tweets([])
       do ->
         ListService.update()
@@ -51,23 +54,25 @@ angular.module "myApp.controllers"
         return
       return
 
-    console.log 'false isSame'
+    console.log '=> false _isSameAmatsukaList'
 
     $scope.message = 'リストデータの更新中'
     ListService.update()
     .then (data) ->
+      console.log '==> update() then data = ', data
 
       # 別のユーザで再ログインしたとき
       $scope.tweets = new Tweets([])
       return
 
     .catch (error) ->
+      console.log '==> update() catch error = ', error
 
       # ログインしたユーザがAmatsuka Listを未作成(初ログイン)のとき
       $scope.message = 'リストを作成中'
       ListService.init()
       .then (data) ->
-        console.log 'then init data ', data
+        console.log '===> init() then data ', data
 
         #設定データを初期化
         do ConfigService.init
@@ -76,21 +81,24 @@ angular.module "myApp.controllers"
         do ConfigService.save2DB
 
       .then (data) ->
+        console.log '===> ConfigService then data = ', data
         $scope.tweets = new Tweets([])
 
     .finally ->
+      console.log '==> update() finally'
       $scope.message = ''
 
-  .then (error) ->
-    console.log 'catch isSame User error = ', error
+  .catch (error) ->
+    console.log '=> catch isSameAmatsukaList error = ', error
   .finally ->
+    console.log '=> isSameAmatsukaList() finally'
     ConfigService.getFromDB().then (data) ->
       $scope.config = data
-      console.log 'finally config = ', $scope.config
+      console.log '==> finally config = ', $scope.config
     $scope.listIdStr = ListService.amatsukaList.data.id_str
     $scope.isLoaded  = true
     $scope.message   = ''
-    console.log '終わり'
+    console.log '=> 終わり'
     return
 
 

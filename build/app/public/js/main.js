@@ -817,8 +817,9 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$locatio
     data: amatsukaList,
     member: amatsukaFollowList
   };
-  ListService.isSameUser().then(function(isSame) {
-    if (isSame) {
+  ListService.isSameAmatsukaList().then(function(_isSameAmatsukaList) {
+    console.log('=> _isSameAmatsukaList = ', _isSameAmatsukaList);
+    if (_isSameAmatsukaList) {
       $scope.tweets = new Tweets([]);
       (function() {
         ListService.update().then(function(data) {
@@ -827,33 +828,38 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$locatio
       })();
       return;
     }
-    console.log('false isSame');
+    console.log('=> false _isSameAmatsukaList');
     $scope.message = 'リストデータの更新中';
     return ListService.update().then(function(data) {
+      console.log('==> update() then data = ', data);
       $scope.tweets = new Tweets([]);
     })["catch"](function(error) {
+      console.log('==> update() catch error = ', error);
       $scope.message = 'リストを作成中';
       return ListService.init().then(function(data) {
-        console.log('then init data ', data);
+        console.log('===> init() then data ', data);
         ConfigService.init();
         return ConfigService.save2DB();
       }).then(function(data) {
+        console.log('===> ConfigService then data = ', data);
         return $scope.tweets = new Tweets([]);
       });
     })["finally"](function() {
+      console.log('==> update() finally');
       return $scope.message = '';
     });
-  }).then(function(error) {
-    return console.log('catch isSame User error = ', error);
+  })["catch"](function(error) {
+    return console.log('=> catch isSameAmatsukaList error = ', error);
   })["finally"](function() {
+    console.log('=> isSameAmatsukaList() finally');
     ConfigService.getFromDB().then(function(data) {
       $scope.config = data;
-      return console.log('finally config = ', $scope.config);
+      return console.log('==> finally config = ', $scope.config);
     });
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
     $scope.isLoaded = true;
     $scope.message = '';
-    console.log('終わり');
+    console.log('=> 終わり');
   });
   $scope.$on('addMember', function(event, args) {
     console.log('index addMember on ', args);
@@ -1475,7 +1481,7 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
           _this.amatsukaList.data = _.findWhere(data.data, {
             'full_name': "@" + AuthService.user.username + "/amatsuka"
           });
-          console.log(_this.amatsukaList.data);
+          console.log('update: @amatsukaList.data = ', _this.amatsukaList.data);
           localStorage.setItem('amatsukaList', JSON.stringify(_this.amatsukaList.data));
           return TweetService.getListsMembers({
             listIdStr: _this.amatsukaList.data.id_str
@@ -1516,22 +1522,24 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
         };
       })(this));
     },
-    isSameUser: function() {
+    isSameAmatsukaList: function() {
       return $q(function(resolve, reject) {
+        console.log('isSameAmatsukaList AuthService.user._json.id_str = ', AuthService.user._json.id_str);
         return TweetService.getListsList({
           twitterIdStr: AuthService.user._json.id_str
         }).then(function(data) {
-          var newList, oldList;
-          console.log('isSameUser', data.data);
+          var newList, oldList, ownLists;
+          ownLists = data.data;
+          console.log('lists = ', ownLists);
           oldList = JSON.parse(localStorage.getItem('amatsukaList')) || {};
-          newList = _.findWhere(data.data, {
+          newList = _.findWhere(ownLists, {
             'full_name': "@" + AuthService.user.username + "/amatsuka"
           }) || {
             id_str: null
           };
           return resolve(oldList.id_str === newList.id_str);
         })["catch"](function(error) {
-          console.log('listService isSameUser = ', error);
+          console.log('listService isSameAmatsukaList = ', error);
           return reject(error);
         });
       });

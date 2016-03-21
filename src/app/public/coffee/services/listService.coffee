@@ -93,7 +93,7 @@ angular.module "myApp.services"
         # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
         # @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
         @amatsukaList.data = _.findWhere data.data, 'full_name': "@#{AuthService.user.username}/amatsuka"
-        console.log @amatsukaList.data
+        console.log 'update: @amatsukaList.data = ', @amatsukaList.data
         localStorage.setItem 'amatsukaList', JSON.stringify(@amatsukaList.data)
         TweetService.getListsMembers(listIdStr: @amatsukaList.data.id_str)
       .then (data) =>
@@ -119,20 +119,22 @@ angular.module "myApp.services"
         localStorage.setItem 'amatsukaFollowList', JSON.stringify(data.data.users)
         data.data.users
 
-    isSameUser: ->
+    isSameAmatsukaList: ->
       return $q (resolve, reject) ->
+        console.log 'isSameAmatsukaList AuthService.user._json.id_str = ', AuthService.user._json.id_str
         TweetService.getListsList
           twitterIdStr: AuthService.user._json.id_str
         .then (data) ->
-          console.log 'isSameUser', data.data
+          ownLists = data.data
+          console.log 'lists = ', ownLists
           oldList = JSON.parse(localStorage.getItem 'amatsukaList') || {}
 
           # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
-          # newList = _.findWhere(data.data, 'name': 'Amatsuka') || id_str: null
-          newList = _.findWhere(data.data, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
+          # newList = _.findWhere(ownLists, 'name': 'Amatsuka') || id_str: null
+          newList = _.findWhere(ownLists, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
           return resolve oldList.id_str is newList.id_str
         .catch (error) ->
-          console.log 'listService isSameUser = ', error
+          console.log 'listService isSameAmatsukaList = ', error
           return reject error
 
 
