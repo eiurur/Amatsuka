@@ -29,7 +29,7 @@
       cacheOptions = {
         dotfiles: 'ignore',
         etag: false,
-        extensions: ['htm', 'html', 'css', 'js'],
+        extensions: ['htm', 'html', 'css', 'js', 'jpg', 'png', 'gif', 'mp4'],
         index: false,
         maxAge: 0,
         redirect: false,
