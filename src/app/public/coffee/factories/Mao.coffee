@@ -61,6 +61,7 @@ angular.module "myApp.factories"
           @skip += @limit
           @busy = false
         .catch (err) =>
+          @isLast = true
           @busy = false
           @isAuthenticatedWithMao = false
     Mao

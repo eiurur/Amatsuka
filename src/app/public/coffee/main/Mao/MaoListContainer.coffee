@@ -16,7 +16,7 @@ angular.module "myApp.directives"
         <div ng-show="$ctrl.tweetList.isLast" class="text-center find--infinitescroll-content find--infinitescroll-message">終わりです
         </div>
       </div>
-      <div ng-show="!$ctrl.tweetListisAuthenticatedWithMao" class="col-sm-12">
+      <div ng-show="!$ctrl.tweetList.isAuthenticatedWithMao" class="col-sm-12">
         <div class="find--infinitescroll-content find--infinitescroll-message">
           <p>MaoでのTwitter認証がされていないのでこの機能は利用できません。</p>
           <p>MaoはAmatsukaのメンバーの人気の画像を毎日収集し、閲覧できる機能です。</p>
