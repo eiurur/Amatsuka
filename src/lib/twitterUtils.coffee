@@ -52,6 +52,8 @@ twitterUtils = ->
       when 'user.url' then t.user.url
       else null
 
+  # normalizeTweetsStr: (tweets, config = {}) ->
+
   normalizeTweets: (tweets, config = {}) ->
     config.ngUsername or= []
     config.ngWord or= []
@@ -59,34 +61,11 @@ twitterUtils = ->
     console.log(config)
 
     _.reject tweets, (tweet) =>
+      tweet = if _.has(tweet, 'tweetStr') then JSON.parse(tweet.tweetStr) else tweet
       includeNgUser = config.ngUsername.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
       includeNgWord = config.ngWord.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
       isFavLowerLimit = @get(tweet, 'tweet.favorite_count', @isRT(tweet)) < config.favLowerLimit
       isOnlyTextTweet = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
       includeNgUser or includeNgWord or isFavLowerLimit or isOnlyTextTweet
-
-  ###
-  上のnormalizeでまとめて行う。(4ループ -> 1ループ)
-  処理時間が1/3まで減少したので効果はあった、。
-  ###
-  # filterIncludeImage: (tweets) ->
-  #   _.reject tweets, (tweet) ->
-  #     !_.has(tweet, 'extended_entities') or
-  #     _.isEmpty(tweet.extended_entities.media)
-
-  # excludeTweetBasedOnNgUser: (tweets, ngUserList = []) ->
-  #   console.log 'ngUserList = ', ngUserList
-  #   # memo: excludeTweetBasedOnNgUser: 0ms
-  #   _.reject tweets, (tweet) =>
-  #     ngUserList.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
-
-  # excludeTweetBasedOnNgWord: (tweets, ngWordList = []) ->
-  #   console.log 'ngWordList = ', ngWordList
-  #   # memo: excludeTweetBasedOnNgWord: 0ms
-  #   _.reject tweets, (tweet) =>
-  #     ngWordList.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
-
-  # excludeTweetBasedFavLowerLimit: (tweets, lowerLimit = 0) ->
-  #   _.filter tweets, (tweet) => @get(tweet, 'tweet.favorite_count', @isRT(tweet)) >= lowerLimit
 
 exports.twitterUtils = twitterUtils()

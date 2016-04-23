@@ -94,6 +94,7 @@ exports.serve = ->
     passport        = require 'passport'
     TwitterStrategy = require('passport-twitter').Strategy
     {UserProvider}  = require '../lib/model'
+    {my}    = require path.resolve 'build', 'lib', 'my'
 
     passport.serializeUser (user, done) ->
       done null, user
@@ -120,6 +121,7 @@ exports.serve = ->
         url: profile._json.url
         accessToken: token
         accessTokenSecret: tokenSecret
+        maoToken: my.createHash(profile._json.id_str + settings.MAO_TOKEN_SALT)
 
       UserProvider.findOneAndUpdate
         user: user

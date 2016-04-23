@@ -25,6 +25,7 @@
     url: String,
     accessToken: String,
     accessTokenSecret: String,
+    maoToken: String,
     createdAt: {
       type: Date,
       "default": Date.now()

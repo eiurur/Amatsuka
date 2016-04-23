@@ -5,8 +5,8 @@ angular.module "myApp.services"
     isAuthenticated: ->
       $http.get "/isAuthenticated"
 
-    findUserById: (twitterIdStr) ->
-      $http.post "/api/findUserById", twitterIdStr
+    # findUserById: (twitterIdStr) ->
+    #   $http.post "/api/findUserById", twitterIdStr
 
     status: isAuthenticated: false
 

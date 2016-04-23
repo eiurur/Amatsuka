@@ -20,6 +20,7 @@ UserSchema = new Schema
   url: String
   accessToken: String
   accessTokenSecret: String
+  maoToken: String
   createdAt:
     type: Date
     default: Date.now()
@@ -125,6 +126,8 @@ class UserProvider
     console.log "\n============> User upsert\n"
     console.log params
     user = params.user
+    # maoToken: params.user.maoToken を変更条件にすると既に登録済みのユーザは重複エラーが発生するため、
+    # Amatsuka側では今まで通りtwitterIdStrを主キー扱いとする
     User.findOneAndUpdate
       twitterIdStr: params.user.twitterIdStr
     , user,

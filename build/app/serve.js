@@ -81,10 +81,11 @@
       return app;
     })();
     (function() {
-      var TwitterStrategy, UserProvider, passport;
+      var TwitterStrategy, UserProvider, my, passport;
       passport = require('passport');
       TwitterStrategy = require('passport-twitter').Strategy;
       UserProvider = require('../lib/model').UserProvider;
+      my = require(path.resolve('build', 'lib', 'my')).my;
       passport.serializeUser(function(user, done) {
         done(null, user);
       });
@@ -107,7 +108,8 @@
           icon: profile._json.profile_image_url_https,
           url: profile._json.url,
           accessToken: token,
-          accessTokenSecret: tokenSecret
+          accessTokenSecret: tokenSecret,
+          maoToken: my.createHash(profile._json.id_str + settings.MAO_TOKEN_SALT)
         };
         UserProvider.findOneAndUpdate({
           user: user

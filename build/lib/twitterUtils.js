@@ -105,6 +105,7 @@
         return _.reject(tweets, (function(_this) {
           return function(tweet) {
             var includeNgUser, includeNgWord, isFavLowerLimit, isOnlyTextTweet;
+            tweet = _.has(tweet, 'tweetStr') ? JSON.parse(tweet.tweetStr) : tweet;
             includeNgUser = config.ngUsername.some(function(element, index) {
               return _this.get(tweet, 'screen_name', _this.isRT(tweet)).indexOf(element.text) !== -1;
             });
@@ -118,11 +119,6 @@
         })(this));
       }
     };
-
-    /*
-    上のnormalizeでまとめて行う。(4ループ -> 1ループ)
-    処理時間が1/3まで減少したので効果はあった、。
-     */
   };
 
   exports.twitterUtils = twitterUtils();

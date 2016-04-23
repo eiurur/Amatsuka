@@ -1,0 +1,12 @@
+a.mao__link {
+  // font-size: 2em;
+  color: $mao-color;
+  transition: .2s ease;
+  text-decoration: none;
+  &:hover {
+    color: lighten($mao-color, 10%);
+  }
+  &:active {
+    color: lighten($mao-color, 10%);
+  }
+}

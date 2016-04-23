@@ -34,6 +34,7 @@
     (require('./api/statuses'))(app);
     (require('./api/timeline'))(app);
     (require('./api/config'))(app);
+    (require('./api/mao'))(app);
 
     /*
     分類不明

@@ -30,6 +30,8 @@ angular.module('myApp', [
     .when '/extract/:id?',
       templateUrl: 'partials/extract'
       controller: 'ExtractCtrl'
+    .when '/mao',
+      templateUrl: 'partials/mao'
     .when '/fav',
       templateUrl: 'partials/fav'
       controller: 'FavCtrl'

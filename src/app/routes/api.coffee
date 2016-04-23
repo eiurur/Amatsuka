@@ -34,6 +34,8 @@ module.exports = (app) ->
 
   (require './api/config')(app)
 
+  (require './api/mao')(app)
+
   ###
   分類不明
   ###

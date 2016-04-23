@@ -197,6 +197,14 @@
 }
 
 /**
+ *
+ */
+.row-eq-height {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/**
  * Go to top
  */
 .arrow-top {
@@ -1416,9 +1424,24 @@ i {
   background-size: cover;
 }
 
+.find--infinitescroll-content {
+  padding: 60px;
+}
+
 .find--infinitescroll-message {
-  padding: 20px;
   color: #a1a1a1;
+}
+
+a.mao__link {
+  color: #ecae6a;
+  transition: .2s ease;
+  text-decoration: none;
+}
+a.mao__link:hover {
+  color: #f2c797;
+}
+a.mao__link:active {
+  color: #f2c797;
 }
 
 .extract-form {

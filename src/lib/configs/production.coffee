@@ -25,6 +25,8 @@ exports.settings =
   MAX_NUM_GET_LISTS_LIST: 100
   MAX_NUM_GET_LIST_STATUSES: 200
   MAX_NUM_GET_LIST_MEMBERS: 5000
+  MAO_TOKEN_SALT: process.env.MAO_TOKEN_SALT
+  MAO_HOST: process.env.MAO_HOST
   twitterAPI: new TwitterAPI
     consumerKey: TW_CK
     consumerSecret: TW_CS
