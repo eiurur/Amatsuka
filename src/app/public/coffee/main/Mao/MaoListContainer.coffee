@@ -5,19 +5,21 @@ angular.module "myApp.directives"
     template: """
       <dot-loader ng-if="!$ctrl.tweetList.items" class="user-sidebar__contents--box-loading-init">
       </dot-loader>
-      <div infinite-scroll="$ctrl.tweetList.load()" infinite-scroll-distance="0" class="row-eq-height">
-        <div style="padding: 15px;" ng-repeat="item in $ctrl.tweetList.items" class="col-lg-4 col-md-6 col-sm-6">
-          <mao-tweet-article item="item"></mao-tweet-article>
+      <div ng-if="$ctrl.tweetList.isAuthenticatedWithMao">
+        <div infinite-scroll="$ctrl.tweetList.load()" infinite-scroll-distance="0" class="row-eq-height">
+          <div style="padding: 15px;" ng-repeat="item in $ctrl.tweetList.items" class="col-lg-4 col-md-6 col-sm-6">
+            <mao-tweet-article item="item"></mao-tweet-article>
+          </div>
+        </div>
+        <div class="col-sm-12">
+          <dot-loader ng-if="$ctrl.tweetList.busy" class="find--infinitescroll-content">
+          </dot-loader>
+          <div ng-show="$ctrl.tweetList.isLast" class="text-center find--infinitescroll-content find--infinitescroll-message">終わりです
+          </div>
         </div>
       </div>
-      <div class="col-sm-12">
-        <dot-loader ng-if="$ctrl.tweetList.busy" class="find--infinitescroll-content">
-        </dot-loader>
-        <div ng-show="$ctrl.tweetList.isLast" class="text-center find--infinitescroll-content find--infinitescroll-message">終わりです
-        </div>
-      </div>
-      <div ng-show="!$ctrl.tweetList.isAuthenticatedWithMao" class="col-sm-12">
-        <div class="find--infinitescroll-content find--infinitescroll-message">
+      <div ng-if="!$ctrl.tweetList.isAuthenticatedWithMao" class="col-sm-12">
+        <div class="find--infinitescroll-message">
           <p>MaoでのTwitter認証がされていないのでこの機能は利用できません。</p>
           <p>MaoはAmatsukaのメンバーの人気の画像を毎日収集し、閲覧できる機能です。</p>
           <p>認証は以下のリンク先で行えます</p>
