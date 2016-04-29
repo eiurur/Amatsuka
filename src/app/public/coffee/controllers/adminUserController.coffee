@@ -1,9 +1,7 @@
 angular.module "myApp.controllers"
   .controller "AdminUserCtrl", (
     $scope
-    $rootScope
     $location
-    $log
     AuthService
     ) ->
   $scope.isLoaded = false

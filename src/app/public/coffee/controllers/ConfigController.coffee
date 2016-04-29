@@ -10,9 +10,7 @@ angular.module "myApp.controllers"
   ConfigService.getFromDB()
   .then (config) -> ConfigService.set config
   .catch (e) -> do ConfigService.init
-  .finally ->
-    $scope.config = ConfigService.config
-    console.log '$scope.config', $scope.config
+  .finally -> $scope.config = ConfigService.config
 
   $scope.$watch 'config', (newData, oldData) ->
 

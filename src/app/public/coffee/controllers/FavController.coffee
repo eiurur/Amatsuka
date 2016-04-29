@@ -8,18 +8,10 @@ angular.module "myApp.controllers"
     Tweets
     ) ->
   if _.isEmpty AuthService.user then $location.path '/'
+  unless ListService.hasListData() then $location.path '/'
 
   $scope.isLoaded   = false
   $scope.layoutType = 'grid'
-
-  # 共通の処理
-  # AmatsukaList や AmatsukaFollowList の生成処理は /index で行うことにした。
-  ListService.amatsukaList =
-    data: JSON.parse(localStorage.getItem 'amatsukaList') || {}
-    member: JSON.parse(localStorage.getItem 'amatsukaFollowList') || []
-
-  unless ListService.hasListData() then $location.path '/'
-
 
   $scope.tweets = new Tweets([], undefined, 'fav', AuthService.user._json.id_str)
   $scope.listIdStr = ListService.amatsukaList.data.id_str

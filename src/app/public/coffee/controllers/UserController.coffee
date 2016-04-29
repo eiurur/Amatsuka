@@ -1,19 +1,12 @@
 angular.module "myApp.controllers"
   .controller "UserCtrl", (
     $scope
-    $rootScope
     $location
-    AuthService
     ConfigService
     TweetService
     ListService
     Tweets
     ) ->
-  return if _.isEmpty AuthService.user
-
-  #
-  # history = 0
-
 
   $scope.isOpened = false
   $scope.config = {}
@@ -60,7 +53,6 @@ angular.module "myApp.controllers"
 
   $scope.$on 'addMember', (event, args) ->
     return if _.isUndefined $scope.tweets
-    console.log 'user addMember on', args
     TweetService.applyFollowStatusChange $scope.tweets.items, args
     return
 

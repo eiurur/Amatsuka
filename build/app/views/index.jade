@@ -15,7 +15,7 @@ block body
         include parts/_layer
         include parts/_nav
 
-        .site-main(resize="resize")
+        .site-main(ng-controller="AmatsukaListCtrl", resize="resize")
           .col-md-12(ng-view)
 
         include parts/_user_sidebar
