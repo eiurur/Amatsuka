@@ -1,5 +1,5 @@
 (function() {
-  var NodeCache, Promise, TwitterClient, TwitterClientDefine, cheerio, my, request, settings, _,
+  var TwitterClient, TwitterClientDefine, my, request, settings, _,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -7,12 +7,6 @@
   _ = require('lodash');
 
   request = require('request');
-
-  cheerio = require('cheerio');
-
-  NodeCache = require('node-cache');
-
-  Promise = require('es6-promise').Promise;
 
   my = require('./my').my;
 
@@ -76,7 +70,6 @@
         opts.max_id = params.maxId;
       }
       opts.include_rts = _.isUndefined(params.includeRetweet) ? true : params.includeRetweet;
-      console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'getTimeline',
         type: 'home_timeline',
@@ -99,7 +92,6 @@
         opts.count = settings.MAX_NUM_GET_TIMELINE_TWEET;
       }
       opts.include_rts = _.isUndefined(params.includeRetweet) ? true : params.includeRetweet;
-      console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'getTimeline',
         type: 'user_timeline',
@@ -177,7 +169,6 @@
         opts.max_id = params.maxId;
       }
       opts.include_rts = _.isUndefined(params.includeRetweet) ? true : params.includeRetweet;
-      console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'lists',
         type: 'statuses',
@@ -340,7 +331,6 @@
       if (!(params.maxId === '0' || params.maxId === 'undefined')) {
         opts.max_id = params.maxId;
       }
-      console.log("opts = ", opts);
       return this.getViaAPI({
         method: 'favorites',
         type: 'list',

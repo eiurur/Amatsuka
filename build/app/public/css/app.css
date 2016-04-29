@@ -199,6 +199,20 @@
 /**
  *
  */
+.infinitescroll-content {
+  padding: 60px;
+}
+
+.infinitescroll-message {
+  color: #a1a1a1;
+}
+.infinitescroll-message--emphasis {
+  color: #f2446f;
+}
+
+/**
+ *
+ */
 .row-eq-height {
   display: flex;
   flex-wrap: wrap;
@@ -1422,14 +1436,6 @@ i {
   width: 100%;
   height: 200px;
   background-size: cover;
-}
-
-.find--infinitescroll-content {
-  padding: 60px;
-}
-
-.find--infinitescroll-message {
-  color: #a1a1a1;
 }
 
 a.mao__link {

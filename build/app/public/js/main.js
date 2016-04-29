@@ -29,34 +29,13 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
     redirectTo: "/"
   }).when("http://127.0.0.1:4040/auth/twitter/callback", {
     redirectTo: "/"
+  }).otherwise({
+    redirectTo: '/'
   });
   return $locationProvider.html5Mode(true);
 }]);
 
-
-/*
-Logの拡張
- */
-var i, methods, _fn;
-
-methods = ["log", "warn", "error", "info", "debug", "dir"];
-
-_fn = function(m) {
-  if (console[m]) {
-    window[m] = console[m].bind(console);
-  } else {
-    window[m] = log;
-  }
-};
-for (i in methods) {
-  _fn(methods[i]);
-}
-
-angular.module("myApp.controllers", []).controller('CommonCtrl', ["$location", "$log", "$rootScope", "$scope", function($location, $log, $rootScope, $scope) {
-  return $rootScope.$on('$locationChangeStart', function(event, next, current) {
-    $log.info('location changin to: ' + next);
-  });
-}]);
+angular.module("myApp.controllers", []);
 
 angular.module("myApp.directives", []).directive('dotLoader', function() {
   return {
@@ -542,71 +521,7 @@ angular.module("myApp.filters", []).filter("interpolate", ["version", function(v
   };
 }]);
 
-angular.module("myApp.services", []).service("CommonService", function() {
-  return {
-    isLoaded: false
-  };
-}).service('ToasterService', ["toaster", function(toaster) {
-  return {
-    success: function(notify) {
-      console.log(notify.title);
-      return toaster.pop('success', notify.title, notify.text, 2000, 'trustedHtml');
-    },
-    warning: function(notify) {
-      console.log(notify.title);
-      return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
-    }
-  };
-}]).service('DownloadService', ["$http", "ConvertService", function($http, ConvertService) {
-  return {
-    exec: function(url, filename, idx) {
-      return $http.post('/api/download', {
-        url: url
-      }).success((function(_this) {
-        return function(data) {
-          var blob, ext;
-          blob = ConvertService.base64toBlob(data.base64Data);
-          ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1];
-          filename = "" + filename + "_" + idx + "." + ext;
-          return _this.saveAs(blob, filename);
-        };
-      })(this));
-    },
-    saveAs: function(blob, filename) {
-      var a;
-      if (navigator.appVersion.toString().indexOf('.NET') > 0) {
-        return window.navigator.msSaveBlob(blob, filename);
-      } else {
-        a = document.createElement('a');
-        document.body.appendChild(a);
-        a.style = 'display: none';
-        a.href = window.URL.createObjectURL(blob);
-        a.download = filename;
-        return a.click();
-      }
-    }
-  };
-}]).service('ConvertService', function() {
-  return {
-    base64toBlob: function(_base64) {
-      var arr, blob, data, i, mime, tmp;
-      i = void 0;
-      tmp = _base64.split(',');
-      data = atob(tmp[1]);
-      mime = tmp[0].split(':')[1].split(';')[0];
-      arr = new Uint8Array(data.length);
-      i = 0;
-      while (i < data.length) {
-        arr[i] = data.charCodeAt(i);
-        i++;
-      }
-      blob = new Blob([arr], {
-        type: mime
-      });
-      return blob;
-    }
-  };
-});
+angular.module("myApp.services", []);
 
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$rootScope", "$location", "$log", "AuthService", function($scope, $rootScope, $location, $log, AuthService) {
   $scope.isLoaded = false;
@@ -931,8 +846,6 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location
     $scope.amatsukaList.updateAmatsukaList();
   });
 }]);
-
-
 
 angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$location", "AuthService", "ListService", "AmatsukaList", function($scope, $location, AuthService, ListService, AmatsukaList) {
   if (_.isEmpty(AuthService.user)) {
@@ -1489,6 +1402,59 @@ angular.module("myApp.services").service("ConfigService", ["$http", "$q", functi
   };
 }]);
 
+angular.module("myApp.services").service('ConvertService', function() {
+  return {
+    base64toBlob: function(_base64) {
+      var arr, blob, data, i, mime, tmp;
+      i = void 0;
+      tmp = _base64.split(',');
+      data = atob(tmp[1]);
+      mime = tmp[0].split(':')[1].split(';')[0];
+      arr = new Uint8Array(data.length);
+      i = 0;
+      while (i < data.length) {
+        arr[i] = data.charCodeAt(i);
+        i++;
+      }
+      blob = new Blob([arr], {
+        type: mime
+      });
+      return blob;
+    }
+  };
+});
+
+angular.module("myApp.services").service('DownloadService', ["$http", "ConvertService", function($http, ConvertService) {
+  return {
+    exec: function(url, filename, idx) {
+      return $http.post('/api/download', {
+        url: url
+      }).success((function(_this) {
+        return function(data) {
+          var blob, ext;
+          blob = ConvertService.base64toBlob(data.base64Data);
+          ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1];
+          filename = "" + filename + "_" + idx + "." + ext;
+          return _this.saveAs(blob, filename);
+        };
+      })(this));
+    },
+    saveAs: function(blob, filename) {
+      var a;
+      if (navigator.appVersion.toString().indexOf('.NET') > 0) {
+        return window.navigator.msSaveBlob(blob, filename);
+      } else {
+        a = document.createElement('a');
+        document.body.appendChild(a);
+        a.style = 'display: none';
+        a.href = window.URL.createObjectURL(blob);
+        a.download = filename;
+        return a.click();
+      }
+    }
+  };
+}]);
+
 angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthService", "TweetService", function($http, $q, AuthService, TweetService) {
   return {
     amatsukaList: {
@@ -1625,27 +1591,38 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
         };
       })(this));
     },
+    getAmatsukaList: function() {
+      return $q((function(_this) {
+        return function(resolve, reject) {
+          console.log('isSameAmatsukaList AuthService.user._json.id_str = ', AuthService.user._json.id_str);
+          return TweetService.getListsList({
+            twitterIdStr: AuthService.user._json.id_str
+          }).then(function(data) {
+            var ownLists;
+            ownLists = data.data;
+            console.log('lists = ', ownLists);
+            return resolve(_.findWhere(ownLists, {
+              'full_name': "@" + AuthService.user.username + "/amatsuka"
+            }) || {
+              id_str: null
+            });
+          });
+        };
+      })(this));
+    },
     isSameAmatsukaList: function() {
-      return $q(function(resolve, reject) {
-        console.log('isSameAmatsukaList AuthService.user._json.id_str = ', AuthService.user._json.id_str);
-        return TweetService.getListsList({
-          twitterIdStr: AuthService.user._json.id_str
-        }).then(function(data) {
-          var newList, oldList, ownLists;
-          ownLists = data.data;
-          console.log('lists = ', ownLists);
-          oldList = JSON.parse(localStorage.getItem('amatsukaList')) || {};
-          newList = _.findWhere(ownLists, {
-            'full_name': "@" + AuthService.user.username + "/amatsuka"
-          }) || {
-            id_str: null
-          };
-          return resolve(oldList.id_str === newList.id_str);
-        })["catch"](function(error) {
-          console.log('listService isSameAmatsukaList = ', error);
-          return reject(error);
-        });
-      });
+      return $q((function(_this) {
+        return function(resolve, reject) {
+          return _this.getAmatsukaList().then(function(newList) {
+            var oldList;
+            oldList = JSON.parse(localStorage.getItem('amatsukaList')) || {};
+            return resolve(oldList.id_str === newList.id_str);
+          })["catch"](function(error) {
+            console.log('listService isSameAmatsukaList = ', error);
+            return reject(error);
+          });
+        };
+      })(this));
     },
     hasListData: function() {
       return !(_.isEmpty(this.amatsukaList.data) && _.isEmpty(this.amatsukaList.member));
@@ -1657,6 +1634,19 @@ angular.module("myApp.services").service("MaoService", ["$http", function($http)
   return {
     findByMaoTokenAndDate: function(qs) {
       return $http.get("/api/mao?" + qs);
+    }
+  };
+}]);
+
+angular.module("myApp.services").service('ToasterService', ["toaster", function(toaster) {
+  return {
+    success: function(notify) {
+      console.log(notify.title);
+      return toaster.pop('success', notify.title, notify.text, 2000, 'trustedHtml');
+    },
+    warning: function(notify) {
+      console.log(notify.title);
+      return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
     }
   };
 }]);
@@ -2105,7 +2095,7 @@ angular.module("myApp.directives").directive('maoListContainer', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<dot-loader ng-if=\"!$ctrl.tweetList.items\" class=\"user-sidebar__contents--box-loading-init\">\n</dot-loader>\n<div ng-if=\"$ctrl.tweetList.isAuthenticatedWithMao\">\n  <div infinite-scroll=\"$ctrl.tweetList.load()\" infinite-scroll-distance=\"0\" class=\"row-eq-height\">\n    <div style=\"padding: 15px;\" ng-repeat=\"item in $ctrl.tweetList.items\" class=\"col-lg-4 col-md-6 col-sm-6\">\n      <mao-tweet-article item=\"item\"></mao-tweet-article>\n    </div>\n  </div>\n  <div class=\"col-sm-12\">\n    <dot-loader ng-if=\"$ctrl.tweetList.busy\" class=\"find--infinitescroll-content\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweetList.isLast\" class=\"text-center find--infinitescroll-content find--infinitescroll-message\">終わりです\n    </div>\n  </div>\n</div>\n<div ng-if=\"!$ctrl.tweetList.isAuthenticatedWithMao\" class=\"col-sm-12\">\n  <div class=\"find--infinitescroll-message\">\n    <p>MaoでのTwitter認証がされていないのでこの機能は利用できません。</p>\n    <p>MaoはAmatsukaのメンバーの人気の画像を毎日収集し、閲覧できる機能です。</p>\n    <p>認証は以下のリンク先で行えます</p>\n    <p>\n      <a href=\"https://ma0.herokuapp.com\" target=\"_blank\" class=\"mao__link\">\n        Mao\n        <i class=\"fa fa-external-link\"></i>\n      </a>\n    </p>\n  </div>\n</div>",
+    template: "<dot-loader ng-if=\"!$ctrl.tweetList.items\" class=\"user-sidebar__contents--box-loading-init\">\n</dot-loader>\n<div ng-if=\"$ctrl.tweetList.isAuthenticatedWithMao\">\n  <div infinite-scroll=\"$ctrl.tweetList.load()\" infinite-scroll-distance=\"0\" class=\"row-eq-height\">\n    <div style=\"padding: 15px;\" ng-repeat=\"item in $ctrl.tweetList.items\" class=\"col-lg-4 col-md-6 col-sm-6\">\n      <mao-tweet-article item=\"item\"></mao-tweet-article>\n    </div>\n  </div>\n  <div class=\"col-sm-12\">\n    <dot-loader ng-if=\"$ctrl.tweetList.busy\" class=\"infinitescroll-content\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweetList.isLast\" class=\"text-center infinitescroll-content infinitescroll-message\">終わりです\n    </div>\n  </div>\n</div>\n<div ng-if=\"!$ctrl.tweetList.isAuthenticatedWithMao\" class=\"col-sm-12\">\n  <div class=\"infinitescroll-message\">\n    <p>MaoでのTwitter認証がされていないのでこの機能は利用できません。</p>\n    <p>MaoはAmatsukaのメンバーの人気の画像を毎日収集し、閲覧できる機能です。</p>\n    <p>認証は以下のリンク先で行えます</p>\n    <p>\n      <a href=\"https://ma0.herokuapp.com\" target=\"_blank\" class=\"mao__link\">\n        Mao\n        <i class=\"fa fa-external-link\"></i>\n      </a>\n    </p>\n  </div>\n</div>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoListContoller
@@ -2141,7 +2131,7 @@ angular.module("myApp.directives").directive('maoTweetArticle', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"media find__media\"><a twitter-id-str=\"{{::$ctrl.item.user.id_str}}\" show-tweet=\"show-tweet\" class=\"pull-left\"><img ng-src=\"{{::$ctrl.item.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"media-object thumbnail-img fade\"/></a>\n  <div class=\"media-body\">\n    <h4 class=\"media-heading\"><span class=\"name\">{{::$ctrl.item.user.name}}</span><span class=\"screen-name\">@{{::$ctrl.item.user.screen_name}}</span>\n    </h4><a href=\"{{::$ctrl.item.user.url}}\" target=\"_blank\" class=\"link\">{{::$ctrl.item.user.url}}</a>\n  </div>\n</div>\n<div class=\"find__pict-tweet--container\">\n  <div class=\"row\">\n    <div ng-repeat=\"pict in $ctrl.item.pictList | limitTo: 12\" class=\"col-lg-6 col-md-4 col-sm-6 col-xs-6\">\n      <div style=\"background-image: url('{{::pict.media.media_url_https}}:small')\" zoom-image=\"zoom-image\" data-img-src=\"{{::pict.media.media_url_https}}\" tweet-id-str=\"{{::pict.tweet.id_str}}\" show-statuses=\"show-statuses\" class=\"find__pict-tweet--img\">\n      </div>\n    </div>\n  </div>\n</div>",
+    template: "<div class=\"media find__media\">\n  <a twitter-id-str=\"{{::$ctrl.item.user.id_str}}\" show-tweet=\"show-tweet\" class=\"pull-left\">\n    <img ng-src=\"{{::$ctrl.item.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"media-object thumbnail-img fade\"/>\n  </a>\n  <div class=\"media-body\">\n    <h4 class=\"media-heading\"><span class=\"name\">{{::$ctrl.item.user.name}}</span>\n      <span class=\"screen-name\">@{{::$ctrl.item.user.screen_name}}</span>\n    </h4>\n    <a href=\"{{::$ctrl.item.user.url}}\" target=\"_blank\" class=\"link\">{{::$ctrl.item.user.url}}</a>\n  </div>\n</div>\n<div class=\"find__pict-tweet--container\">\n  <div class=\"row\">\n    <div ng-repeat=\"pict in $ctrl.item.pictList | limitTo: 12\" class=\"col-lg-6 col-md-4 col-sm-6 col-xs-6\">\n      <div style=\"background-image: url('{{::pict.media.media_url_https}}:small')\" zoom-image=\"zoom-image\" data-img-src=\"{{::pict.media.media_url_https}}:orig\" tweet-id-str=\"{{::pict.tweet.id_str}}\" show-statuses=\"show-statuses\" class=\"find__pict-tweet--img\">\n      </div>\n    </div>\n  </div>\n</div>",
     bindToController: {
       item: '='
     },
@@ -2156,3 +2146,112 @@ MaoTweetArticleController = (function() {
   return MaoTweetArticleController;
 
 })();
+
+var GridLayoutTweet;
+
+angular.module("myApp.directives").directive('gridLayoutTweet', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<div class=\"timeline__post--header timeline__post--header--grid\">\n  <div class=\"timeline__post--header--info timeline__post--header--info--grid\">\n    <div class=\"timeline__post--header--link timeline__post--header--link--grid\">\n      <span twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--user timeline__post--header--user--grid\">{{::$ctrl.tweet.user.screen_name}}\n      </span><span ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--header--rt_icon timeline__post--header--rt_icon--grid\"><i class=\"fa fa-retweet\"></i></span><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--rt_source timeline__post--header--rt_source--grid\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n      <followable ng-if=\"!$ctrl.tweet.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" tweet=\"{{$ctrl.tweet}}\" follow-status=\"$ctrl.tweet.followStatus\">\n      </followable>\n    </div>\n  </div>\n  <div class=\"timeline__post--header--time\"><a href=\"https://{{::$ctrl.tweet.sourceUrl}}\" target=\"_blank\">{{::$ctrl.tweet.time}}\n    </a>\n  </div>\n</div>\n<div class=\"timeline__post--icon timeline__post--icon--grid\"><img ng-src=\"{{::$ctrl.tweet.user.profile_image_url_https}}\" img-preload=\"img-preload\" show-tweet=\"show-tweet\" twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" class=\"fade\"/>\n</div>\n<div ng-repeat=\"picUrl in $ctrl.tweet.picUrlList\" class=\"timeline__post--image timeline__post--image--grid\">\n  <img ng-if=\"!$ctrl.tweet.video_url\" ng-src=\"{{::picUrl}}\" img-preload=\"img-preload\" zoom-image=\"zoom-image\" data-img-src=\"{{::picUrl}}\" class=\"fade\"/>\n  <video ng-if=\"$ctrl.tweet.video_url\" poster=\"{{::picUrl}}\" autoplay=\"autoplay\" loop=\"loop\" controls=\"controls\" muted=\"muted\">\n    <source ng-src=\"{{::$ctrl.tweet.video_url | trusted}}\" type=\"video/mp4\">\n    </source>\n  </video>\n</div>\n<div ng-if=\"!config.isShowOnlyImage\" class=\"timeline__post__text__container\">\n  <div ng-if=\"!$ctrl.tweet.retweeted_status\" ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text timeline__post--text--grid\">\n  </div>\n  <div ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--blockquote timeline__post--blockquote--grid\">\n    <p><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n    </p>\n    <blockquote>\n      <div ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n      </div>\n    </blockquote>\n  </div>\n</div>\n<div class=\"timeline__post--footer timeline__post--footer--grid\">\n  <div class=\"timeline__post--footer--contents\">\n    <div class=\"timeline__post--footer--contents--controls\">\n      <i retweet-num=\"$ctrl.tweet.retweetNum\" retweeted=\"$ctrl.tweet.retweeted\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" retweetable=\"retweetable\" class=\"fa fa-retweet icon-retweet\">{{$ctrl.tweet.retweetNum}}</i><i fav-num=\"$ctrl.tweet.favNum\" favorited=\"$ctrl.tweet.favorited\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" favoritable=\"favoritable\" class=\"fa fa-heart icon-heart\">{{$ctrl.tweet.favNum}}</i>\n      <!-- aタグがないとtextとcontrolsの間の余白がなくなり、レイアウトが崩れる。--><a><i data-url=\"{{::$ctrl.tweet.picOrigUrlList}}\" filename=\"{{::$ctrl.tweet.fileName}}\" download-from-url=\"download-from-url\" class=\"fa fa-download\"></i></a>\n    </div>\n  </div>\n</div>",
+    bindToController: {
+      tweet: "=",
+      listIdStr: "="
+    },
+    controllerAs: "$ctrl",
+    controller: GridLayoutTweet
+  };
+});
+
+GridLayoutTweet = (function() {
+  function GridLayoutTweet() {
+    console.log(this);
+  }
+
+  return GridLayoutTweet;
+
+})();
+
+var ListLayoutTweet;
+
+angular.module("myApp.directives").directive('listLayoutTweet', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "\n<div class=\"timeline__post--header\">\n  <div class=\"timeline__post--header--info\">\n    <div class=\"timeline__post--header--link\">\n      <span twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--user\">{{::$ctrl.tweet.user.screen_name}}\n      </span><span ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--header--rt_icon\"><i class=\"fa fa-retweet\"></i></span><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--rt_source\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n      <followable ng-if=\"!$ctrl.tweet.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" tweet=\"{{$ctrl.tweet}}\" follow-status=\"$ctrl.tweet.followStatus\">\n      </followable>\n    </div>\n  </div>\n  <div class=\"timeline__post--header--time\"><a href=\"https://{{::$ctrl.tweet.sourceUrl}}\" target=\"_blank\">{{::$ctrl.tweet.time}}\n    </a>\n  </div>\n</div>\n<div class=\"timeline__post--icon\"><img ng-src=\"{{::$ctrl.tweet.user.profile_image_url_https}}\" img-preload=\"img-preload\" show-tweet=\"show-tweet\" twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" class=\"fade\"/>\n</div>\n<div ng-repeat=\"picUrl in $ctrl.tweet.picUrlList\" class=\"timeline__post--image\">\n  <img ng-if=\"!$ctrl.tweet.video_url\" ng-src=\"{{::picUrl}}\" img-preload=\"img-preload\" zoom-image=\"zoom-image\" data-img-src=\"{{::picUrl}}\" class=\"fade\"/>\n  <video ng-if=\"$ctrl.tweet.video_url\" poster=\"{{::picUrl}}\" autoplay=\"autoplay\" loop=\"loop\" controls=\"controls\" muted=\"muted\">\n    <source ng-src=\"{{::$ctrl.tweet.video_url | trusted}}\" type=\"video/mp4\">\n    </source>\n  </video>\n</div>\n<div ng-if=\"!config.isShowOnlyImage\" class=\"timeline__post__text__container\">\n  <div ng-if=\"!$ctrl.tweet.retweeted_status\" ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n  </div>\n  <div ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--blockquote\">\n    <p><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n    </p>\n    <blockquote>\n      <div ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n      </div>\n    </blockquote>\n  </div>\n</div>\n<div class=\"timeline__post--footer\">\n  <div class=\"timeline__post--footer--contents\">\n    <div class=\"timeline__post--footer--contents--controls\"><i retweet-num=\"$ctrl.tweet.retweetNum\" retweeted=\"$ctrl.tweet.retweeted\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" retweetable=\"retweetable\" class=\"fa fa-retweet icon-retweet\">{{$ctrl.tweet.retweetNum}}</i><i fav-num=\"$ctrl.tweet.favNum\" favorited=\"$ctrl.tweet.favorited\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" favoritable=\"favoritable\" class=\"fa fa-heart icon-heart\">{{$ctrl.tweet.favNum}}</i><a><i data-url=\"{{::$ctrl.tweet.extended_entities.media[0].media_url}}:orig\" filename=\"{{::$ctrl.tweet.fileName}}\" download-from-url=\"download-from-url\" class=\"fa fa-download\"></i></a>\n    </div>\n  </div>\n</div>\n",
+    bindToController: {
+      tweet: "=",
+      listIdStr: "="
+    },
+    controllerAs: "$ctrl",
+    controller: ListLayoutTweet
+  };
+});
+
+ListLayoutTweet = (function() {
+  function ListLayoutTweet() {
+    console.log(this);
+  }
+
+  return ListLayoutTweet;
+
+})();
+
+var TweetListController;
+
+angular.module("myApp.directives").directive('tweetListContainer', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<dot-loader ng-if=\"!$ctrl.tweets.items\" class=\"user-sidebar__contents--box-loading-init\"></dot-loader>\n<div ng-if=\"$ctrl.message\" class=\"list__status--message text-center\">{{message}}\n</div>\n\n<span ng-if=\"$ctrl.layoutType == 'grid'\">\n  <div infinite-scroll=\"$ctrl.tweets.nextPage()\" infinite-scroll-distance=\"2\" infinite-scroll-disabled=\"$ctrl.tweets.busy\" masonry=\"masonry\" preserve-order=\"preserve-order\" class=\"timeline timeline--grid\">\n    <div ng-repeat=\"tweet in $ctrl.tweets.items\" class=\"masonry-brick timeline__post timeline__post--grid\">\n      <grid-layout-tweet tweet=\"tweet\" listIdStr=\"$ctrl.listIdStr\"></grid-layout-tweet>\n    </div>\n  </div>\n\n  <div class=\"loading-bar loading-bar--grid\">\n    <dot-loader ng-if=\"$ctrl.tweets.busy\" class=\"box-loading-padding-vertical\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweets.isLast\" class=\"text-center\">終わりです</div>\n  </div>\n</span>\n\n<span ng-if=\"$ctrl.layoutType == 'list'\">\n  <div infinite-scroll=\"$ctrl.tweets.nextPage()\" infinite-scroll-distance=\"2\" infinite-scroll-disabled=\"$ctrl.tweets.busy\" class=\"timeline timeline--list\">\n    <div ng-repeat=\"tweet in $ctrl.tweets.items\" class=\"timeline__post\">\n      <list-layout-tweet tweet=\"tweet\"></list-layout-tweet>\n    </div>\n\n    <div class=\"loading-bar\">\n      <dot-loader ng-if=\"$ctrl.tweets.busy\" class=\"box-loading-padding-vertical\">\n      </dot-loader>\n      <div ng-show=\"$ctrl.tweets.isLast\" class=\"text-center\">終わりです</div>\n    </div>\n  </div>\n</span>\n",
+    bindToController: {},
+    controllerAs: "$ctrl",
+    controller: TweetListController
+  };
+});
+
+TweetListController = (function() {
+  function TweetListController($location, $scope, AuthService, ListService, Tweets, TweetService) {
+    this.$location = $location;
+    this.$scope = $scope;
+    this.AuthService = AuthService;
+    this.ListService = ListService;
+    this.Tweets = Tweets;
+    this.TweetService = TweetService;
+    this.isLoaded = false;
+    this.layoutType = 'grid';
+    this.ListService.amatsukaList = {
+      data: JSON.parse(localStorage.getItem('amatsukaList')) || {},
+      member: JSON.parse(localStorage.getItem('amatsukaFollowList')) || []
+    };
+    if (!this.ListService.hasListData()) {
+      this.$location.path('/');
+    }
+    this.tweets = new this.Tweets([], void 0, 'fav', this.AuthService.user._json.id_str);
+    this.listIdStr = ListService.amatsukaList.data.id_str;
+    this.isLoaded = true;
+    this.subscribe();
+  }
+
+  TweetListController.prototype.subscribe = function() {
+    this.$scope.$on('addMember', (function(_this) {
+      return function(event, args) {
+        console.log('fav addMember on ', args);
+        return _this.TweetService.applyFollowStatusChange(_this.tweets.items, args);
+      };
+    })(this));
+    return this.$scope.$on('resize::resize', (function(_this) {
+      return function(event, args) {
+        console.log('fav resize::resize on ', args.layoutType);
+        return _this.$scope.$apply(function() {
+          return _this.layoutType = args.layoutType;
+        });
+      };
+    })(this));
+  };
+
+  return TweetListController;
+
+})();
+
+TweetListController.$inject = ['$location', '$scope', 'AuthService', 'ListService', 'Tweets', 'TweetService'];
