@@ -8,8 +8,10 @@ angular.module "myApp.directives"
           <img ng-src="{{::$ctrl.item.user.profile_image_url_https}}" img-preload="img-preload" class="media-object thumbnail-img fade"/>
         </a>
         <div class="media-body">
-          <h4 class="media-heading"><span class="name">{{::$ctrl.item.user.name}}</span><span class="screen-name">@{{::$ctrl.item.user.screen_name}}</span>
-          </h4><a href="{{::$ctrl.item.user.url}}" target="_blank" class="link">{{::$ctrl.item.user.url}}</a>
+          <h4 class="media-heading"><span class="name">{{::$ctrl.item.user.name}}</span>
+            <span class="screen-name">@{{::$ctrl.item.user.screen_name}}</span>
+          </h4>
+          <a href="{{::$ctrl.item.user.url}}" target="_blank" class="link">{{::$ctrl.item.user.url}}</a>
         </div>
       </div>
       <div class="find__pict-tweet--container">

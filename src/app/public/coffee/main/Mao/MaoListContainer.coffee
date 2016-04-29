@@ -12,14 +12,14 @@ angular.module "myApp.directives"
           </div>
         </div>
         <div class="col-sm-12">
-          <dot-loader ng-if="$ctrl.tweetList.busy" class="find--infinitescroll-content">
+          <dot-loader ng-if="$ctrl.tweetList.busy" class="infinitescroll-content">
           </dot-loader>
-          <div ng-show="$ctrl.tweetList.isLast" class="text-center find--infinitescroll-content find--infinitescroll-message">終わりです
+          <div ng-show="$ctrl.tweetList.isLast" class="text-center infinitescroll-content infinitescroll-message">終わりです
           </div>
         </div>
       </div>
       <div ng-if="!$ctrl.tweetList.isAuthenticatedWithMao" class="col-sm-12">
-        <div class="find--infinitescroll-message">
+        <div class="infinitescroll-message">
           <p>MaoでのTwitter認証がされていないのでこの機能は利用できません。</p>
           <p>MaoはAmatsukaのメンバーの人気の画像を毎日収集し、閲覧できる機能です。</p>
           <p>認証は以下のリンク先で行えます</p>
