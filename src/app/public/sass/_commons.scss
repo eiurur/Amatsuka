@@ -245,6 +245,9 @@
 
 .infinitescroll-message {
   color: $link-color;
+  &--emphasis {
+    color: $amatsuka-color;
+  }
 }
 
 /**
