@@ -96,7 +96,10 @@ module.exports =
     dest: './build'
 
   watch:
-    coffee: relativeSrcPath + "/*.coffee"
+    coffee: [
+      relativeSrcPath + "/**/*.coffee"
+      "!" + relativeSrcPath + app_public + "/**/*.coffee"
+    ]
     coffee_app_public: relativeSrcPath + app_public + "/**/*.coffee"
     sass: relativeSrcPath + app_public + "/sass/**"
     jade_copy: relativeSrcPath + app + "/views/**"
