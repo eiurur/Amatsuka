@@ -1,8 +1,5 @@
 _          = require 'lodash'
 request    = require 'request'
-cheerio    = require 'cheerio'
-NodeCache  = require 'node-cache'
-{Promise}  = require 'es6-promise'
 {my}       = require './my'
 {settings} = if process.env.NODE_ENV is "production"
   require './configs/production'
@@ -53,7 +50,6 @@ module.exports = class TwitterClient extends TwitterClientDefine
 
     # HACK 汚い
     opts.include_rts = if _.isUndefined params.includeRetweet then true else params.includeRetweet
-    console.log "opts = ", opts
 
     @getViaAPI
       method: 'getTimeline'
@@ -75,7 +71,6 @@ module.exports = class TwitterClient extends TwitterClientDefine
     # HACK 汚い
     opts.include_rts = if _.isUndefined params.includeRetweet then true else params.includeRetweet
 
-    console.log "opts = ", opts
 
     @getViaAPI
       method: 'getTimeline'
@@ -137,7 +132,6 @@ module.exports = class TwitterClient extends TwitterClientDefine
 
     # HACK 汚い
     opts.include_rts = if _.isUndefined params.includeRetweet then true else params.includeRetweet
-    console.log "opts = ", opts
 
     @getViaAPI
       method: 'lists'
@@ -274,7 +268,6 @@ module.exports = class TwitterClient extends TwitterClientDefine
       include_entities: true
     unless params.maxId is '0' || params.maxId is 'undefined'
       opts.max_id = params.maxId
-    console.log "opts = ", opts
     @getViaAPI
       method: 'favorites'
       type: 'list'
