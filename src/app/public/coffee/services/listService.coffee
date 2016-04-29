@@ -119,24 +119,28 @@ angular.module "myApp.services"
         localStorage.setItem 'amatsukaFollowList', JSON.stringify(data.data.users)
         data.data.users
 
-    isSameAmatsukaList: ->
-      return $q (resolve, reject) ->
+    getAmatsukaList: ->
+      return $q (resolve, reject) =>
         console.log 'isSameAmatsukaList AuthService.user._json.id_str = ', AuthService.user._json.id_str
         TweetService.getListsList
           twitterIdStr: AuthService.user._json.id_str
         .then (data) ->
           ownLists = data.data
           console.log 'lists = ', ownLists
-          oldList = JSON.parse(localStorage.getItem 'amatsukaList') || {}
 
           # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
           # newList = _.findWhere(ownLists, 'name': 'Amatsuka') || id_str: null
-          newList = _.findWhere(ownLists, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
+          return resolve _.findWhere(ownLists, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
+
+    isSameAmatsukaList: ->
+      return $q (resolve, reject) =>
+        @getAmatsukaList()
+        .then (newList) ->
+          oldList = JSON.parse(localStorage.getItem 'amatsukaList') || {}
           return resolve oldList.id_str is newList.id_str
         .catch (error) ->
           console.log 'listService isSameAmatsukaList = ', error
           return reject error
-
 
     hasListData: ->
       !(_.isEmpty(@amatsukaList.data) and _.isEmpty(@amatsukaList.member))
