@@ -57,15 +57,20 @@ twitterUtils = ->
   normalizeTweets: (tweets, config = {}) ->
     config.ngUsername or= []
     config.ngWord or= []
+    config.retweetLowerLimit or= 0
     config.favLowerLimit or= 0
     console.log(config)
 
     _.reject tweets, (tweet) =>
+
+      # tweetStr は Maoによって収集したツイート、それ以外はtweet
       tweet = if _.has(tweet, 'tweetStr') then JSON.parse(tweet.tweetStr) else tweet
+
       includeNgUser = config.ngUsername.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
       includeNgWord = config.ngWord.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
+      isRetweetLowerLimit = @get(tweet, 'tweet.retweet_count', @isRT(tweet)) < config.retweetLowerLimit
       isFavLowerLimit = @get(tweet, 'tweet.favorite_count', @isRT(tweet)) < config.favLowerLimit
       isOnlyTextTweet = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
-      includeNgUser or includeNgWord or isFavLowerLimit or isOnlyTextTweet
+      includeNgUser or includeNgWord or isRetweetLowerLimit or isFavLowerLimit or isOnlyTextTweet
 
 exports.twitterUtils = twitterUtils()

@@ -100,11 +100,12 @@
         }
         config.ngUsername || (config.ngUsername = []);
         config.ngWord || (config.ngWord = []);
+        config.retweetLowerLimit || (config.retweetLowerLimit = 0);
         config.favLowerLimit || (config.favLowerLimit = 0);
         console.log(config);
         return _.reject(tweets, (function(_this) {
           return function(tweet) {
-            var includeNgUser, includeNgWord, isFavLowerLimit, isOnlyTextTweet;
+            var includeNgUser, includeNgWord, isFavLowerLimit, isOnlyTextTweet, isRetweetLowerLimit;
             tweet = _.has(tweet, 'tweetStr') ? JSON.parse(tweet.tweetStr) : tweet;
             includeNgUser = config.ngUsername.some(function(element, index) {
               return _this.get(tweet, 'screen_name', _this.isRT(tweet)).indexOf(element.text) !== -1;
@@ -112,9 +113,10 @@
             includeNgWord = config.ngWord.some(function(element, index) {
               return _this.get(tweet, 'text', _this.isRT(tweet)).indexOf(element.text) !== -1;
             });
+            isRetweetLowerLimit = _this.get(tweet, 'tweet.retweet_count', _this.isRT(tweet)) < config.retweetLowerLimit;
             isFavLowerLimit = _this.get(tweet, 'tweet.favorite_count', _this.isRT(tweet)) < config.favLowerLimit;
             isOnlyTextTweet = !_.has(tweet, 'extended_entities') || _.isEmpty(tweet.extended_entities.media);
-            return includeNgUser || includeNgWord || isFavLowerLimit || isOnlyTextTweet;
+            return includeNgUser || includeNgWord || isRetweetLowerLimit || isFavLowerLimit || isOnlyTextTweet;
           };
         })(this));
       }
