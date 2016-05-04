@@ -1,3 +1,5 @@
+@charset "utf-8";
+
 @mixin round($radius:4px) {
   border-radius: $radius;
 }
@@ -52,4 +54,25 @@
   background: $amatsuka-color;
   @include round(50%);
   display: inline-block;
+}
+
+
+// ページ送り
+@mixin page-arrow($arrow-translateX-px: 10px) {
+  cursor: pointer;
+  height: 100%;
+  background: rgba(33, 33, 33, 0.1);
+  width: 50px;
+  z-index: $z-index--page-arrow;
+  position: fixed;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.3);
+  @include transition(all, 0.25s, ease);
+  &:hover {
+    background: rgba(33, 33, 33, 0.3);
+    color: rgba(255, 255, 255, 1.0);
+  }
+  &:hover i {
+    transform: translateX($arrow-translateX-px);
+  }
 }

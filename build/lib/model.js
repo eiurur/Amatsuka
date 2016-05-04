@@ -131,7 +131,6 @@
 
     UserProvider.prototype.findUserById = function(params, callback) {
       console.log("\n============> User findUserByID\n");
-      console.log(params);
       return User.findOne({
         twitterIdStr: params.twitterIdStr
       }, function(err, user) {
@@ -141,7 +140,6 @@
 
     UserProvider.prototype.findAllUsers = function(params, callback) {
       console.log("\n============> User findAllUser\n");
-      console.log(params);
       return User.find({}, function(err, users) {
         return callback(err, users);
       });
@@ -151,7 +149,6 @@
       var user;
       user = null;
       console.log("\n============> User upsert\n");
-      console.log(params);
       user = params.user;
       return User.findOneAndUpdate({
         twitterIdStr: params.user.twitterIdStr
@@ -187,7 +184,6 @@
 
     IllustratorProvider.prototype.findById = function(params, callback) {
       console.log("\n============> Illustrator findUserByID\n");
-      console.log(params);
       return Illustrator.findOne({
         twitterIdStr: params.twitterIdStr
       }, function(err, user) {
@@ -199,7 +195,6 @@
       var illustrator;
       illustrator = null;
       console.log("\n============> Illustrator upsert\n");
-      console.log(params);
       illustrator = params.illustrator;
       return Illustrator.findOneAndUpdate({
         twitterIdStr: params.illustrator.twitterIdStr
@@ -220,7 +215,6 @@
     PictProvider.prototype.find = function(params, callback) {
       return new Promise(function(resolve, reject) {
         console.log("\n============> Pict find\n");
-        console.log(params);
         console.time('Pict find');
         return Pict.find({}).limit(params.limit || 20).skip(params.skip || 0).populate('postedBy').sort({
           updatedAt: -1
@@ -239,7 +233,6 @@
         var pict;
         pict = null;
         console.log("\n============> Pict upsert\n");
-        console.log(params);
         pict = params;
         pict.updatedAt = new Date();
         return Pict.findOneAndUpdate({
@@ -279,7 +272,6 @@
 
     TLProvider.prototype.findOneById = function(params, callback) {
       console.log("\n============> TL findOneByID\n");
-      console.log(params);
       return TL.findOne({
         twitterIdStr: params.twitterIdStr
       }, function(err, tl) {
@@ -290,7 +282,6 @@
     TLProvider.prototype.upsert = function(params, callback) {
       var timeline;
       console.log("\n============> TL upsert\n");
-      console.log(params.twitterIdStr);
       timeline = {
         twitterIdStr: params.twitterIdStr,
         ids: params.ids
@@ -313,7 +304,6 @@
 
     ConfigProvider.prototype.findOneById = function(params, callback) {
       console.log("\n============> Config findOneByID\n");
-      console.log(params);
       return Config.findOne({
         twitterIdStr: params.twitterIdStr
       }, function(err, config) {
@@ -324,7 +314,6 @@
     ConfigProvider.prototype.upsert = function(params, callback) {
       var config;
       console.log("\n============> Config upsert\n");
-      console.log(params);
       config = {
         twitterIdStr: params.twitterIdStr,
         configStr: JSON.stringify(params.config)
@@ -341,7 +330,6 @@
     ConfigProvider.prototype.findOneAndUpdate = function(params, callback) {
       var config;
       console.log("\n============> User findOneAndUpdate\n");
-      console.log(params);
       config = {
         twitterIdStr: params.twitterIdStr,
         configStr: JSON.stringify(params.config)

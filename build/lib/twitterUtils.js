@@ -102,7 +102,6 @@
         config.ngWord || (config.ngWord = []);
         config.retweetLowerLimit || (config.retweetLowerLimit = 0);
         config.favLowerLimit || (config.favLowerLimit = 0);
-        console.log(config);
         return _.reject(tweets, (function(_this) {
           return function(tweet) {
             var includeNgUser, includeNgWord, isFavLowerLimit, isOnlyTextTweet, isRetweetLowerLimit;

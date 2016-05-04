@@ -28,89 +28,6 @@ angular.module "myApp.directives", []
         $('html, body').animate
           scrollTop: $(scope.scrollTo).offset().top, "slow"
 
-  .directive 'resize', ($timeout, $rootScope, $window) ->
-    link: ->
-      timer = false
-      angular.element($window).on 'load resize', (e) ->
-        if timer then $timeout.cancel timer
-
-        timer = $timeout ->
-
-          # ウィンドウのサイズを取得
-          html = angular.element(document).find('html')
-          cW = html[0].clientWidth
-          console.log 'broadCast resize ', cW
-
-          # ウィンドウのサイズを元にビューを切り替える
-          # 2カラムで表示できる限界が700px
-          # layoutType = if cW < 700 then 'list' else 'grid'
-          layoutType = if cW < 700 then 'list' else 'tile'
-
-          $rootScope.$broadcast 'resize::resize', layoutType: layoutType
-
-        , 200
-        return
-
-  .directive "zoomImage", ($compile, $rootScope, TweetService) ->
-    restrict: 'A'
-    link: (scope, element, attrs) ->
-
-      # 拡大画像の伸長方向の決定
-      getDirectionOfImage = (imgElement, html) ->
-
-        h = imgElement[0].naturalHeight
-        w = imgElement[0].naturalWidth
-        h_w_percent = h / w * 100
-
-        cH = html[0].clientHeight
-        cW = html[0].clientWidth
-        cH_cW_percent = cH / cW * 100
-
-        direction = if h_w_percent - cH_cW_percent >= 0 then 'h' else 'w'
-
-      element.on 'click', ->
-        # todo: 各アクションで画像の切替が可能なバージョン。ただし、重くて使い物にはならないのでいったんコメントアウト
-        # $rootScope.$broadcast 'zoomableImage::show', tweets: scope.tweets, attrs: attrs
-
-        # windowのサイズを取得
-        html = angular.element(document).find('html')
-
-        imageLayer = angular.element(document).find('.image-layer')
-        containerHTML = """
-          <div class="image-layer__container">
-            <img class="image-layer__img"/>
-            <div class="image-layer__loading">
-              <img src="./images/loaders/tail-spin.svg" />
-            </div>
-          </div>
-          """
-        imageLayer.html containerHTML
-
-        # 画面全体をオーバーレイで覆う
-        imageLayer.addClass('image-layer__overlay')
-
-        imageLayerImg = angular.element(document).find('.image-layer__img')
-        imageLayerLoading = angular.element(document).find('.image-layer__loading')
-
-        # 画像はいったん非表示(横に伸びた画像が表示された後にリサイズされる動作をするのだけど、それが煩い)
-        imageLayerImg.hide()
-
-        imageLayerImg
-        .attr 'src', "#{attrs.imgSrc}".replace ':small', ':orig'
-        .load ->
-          direction = getDirectionOfImage(imageLayerImg, html)
-          imageLayerImg.addClass("image-layer__img-#{direction}-wide")
-
-          # 満を持して表示
-          imageLayerLoading.remove()
-          imageLayerImg.fadeIn(1)
-
-        # オーバーレイ部分をクリックしたら生成した要素は全て削除する
-        imageLayerContainer = angular.element(document).find('.image-layer__container')
-        imageLayerContainer.on 'click', ->
-          imageLayer.html ''
-          imageLayer.removeClass('image-layer__overlay')
-
   .directive 'downloadFromUrl', ($q, toaster, DownloadService) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
@@ -129,7 +46,6 @@ angular.module "myApp.directives", []
         .then (datas) ->
           toaster.clear()
           toaster.pop 'success', "Finished Download", '', 2000, 'trustedHtml'
-
 
   .directive 'icNavAutoclose', ->
     console.log 'icNavAutoclose'

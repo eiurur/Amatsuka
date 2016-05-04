@@ -128,15 +128,12 @@ my = ->
         return resolve(base64prefix + image)
 
   promiseWhile: (condition, action) ->
-    resolver = Promise.defer()
-
-    loop_ = ->
-      if !condition()
-        return resolver.resolve()
-      Promise.cast(action()).then(loop_).catch resolver.reject
-
-    process.nextTick loop_
-    resolver.promise
+    return new Promise (resolve, reject) ->
+      loop_ = ->
+        if !condition()
+          return resolve()
+        Promise.cast(action()).then(loop_).catch reject
+      process.nextTick loop_
 
   delayPromise: (ms) ->
     return new Promise (resolve) -> setTimeout resolve, ms

@@ -123,7 +123,6 @@
 
     TwitterClient.prototype.showUsers = function(params) {
       var opts;
-      console.log(params);
       opts = {
         include_entities: true
       };
@@ -234,7 +233,6 @@
     };
 
     TwitterClient.prototype.createAllListsMembers = function(params) {
-      console.log(params);
       params.twitterIdStr = params.twitterIdStr || settings.defaultUserIds;
       return this.postViaAPI({
         method: 'lists',

@@ -1,0 +1,25 @@
+@charset "utf-8";
+
+.image-layer__prev {
+  @include page-arrow(-10px);
+  top: 0;
+  left: 0;
+}
+
+.image-layer__next {
+  @include page-arrow(10px);
+  top: 0;
+  right: 0;
+}
+
+.feeding-arrow {
+  position: absolute;
+  top: 50%;
+  @include transition(transform, 0.25s, ease);
+}
+
+// text-align:centerを当てるとinline要素は真ん中にくるのだが、
+// テキストの開始位置が左右で異なる。()
+.feeding-arrow-right__patch {
+  right: 25px;
+}

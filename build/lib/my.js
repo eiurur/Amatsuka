@@ -149,16 +149,16 @@
         });
       },
       promiseWhile: function(condition, action) {
-        var loop_, resolver;
-        resolver = Promise.defer();
-        loop_ = function() {
-          if (!condition()) {
-            return resolver.resolve();
-          }
-          return Promise.cast(action()).then(loop_)["catch"](resolver.reject);
-        };
-        process.nextTick(loop_);
-        return resolver.promise;
+        return new Promise(function(resolve, reject) {
+          var loop_;
+          loop_ = function() {
+            if (!condition()) {
+              return resolve();
+            }
+            return Promise.cast(action()).then(loop_)["catch"](reject);
+          };
+          return process.nextTick(loop_);
+        });
       },
       delayPromise: function(ms) {
         return new Promise(function(resolve) {
