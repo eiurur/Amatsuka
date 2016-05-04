@@ -4,7 +4,7 @@ span(ng-if='layoutType == "tile"')
   .timeline.timeline--tile(infinite-scroll='tweets.nextPage()', infinite-scroll-distance='1', infinite-scroll-disabled='tweets.busy')
     .timeline__post.timeline__post--tile.col-lg-2.col-md-3.col-sm-4(ng-repeat='tweet in tweets.items')
       .timeline__post--image
-        img.timeline__post__image--tile(ng-if="!tweet.video_url", zoom-image="zoom-image", data-img-src="{{::tweet.picUrlList[0]}}", style="background-image: url('{{::tweet.picUrlList[0]}}')")
+        img.fade.timeline__post__image--tile(ng-if="!tweet.video_url", img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{::tweet.picUrlList[0]}}", ng-src="{{::tweet.picUrlList[0]}}")
         video.timeline__post__video--tile(ng-if="tweet.video_url", poster="{{::tweet.picUrlList[0]}}", autoplay, loop, controls, muted)
           source(ng-src="{{::tweet.video_url | trusted}}", type="video/mp4")
       //- .timeline__post--image(ng-repeat='picUrl in tweet.picUrlList')

@@ -56,7 +56,8 @@
             }
             &--tile {
               display: inline-block;
-              background: $link-color center center / cover no-repeat;
+              object-fit: cover;
+              // background: $link-color center center / cover no-repeat;
               width: 200px;
               height: 200px;
             }
