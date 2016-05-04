@@ -43,7 +43,8 @@ angular.module "myApp.directives", []
 
           # ウィンドウのサイズを元にビューを切り替える
           # 2カラムで表示できる限界が700px
-          layoutType = if cW < 700 then 'list' else 'grid'
+          # layoutType = if cW < 700 then 'list' else 'grid'
+          layoutType = if cW < 700 then 'list' else 'tile'
 
           $rootScope.$broadcast 'resize::resize', layoutType: layoutType
 
@@ -53,7 +54,23 @@ angular.module "myApp.directives", []
   .directive "zoomImage", ($compile, $rootScope, TweetService) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
+
+      # 拡大画像の伸長方向の決定
+      getDirectionOfImage = (imgElement, html) ->
+
+        h = imgElement[0].naturalHeight
+        w = imgElement[0].naturalWidth
+        h_w_percent = h / w * 100
+
+        cH = html[0].clientHeight
+        cW = html[0].clientWidth
+        cH_cW_percent = cH / cW * 100
+
+        direction = if h_w_percent - cH_cW_percent >= 0 then 'h' else 'w'
+
       element.on 'click', ->
+        # todo: 各アクションで画像の切替が可能なバージョン。ただし、重くて使い物にはならないのでいったんコメントアウト
+        # $rootScope.$broadcast 'zoomableImage::show', tweets: scope.tweets, attrs: attrs
 
         # windowのサイズを取得
         html = angular.element(document).find('html')
@@ -81,24 +98,12 @@ angular.module "myApp.directives", []
         imageLayerImg
         .attr 'src', "#{attrs.imgSrc}".replace ':small', ':orig'
         .load ->
-          imageLayerLoading.remove()
-
-          # 拡大画像の伸長方向の決定
-          h = imageLayerImg[0].naturalHeight
-          w = imageLayerImg[0].naturalWidth
-          h_w_percent = h / w * 100
-
-          cH = html[0].clientHeight
-          cW = html[0].clientWidth
-          cH_cW_percent = cH / cW * 100
-
-          direction = if h_w_percent - cH_cW_percent >= 0 then 'h' else 'w'
-
+          direction = getDirectionOfImage(imageLayerImg, html)
           imageLayerImg.addClass("image-layer__img-#{direction}-wide")
 
           # 満を持して表示
+          imageLayerLoading.remove()
           imageLayerImg.fadeIn(1)
-
 
         # オーバーレイ部分をクリックしたら生成した要素は全て削除する
         imageLayerContainer = angular.element(document).find('.image-layer__container')

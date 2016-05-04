@@ -13,7 +13,8 @@ angular.module "myApp.controllers"
 
   $scope.listIdStr  = ''
   $scope.isLoaded   = false
-  $scope.layoutType = 'grid'
+  # $scope.layoutType = 'grid'
+  $scope.layoutType = 'tile'
   $scope.message    = 'リストデータの確認中'
 
   upsertAmatsukaList = ->

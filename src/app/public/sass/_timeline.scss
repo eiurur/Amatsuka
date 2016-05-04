@@ -9,34 +9,133 @@
 
 .timeline
 {
-    //width:  540px;
     width: 100%;
-    // padding: 30px 0;
 
     color: $link-color;
     i
     {
         color: $link-color;
     }
+
+    &--tile {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
+    /**
+     * timeline__post
+     */
+    &__post {
+        font-size: $post--font-size;
+
+        position: relative;
+
+        max-width: $timeline__post--width;
+        margin: 0 0 20px 0;
+        padding-top: 15px;
+
+        border-radius: 3px;
+        background: $timeline__post--bg-color;
+        &--tile {
+            position: relative;
+            // width: 20%;
+            height: 20%;
+            background: transparent;
+            padding: 15px 5px 0;
+            // padding-top: 15px;
+        }
+
+        &__image {
+            max-width: 100%;
+            padding: 15px 0;
+            img
+            {
+                border: none;
+                width: $timeline__img--width;
+            }
+            &--tile {
+              display: inline-block;
+              background: $link-color center center / cover no-repeat;
+              width: 200px;
+              height: 200px;
+            }
+        }
+
+        &__video {
+            video {
+                width: $timeline__img--width;
+            }
+            &--tile {
+              display: inline-block;
+              height: 200px;
+            }
+        }
+
+        &__footer {
+            line-height: 45px;
+            width: 100%;
+            height: 45px;
+
+            &__controls {
+                font-size: 120%;
+                font-weight: 600;
+                @include display-flex;
+                @include flex-direction(row);
+                @include align-items(baseline);
+                @include justify-content(space-between);
+            }
+        }
+    }
+
+
+    &__icon {
+        cursor: pointer;
+        margin-right: 8px;
+        &--tile {
+            width: 32px;
+            height: 32px;
+        }
+        img {
+            max-width: 32px;
+            border-radius: 3px;
+        }
+    }
+
+    /**
+     * timelne__header
+     */
+    &__header {
+        &--tile {
+            line-height: 32px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        &__user {
+            &--tile {
+
+            }
+        }
+
+        &__info {
+            &--tile {
+                flex: 1;
+            }
+        }
+
+        a {
+            text-decoration: none;
+            color: $link-color;
+        }
+    }
+
 }
 
 .timeline--list {
     padding: 0 0 30px 85px; // icon 64px +  ixonとpostとのpadding 21 = 85px
 }
 
-.timeline__post
-{
-    font-size: $post--font-size;
-
-    position: relative;
-
-    max-width: $timeline__post--width;
-    margin: 0 0 20px 0;
-    padding-top: 15px;
-
-    border-radius: 3px;
-    background: $timeline__post--bg-color;
-}
 
 
 .timeline__post--icon
@@ -282,6 +381,8 @@
 {
     padding: 0 $timeline__post--padding-horizontal-smartphone;
 }
+
+
 
 
 /**
