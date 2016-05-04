@@ -12,14 +12,14 @@ module.exports = (app) ->
     ConfigProvider.findOneById
       twitterIdStr: req.session.passport.user._json.id_str
     , (err, data) ->
-      console.log 'get config: ', data
+      # console.log 'get config: ', data
       res.json data: data
 
   app.post '/api/config', (req, res) ->
-    console.log req.body
+    # console.log req.body
     ConfigProvider.upsert
       twitterIdStr: req.session.passport.user._json.id_str
       config: req.body.config
     , (err, data) ->
-      console.log 'post config: ', data
+      # console.log 'post config: ', data
       res.json data: data

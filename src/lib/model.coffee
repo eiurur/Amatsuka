@@ -108,7 +108,7 @@ class UserProvider
 
   findUserById: (params, callback) ->
     console.log "\n============> User findUserByID\n"
-    console.log params
+    # console.log params
     User.findOne
       twitterIdStr: params.twitterIdStr
     , (err, user) ->
@@ -116,7 +116,7 @@ class UserProvider
 
   findAllUsers: (params, callback) ->
     console.log "\n============> User findAllUser\n"
-    console.log params
+    # console.log params
     User.find {}
     , (err, users) ->
       callback err, users
@@ -124,7 +124,7 @@ class UserProvider
   findOneAndUpdate: (params, callback) ->
     user = null
     console.log "\n============> User upsert\n"
-    console.log params
+    # console.log params
     user = params.user
     # maoToken: params.user.maoToken を変更条件にすると既に登録済みのユーザは重複エラーが発生するため、
     # Amatsuka側では今まで通りtwitterIdStrを主キー扱いとする
@@ -151,7 +151,7 @@ class IllustratorProvider
 
   findById: (params, callback) ->
     console.log "\n============> Illustrator findUserByID\n"
-    console.log params
+    # console.log params
     Illustrator.findOne
       twitterIdStr: params.twitterIdStr
     , (err, user) ->
@@ -160,7 +160,7 @@ class IllustratorProvider
   findOneAndUpdate: (params, callback) ->
     illustrator = null
     console.log "\n============> Illustrator upsert\n"
-    console.log params
+    # console.log params
     illustrator = params.illustrator
     Illustrator.findOneAndUpdate
       twitterIdStr: params.illustrator.twitterIdStr
@@ -174,7 +174,7 @@ class PictProvider
   find: (params, callback) ->
     return new Promise (resolve, reject) ->
       console.log "\n============> Pict find\n"
-      console.log params
+      # console.log params
       console.time 'Pict find'
       Pict.find {}
       .limit params.limit or 20
@@ -190,7 +190,7 @@ class PictProvider
     return new Promise (resolve, reject) ->
       pict = null
       console.log "\n============> Pict upsert\n"
-      console.log params
+      # console.log params
       pict = params
       pict.updatedAt = new Date()
       Pict.findOneAndUpdate
@@ -216,7 +216,7 @@ class TLProvider
 
   findOneById: (params, callback) ->
     console.log "\n============> TL findOneByID\n"
-    console.log params
+    # console.log params
     TL.findOne
       twitterIdStr: params.twitterIdStr
     , (err, tl) ->
@@ -224,7 +224,7 @@ class TLProvider
 
   upsert: (params, callback) ->
     console.log "\n============> TL upsert\n"
-    console.log params.twitterIdStr
+    # console.log params.twitterIdStr
     timeline =
       twitterIdStr: params.twitterIdStr
       ids: params.ids
@@ -241,7 +241,7 @@ class ConfigProvider
 
   findOneById: (params, callback) ->
     console.log "\n============> Config findOneByID\n"
-    console.log params
+    # console.log params
     Config.findOne
       twitterIdStr: params.twitterIdStr
     , (err, config) ->
@@ -249,7 +249,7 @@ class ConfigProvider
 
   upsert: (params, callback) ->
     console.log "\n============> Config upsert\n"
-    console.log params
+    # console.log params
     config =
       twitterIdStr: params.twitterIdStr
       configStr: JSON.stringify(params.config)
@@ -264,7 +264,7 @@ class ConfigProvider
 
   findOneAndUpdate: (params, callback) ->
     console.log "\n============> User findOneAndUpdate\n"
-    console.log params
+    # console.log params
     config =
       twitterIdStr: params.twitterIdStr
       configStr: JSON.stringify(params.config)

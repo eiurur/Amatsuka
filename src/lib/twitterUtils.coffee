@@ -59,7 +59,7 @@ twitterUtils = ->
     config.ngWord or= []
     config.retweetLowerLimit or= 0
     config.favLowerLimit or= 0
-    console.log(config)
+    # console.log(config)
 
     _.reject tweets, (tweet) =>
 

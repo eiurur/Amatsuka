@@ -93,7 +93,6 @@ module.exports = class TwitterClient extends TwitterClientDefine
   User
   ###
   showUsers: (params) ->
-    console.log params
     opts = include_entities: true
     unless params.twitterIdStr is 'undefined'
       opts.user_id = params.twitterIdStr
@@ -186,7 +185,6 @@ module.exports = class TwitterClient extends TwitterClientDefine
 
   # リストにユーザを追加する(複数)
   createAllListsMembers: (params) ->
-    console.log params
     params.twitterIdStr = params.twitterIdStr || settings.defaultUserIds
     @postViaAPI
       method: 'lists'
