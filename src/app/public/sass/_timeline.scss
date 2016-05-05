@@ -50,6 +50,12 @@
             // padding-top: 15px;
         }
 
+        &--grid {
+            width: $timeline__post--width--grid;
+            margin: $timeline__post--margin--grid;
+            padding-top: $timeline__post--padding-vertical;
+        }
+
         &__image {
             max-width: 100%;
             padding: 16px 0;
@@ -63,20 +69,28 @@
               width: 200px;
               height: 200px;
             }
+            &--grid {
+                padding: 10px 0;
+            }
         }
 
+
         &__video {
-            video {
-                width: $timeline__img--width;
-            }
             &--tile {
               display: inline-block;
               height: 200px;
             }
         }
 
+        video {
+            width: $timeline__img--width;
+        }
+
         &__text {
             @include tweet-text;
+            &--grid {
+                padding: 0 $timeline__post--padding-horizontal-smartphone;
+            }
         }
 
         &__blockquote {
@@ -89,6 +103,9 @@
                 border-left: solid 2px rgba(0,0,0,.12);
             }
 
+            &--grid {
+                padding: 0 $timeline__post--padding-horizontal-smartphone;
+            }
         }
     }
 
@@ -116,6 +133,19 @@
             }
         }
 
+        &--grid {
+            position: absolute;
+            top: $timeline__post--padding-vertical;
+            left: $timeline__post--padding-horizontal-smartphone;
+
+            width: $timeline__post--icon--width-smartphone;
+            height: $timeline__post--icon--width-smartphone;
+            img
+            {
+                max-width: $timeline__post--icon--width-smartphone;
+            }
+        }
+
         img {
             border-radius: 3px;
         }
@@ -135,11 +165,24 @@
             @include post_padding;
         }
 
+        &--grid {
+            line-height: $timeline__post--icon--width-smartphone;
+            padding: 0 $timeline__post--padding-horizontal-smartphone;
+        }
+
         &__user {
             cursor: pointer;
             &--tile {
 
             }
+            &--grid {
+                line-height: 12px;
+                display: block;
+            }
+        }
+
+        &__link {
+            margin-left: $timeline__post--padding-horizontal-smartphone + $timeline__post--icon--width-smartphone + 4px;
         }
 
         &__info {
@@ -149,10 +192,34 @@
             &--list {
                 display: inline-block;
             }
+            &--grid {
+                line-height: 32px;
+                display: inline-block;
+            }
+        }
+
+        &__rt-source {
+            &--grid {
+                line-height: 12px;
+            }
         }
 
         &__rt-icon {
             padding: 0 5px;
+            &--grid {
+                padding: 0;
+            }
+        }
+
+        &__label {
+            position: relative;
+            bottom: 2px;
+
+            margin-left: 5px;
+            padding: .1em .3em .3em;
+
+            cursor: pointer;
+            background-color: $label__follow-color;
         }
 
         &__time {
@@ -166,6 +233,9 @@
         }
     }
 
+    /**
+     * timeline__footer
+     */
     &__footer {
         line-height: 48px;
         width: 100%;
@@ -173,6 +243,10 @@
 
         &--list {
             @include post_padding;
+        }
+
+        &--grid {
+            padding: 0 $timeline__post--padding-horizontal-smartphone;
         }
 
         &__controls {
@@ -222,261 +296,6 @@
         transform: rotate(45deg);
     }
 }
-
-
-
-/**
- * TODO
- * ここからリファクタリング対象
- */
-.timeline--list {
-    padding: 0 0 30px 85px; // icon 64px +  ixonとpostとのpadding 21 = 85px
-}
-
-.timeline__post--icon
-{
-    position: absolute;
-    top: 0;
-    left: -$timeline__post--icon--left;
-
-    width: 64px;
-    height: 64px;
-
-    cursor: pointer;
-    img
-    {
-        max-width: 64px;
-
-        border-radius: 3px;
-    }
-}
-
-.timeline__post--header
-{
-    @include post_padding;
-    a
-    {
-        text-decoration: none;
-
-        color: $link-color;
-    }
-}
-
-.timeline__post--header--user
-{
-    cursor: pointer;
-}
-
-.timeline__post--header--label
-{
-    position: relative;
-    bottom: 2px;
-
-    margin-left: 5px;
-    padding: .1em .3em .3em;
-
-    cursor: pointer;
-    background-color: $label__follow-color;
-}
-
-.timeline__post--header--info
-{
-    display: inline-block;
-}
-
-.timeline__post--header--time
-{
-    display: inline-block;
-    float: right;
-}
-
-.timeline__post--header--rt_icon
-{
-    padding: 0 5px;
-}
-
-.timeline__post--header--rt_source
-{
-    cursor: pointer;
-}
-
-.timeline__post--image
-{
-    max-width: 100%;
-    padding: 15px 0;
-    img
-    {
-        width: $timeline__img--width;
-    }
-    video
-    {
-        width: $timeline__img--width;
-    }
-}
-
-.timeline__post--text
-{
-    // @include post_padding;
-    @include tweet-text;
-}
-
-.timeline__post--blockquote
-{
-    @include tweet-text;
-    blockquote
-    {
-        margin: 0;
-        padding: 0;
-
-        border-left: solid 2px rgba(0,0,0,.12);
-    }
-}
-
-.timeline__post--footer
-{
-    line-height: 45px;
-
-    display: table;
-
-    width: 100%;
-    height: 45px;
-
-    @include post_padding;
-}
-
-.timeline__post--footer--contents
-{
-    display: table-cell;
-
-    height: 45px;
-
-    vertical-align: middle;
-}
-
-.timeline__post--footer--contents--controls
-{
-    font-size: 120%;
-    font-weight: 600;
-
-    height: 45px;
-
-    text-align: right;
-    white-space: nowrap;
-
-    color: $link-color;
-
-    @include display-flex;
-    @include flex-direction(row);
-    @include align-items(baseline);
-    @include justify-content(space-between);
-}
-
-
-
-/**
- * Grid 表示
- * ほとんど max-width:480px からコピペ。直そう。
- */
-.timeline--grid
-{
-    padding: 0 0 30px 0;
-}
-
-
-.timeline__post--grid {
-    // max-width: $timeline__post--width--grid;
-    width: $timeline__post--width--grid;
-    margin: $timeline__post--margin--grid;
-    padding-top: $timeline__post--padding-vertical;
-
-    // @media(min-width: 992px) {
-    //     margin: 0.25%;
-    //     max-width: 33%;
-    // }
-
-    // @media(min-width: 1200px) {
-    //     margin: 0.2%;
-    //     max-width: 24%;
-    // }
-
-    // // (100 / 12 ) * 2 = 16.6
-    // @media(min-width: 1600px) {
-    //     margin: 0.1%;
-    //     max-width: 16%;
-    // }
-
-
-}
-
-.timeline__post--header--grid
-{
-    line-height: $timeline__post--icon--width-smartphone;
-
-    padding: 0 $timeline__post--padding-horizontal-smartphone;
-}
-
-.timeline__post--header--info--grid
-{
-    line-height: 30px;
-}
-
-.timeline__post--header--link--grid
-{
-    // 8 + 32 + 4 = 44px
-    margin-left: $timeline__post--padding-horizontal-smartphone + $timeline__post--icon--width-smartphone + 4px;
-}
-
-.timeline__post--header--rt_source--grid
-{
-    line-height: 12px;
-}
-
-.timeline__post--header--user--grid
-{
-    line-height: 12px;
-
-    display: block;
-}
-
-.timeline__post--header--rt_icon--grid
-{
-    padding: 0;
-}
-
-.timeline__post--icon--grid
-{
-    top: $timeline__post--padding-vertical;
-    left: $timeline__post--padding-horizontal-smartphone;
-
-    width: $timeline__post--icon--width-smartphone;
-    height: $timeline__post--icon--width-smartphone;
-    img
-    {
-        max-width: $timeline__post--icon--width-smartphone;
-    }
-}
-
-.timeline__post--image--grid
-{
-    padding: 10px 0;
-}
-
-
-.timeline__post--text--grid
-{
-    padding: 0 $timeline__post--padding-horizontal-smartphone;
-}
-
-.timeline__post--blockquote--grid
-{
-    padding: 0 $timeline__post--padding-horizontal-smartphone;
-}
-
-.timeline__post--footer--grid
-{
-    padding: 0 $timeline__post--padding-horizontal-smartphone;
-}
-
 
 
 
