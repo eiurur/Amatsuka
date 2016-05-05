@@ -135,52 +135,48 @@
 
 /* ⑦⑧⑨⑩triangle */
 .point-triangle {
- position: relative;
-}
-.point-triangle:after {
- position: absolute;
- content: " ";
- height: 0;
- width: 0;
-}
-.point-triangle span {
- position: absolute;
- content: " ";
- font-size: 12px;
- font-weight: bold;
- color: #fff;
- z-index:100;
-}
-/* ⑦triangle-rt */
-.point-triangle-rt:after {
- top: 0;
- right: 0;
- border-bottom:3em solid transparent;
- border-right:3em solid $amatsuka-color;
-}
-.point-triangle-rt span {
- top: .5em;
- right: .2em;
- transform: rotate(45deg);
- -webkit-transform: rotate(45deg);
- -ms-transform: rotate(45deg);
-}
-
-.rebbon--on-image {
-    background: $amatsuka-color;
-    height: 32px;
-    width: 120px;
     position: relative;
-    left: 0;
-    top: 16px;
-    z-index: 30;
+    &:after {
+        position: absolute;
+        content: " ";
+        height: 0;
+        width: 0;
+    }
+    & span {
+        position: absolute;
+        content: " ";
+        font-size: 12px;
+        font-weight: bold;
+        color: #fff;
+        z-index:100;
+    }
 }
 
+/* ⑦triangle-rt */
+.point-triangle-rt {
+    &:after {
+        top: 0;
+        right: 0;
+        border-bottom:3em solid transparent;
+        border-right:3em solid $amatsuka-color;
+
+    }
+    & span {
+        top: .5em;
+        right: .2em;
+        transform: rotate(45deg);
+    }
+}
+
+
+
+/**
+ * TODO
+ * ここからリファクタリング対象
+ */
 .timeline--list {
     padding: 0 0 30px 85px; // icon 64px +  ixonとpostとのpadding 21 = 85px
 }
-
-
 
 .timeline__post--icon
 {
