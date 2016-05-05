@@ -351,6 +351,7 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$locatio
   }
   $scope.listIdStr = '';
   $scope.isLoaded = false;
+  $scope.layoutType = 'grid';
   ConfigService.get().then(function(config) {
     return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
   });
