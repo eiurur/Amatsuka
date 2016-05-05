@@ -223,9 +223,7 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
     $location.path('/');
   }
   $scope.listIdStr = ListService.amatsukaList.data.id_str;
-  ConfigService.get().then(function(config) {
-    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
-  });
+  $scope.layoutType = 'grid';
   $scope.filter = {
     screenName: '',
     keyword: '',
@@ -233,6 +231,9 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
   };
   $scope.extract = {};
   $scope.extract.tweets = [];
+  ConfigService.get().then(function(config) {
+    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+  });
   filterPic = function(params) {
     if (params == null) {
       params = {
@@ -296,7 +297,7 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
   });
 }]);
 
-angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, Tweets) {
+angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, ConfigService, TweetService, ListService, Tweets) {
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
@@ -587,8 +588,7 @@ angular.module("myApp.directives").directive('resize', ["$timeout", "$rootScope"
           return ConfigService.get().then(function(config) {
             var layoutType;
             console.log('config = ', config);
-            layoutType = cW < 700 ? 'list' : 'grid';
-            layoutType = config.isTileLayout ? 'tile' : layoutType;
+            layoutType = cW < 700 ? 'list' : config.isTileLayout ? 'tile' : 'grid';
             return $rootScope.$broadcast('resize::resize', {
               layoutType: layoutType
             });
@@ -599,39 +599,31 @@ angular.module("myApp.directives").directive('resize', ["$timeout", "$rootScope"
   };
 }]);
 
-angular.module('myApp.directives').directive('showStatuses', ["$compile", "GetterImageInfomation", "TweetService", "ZoomImageViewer", function($compile, GetterImageInfomation, TweetService, ZoomImageViewer) {
+angular.module('myApp.directives').directive('showStatuses', ["$compile", "GetterImageInfomation", "TweetService", "WindowScrollableSwitcher", "ZoomImageViewer", function($compile, GetterImageInfomation, TweetService, WindowScrollableSwitcher, ZoomImageViewer) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
-        var bind, cleanup, getImgIdx, imageLayer, imageLayerContainer, imgIdx, next, prev, showTweetInfomation, switchImage, tweet, zoomImageViewer;
+        var bindEvents, cleanup, getImgIdx, imageLayer, imageLayerContainer, imgIdx, next, prev, showTweetInfomation, switchImage, tweet, zoomImageViewer;
+        WindowScrollableSwitcher.disableScrolling();
         tweet = null;
         imgIdx = 0;
         zoomImageViewer = new ZoomImageViewer();
         zoomImageViewer.showImage(attrs.imgSrc);
-        imageLayerContainer = angular.element(document).find('.image-layer__container');
-        imageLayerContainer.on('click', function() {
-          return cleanup();
-        });
         imageLayer = angular.element(document).find('.image-layer');
+        imageLayerContainer = angular.element(document).find('.image-layer__container');
         next = angular.element(document).find('.image-layer__next');
         prev = angular.element(document).find('.image-layer__prev');
-        next.on('click', function() {
-          return switchImage('next');
-        });
-        prev.on('click', function() {
-          return switchImage('prev');
-        });
         TweetService.showStatuses({
           tweetIdStr: attrs.tweetIdStr
         }).then(function(data) {
-          console.log('showStatuses', data);
           tweet = data.data;
+          bindEvents();
           return showTweetInfomation(tweet, imgIdx);
         });
         showTweetInfomation = function(tweet, imgIdx) {
           var imageLayerCaptionHtml, item;
-          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__post--footer\">\n    <div class=\"timeline__post--footer--contents\">\n      <div class=\"timeline__post--footer--contents--controls\">\n        <a href=\"" + tweet.entities.media[imgIdx].extended_url + "\" target=\"_blank\">\n          <i class=\"fa fa-twitter icon-twitter\"></i>\n        </a>\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + tweet.id_str + "\" retweeted=\"" + tweet.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + tweet.id_str + "\" favorited=\"" + tweet.favorited + "\" favoritable=\"favoritable\"></i>\n        <a><i class=\"fa fa-download\" data-url=\"" + tweet.extended_entities.media[imgIdx].media_url_https + ":orig\" filename=\"" + tweet.user.screen_name + "_" + tweet.id_str + "\" download-from-url=\"download-from-url\"></i></a>\n      </div>\n    </div>\n  </div>\n</div>";
+          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__footer\">\n    <div class=\"timeline__footer__contents\">\n      <div class=\"timeline__footer__controls\">\n        <a href=\"" + tweet.entities.media[imgIdx].expanded_url + "\" target=\"_blank\">\n          <i class=\"fa fa-twitter icon-twitter\"></i>\n        </a>\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + tweet.id_str + "\" retweeted=\"" + tweet.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + tweet.id_str + "\" favorited=\"" + tweet.favorited + "\" favoritable=\"favoritable\"></i>\n        <a><i class=\"fa fa-download\" data-url=\"" + tweet.extended_entities.media[imgIdx].media_url_https + ":orig\" filename=\"" + tweet.user.screen_name + "_" + tweet.id_str + "\" download-from-url=\"download-from-url\"></i></a>\n      </div>\n    </div>\n  </div>\n</div>";
           if (_.isEmpty(imageLayer.html())) {
             return;
           }
@@ -644,29 +636,64 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
             return (originalIdx + 1) % tweet.extended_entities.media.length;
           }
           if (dir === 'prev') {
-            originalIdx = originalIdx - 1;
-            if (originalIdx < 0) {
+            if ((originalIdx - 1) < 0) {
               return tweet.extended_entities.media.length - 1;
             }
+          } else {
+            return originalIdx - 1;
           }
-          return originalIdx % tweet.extended_entities.media.length;
         };
         switchImage = function(dir) {
           var src;
           console.log(tweet);
-          if (tweet.extended_entities.media.length < 2) {
-            return;
-          }
           imgIdx = getImgIdx(dir, imgIdx);
           src = tweet.extended_entities.media[imgIdx].media_url_https;
           return zoomImageViewer.showImage(src);
         };
-        bind = function() {};
+        bindEvents = function() {
+          imageLayerContainer.on('click', function() {
+            return cleanup();
+          });
+          Mousetrap.bind('f', function() {
+            return angular.element(document).find('.image-layer__caption .icon-heart').click();
+          });
+          Mousetrap.bind('r', function() {
+            return angular.element(document).find('.image-layer__caption .icon-retweet').click();
+          });
+          Mousetrap.bind('d', function() {
+            return angular.element(document).find('.image-layer__caption .fa-download').click();
+          });
+          Mousetrap.bind(['esc', 'q'], function() {
+            return cleanup();
+          });
+          if (tweet.extended_entities.media.length < 2) {
+            return;
+          }
+          next.on('click', function() {
+            return switchImage('next');
+          });
+          prev.on('click', function() {
+            return switchImage('prev');
+          });
+          Mousetrap.bind(['left', 'k'], function() {
+            return switchImage('prev');
+          });
+          Mousetrap.bind(['right', 'j'], function() {
+            return switchImage('next');
+          });
+          return imageLayerContainer.on('wheel', function(e) {
+            var dir;
+            dir = e.originalEvent.wheelDelta >= 0 ? 'prev' : 'next';
+            return switchImage(dir);
+          });
+        };
         return cleanup = function() {
+          Mousetrap.unbind(['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r']);
           imageLayer.html('');
           imageLayerContainer.html('');
           next.remove();
           prev.remove();
+          WindowScrollableSwitcher.enableScrolling();
           zoomImageViewer.cleanup();
           return zoomImageViewer = null;
         };
@@ -753,7 +780,7 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
       twitterIdStr: '@',
       followStatus: '='
     },
-    template: '<span class="label label-default timeline__post--header--label">{{content}}</span>',
+    template: '<span class="label label-default timeline__header__label">{{content}}</span>',
     link: function(scope, element, attrs) {
       if (scope.followStatus === false) {
         scope.content = '+';
@@ -1357,6 +1384,30 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ToasterServ
   })();
   return Tweets;
 }]);
+
+angular.module("myApp.factories").factory('WindowScrollableSwitcher', function() {
+  var WindowScrollableSwitcher;
+  WindowScrollableSwitcher = (function() {
+    function WindowScrollableSwitcher() {}
+
+    WindowScrollableSwitcher.enableScrolling = function() {
+      window.onscroll = function() {};
+    };
+
+    WindowScrollableSwitcher.disableScrolling = function() {
+      var x, y;
+      x = window.scrollX;
+      y = window.scrollY;
+      return window.onscroll = function() {
+        return window.scrollTo(x, y);
+      };
+    };
+
+    return WindowScrollableSwitcher;
+
+  })();
+  return WindowScrollableSwitcher;
+});
 
 angular.module("myApp.factories").factory('ZoomImageViewer', ["GetterImageInfomation", function(GetterImageInfomation) {
   var ZoomImageViewer;
@@ -2217,7 +2268,7 @@ angular.module("myApp.directives").directive('maoTweetArticle', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"media find__media\">\n  <a twitter-id-str=\"{{::$ctrl.item.user.id_str}}\" show-tweet=\"show-tweet\" class=\"pull-left\">\n    <img ng-src=\"{{::$ctrl.item.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"media-object thumbnail-img fade\"/>\n  </a>\n  <div class=\"media-body\">\n    <h4 class=\"media-heading\"><span class=\"name\">{{::$ctrl.item.user.name}}</span>\n      <span class=\"screen-name\">@{{::$ctrl.item.user.screen_name}}</span>\n    </h4>\n    <a href=\"{{::$ctrl.item.user.url}}\" target=\"_blank\" class=\"link\">{{::$ctrl.item.user.url}}</a>\n  </div>\n</div>\n<div class=\"find__pict-tweet--container\">\n  <div class=\"row\">\n    <div ng-repeat=\"pict in $ctrl.item.pictList | limitTo: 12\" class=\"col-lg-6 col-md-4 col-sm-6 col-xs-6\">\n      <div style=\"background-image: url('{{::pict.media.media_url_https}}:small')\" zoom-image=\"zoom-image\" data-img-src=\"{{::pict.media.media_url_https}}:orig\" tweet-id-str=\"{{::pict.tweet.id_str}}\" show-statuses=\"show-statuses\" class=\"find__pict-tweet--img\">\n      </div>\n    </div>\n  </div>\n</div>",
+    template: "<div class=\"media find__media\">\n  <a twitter-id-str=\"{{::$ctrl.item.user.id_str}}\" show-tweet=\"show-tweet\" class=\"pull-left\">\n    <img ng-src=\"{{::$ctrl.item.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"media-object thumbnail-img fade\"/>\n  </a>\n  <div class=\"media-body\">\n    <h4 class=\"media-heading\"><span class=\"name\">{{::$ctrl.item.user.name}}</span>\n      <span class=\"screen-name\">@{{::$ctrl.item.user.screen_name}}</span>\n    </h4>\n    <a href=\"{{::$ctrl.item.user.url}}\" target=\"_blank\" class=\"link\">{{::$ctrl.item.user.url}}</a>\n  </div>\n</div>\n<div class=\"find__pict-tweet--container\">\n  <div class=\"row\">\n    <div ng-repeat=\"pict in $ctrl.item.pictList | limitTo: 12\" class=\"col-lg-6 col-md-4 col-sm-6 col-xs-6\">\n      <div style=\"background-image: url('{{::pict.media.media_url_https}}:small')\" data-img-src=\"{{::pict.media.media_url_https}}\" tweet-id-str=\"{{::pict.tweet.id_str}}\" show-statuses=\"show-statuses\" class=\"find__pict-tweet--img\">\n      </div>\n    </div>\n  </div>\n</div>",
     bindToController: {
       item: '='
     },
