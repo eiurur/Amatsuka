@@ -10,7 +10,7 @@ angular.module "myApp.services"
     get: ->
       return new Promise (resolve, reject) =>
         console.log 'get @pconfig = ', @config
-        unless _.isEmpty @config then return resolve @config
+        unless _.isEmpty(@config) then return resolve @config
         @getFromDB()
         .then (config) =>
           console.log 'get @getFromDB() config = ', config

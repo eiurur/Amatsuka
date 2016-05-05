@@ -13,8 +13,7 @@ angular.module "myApp.controllers"
 
   $scope.listIdStr  = ''
   $scope.isLoaded   = false
-  # $scope.layoutType = 'grid'
-  $scope.layoutType = 'tile'
+  ConfigService.get().then (config) -> $scope.layoutType = if config.isTileLayout then 'tile' else 'grid'
   $scope.message    = 'リストデータの確認中'
 
   upsertAmatsukaList = ->

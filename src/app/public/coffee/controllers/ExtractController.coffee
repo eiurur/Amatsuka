@@ -7,12 +7,13 @@ angular.module "myApp.controllers"
     AuthService
     TweetService
     ListService
+    ConfigService
     ) ->
   if _.isEmpty AuthService.user then $location.path '/'
   unless ListService.hasListData() then $location.path '/'
 
   $scope.listIdStr = ListService.amatsukaList.data.id_str
-
+  ConfigService.get().then (config) -> $scope.layoutType = if config.isTileLayout then 'tile' else 'grid'
 
   $scope.filter = screenName: '', keyword: '', isIncludeRetweet: false
   $scope.extract = {}

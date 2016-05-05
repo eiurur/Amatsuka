@@ -52,15 +52,10 @@ angular.module "myApp.directives"
     replace: true
     scope:
       listIdStr: '@'
-      # tweet: '@'
       twitterIdStr: '@'
       followStatus: '='
     template: '<span class="label label-default timeline__post--header--label">{{content}}</span>'
     link: (scope, element, attrs) ->
-      # tweetParsed  = JSON.parse scope.tweet
-      # isRT         = TweetService.isRT tweetParsed
-      # twitterIdStr = TweetService.get(tweetParsed, 'user.id_str', isRT)
-
       if scope.followStatus is false then scope.content = '+'
 
       element.on 'mouseover', (e) ->

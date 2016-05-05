@@ -3,6 +3,7 @@ angular.module 'myApp.directives'
     restrict: 'A'
     link: (scope, element, attrs) ->
       element.on 'click', (event) ->
+        # TODO: Status?の部分をviewer同様、クラス化したい。
         tweet = null
         imgIdx = 0
 
@@ -67,7 +68,11 @@ angular.module 'myApp.directives'
           src = tweet.extended_entities.media[imgIdx].media_url_https
           zoomImageViewer.showImage(src)
 
+
         bind = ->
+          # TODO
+          # KeyBind(t, f, r, d, q, esc, <-, ->, j, k)
+
         cleanup = ->
 
           imageLayer.html ''

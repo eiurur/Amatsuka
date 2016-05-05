@@ -214,7 +214,7 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
   }, true);
 }]);
 
-angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$routeParams", "$location", "Tweets", "AuthService", "TweetService", "ListService", function($scope, $routeParams, $location, Tweets, AuthService, TweetService, ListService) {
+angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$routeParams", "$location", "Tweets", "AuthService", "TweetService", "ListService", "ConfigService", function($scope, $routeParams, $location, Tweets, AuthService, TweetService, ListService, ConfigService) {
   var filterPic, params;
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
@@ -223,6 +223,9 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
     $location.path('/');
   }
   $scope.listIdStr = ListService.amatsukaList.data.id_str;
+  ConfigService.get().then(function(config) {
+    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+  });
   $scope.filter = {
     screenName: '',
     keyword: '',
@@ -301,7 +304,9 @@ angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location"
     $location.path('/');
   }
   $scope.isLoaded = false;
-  $scope.layoutType = 'grid';
+  ConfigService.get().then(function(config) {
+    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+  });
   $scope.tweets = new Tweets([], void 0, 'fav', AuthService.user._json.id_str);
   $scope.listIdStr = ListService.amatsukaList.data.id_str;
   $scope.isLoaded = true;
@@ -345,7 +350,9 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$locatio
   }
   $scope.listIdStr = '';
   $scope.isLoaded = false;
-  $scope.layoutType = 'tile';
+  ConfigService.get().then(function(config) {
+    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+  });
   $scope.message = 'リストデータの確認中';
   upsertAmatsukaList = function() {
     $scope.message = 'リストデータの更新中';
@@ -563,7 +570,7 @@ angular.module("myApp.directives").directive('copyMember', ["$rootScope", "toast
   };
 }]);
 
-angular.module("myApp.directives").directive('resize', ["$timeout", "$rootScope", "$window", function($timeout, $rootScope, $window) {
+angular.module("myApp.directives").directive('resize', ["$timeout", "$rootScope", "$window", "ConfigService", function($timeout, $rootScope, $window, ConfigService) {
   return {
     link: function() {
       var timer;
@@ -573,13 +580,18 @@ angular.module("myApp.directives").directive('resize', ["$timeout", "$rootScope"
           $timeout.cancel(timer);
         }
         timer = $timeout(function() {
-          var cW, html, layoutType;
+          var cW, html;
           html = angular.element(document).find('html');
           cW = html[0].clientWidth;
           console.log('broadCast resize ', cW);
-          layoutType = cW < 700 ? 'list' : 'tile';
-          return $rootScope.$broadcast('resize::resize', {
-            layoutType: layoutType
+          return ConfigService.get().then(function(config) {
+            var layoutType;
+            console.log('config = ', config);
+            layoutType = cW < 700 ? 'list' : 'grid';
+            layoutType = config.isTileLayout ? 'tile' : layoutType;
+            return $rootScope.$broadcast('resize::resize', {
+              layoutType: layoutType
+            });
           });
         }, 200);
       });
@@ -663,38 +675,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
   };
 }]);
 
-var ShowStatusesElementController;
 
-angular.module('myApp.directives').directive('showStatusesElement', ["$compile", "TweetService", function($compile, TweetService) {
-  return {
-    restrict: 'E',
-    scope: {},
-    template: "\"\n<div class=\"image-layer__caption\">\n  <div class=\"timeline__post--footer\">\n    <div class=\"timeline__post--footer--contents\">\n      <div class=\"timeline__post--footer--contents--controls\">\n        <a href=\"" + data.data.entities.media[0].expanded_url + "\" target=\"_blank\">\n          <i class=\"fa fa-twitter icon-twitter\"></i>\n        </a>\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + data.data.id_str + "\" retweeted=\"" + data.data.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + data.data.id_str + "\" favorited=\"" + data.data.favorited + "\" favoritable=\"favoritable\"></i>\n        <a><i class=\"fa fa-download\" data-url=\"" + data.data.extended_entities.media[0].media_url_https + ":orig\" filename=\"" + data.data.user.screen_name + "_" + data.data.id_str + "\" download-from-url=\"download-from-url\"></i></a>\n      </div>\n    </div>\n  </div>\n</div>",
-    bindToController: {
-      tweetIdStr: "="
-    },
-    controller: ShowStatusesElementController,
-    controllerAs: '$ctrl',
-    link: function(scope, element, attrs, $ctrl) {
-      return element.on('click', (function(_this) {
-        return function(event) {
-          return TweetService.showStatuses({
-            tweetIdStr: _this.tweetIdStr
-          }).then(function(data) {
-            return console.log('showStatusesElement', data);
-          });
-        };
-      })(this));
-    }
-  };
-}]);
-
-ShowStatusesElementController = (function() {
-  function ShowStatusesElementController() {}
-
-  return ShowStatusesElementController;
-
-})();
 
 angular.module("myApp.directives").directive('favoritable', ["TweetService", function(TweetService) {
   return {

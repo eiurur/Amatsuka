@@ -1,5 +1,5 @@
 angular.module "myApp.directives"
-  .directive 'resize', ($timeout, $rootScope, $window) ->
+  .directive 'resize', ($timeout, $rootScope, $window, ConfigService) ->
     link: ->
       timer = false
       angular.element($window).on 'load resize', (e) ->
@@ -15,9 +15,12 @@ angular.module "myApp.directives"
           # ウィンドウのサイズを元にビューを切り替える
           # 2カラムで表示できる限界が700px
           # layoutType = if cW < 700 then 'list' else 'grid'
-          layoutType = if cW < 700 then 'list' else 'tile'
+          ConfigService.get().then (config) ->
+            console.log 'config = ', config
+            layoutType = if cW < 700 then 'list' else 'grid'
+            layoutType = if config.isTileLayout then 'tile' else layoutType
 
-          $rootScope.$broadcast 'resize::resize', layoutType: layoutType
+            $rootScope.$broadcast 'resize::resize', layoutType: layoutType
 
         , 200
         return
