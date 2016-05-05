@@ -249,6 +249,12 @@
             padding: 0 $timeline__post--padding-horizontal-smartphone;
         }
 
+        &__contents {
+            text-align: right;
+            white-space: nowrap;
+            color: $link-color;
+        }
+
         &__controls {
             font-size: 120%;
             font-weight: 600;

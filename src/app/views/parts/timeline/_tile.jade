@@ -4,7 +4,7 @@ span(ng-if='layoutType == "tile"')
     infinite-scroll-distance='1',
     infinite-scroll-disabled='tweets.busy')
     .timeline__post.timeline__post--tile.col-lg-2.col-md-3.col-sm-4(ng-repeat='tweet in tweets.items')
-      .timeline__post--image
+      .timeline__post__image
         .point-triangle.point-triangle-rt(ng-if="tweet.picUrlList.length > 1")
           img.fade.timeline__post__image--tile(
             ng-if="!tweet.video_url",

@@ -17,7 +17,7 @@ angular.module "myApp.directives"
       <div class="find__pict-tweet--container">
         <div class="row">
           <div ng-repeat="pict in $ctrl.item.pictList | limitTo: 12" class="col-lg-6 col-md-4 col-sm-6 col-xs-6">
-            <div style="background-image: url('{{::pict.media.media_url_https}}:small')" zoom-image="zoom-image" data-img-src="{{::pict.media.media_url_https}}:orig" tweet-id-str="{{::pict.tweet.id_str}}" show-statuses="show-statuses" class="find__pict-tweet--img">
+            <div style="background-image: url('{{::pict.media.media_url_https}}:small')" data-img-src="{{::pict.media.media_url_https}}" tweet-id-str="{{::pict.tweet.id_str}}" show-statuses="show-statuses" class="find__pict-tweet--img">
             </div>
           </div>
         </div>

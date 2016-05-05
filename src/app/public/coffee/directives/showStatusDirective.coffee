@@ -26,9 +26,9 @@ angular.module 'myApp.directives'
         showTweetInfomation = (tweet, imgIdx) ->
           imageLayerCaptionHtml = """
             <div class="image-layer__caption">
-              <div class="timeline__post--footer">
-                <div class="timeline__post--footer--contents">
-                  <div class="timeline__post--footer--contents--controls">
+              <div class="timeline__footer">
+                <div class="timeline__footer__contents">
+                  <div class="timeline__footer__controls">
                     <a href="#{tweet.entities.media[imgIdx].expanded_url}" target="_blank">
                       <i class="fa fa-twitter icon-twitter"></i>
                     </a>
