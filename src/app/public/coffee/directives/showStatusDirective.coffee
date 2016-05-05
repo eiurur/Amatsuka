@@ -10,7 +10,7 @@ angular.module 'myApp.directives'
         imgIdx = 0
 
         zoomImageViewer = new ZoomImageViewer()
-        zoomImageViewer.showImage(attrs.imgSrc)
+        zoomImageViewer.pipeLowToHighImage(attrs.imgSrc, attrs.imgSrc.replace(':small', '') + ':orig')
 
         imageLayer          = angular.element(document).find('.image-layer')
         imageLayerContainer = angular.element(document).find('.image-layer__container')
@@ -49,7 +49,11 @@ angular.module 'myApp.directives'
         getImgIdx = (dir, originalIdx) ->
           console.log 'before originalIdx = ', originalIdx
           if dir is 'next' then return (originalIdx + 1) % tweet.extended_entities.media.length
-          if dir is 'prev' then return if (originalIdx - 1) < 0 then tweet.extended_entities.media.length - 1 else (originalIdx - 1)
+          if dir is 'prev'
+            originalIdx = originalIdx - 1
+            return if originalIdx < 0 then  tweet.extended_entities.media.length - 1 else originalIdx
+
+            # return if (originalIdx - 1) < 0 then tweet.extended_entities.media.length - 1 else (originalIdx - 1)
           # 'active'
           # return originalIdx % tweet.extended_entities.media.length
 
@@ -58,7 +62,8 @@ angular.module 'myApp.directives'
           # return if tweet.extended_entities.media.length < 2
           imgIdx = getImgIdx(dir, imgIdx)
           src = tweet.extended_entities.media[imgIdx].media_url_https
-          zoomImageViewer.showImage(src)
+          # zoomImageViewer.showImage(src)
+          zoomImageViewer.pipeLowToHighImage("#{src}:small", "#{src}:orig")
 
 
         bindEvents = ->

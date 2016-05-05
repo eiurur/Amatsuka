@@ -610,7 +610,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
         tweet = null;
         imgIdx = 0;
         zoomImageViewer = new ZoomImageViewer();
-        zoomImageViewer.showImage(attrs.imgSrc);
+        zoomImageViewer.pipeLowToHighImage(attrs.imgSrc, attrs.imgSrc.replace(':small', '') + ':orig');
         imageLayer = angular.element(document).find('.image-layer');
         imageLayerContainer = angular.element(document).find('.image-layer__container');
         next = angular.element(document).find('.image-layer__next');
@@ -637,11 +637,12 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
             return (originalIdx + 1) % tweet.extended_entities.media.length;
           }
           if (dir === 'prev') {
-            if ((originalIdx - 1) < 0) {
+            originalIdx = originalIdx - 1;
+            if (originalIdx < 0) {
               return tweet.extended_entities.media.length - 1;
+            } else {
+              return originalIdx;
             }
-          } else {
-            return originalIdx - 1;
           }
         };
         switchImage = function(dir) {
@@ -649,7 +650,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           console.log(tweet);
           imgIdx = getImgIdx(dir, imgIdx);
           src = tweet.extended_entities.media[imgIdx].media_url_https;
-          return zoomImageViewer.showImage(src);
+          return zoomImageViewer.pipeLowToHighImage("" + src + ":small", "" + src + ":orig");
         };
         bindEvents = function() {
           imageLayerContainer.on('click', function() {
@@ -1431,15 +1432,21 @@ angular.module("myApp.factories").factory('ZoomImageViewer', ["GetterImageInfoma
       return imgElement.addClass("image-layer__img-" + direction + "-wide");
     };
 
-    ZoomImageViewer.prototype.showImage = function(src) {
+    ZoomImageViewer.prototype.pipeLowToHighImage = function(from, to) {
       this.imageLayerLoading.show();
       this.imageLayerImg.hide();
       this.imageLayerImg.removeClass();
-      return this.imageLayerImg.attr('src', src.replace(':small', '') + ':orig').load((function(_this) {
+      return this.imageLayerImg.attr('src', from).load((function(_this) {
         return function() {
+          console.log('-> Middle');
+          _this.imageLayerLoading.hide();
           _this.setImageAndStyle(_this.imageLayerImg, _this.html);
-          _this.imageLayerLoading.remove();
-          return _this.imageLayerImg.fadeIn(1);
+          _this.imageLayerImg.fadeIn(1);
+          _this.imageLayerImg.off('load');
+          return _this.imageLayerImg.attr('src', to).load(function() {
+            console.log('-> High');
+            return _this.imageLayerImg.fadeIn(1);
+          });
         };
       })(this));
     };

@@ -43,18 +43,29 @@ angular.module "myApp.factories"
         direction = GetterImageInfomation.getWideDirection(imgElement, html)
         imgElement.addClass("image-layer__img-#{direction}-wide")
 
-      showImage: (src) ->
+      pipeLowToHighImage: (from, to) ->
         @imageLayerLoading.show()
         @imageLayerImg.hide()
         @imageLayerImg.removeClass()
-        @imageLayerImg
-        .attr 'src', src.replace(':small', '') + ':orig'
-        .load =>
-          @setImageAndStyle(@imageLayerImg, @html)
 
-          # 満を持して表示
-          @imageLayerLoading.remove()
+        @imageLayerImg
+        .attr 'src', from
+        .load =>
+          console.log '-> Middle'
+          @imageLayerLoading.hide()
+          @setImageAndStyle(@imageLayerImg, @html)
           @imageLayerImg.fadeIn(1)
+
+          # loadの∞ループ回避
+          @imageLayerImg.off 'load'
+
+          @imageLayerImg
+          .attr 'src', to
+          .load =>
+            console.log '-> High'
+            # @setImageAndStyle(@imageLayerImg, @html)
+            @imageLayerImg.fadeIn(1)
+
 
       cleanup: ->
         @imageLayerLoading.remove()
