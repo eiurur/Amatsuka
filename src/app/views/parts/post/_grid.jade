@@ -1,0 +1,68 @@
+.timeline__header.timeline__header--grid
+  .timeline__header__info.timeline__header__info--grid
+    .timeline__header__link.timeline__header__link--grid
+      span.timeline__header__user.timeline__header__user--grid(
+        twitter-id-str="{{::tweet.user.id_str}}",
+        show-tweet="show-tweet") {{::tweet.user.screen_name}}
+      span.timeline__header__rt_icon.timeline__header__rt_icon--grid(ng-if="tweet.retweeted_status")
+        i.fa.fa-retweet
+      a.timeline__header__rt-source.timeline__header__rt-source--grid(
+        twitter-id-str="{{::tweet.retweeted_status.user.id_str}}",
+        show-tweet="show-tweet") {{::tweet.retweeted_status.user.screen_name}}
+      followable(
+        ng-if='!tweet.followStatus && tweet.retweeted_status',
+        list-id-str="{{listIdStr}}",
+        twitter-id-str="{{tweet.retweeted_status.user.id_str}}",
+        follow-status="tweet.followStatus")
+      followable(
+        ng-if='!tweet.followStatus && !tweet.retweeted_status',
+        list-id-str="{{listIdStr}}",
+        twitter-id-str="{{tweet.user.id_str}}",
+        follow-status="tweet.followStatus")
+  .timeline__header__time
+    a(href="https://{{::tweet.sourceUrl}}", target="_blank") {{::tweet.time}}
+.timeline__icon.timeline__icon--grid
+  img.fade(
+    ng-src="{{::tweet.user.profile_image_url_https}}",
+    img-preload="img-preload",
+    show-tweet="show-tweet",
+    twitter-id-str="{{::tweet.user.id_str}}")
+.timeline__post__image.timeline__post__image--grid(ng-repeat='picUrl in tweet.picUrlList')
+  img.fade(
+    ng-if="!tweet.video_url",
+    ng-src="{{::picUrl}}",
+    img-preload="img-preload",
+    zoom-image="zoom-image",
+    data-img-src="{{::picUrl}}")
+  video.timeline__post__video(
+    ng-if="tweet.video_url",
+    poster="{{::picUrl}}",
+    autoplay, loop, controls, muted)
+    source(ng-src="{{::tweet.video_url | trusted}}", type="video/mp4")
+.timeline__post__text__container(ng-if="!config.isShowOnlyImage")
+  .timeline__post__text.timeline__post__text--grid(ng-if="!tweet.retweeted_status", ng-bind-html='tweet.text | newlines')
+  .timeline__post__blockquote.timeline__post__blockquote--grid(ng-if="tweet.retweeted_status")
+    p
+      a(
+        twitter-id-str="{{::tweet.retweeted_status.user.id_str}}",
+        show-tweet="show-tweet") {{::tweet.retweeted_status.user.screen_name}}
+    blockquote
+      .timeline__post__text(ng-bind-html='tweet.text | newlines')
+.timeline__footer.timeline__footer--grid
+  .timeline__footer__controls
+    i.fa.fa-retweet.icon-retweet(
+      retweet-num="tweet.retweetNum",
+      retweeted='tweet.retweeted',
+      tweet-id-str='{{::tweet.tweetIdStr}}',
+      retweetable='retweetable')  {{tweet.retweetNum}}
+    i.fa.fa-heart.icon-heart(
+      fav-num="tweet.favNum",
+      favorited='tweet.favorited',
+      tweet-id-str='{{::tweet.tweetIdStr}}',
+      favoritable='favoritable')  {{tweet.favNum}}
+    // aタグがないとtextとcontrolsの間の余白がなくなり、レイアウトが崩れる。
+    a
+      i.fa.fa-download(
+        data-url="{{::tweet.picOrigUrlList}}",
+        filename="{{::tweet.fileName}}",
+        download-from-url='download-from-url')
