@@ -14,12 +14,9 @@ angular.module "myApp.directives"
 
           # ウィンドウのサイズを元にビューを切り替える
           # 2カラムで表示できる限界が700px
-          # layoutType = if cW < 700 then 'list' else 'grid'
           ConfigService.get().then (config) ->
             console.log 'config = ', config
-            layoutType = if cW < 700 then 'list' else 'grid'
-            layoutType = if config.isTileLayout then 'tile' else layoutType
-
+            layoutType = if cW < 700 then 'list' else if config.isTileLayout then 'tile' else 'grid'
             $rootScope.$broadcast 'resize::resize', layoutType: layoutType
 
         , 200

@@ -25,7 +25,6 @@ angular.module 'myApp.directives'
 
         TweetService.showStatuses(tweetIdStr: attrs.tweetIdStr)
         .then (data) ->
-          console.log 'showStatuses', data
           tweet = data.data
           showTweetInfomation(tweet, imgIdx);
 
@@ -35,7 +34,7 @@ angular.module 'myApp.directives'
               <div class="timeline__post--footer">
                 <div class="timeline__post--footer--contents">
                   <div class="timeline__post--footer--contents--controls">
-                    <a href="#{tweet.entities.media[imgIdx].extended_url}" target="_blank">
+                    <a href="#{tweet.entities.media[imgIdx].expanded_url}" target="_blank">
                       <i class="fa fa-twitter icon-twitter"></i>
                     </a>
                     <i class="fa fa-retweet icon-retweet" tweet-id-str="#{tweet.id_str}" retweeted="#{tweet.retweeted}" retweetable="retweetable"></i>
@@ -63,7 +62,7 @@ angular.module 'myApp.directives'
 
         switchImage = (dir) ->
           console.log tweet
-          return if tweet.extended_entities.media.length < 2
+          # return if tweet.extended_entities.media.length < 2
           imgIdx = getImgIdx(dir, imgIdx)
           src = tweet.extended_entities.media[imgIdx].media_url_https
           zoomImageViewer.showImage(src)

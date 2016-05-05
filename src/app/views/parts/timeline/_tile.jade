@@ -16,9 +16,10 @@ span(ng-if='layoutType == "tile"')
         img.fade.timeline__post__image--tile(
           ng-if="!tweet.video_url && tweet.picUrlList.length == 1",
           img-preload="img-preload",
-          zoom-image="zoom-image",
           data-img-src="{{::tweet.picUrlList[0]}}",
-          ng-src="{{::tweet.picUrlList[0]}}")
+          ng-src="{{::tweet.picUrlList[0]}}",
+          tweet-id-str='{{::tweet.id_str}}',
+          show-statuses="show-statuses")
         video.timeline__post__video--tile(
           ng-if="tweet.video_url",
           poster="{{::tweet.picUrlList[0]}}",
