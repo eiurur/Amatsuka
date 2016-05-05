@@ -49,11 +49,9 @@ angular.module 'myApp.directives'
         getImgIdx = (dir, originalIdx) ->
           console.log 'before originalIdx = ', originalIdx
           if dir is 'next' then return (originalIdx + 1) % tweet.extended_entities.media.length
-          if dir is 'prev'
-            originalIdx = originalIdx - 1
-            return if (originalIdx - 1) < 0 then tweet.extended_entities.media.length - 1 else originalIdx
+          if dir is 'prev' then return if (originalIdx - 1) < 0 then tweet.extended_entities.media.length - 1 else (originalIdx - 1)
           # 'active'
-          return originalIdx % tweet.extended_entities.media.length
+          # return originalIdx % tweet.extended_entities.media.length
 
         switchImage = (dir) ->
           console.log tweet
@@ -64,29 +62,28 @@ angular.module 'myApp.directives'
 
 
         bindEvents = ->
-          ###
-          ClickEvent
-          ###
+          # ClickEvent
           # オーバーレイ部分をクリックしたら生成した要素は全て削除する
           imageLayerContainer.on 'click', -> cleanup()
 
-          # ページ送り
-          next.on 'click', -> switchImage('next')
-          prev.on 'click', -> switchImage('prev')
 
-          ###
-          KeyEvent
-          ###
+          # KeyEvent
           Mousetrap.bind 'f', -> angular.element(document).find('.image-layer__caption .icon-heart').click()
           Mousetrap.bind 'r', -> angular.element(document).find('.image-layer__caption .icon-retweet').click()
           Mousetrap.bind 'd', -> angular.element(document).find('.image-layer__caption .fa-download').click()
-          Mousetrap.bind ['left', 'k'], -> switchImage('prev')
-          Mousetrap.bind ['right', 'j'], -> switchImage('next')
           Mousetrap.bind ['esc', 'q'], -> cleanup()
 
-          ###
-          ScrollEvent
-          ###
+          return if tweet.extended_entities.media.length < 2
+
+          # ClickEvent
+          next.on 'click', -> switchImage('next')
+          prev.on 'click', -> switchImage('prev')
+
+          # KeyEvent
+          Mousetrap.bind ['left', 'k'], -> switchImage('prev')
+          Mousetrap.bind ['right', 'j'], -> switchImage('next')
+
+          # ScrollEvent
           imageLayerContainer.on 'wheel', (e) ->
             # e.originalEvent.wheelDelta >= 0  === Scroll up
             dir = if e.originalEvent.wheelDelta >= 0 then 'prev' else 'next'

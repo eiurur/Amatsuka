@@ -23,6 +23,10 @@
         justify-content: flex-start;
     }
 
+    &--list {
+        padding: 0 0 30px 85px; // icon 64px +  ixonとpostとのpadding 21 = 85px
+    }
+
     /**
      * timeline__post
      */
@@ -51,7 +55,6 @@
             padding: 16px 0;
             img
             {
-                border: none;
                 width: $timeline__img--width;
             }
             &--tile {
@@ -72,32 +75,48 @@
             }
         }
 
-        &__footer {
-            line-height: 48px;
-            width: 100%;
-            height: 48px;
+        &__text {
+            @include tweet-text;
+        }
 
-            &__controls {
-                font-size: 120%;
-                font-weight: 600;
-                @include display-flex;
-                @include flex-direction(row);
-                @include align-items(baseline);
-                @include justify-content(space-between);
+        &__blockquote {
+            @include tweet-text;
+            blockquote
+            {
+                margin: 0;
+                padding: 0;
+
+                border-left: solid 2px rgba(0,0,0,.12);
             }
+
         }
     }
 
 
     &__icon {
         cursor: pointer;
-        margin-right: 8px;
         &--tile {
+            margin-right: 8px;
             width: 32px;
             height: 32px;
+            img {
+                max-width: 32px;
+            }
         }
+
+        &--list {
+            position: absolute;
+            top: 0;
+            left: -$timeline__post--icon--left;
+
+            width: 64px;
+            height: 64px;
+            img {
+                max-width: 64px;
+            }
+        }
+
         img {
-            max-width: 32px;
             border-radius: 3px;
         }
     }
@@ -112,7 +131,12 @@
             align-items: flex-start;
         }
 
+        &--list {
+            @include post_padding;
+        }
+
         &__user {
+            cursor: pointer;
             &--tile {
 
             }
@@ -122,11 +146,42 @@
             &--tile {
                 flex: 1;
             }
+            &--list {
+                display: inline-block;
+            }
+        }
+
+        &__rt-icon {
+            padding: 0 5px;
+        }
+
+        &__time {
+            display: inline-block;
+            float: right;
         }
 
         a {
             text-decoration: none;
             color: $link-color;
+        }
+    }
+
+    &__footer {
+        line-height: 48px;
+        width: 100%;
+        height: 48px;
+
+        &--list {
+            @include post_padding;
+        }
+
+        &__controls {
+            font-size: 120%;
+            font-weight: 600;
+            @include display-flex;
+            @include flex-direction(row);
+            @include align-items(baseline);
+            @include justify-content(space-between);
         }
     }
 
