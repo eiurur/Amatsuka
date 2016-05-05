@@ -13,6 +13,7 @@ span(ng-if='layoutType == "tile"')
             ng-src="{{::tweet.picUrlList[0]}}"
             tweet-id-str='{{::tweet.id_str}}',
             show-statuses="show-statuses")
+          span {{tweet.picUrlList.length}}
         img.fade.timeline__post__image--tile(
           ng-if="!tweet.video_url && tweet.picUrlList.length == 1",
           img-preload="img-preload",

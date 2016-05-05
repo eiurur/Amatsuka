@@ -62,10 +62,10 @@ module.exports =
       'bower_components/lodash/dist/lodash.js'
       'bower_components/jquery/dist/jquery.js'
       'bower_components/bootstrap/dist/js/bootstrap.js'
-      'bower_components/es6-promise/promise.js'
       'bower_components/imagesloaded/imagesloaded.pkgd.js'
       'bower_components/masonry/dist/masonry.pkgd.js'
       'bower_components/file-saver-js/FileSaver.js'
+      'bower_components/mousetrap/mousetrap.js'
     ]
     dest: dest + app_public + "/js/vendors/"
 

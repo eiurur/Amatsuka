@@ -3,6 +3,7 @@ angular.module "myApp.controllers"
     $scope
     $location
     AuthService
+    ConfigService
     TweetService
     ListService
     Tweets

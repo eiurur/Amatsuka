@@ -29,6 +29,7 @@
     "angularjs-toaster": "~0.4.11",
     "file-saver-js": "*",
     "ng-tags-input": "3.0.0",
-    "nginfinitescroll": "~1.2.1"
+    "nginfinitescroll": "~1.2.1",
+    "mousetrap": "~1.5.3"
   }
 }
