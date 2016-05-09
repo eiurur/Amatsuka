@@ -27,6 +27,7 @@
         padding: 0 0 30px 85px; // icon 64px +  ixonとpostとのpadding 21 = 85px
     }
 
+
     /**
      * timeline__post
      */
@@ -111,6 +112,9 @@
     }
 
 
+    /**
+     * timeline__icon
+     */
     &__icon {
         cursor: pointer;
         &--tile {
@@ -151,6 +155,7 @@
             border-radius: 3px;
         }
     }
+
 
     /**
      * timelne__header
@@ -233,6 +238,7 @@
             color: $link-color;
         }
     }
+
 
     /**
      * timeline__footer
