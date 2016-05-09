@@ -605,7 +605,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
-        var bindEvents, cleanup, getImgIdx, imageLayer, imageLayerContainer, imgIdx, next, prev, showTweetInfomation, switchImage, tweet, zoomImageViewer;
+        var bindEvents, cleanup, getImgIdx, imageLayer, imageLayerContainer, imgIdx, next, prev, showPrevNextElement, showTweetInfomation, switchImage, tweet, zoomImageViewer;
         WindowScrollableSwitcher.disableScrolling();
         tweet = null;
         imgIdx = 0;
@@ -613,8 +613,8 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
         zoomImageViewer.pipeLowToHighImage(attrs.imgSrc, attrs.imgSrc.replace(':small', '') + ':orig');
         imageLayer = angular.element(document).find('.image-layer');
         imageLayerContainer = angular.element(document).find('.image-layer__container');
-        next = angular.element(document).find('.image-layer__next');
-        prev = angular.element(document).find('.image-layer__prev');
+        next = null;
+        prev = null;
         TweetService.showStatuses({
           tweetIdStr: attrs.tweetIdStr
         }).then(function(data) {
@@ -622,6 +622,11 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           bindEvents();
           return showTweetInfomation(tweet, imgIdx);
         });
+        showPrevNextElement = function() {
+          var html;
+          html = "<div class=\"image-layer__prev\">\n  <i class=\"fa fa-angle-left fa-2x feeding-arrow\"></i>\n</div>\n<div class=\"image-layer__next\">\n  <i class=\"fa fa-angle-right fa-2x feeding-arrow feeding-arrow-right__patch\"></i>\n</div>";
+          return imageLayerContainer.after(html);
+        };
         showTweetInfomation = function(tweet, imgIdx) {
           var imageLayerCaptionHtml, item;
           imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__footer\">\n    <div class=\"timeline__footer__contents\">\n      <div class=\"timeline__footer__controls\">\n        <a href=\"" + tweet.entities.media[imgIdx].expanded_url + "\" target=\"_blank\">\n          <i class=\"fa fa-twitter icon-twitter\"></i>\n        </a>\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + tweet.id_str + "\" retweeted=\"" + tweet.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + tweet.id_str + "\" favorited=\"" + tweet.favorited + "\" favoritable=\"favoritable\"></i>\n        <a><i class=\"fa fa-download\" data-url=\"" + tweet.extended_entities.media[imgIdx].media_url_https + ":orig\" filename=\"" + tweet.user.screen_name + "_" + tweet.id_str + "\" download-from-url=\"download-from-url\"></i></a>\n      </div>\n    </div>\n  </div>\n</div>";
@@ -671,6 +676,9 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           if (tweet.extended_entities.media.length < 2) {
             return;
           }
+          showPrevNextElement();
+          next = angular.element(document).find('.image-layer__next');
+          prev = angular.element(document).find('.image-layer__prev');
           next.on('click', function() {
             return switchImage('next');
           });
@@ -693,8 +701,12 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           Mousetrap.unbind(['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r']);
           imageLayer.html('');
           imageLayerContainer.html('');
-          next.remove();
-          prev.remove();
+          if (next != null) {
+            next.remove();
+          }
+          if (prev != null) {
+            prev.remove();
+          }
           WindowScrollableSwitcher.enableScrolling();
           zoomImageViewer.cleanup();
           return zoomImageViewer = null;
@@ -1419,7 +1431,7 @@ angular.module("myApp.factories").factory('ZoomImageViewer', ["GetterImageInfoma
       this.html = angular.element(document).find('html');
       this.body = angular.element(document).find('body');
       this.imageLayer = angular.element(document).find('.image-layer');
-      containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n  <div class=\"image-layer__loading\">\n    <img src=\"./images/loaders/tail-spin.svg\" />\n  </div>\n</div>\n<div class=\"image-layer__prev\">\n  <i class=\"fa fa-angle-left fa-2x feeding-arrow\"></i>\n</div>\n<div class=\"image-layer__next\">\n  <i class=\"fa fa-angle-right fa-2x feeding-arrow feeding-arrow-right__patch\"></i>\n</div>";
+      containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n  <div class=\"image-layer__loading\">\n    <img src=\"./images/loaders/tail-spin.svg\" />\n  </div>\n</div>\n";
       this.imageLayer.html(containerHTML);
       this.imageLayer.addClass('image-layer__overlay');
       this.imageLayerImg = angular.element(document).find('.image-layer__img');

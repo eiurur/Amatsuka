@@ -856,6 +856,9 @@ i {
    * timeline__post
    */
   /**
+   * timeline__icon
+   */
+  /**
    * timelne__header
    */
   /**
@@ -1339,7 +1342,7 @@ i {
 }
 
 .user-sidebar__contents--infinitescroll-message {
-  padding: 20px;
+  margin: 0 auto;
 }
 
 .user-sidebar__contents--box-loading-init {
@@ -1452,7 +1455,6 @@ i {
 .find__media {
   min-height: 80px;
 }
-
 .find__divider {
   margin: 30px 0;
   width: 100%;
@@ -1461,7 +1463,6 @@ i {
   -webkit-box-shadow: rgba(255, 255, 255, 0.5) 0 1px 0 inset;
   box-shadow: rgba(255, 255, 255, 0.5) 0 1px 0 inset;
 }
-
 .find__pict-tweet--img__container {
   display: inline-block;
   padding: 8px;
@@ -1471,7 +1472,6 @@ i {
     width: 16.6%;
   }
 }
-
 .find__pict-tweet--img {
   cursor: pointer;
   display: inline-block;
