@@ -24,12 +24,7 @@ angular.module "myApp.factories"
               <img src="./images/loaders/tail-spin.svg" />
             </div>
           </div>
-          <div class="image-layer__prev">
-            <i class="fa fa-angle-left fa-2x feeding-arrow"></i>
-          </div>
-          <div class="image-layer__next">
-            <i class="fa fa-angle-right fa-2x feeding-arrow feeding-arrow-right__patch"></i>
-          </div>
+
           """
         @imageLayer.html containerHTML
 

@@ -14,14 +14,25 @@ angular.module 'myApp.directives'
 
         imageLayer          = angular.element(document).find('.image-layer')
         imageLayerContainer = angular.element(document).find('.image-layer__container')
-        next                = angular.element(document).find('.image-layer__next')
-        prev                = angular.element(document).find('.image-layer__prev')
+        next                = null
+        prev                = null
 
         TweetService.showStatuses(tweetIdStr: attrs.tweetIdStr)
         .then (data) ->
           tweet = data.data
           bindEvents()
           showTweetInfomation(tweet, imgIdx);
+
+        showPrevNextElement = ->
+          html = """
+            <div class="image-layer__prev">
+              <i class="fa fa-angle-left fa-2x feeding-arrow"></i>
+            </div>
+            <div class="image-layer__next">
+              <i class="fa fa-angle-right fa-2x feeding-arrow feeding-arrow-right__patch"></i>
+            </div>
+          """
+          imageLayerContainer.after html
 
         showTweetInfomation = (tweet, imgIdx) ->
           imageLayerCaptionHtml = """
@@ -71,7 +82,6 @@ angular.module 'myApp.directives'
           # オーバーレイ部分をクリックしたら生成した要素は全て削除する
           imageLayerContainer.on 'click', -> cleanup()
 
-
           # KeyEvent
           Mousetrap.bind 'f', -> angular.element(document).find('.image-layer__caption .icon-heart').click()
           Mousetrap.bind 'r', -> angular.element(document).find('.image-layer__caption .icon-retweet').click()
@@ -79,6 +89,10 @@ angular.module 'myApp.directives'
           Mousetrap.bind ['esc', 'q'], -> cleanup()
 
           return if tweet.extended_entities.media.length < 2
+
+          do showPrevNextElement
+          next = angular.element(document).find('.image-layer__next')
+          prev = angular.element(document).find('.image-layer__prev')
 
           # ClickEvent
           next.on 'click', -> switchImage('next')
@@ -100,8 +114,8 @@ angular.module 'myApp.directives'
           imageLayer.html ''
           imageLayerContainer.html ''
 
-          next.remove()
-          prev.remove()
+          next?.remove()
+          prev?.remove()
 
           WindowScrollableSwitcher.enableScrolling()
 
