@@ -165,12 +165,6 @@
 .image-layer__img-w-wide {
   width: 100%;
   height: auto;
-  -moz-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -webkit-transform: translateY(-50%);
-  transform: translateY(-50%);
-  position: relative;
-  top: 50%;
 }
 
 .image-layer__img--hidden {
@@ -181,7 +175,11 @@
 }
 
 .image-layer__container {
+  display: flex;
   height: 100%;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .image-layer__caption {

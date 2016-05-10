@@ -45,7 +45,9 @@ angular.module 'myApp.directives'
                     </a>
                     <i class="fa fa-retweet icon-retweet" tweet-id-str="#{tweet.id_str}" retweeted="#{tweet.retweeted}" retweetable="retweetable"></i>
                     <i class="fa fa-heart icon-heart" tweet-id-str="#{tweet.id_str}" favorited="#{tweet.favorited}" favoritable="favoritable"></i>
-                    <a><i class="fa fa-download" data-url="#{tweet.extended_entities.media[imgIdx].media_url_https}:orig" filename="#{tweet.user.screen_name}_#{tweet.id_str}" download-from-url="download-from-url"></i></a>
+                    <a>
+                      <i class="fa fa-download" data-url="#{tweet.extended_entities.media[imgIdx].media_url_https}:orig" filename="#{tweet.user.screen_name}_#{tweet.id_str}" download-from-url="download-from-url"></i>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -64,20 +66,14 @@ angular.module 'myApp.directives'
             originalIdx = originalIdx - 1
             return if originalIdx < 0 then  tweet.extended_entities.media.length - 1 else originalIdx
 
-            # return if (originalIdx - 1) < 0 then tweet.extended_entities.media.length - 1 else (originalIdx - 1)
-          # 'active'
-          # return originalIdx % tweet.extended_entities.media.length
-
         switchImage = (dir) ->
-          console.log tweet
-          # return if tweet.extended_entities.media.length < 2
           imgIdx = getImgIdx(dir, imgIdx)
           src = tweet.extended_entities.media[imgIdx].media_url_https
-          # zoomImageViewer.showImage(src)
           zoomImageViewer.pipeLowToHighImage("#{src}:small", "#{src}:orig")
 
 
         bindEvents = ->
+          ## For 単数枚
           # ClickEvent
           # オーバーレイ部分をクリックしたら生成した要素は全て削除する
           imageLayerContainer.on 'click', -> cleanup()
@@ -90,6 +86,7 @@ angular.module 'myApp.directives'
 
           return if tweet.extended_entities.media.length < 2
 
+          ## For 複数枚
           do showPrevNextElement
           next = angular.element(document).find('.image-layer__next')
           prev = angular.element(document).find('.image-layer__prev')
