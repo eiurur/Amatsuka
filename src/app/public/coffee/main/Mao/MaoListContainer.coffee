@@ -48,11 +48,12 @@ class MaoListContoller
 
 
     urlParameterChecker = new URLParameterChecker()
+    console.log urlParameterChecker
+
     if _.isEmpty(urlParameterChecker.queryParams)
       urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD')
-    console.log urlParameterChecker.queryParams
 
-    @date = moment().add(-1, 'days').format('YYYY-MM-DD')
+    @date = moment(urlParameterChecker.queryParams.date).add(-1, 'days').format('YYYY-MM-DD')
     @tweetList = new @Mao(@date)
     @subscribe()
     # 今はいらん
