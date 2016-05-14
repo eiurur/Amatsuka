@@ -79,9 +79,10 @@ angular.module 'myApp.directives'
           imageLayerContainer.on 'click', -> cleanup()
 
           # KeyEvent
+          Mousetrap.bind 'd', -> angular.element(document).find('.image-layer__caption .fa-download').click()
           Mousetrap.bind 'f', -> angular.element(document).find('.image-layer__caption .icon-heart').click()
           Mousetrap.bind 'r', -> angular.element(document).find('.image-layer__caption .icon-retweet').click()
-          Mousetrap.bind 'd', -> angular.element(document).find('.image-layer__caption .fa-download').click()
+          Mousetrap.bind 't', -> angular.element(document).find('.image-layer__caption .fa-twitter').click()
           Mousetrap.bind ['esc', 'q'], -> cleanup()
 
           return if tweet.extended_entities.media.length < 2
@@ -106,7 +107,7 @@ angular.module 'myApp.directives'
             switchImage(dir)
 
         cleanup = ->
-          Mousetrap.unbind ['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r']
+          Mousetrap.unbind ['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r', 't']
 
           imageLayer.html ''
           imageLayerContainer.html ''

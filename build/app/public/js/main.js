@@ -660,14 +660,17 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           imageLayerContainer.on('click', function() {
             return cleanup();
           });
+          Mousetrap.bind('d', function() {
+            return angular.element(document).find('.image-layer__caption .fa-download').click();
+          });
           Mousetrap.bind('f', function() {
             return angular.element(document).find('.image-layer__caption .icon-heart').click();
           });
           Mousetrap.bind('r', function() {
             return angular.element(document).find('.image-layer__caption .icon-retweet').click();
           });
-          Mousetrap.bind('d', function() {
-            return angular.element(document).find('.image-layer__caption .fa-download').click();
+          Mousetrap.bind('t', function() {
+            return angular.element(document).find('.image-layer__caption .fa-twitter').click();
           });
           Mousetrap.bind(['esc', 'q'], function() {
             return cleanup();
@@ -697,7 +700,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           });
         };
         return cleanup = function() {
-          Mousetrap.unbind(['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r']);
+          Mousetrap.unbind(['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r', 't']);
           imageLayer.html('');
           imageLayerContainer.html('');
           if (next != null) {
