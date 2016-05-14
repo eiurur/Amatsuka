@@ -540,6 +540,499 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$location
   });
 }]);
 
+angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
+  return function(scope, elm, attrs) {
+    elm.text(version);
+  };
+}]);
+
+angular.module("myApp.directives").directive('copyMember', ["$rootScope", "toaster", "TweetService", function($rootScope, toaster, TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      sourceList: '='
+    },
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        if (element.hasClass('disabled')) {
+          return;
+        }
+        if (window.confirm('コピーしてもよろしいですか？')) {
+          element.addClass('disabled');
+          toaster.pop('wait', "Now Copying ...", '', 0, 'trustedHtml');
+          return scope.sourceList.copyMember2AmatsukaList().then(function(data) {
+            element.removeClass('disabled');
+            toaster.clear();
+            $rootScope.$broadcast('list:copyMember', data);
+            return toaster.pop('success', "Finished copy member", '', 2000, 'trustedHtml');
+          });
+        }
+      });
+    }
+  };
+}]);
+
+angular.module("myApp.directives").directive('resize', ["$timeout", "$rootScope", "$window", "ConfigService", function($timeout, $rootScope, $window, ConfigService) {
+  return {
+    link: function() {
+      var timer;
+      timer = false;
+      return angular.element($window).on('load resize', function(e) {
+        if (timer) {
+          $timeout.cancel(timer);
+        }
+        timer = $timeout(function() {
+          var cW, html;
+          html = angular.element(document).find('html');
+          cW = html[0].clientWidth;
+          console.log('broadCast resize ', cW);
+          return ConfigService.get().then(function(config) {
+            var layoutType;
+            console.log('config = ', config);
+            layoutType = cW < 700 ? 'list' : config.isTileLayout ? 'tile' : 'grid';
+            return $rootScope.$broadcast('resize::resize', {
+              layoutType: layoutType
+            });
+          });
+        }, 200);
+      });
+    }
+  };
+}]);
+
+angular.module('myApp.directives').directive('showStatuses', ["$compile", "GetterImageInfomation", "TweetService", "WindowScrollableSwitcher", "ZoomImageViewer", function($compile, GetterImageInfomation, TweetService, WindowScrollableSwitcher, ZoomImageViewer) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        var bindEvents, cleanup, getImgIdx, imageLayer, imageLayerContainer, imgIdx, next, prev, showPrevNextElement, showTweetInfomation, switchImage, tweet, zoomImageViewer;
+        WindowScrollableSwitcher.disableScrolling();
+        tweet = null;
+        imgIdx = 0;
+        zoomImageViewer = new ZoomImageViewer();
+        zoomImageViewer.pipeLowToHighImage(attrs.imgSrc, attrs.imgSrc.replace(':small', '') + ':orig');
+        imageLayer = angular.element(document).find('.image-layer');
+        imageLayerContainer = angular.element(document).find('.image-layer__container');
+        next = null;
+        prev = null;
+        TweetService.showStatuses({
+          tweetIdStr: attrs.tweetIdStr
+        }).then(function(data) {
+          tweet = data.data;
+          bindEvents();
+          return showTweetInfomation(tweet, imgIdx);
+        });
+        showPrevNextElement = function() {
+          var html;
+          html = "<div class=\"image-layer__prev\">\n  <i class=\"fa fa-angle-left fa-2x feeding-arrow\"></i>\n</div>\n<div class=\"image-layer__next\">\n  <i class=\"fa fa-angle-right fa-2x feeding-arrow feeding-arrow-right__patch\"></i>\n</div>";
+          return imageLayerContainer.after(html);
+        };
+        showTweetInfomation = function(tweet, imgIdx) {
+          var imageLayerCaptionHtml, item;
+          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__footer\">\n    <div class=\"timeline__footer__contents\">\n      <div class=\"timeline__footer__controls\">\n        <a href=\"" + tweet.entities.media[imgIdx].expanded_url + "\" target=\"_blank\">\n          <i class=\"fa fa-twitter icon-twitter\"></i>\n        </a>\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + tweet.id_str + "\" retweeted=\"" + tweet.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + tweet.id_str + "\" favorited=\"" + tweet.favorited + "\" favoritable=\"favoritable\"></i>\n        <a>\n          <i class=\"fa fa-download\" data-url=\"" + tweet.extended_entities.media[imgIdx].media_url_https + ":orig\" filename=\"" + tweet.user.screen_name + "_" + tweet.id_str + "\" download-from-url=\"download-from-url\"></i>\n        </a>\n      </div>\n    </div>\n  </div>\n</div>";
+          if (_.isEmpty(imageLayer.html())) {
+            return;
+          }
+          item = $compile(imageLayerCaptionHtml)(scope).hide().fadeIn(300);
+          return imageLayer.append(item);
+        };
+        getImgIdx = function(dir, originalIdx) {
+          console.log('before originalIdx = ', originalIdx);
+          if (dir === 'next') {
+            return (originalIdx + 1) % tweet.extended_entities.media.length;
+          }
+          if (dir === 'prev') {
+            originalIdx = originalIdx - 1;
+            if (originalIdx < 0) {
+              return tweet.extended_entities.media.length - 1;
+            } else {
+              return originalIdx;
+            }
+          }
+        };
+        switchImage = function(dir) {
+          var src;
+          imgIdx = getImgIdx(dir, imgIdx);
+          src = tweet.extended_entities.media[imgIdx].media_url_https;
+          return zoomImageViewer.pipeLowToHighImage("" + src + ":small", "" + src + ":orig");
+        };
+        bindEvents = function() {
+          imageLayerContainer.on('click', function() {
+            return cleanup();
+          });
+          Mousetrap.bind('f', function() {
+            return angular.element(document).find('.image-layer__caption .icon-heart').click();
+          });
+          Mousetrap.bind('r', function() {
+            return angular.element(document).find('.image-layer__caption .icon-retweet').click();
+          });
+          Mousetrap.bind('d', function() {
+            return angular.element(document).find('.image-layer__caption .fa-download').click();
+          });
+          Mousetrap.bind(['esc', 'q'], function() {
+            return cleanup();
+          });
+          if (tweet.extended_entities.media.length < 2) {
+            return;
+          }
+          showPrevNextElement();
+          next = angular.element(document).find('.image-layer__next');
+          prev = angular.element(document).find('.image-layer__prev');
+          next.on('click', function() {
+            return switchImage('next');
+          });
+          prev.on('click', function() {
+            return switchImage('prev');
+          });
+          Mousetrap.bind(['left', 'k'], function() {
+            return switchImage('prev');
+          });
+          Mousetrap.bind(['right', 'j'], function() {
+            return switchImage('next');
+          });
+          return imageLayerContainer.on('wheel', function(e) {
+            var dir;
+            dir = e.originalEvent.wheelDelta >= 0 ? 'prev' : 'next';
+            return switchImage(dir);
+          });
+        };
+        return cleanup = function() {
+          Mousetrap.unbind(['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r']);
+          imageLayer.html('');
+          imageLayerContainer.html('');
+          if (next != null) {
+            next.remove();
+          }
+          if (prev != null) {
+            prev.remove();
+          }
+          WindowScrollableSwitcher.enableScrolling();
+          zoomImageViewer.cleanup();
+          return zoomImageViewer = null;
+        };
+      });
+    }
+  };
+}]);
+
+
+
+var TermPaginationController;
+
+angular.module("myApp.directives").directive('termPagination', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<div class=\"pagination__term\">\n  <a class=\"pagination__term--prev\" ng-click=\"$ctrl.paginate(-1)\"><\n  </a>\n  <a class=\"pagination__term--active\">{{$ctrl.date}}\n  </a>\n  <a class=\"pagination__term--next\" ng-click=\"$ctrl.paginate(1)\">>\n  </a>\n</div>",
+    bindToController: {
+      term: "="
+    },
+    controller: TermPaginationController,
+    controllerAs: "$ctrl"
+  };
+});
+
+TermPaginationController = (function() {
+  function TermPaginationController($scope, TimeService, TermPeginateDataServicve, URLParameterChecker) {
+    var urlParameterChecker;
+    this.$scope = $scope;
+    this.TimeService = TimeService;
+    this.TermPeginateDataServicve = TermPeginateDataServicve;
+    urlParameterChecker = new URLParameterChecker();
+    console.log('TermPaginationController ', urlParameterChecker.queryParams);
+    if (_.isEmpty(urlParameterChecker.queryParams)) {
+      urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    }
+    this.date = this.TimeService.normalizeDate('days', urlParameterChecker.queryParams.date);
+    console.log(this.date);
+    this.subscribe();
+    this.bindKeyAction();
+  }
+
+  TermPaginationController.prototype.bindKeyAction = function() {
+    Mousetrap.bind(['ctrl+left'], (function(_this) {
+      return function() {
+        return _this.paginate(-1);
+      };
+    })(this));
+    return Mousetrap.bind(['ctrl+right'], (function(_this) {
+      return function() {
+        return _this.paginate(1);
+      };
+    })(this));
+  };
+
+  TermPaginationController.prototype.subscribe = function() {
+    return this.$scope.$on('TermPeginateDataServicve::publish', (function(_this) {
+      return function(event, args) {
+        return _this.date = args.date;
+      };
+    })(this));
+  };
+
+  TermPaginationController.prototype.paginate = function(amount) {
+    this.date = this.TimeService.changeDate('days', this.date, amount);
+    this.TermPeginateDataServicve.publish({
+      date: this.date
+    });
+    return this.$scope.$emit('termPagination::paginate', {
+      date: this.date
+    });
+  };
+
+  return TermPaginationController;
+
+})();
+
+TermPaginationController.$inject = ['$scope', 'TimeService', 'TermPeginateDataServicve', 'URLParameterChecker'];
+
+angular.module("myApp.directives").directive('favoritable', ["TweetService", function(TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      favNum: '=',
+      favorited: '=',
+      tweetIdStr: '@'
+    },
+    link: function(scope, element, attrs) {
+      if (scope.favorited) {
+        element.addClass('favorited');
+      }
+      return element.on('click', function(event) {
+        console.log('favorited = ', scope.favorited);
+        if (scope.favorited) {
+          element.removeClass('favorited');
+          return TweetService.destroyFav({
+            tweetIdStr: scope.tweetIdStr
+          }).then(function(data) {
+            scope.favNum -= 1;
+            return scope.favorited = !scope.favorited;
+          });
+        } else {
+          element.addClass('favorited');
+          return TweetService.createFav({
+            tweetIdStr: scope.tweetIdStr
+          }).then(function(data) {
+            scope.favNum += 1;
+            return scope.favorited = !scope.favorited;
+          });
+        }
+      });
+    }
+  };
+}]).directive('retweetable', ["TweetService", function(TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      retweetNum: '=',
+      retweeted: '=',
+      tweetIdStr: '@'
+    },
+    link: function(scope, element, attrs) {
+      if (scope.retweeted) {
+        element.addClass('retweeted');
+      }
+      return element.on('click', function(event) {
+        if (scope.retweeted) {
+          element.removeClass('retweeted');
+          return TweetService.destroyStatus({
+            tweetIdStr: scope.tweetIdStr
+          }).then(function(data) {
+            scope.retweetNum -= 1;
+            return scope.retweeted = !scope.retweeted;
+          });
+        } else if (window.confirm('リツイートしてもよろしいですか？')) {
+          element.addClass('retweeted');
+          return TweetService.retweetStatus({
+            tweetIdStr: scope.tweetIdStr
+          }).then(function(data) {
+            scope.retweetNum += 1;
+            return scope.retweeted = !scope.retweeted;
+          });
+        }
+      });
+    }
+  };
+}]).directive('followable', ["$rootScope", "ListService", "TweetService", function($rootScope, ListService, TweetService) {
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
+      listIdStr: '@',
+      twitterIdStr: '@',
+      followStatus: '='
+    },
+    template: '<span class="label label-default timeline__header__label">{{content}}</span>',
+    link: function(scope, element, attrs) {
+      if (scope.followStatus === false) {
+        scope.content = '+';
+      }
+      element.on('mouseover', function(e) {
+        scope.content = 'フォロー';
+        return scope.$apply();
+      });
+      element.on('mouseout', function(e) {
+        scope.content = '+';
+        return scope.$apply();
+      });
+      return element.on('click', function() {
+        var opts;
+        console.log(scope.listIdStr);
+        console.log(scope.twitterIdStr);
+        opts = {
+          listIdStr: scope.listIdStr,
+          twitterIdStr: scope.twitterIdStr
+        };
+        if (scope.followStatus === false) {
+          element.addClass('label-success');
+          element.fadeOut(200);
+          return TweetService.createListsMembers(opts).then(function(data) {
+            ListService.addMember(scope.twitterIdStr);
+            $rootScope.$broadcast('addMember', scope.twitterIdStr);
+            console.log('E followable createListsMembers data', data);
+            return TweetService.collectProfile({
+              twitterIdStr: scope.twitterIdStr
+            });
+          }).then(function(data) {
+            return console.log(data);
+          });
+        }
+      });
+    }
+  };
+}]).directive('followable', ["$rootScope", "ListService", "TweetService", function($rootScope, ListService, TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      listIdStr: '@',
+      twitterIdStr: '@',
+      followStatus: '='
+    },
+    link: function(scope, element, attrs) {
+      element[0].innerText = scope.followStatus ? 'フォロー解除' : 'フォロー';
+      return element.on('click', function() {
+        var opts;
+        console.log(scope.listIdStr);
+        console.log(scope.twitterIdStr);
+        opts = {
+          listIdStr: scope.listIdStr,
+          twitterIdStr: scope.twitterIdStr
+        };
+        scope.isProcessing = true;
+        if (scope.followStatus === true) {
+          element[0].innerText = 'フォロー';
+          TweetService.destroyListsMembers(opts).then(function(data) {
+            console.log(data);
+            ListService.removeMember(scope.twitterIdStr);
+            $rootScope.$broadcast('list:removeMember', data);
+            return scope.isProcessing = false;
+          });
+        }
+        if (scope.followStatus === false) {
+          element[0].innerText = 'フォロー解除';
+          TweetService.createListsMembers(opts).then(function(data) {
+            ListService.addMember(scope.twitterIdStr);
+            $rootScope.$broadcast('addMember', scope.twitterIdStr);
+            $rootScope.$broadcast('list:addMember', data);
+            scope.isProcessing = false;
+            return TweetService.collectProfile({
+              twitterIdStr: scope.twitterIdStr
+            });
+          }).then(function(data) {
+            return console.log(data);
+          });
+        }
+        return scope.followStatus = !scope.followStatus;
+      });
+    }
+  };
+}]).directive('showTweet', ["$rootScope", "TweetService", function($rootScope, TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      twitterIdStr: '@'
+    },
+    link: function(scope, element, attrs) {
+      var showTweet;
+      showTweet = function() {
+        return TweetService.showUsers({
+          twitterIdStr: scope.twitterIdStr
+        }).then(function(data) {
+          console.log(data);
+          $rootScope.$broadcast('userData', data.data);
+          return TweetService.getUserTimeline({
+            twitterIdStr: scope.twitterIdStr
+          });
+        }).then(function(data) {
+          console.log(data.data);
+          return $rootScope.$broadcast('tweetData', data.data);
+        });
+      };
+      return element.on('click', function() {
+        var $document, body, domUserSidebar, domUserSidebarHeader, isOpenedSidebar, layer;
+        $rootScope.$broadcast('isOpened', true);
+        $document = angular.element(document);
+        domUserSidebar = $document.find('.user-sidebar');
+        domUserSidebarHeader = $document.find('.user-sidebar__header');
+        isOpenedSidebar = 　domUserSidebar[0].className.indexOf('.user-sidebar-in') !== -1;
+        if (isOpenedSidebar) {
+          showTweet();
+          return;
+        }
+
+        /*
+        初回(サイドバーは見えない状態が初期状態)
+         */
+        domUserSidebar.addClass('user-sidebar-in');
+        domUserSidebarHeader.removeClass('user-sidebar-out');
+        body = $document.find('body');
+        body.addClass('scrollbar-y-hidden');
+        layer = $document.find('.layer');
+        layer.addClass('fullscreen-overlay');
+        showTweet();
+        return layer.on('click', function() {
+          body.removeClass('scrollbar-y-hidden');
+          layer.removeClass('fullscreen-overlay');
+          domUserSidebar.removeClass('user-sidebar-in');
+          domUserSidebarHeader.addClass('user-sidebar-out');
+          return $rootScope.$broadcast('isClosed', true);
+        });
+      });
+    }
+  };
+}]);
+
+angular.module("myApp.directives").directive("zoomImage", ["$compile", "$rootScope", "TweetService", "GetterImageInfomation", function($compile, $rootScope, TweetService, GetterImageInfomation) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function() {
+        var containerHTML, html, imageLayer, imageLayerContainer, imageLayerImg, imageLayerLoading;
+        html = angular.element(document).find('html');
+        imageLayer = angular.element(document).find('.image-layer');
+        containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n  <div class=\"image-layer__loading\">\n    <img src=\"./images/loaders/tail-spin.svg\" />\n  </div>\n</div>";
+        imageLayer.html(containerHTML);
+        imageLayer.addClass('image-layer__overlay');
+        imageLayerImg = angular.element(document).find('.image-layer__img');
+        imageLayerLoading = angular.element(document).find('.image-layer__loading');
+        imageLayerImg.hide();
+        imageLayerImg.attr('src', ("" + attrs.imgSrc).replace(':small', ':orig')).load(function() {
+          var direction;
+          direction = GetterImageInfomation.getWideDirection(imageLayerImg, html);
+          imageLayerImg.addClass("image-layer__img-" + direction + "-wide");
+          imageLayerLoading.remove();
+          return imageLayerImg.fadeIn(1);
+        });
+        imageLayerContainer = angular.element(document).find('.image-layer__container');
+        return imageLayerContainer.on('click', function() {
+          imageLayer.html('');
+          return imageLayer.removeClass('image-layer__overlay');
+        });
+      });
+    }
+  };
+}]);
+
 angular.module("myApp.factories").factory('AmatsukaList', ["TweetService", "ListService", function(TweetService, ListService) {
   var AmatsukaList;
   AmatsukaList = (function() {
@@ -974,6 +1467,23 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ToasterServ
   return Tweets;
 }]);
 
+angular.module("myApp.factories").factory('URLParameterChecker', ["URLParameterService", function(URLParameterService) {
+  var URLParameterChecker;
+  return URLParameterChecker = (function() {
+    function URLParameterChecker() {
+      this.urlResources = URLParameterService.parse();
+      this.queryParams = URLParameterService.getQueryParams();
+    }
+
+    URLParameterChecker.prototype.checkURLResourceLength = function(allowableLength) {
+      return URLParameterService.checkURLResourceLength(this.urlResources.length, allowableLength);
+    };
+
+    return URLParameterChecker;
+
+  })();
+}]);
+
 angular.module("myApp.factories").factory('WindowScrollableSwitcher', function() {
   var WindowScrollableSwitcher;
   WindowScrollableSwitcher = (function() {
@@ -1373,6 +1883,43 @@ angular.module("myApp.services").service("MaoService", ["$http", function($http)
     }
   };
 }]);
+
+angular.module("myApp.services").service("TermPeginateDataServicve", ["$rootScope", function($rootScope) {
+  return {
+    publish: function(params) {
+      return $rootScope.$broadcast('TermPeginateDataServicve::publish', params);
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("TimeService", function() {
+  return {
+    normalizeDate: function(term, date) {
+      switch (term) {
+        case 'days':
+          return moment(date).format('YYYY-MM-DD');
+        case 'weeks':
+          return moment(date).format('YYYY-MM-DD');
+        case 'month':
+          return moment(date).date('1').format('YYYY-MM-DD');
+        default:
+          return moment(date).format('YYYY-MM-DD');
+      }
+    },
+    changeDate: function(term, date, amount) {
+      switch (term) {
+        case 'days':
+          return moment(date).add(amount, 'days').format('YYYY-MM-DD');
+        case 'weeks':
+          return moment(date).add(amount, 'weeks').format('YYYY-MM-DD');
+        case 'month':
+          return moment(date).add(amount, 'months').date('1').format('YYYY-MM-DD');
+        default:
+          return moment().format('YYYY-MM-DD');
+      }
+    }
+  };
+});
 
 angular.module("myApp.services").service('ToasterService', ["toaster", function(toaster) {
   return {
@@ -1825,426 +2372,18 @@ angular.module("myApp.services").service("TweetService", ["$http", "$q", "$injec
   };
 }]);
 
-angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
-  return function(scope, elm, attrs) {
-    elm.text(version);
-  };
-}]);
-
-angular.module("myApp.directives").directive('copyMember', ["$rootScope", "toaster", "TweetService", function($rootScope, toaster, TweetService) {
+angular.module("myApp.services").service("URLParameterService", ["$location", function($location) {
   return {
-    restrict: 'A',
-    scope: {
-      sourceList: '='
-    },
-    link: function(scope, element, attrs) {
-      return element.on('click', function(event) {
-        if (element.hasClass('disabled')) {
-          return;
-        }
-        if (window.confirm('コピーしてもよろしいですか？')) {
-          element.addClass('disabled');
-          toaster.pop('wait', "Now Copying ...", '', 0, 'trustedHtml');
-          return scope.sourceList.copyMember2AmatsukaList().then(function(data) {
-            element.removeClass('disabled');
-            toaster.clear();
-            $rootScope.$broadcast('list:copyMember', data);
-            return toaster.pop('success', "Finished copy member", '', 2000, 'trustedHtml');
-          });
-        }
-      });
-    }
-  };
-}]);
-
-angular.module("myApp.directives").directive('resize', ["$timeout", "$rootScope", "$window", "ConfigService", function($timeout, $rootScope, $window, ConfigService) {
-  return {
-    link: function() {
-      var timer;
-      timer = false;
-      return angular.element($window).on('load resize', function(e) {
-        if (timer) {
-          $timeout.cancel(timer);
-        }
-        timer = $timeout(function() {
-          var cW, html;
-          html = angular.element(document).find('html');
-          cW = html[0].clientWidth;
-          console.log('broadCast resize ', cW);
-          return ConfigService.get().then(function(config) {
-            var layoutType;
-            console.log('config = ', config);
-            layoutType = cW < 700 ? 'list' : config.isTileLayout ? 'tile' : 'grid';
-            return $rootScope.$broadcast('resize::resize', {
-              layoutType: layoutType
-            });
-          });
-        }, 200);
-      });
-    }
-  };
-}]);
-
-angular.module('myApp.directives').directive('showStatuses', ["$compile", "GetterImageInfomation", "TweetService", "WindowScrollableSwitcher", "ZoomImageViewer", function($compile, GetterImageInfomation, TweetService, WindowScrollableSwitcher, ZoomImageViewer) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      return element.on('click', function(event) {
-        var bindEvents, cleanup, getImgIdx, imageLayer, imageLayerContainer, imgIdx, next, prev, showPrevNextElement, showTweetInfomation, switchImage, tweet, zoomImageViewer;
-        WindowScrollableSwitcher.disableScrolling();
-        tweet = null;
-        imgIdx = 0;
-        zoomImageViewer = new ZoomImageViewer();
-        zoomImageViewer.pipeLowToHighImage(attrs.imgSrc, attrs.imgSrc.replace(':small', '') + ':orig');
-        imageLayer = angular.element(document).find('.image-layer');
-        imageLayerContainer = angular.element(document).find('.image-layer__container');
-        next = null;
-        prev = null;
-        TweetService.showStatuses({
-          tweetIdStr: attrs.tweetIdStr
-        }).then(function(data) {
-          tweet = data.data;
-          bindEvents();
-          return showTweetInfomation(tweet, imgIdx);
-        });
-        showPrevNextElement = function() {
-          var html;
-          html = "<div class=\"image-layer__prev\">\n  <i class=\"fa fa-angle-left fa-2x feeding-arrow\"></i>\n</div>\n<div class=\"image-layer__next\">\n  <i class=\"fa fa-angle-right fa-2x feeding-arrow feeding-arrow-right__patch\"></i>\n</div>";
-          return imageLayerContainer.after(html);
-        };
-        showTweetInfomation = function(tweet, imgIdx) {
-          var imageLayerCaptionHtml, item;
-          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__footer\">\n    <div class=\"timeline__footer__contents\">\n      <div class=\"timeline__footer__controls\">\n        <a href=\"" + tweet.entities.media[imgIdx].expanded_url + "\" target=\"_blank\">\n          <i class=\"fa fa-twitter icon-twitter\"></i>\n        </a>\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + tweet.id_str + "\" retweeted=\"" + tweet.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + tweet.id_str + "\" favorited=\"" + tweet.favorited + "\" favoritable=\"favoritable\"></i>\n        <a>\n          <i class=\"fa fa-download\" data-url=\"" + tweet.extended_entities.media[imgIdx].media_url_https + ":orig\" filename=\"" + tweet.user.screen_name + "_" + tweet.id_str + "\" download-from-url=\"download-from-url\"></i>\n        </a>\n      </div>\n    </div>\n  </div>\n</div>";
-          if (_.isEmpty(imageLayer.html())) {
-            return;
-          }
-          item = $compile(imageLayerCaptionHtml)(scope).hide().fadeIn(300);
-          return imageLayer.append(item);
-        };
-        getImgIdx = function(dir, originalIdx) {
-          console.log('before originalIdx = ', originalIdx);
-          if (dir === 'next') {
-            return (originalIdx + 1) % tweet.extended_entities.media.length;
-          }
-          if (dir === 'prev') {
-            originalIdx = originalIdx - 1;
-            if (originalIdx < 0) {
-              return tweet.extended_entities.media.length - 1;
-            } else {
-              return originalIdx;
-            }
-          }
-        };
-        switchImage = function(dir) {
-          var src;
-          imgIdx = getImgIdx(dir, imgIdx);
-          src = tweet.extended_entities.media[imgIdx].media_url_https;
-          return zoomImageViewer.pipeLowToHighImage("" + src + ":small", "" + src + ":orig");
-        };
-        bindEvents = function() {
-          imageLayerContainer.on('click', function() {
-            return cleanup();
-          });
-          Mousetrap.bind('f', function() {
-            return angular.element(document).find('.image-layer__caption .icon-heart').click();
-          });
-          Mousetrap.bind('r', function() {
-            return angular.element(document).find('.image-layer__caption .icon-retweet').click();
-          });
-          Mousetrap.bind('d', function() {
-            return angular.element(document).find('.image-layer__caption .fa-download').click();
-          });
-          Mousetrap.bind(['esc', 'q'], function() {
-            return cleanup();
-          });
-          if (tweet.extended_entities.media.length < 2) {
-            return;
-          }
-          showPrevNextElement();
-          next = angular.element(document).find('.image-layer__next');
-          prev = angular.element(document).find('.image-layer__prev');
-          next.on('click', function() {
-            return switchImage('next');
-          });
-          prev.on('click', function() {
-            return switchImage('prev');
-          });
-          Mousetrap.bind(['left', 'k'], function() {
-            return switchImage('prev');
-          });
-          Mousetrap.bind(['right', 'j'], function() {
-            return switchImage('next');
-          });
-          return imageLayerContainer.on('wheel', function(e) {
-            var dir;
-            dir = e.originalEvent.wheelDelta >= 0 ? 'prev' : 'next';
-            return switchImage(dir);
-          });
-        };
-        return cleanup = function() {
-          Mousetrap.unbind(['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r']);
-          imageLayer.html('');
-          imageLayerContainer.html('');
-          if (next != null) {
-            next.remove();
-          }
-          if (prev != null) {
-            prev.remove();
-          }
-          WindowScrollableSwitcher.enableScrolling();
-          zoomImageViewer.cleanup();
-          return zoomImageViewer = null;
-        };
-      });
-    }
-  };
-}]);
-
-
-
-angular.module("myApp.directives").directive('favoritable', ["TweetService", function(TweetService) {
-  return {
-    restrict: 'A',
-    scope: {
-      favNum: '=',
-      favorited: '=',
-      tweetIdStr: '@'
-    },
-    link: function(scope, element, attrs) {
-      if (scope.favorited) {
-        element.addClass('favorited');
+    checkURLResourceLength: function(urlResourcesLength, allowableLength) {
+      if (urlResourcesLength > allowableLength) {
+        return $location.path('/');
       }
-      return element.on('click', function(event) {
-        console.log('favorited = ', scope.favorited);
-        if (scope.favorited) {
-          element.removeClass('favorited');
-          return TweetService.destroyFav({
-            tweetIdStr: scope.tweetIdStr
-          }).then(function(data) {
-            scope.favNum -= 1;
-            return scope.favorited = !scope.favorited;
-          });
-        } else {
-          element.addClass('favorited');
-          return TweetService.createFav({
-            tweetIdStr: scope.tweetIdStr
-          }).then(function(data) {
-            scope.favNum += 1;
-            return scope.favorited = !scope.favorited;
-          });
-        }
-      });
-    }
-  };
-}]).directive('retweetable', ["TweetService", function(TweetService) {
-  return {
-    restrict: 'A',
-    scope: {
-      retweetNum: '=',
-      retweeted: '=',
-      tweetIdStr: '@'
     },
-    link: function(scope, element, attrs) {
-      if (scope.retweeted) {
-        element.addClass('retweeted');
-      }
-      return element.on('click', function(event) {
-        if (scope.retweeted) {
-          element.removeClass('retweeted');
-          return TweetService.destroyStatus({
-            tweetIdStr: scope.tweetIdStr
-          }).then(function(data) {
-            scope.retweetNum -= 1;
-            return scope.retweeted = !scope.retweeted;
-          });
-        } else if (window.confirm('リツイートしてもよろしいですか？')) {
-          element.addClass('retweeted');
-          return TweetService.retweetStatus({
-            tweetIdStr: scope.tweetIdStr
-          }).then(function(data) {
-            scope.retweetNum += 1;
-            return scope.retweeted = !scope.retweeted;
-          });
-        }
-      });
-    }
-  };
-}]).directive('followable', ["$rootScope", "ListService", "TweetService", function($rootScope, ListService, TweetService) {
-  return {
-    restrict: 'E',
-    replace: true,
-    scope: {
-      listIdStr: '@',
-      twitterIdStr: '@',
-      followStatus: '='
+    getQueryParams: function() {
+      return $location.search();
     },
-    template: '<span class="label label-default timeline__header__label">{{content}}</span>',
-    link: function(scope, element, attrs) {
-      if (scope.followStatus === false) {
-        scope.content = '+';
-      }
-      element.on('mouseover', function(e) {
-        scope.content = 'フォロー';
-        return scope.$apply();
-      });
-      element.on('mouseout', function(e) {
-        scope.content = '+';
-        return scope.$apply();
-      });
-      return element.on('click', function() {
-        var opts;
-        console.log(scope.listIdStr);
-        console.log(scope.twitterIdStr);
-        opts = {
-          listIdStr: scope.listIdStr,
-          twitterIdStr: scope.twitterIdStr
-        };
-        if (scope.followStatus === false) {
-          element.addClass('label-success');
-          element.fadeOut(200);
-          return TweetService.createListsMembers(opts).then(function(data) {
-            ListService.addMember(scope.twitterIdStr);
-            $rootScope.$broadcast('addMember', scope.twitterIdStr);
-            console.log('E followable createListsMembers data', data);
-            return TweetService.collectProfile({
-              twitterIdStr: scope.twitterIdStr
-            });
-          }).then(function(data) {
-            return console.log(data);
-          });
-        }
-      });
-    }
-  };
-}]).directive('followable', ["$rootScope", "ListService", "TweetService", function($rootScope, ListService, TweetService) {
-  return {
-    restrict: 'A',
-    scope: {
-      listIdStr: '@',
-      twitterIdStr: '@',
-      followStatus: '='
-    },
-    link: function(scope, element, attrs) {
-      element[0].innerText = scope.followStatus ? 'フォロー解除' : 'フォロー';
-      return element.on('click', function() {
-        var opts;
-        console.log(scope.listIdStr);
-        console.log(scope.twitterIdStr);
-        opts = {
-          listIdStr: scope.listIdStr,
-          twitterIdStr: scope.twitterIdStr
-        };
-        scope.isProcessing = true;
-        if (scope.followStatus === true) {
-          element[0].innerText = 'フォロー';
-          TweetService.destroyListsMembers(opts).then(function(data) {
-            console.log(data);
-            ListService.removeMember(scope.twitterIdStr);
-            $rootScope.$broadcast('list:removeMember', data);
-            return scope.isProcessing = false;
-          });
-        }
-        if (scope.followStatus === false) {
-          element[0].innerText = 'フォロー解除';
-          TweetService.createListsMembers(opts).then(function(data) {
-            ListService.addMember(scope.twitterIdStr);
-            $rootScope.$broadcast('addMember', scope.twitterIdStr);
-            $rootScope.$broadcast('list:addMember', data);
-            scope.isProcessing = false;
-            return TweetService.collectProfile({
-              twitterIdStr: scope.twitterIdStr
-            });
-          }).then(function(data) {
-            return console.log(data);
-          });
-        }
-        return scope.followStatus = !scope.followStatus;
-      });
-    }
-  };
-}]).directive('showTweet', ["$rootScope", "TweetService", function($rootScope, TweetService) {
-  return {
-    restrict: 'A',
-    scope: {
-      twitterIdStr: '@'
-    },
-    link: function(scope, element, attrs) {
-      var showTweet;
-      showTweet = function() {
-        return TweetService.showUsers({
-          twitterIdStr: scope.twitterIdStr
-        }).then(function(data) {
-          console.log(data);
-          $rootScope.$broadcast('userData', data.data);
-          return TweetService.getUserTimeline({
-            twitterIdStr: scope.twitterIdStr
-          });
-        }).then(function(data) {
-          console.log(data.data);
-          return $rootScope.$broadcast('tweetData', data.data);
-        });
-      };
-      return element.on('click', function() {
-        var $document, body, domUserSidebar, domUserSidebarHeader, isOpenedSidebar, layer;
-        $rootScope.$broadcast('isOpened', true);
-        $document = angular.element(document);
-        domUserSidebar = $document.find('.user-sidebar');
-        domUserSidebarHeader = $document.find('.user-sidebar__header');
-        isOpenedSidebar = 　domUserSidebar[0].className.indexOf('.user-sidebar-in') !== -1;
-        if (isOpenedSidebar) {
-          showTweet();
-          return;
-        }
-
-        /*
-        初回(サイドバーは見えない状態が初期状態)
-         */
-        domUserSidebar.addClass('user-sidebar-in');
-        domUserSidebarHeader.removeClass('user-sidebar-out');
-        body = $document.find('body');
-        body.addClass('scrollbar-y-hidden');
-        layer = $document.find('.layer');
-        layer.addClass('fullscreen-overlay');
-        showTweet();
-        return layer.on('click', function() {
-          body.removeClass('scrollbar-y-hidden');
-          layer.removeClass('fullscreen-overlay');
-          domUserSidebar.removeClass('user-sidebar-in');
-          domUserSidebarHeader.addClass('user-sidebar-out');
-          return $rootScope.$broadcast('isClosed', true);
-        });
-      });
-    }
-  };
-}]);
-
-angular.module("myApp.directives").directive("zoomImage", ["$compile", "$rootScope", "TweetService", "GetterImageInfomation", function($compile, $rootScope, TweetService, GetterImageInfomation) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      return element.on('click', function() {
-        var containerHTML, html, imageLayer, imageLayerContainer, imageLayerImg, imageLayerLoading;
-        html = angular.element(document).find('html');
-        imageLayer = angular.element(document).find('.image-layer');
-        containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n  <div class=\"image-layer__loading\">\n    <img src=\"./images/loaders/tail-spin.svg\" />\n  </div>\n</div>";
-        imageLayer.html(containerHTML);
-        imageLayer.addClass('image-layer__overlay');
-        imageLayerImg = angular.element(document).find('.image-layer__img');
-        imageLayerLoading = angular.element(document).find('.image-layer__loading');
-        imageLayerImg.hide();
-        imageLayerImg.attr('src', ("" + attrs.imgSrc).replace(':small', ':orig')).load(function() {
-          var direction;
-          direction = GetterImageInfomation.getWideDirection(imageLayerImg, html);
-          imageLayerImg.addClass("image-layer__img-" + direction + "-wide");
-          imageLayerLoading.remove();
-          return imageLayerImg.fadeIn(1);
-        });
-        imageLayerContainer = angular.element(document).find('.image-layer__container');
-        return imageLayerContainer.on('click', function() {
-          imageLayer.html('');
-          return imageLayer.removeClass('image-layer__overlay');
-        });
-      });
+    parse: function() {
+      return $location.path().split('/');
     }
   };
 }]);
@@ -2255,7 +2394,7 @@ angular.module("myApp.directives").directive('maoListContainer', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<dot-loader ng-if=\"!$ctrl.tweetList.items\" class=\"user-sidebar__contents--box-loading-init\">\n</dot-loader>\n<div ng-if=\"$ctrl.tweetList.isAuthenticatedWithMao\">\n  <div infinite-scroll=\"$ctrl.tweetList.load()\" infinite-scroll-distance=\"0\" class=\"row-eq-height\">\n    <div style=\"padding: 15px;\" ng-repeat=\"item in $ctrl.tweetList.items\" class=\"col-lg-4 col-md-6 col-sm-6\">\n      <mao-tweet-article item=\"item\"></mao-tweet-article>\n    </div>\n  </div>\n  <div class=\"col-sm-12\">\n    <dot-loader ng-if=\"$ctrl.tweetList.busy\" class=\"infinitescroll-content\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweetList.isLast\" class=\"text-center infinitescroll-content infinitescroll-message\">終わりです\n    </div>\n  </div>\n</div>\n<div ng-if=\"!$ctrl.tweetList.isAuthenticatedWithMao\" class=\"col-sm-12\">\n  <div class=\"infinitescroll-message\">\n    <p>MaoでのTwitter認証がされていないのでこの機能は利用できません。</p>\n    <p>MaoはAmatsukaのメンバーの人気の画像を毎日収集し、閲覧できる機能です。</p>\n    <p>認証は以下のリンク先で行えます</p>\n    <p>\n      <a href=\"https://ma0.herokuapp.com\" target=\"_blank\" class=\"mao__link\">\n        Mao\n        <i class=\"fa fa-external-link\"></i>\n      </a>\n    </p>\n  </div>\n</div>",
+    template: "<dot-loader ng-if=\"!$ctrl.tweetList.items\" class=\"user-sidebar__contents--box-loading-init\">\n</dot-loader>\n<div ng-if=\"$ctrl.tweetList.isAuthenticatedWithMao\">\n  <div class=\"col-sm-12\">\n    <term-pagination></term-pagination>\n  </div>\n  <div infinite-scroll=\"$ctrl.tweetList.load()\" infinite-scroll-distance=\"0\" class=\"col-sm-12 row-eq-height\">\n    <div style=\"padding: 15px\" ng-repeat=\"item in $ctrl.tweetList.items\" class=\"col-lg-4 col-md-6 col-sm-6\">\n      <mao-tweet-article item=\"item\"></mao-tweet-article>\n    </div>\n  </div>\n  <div class=\"col-sm-12\">\n    <dot-loader ng-if=\"$ctrl.tweetList.busy\" class=\"infinitescroll-content\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweetList.isLast\" class=\"text-center infinitescroll-content infinitescroll-message\">終わりです\n    </div>\n  </div>\n  <div class=\"col-sm-12\">\n    <term-pagination></term-pagination>\n  </div>\n</div>\n<div ng-if=\"!$ctrl.tweetList.isAuthenticatedWithMao\" class=\"col-sm-12\">\n  <div class=\"infinitescroll-message\">\n    <p>MaoでのTwitter認証がされていないのでこの機能は利用できません。</p>\n    <p>MaoはAmatsukaのメンバーの人気の画像を毎日収集し、閲覧できる機能です。</p>\n    <p>認証は以下のリンク先で行えます</p>\n    <p>\n      <a href=\"https://ma0.herokuapp.com\" target=\"_blank\" class=\"mao__link\">\n        Mao\n        <i class=\"fa fa-external-link\"></i>\n      </a>\n    </p>\n  </div>\n</div>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoListContoller
@@ -2263,23 +2402,53 @@ angular.module("myApp.directives").directive('maoListContainer', function() {
 });
 
 MaoListContoller = (function() {
-  function MaoListContoller($location, Mao, ListService) {
-    var date;
+  function MaoListContoller($location, $scope, Mao, ListService, URLParameterChecker, TimeService) {
+    var urlParameterChecker;
     this.$location = $location;
+    this.$scope = $scope;
     this.Mao = Mao;
     this.ListService = ListService;
+    this.TimeService = TimeService;
     if (!this.ListService.hasListData()) {
       this.$location.path('/');
     }
-    date = moment().add(-1, 'days').format('YYYY-MM-DD');
-    this.tweetList = new this.Mao(date);
+    urlParameterChecker = new URLParameterChecker();
+    if (_.isEmpty(urlParameterChecker.queryParams)) {
+      urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD');
+    }
+    console.log(urlParameterChecker.queryParams);
+    this.date = moment().add(-1, 'days').format('YYYY-MM-DD');
+    this.tweetList = new this.Mao(this.date);
+    this.subscribe();
   }
+
+  MaoListContoller.prototype.getTweet = function(newQueryParams) {
+    this.date = this.TimeService.normalizeDate('days', newQueryParams.date);
+    console.log('getTweet ', this.date);
+    this.tweetList = new this.Mao(this.date);
+    return this.tweetList.load();
+  };
+
+  MaoListContoller.prototype.subscribe = function() {
+    this.$scope.$on('MaoStatusController::publish', (function(_this) {
+      return function(event, args) {
+        return _this.date = args.date;
+      };
+    })(this));
+    return this.$scope.$on('termPagination::paginate', (function(_this) {
+      return function(event, args) {
+        console.log('termPagination::paginate on', args);
+        _this.$location.search('date', args.date);
+        _this.getTweet(args);
+      };
+    })(this));
+  };
 
   return MaoListContoller;
 
 })();
 
-MaoListContoller.$inject = ['$location', 'Mao', 'ListService'];
+MaoListContoller.$inject = ['$location', '$scope', 'Mao', 'ListService', 'URLParameterChecker', 'TimeService'];
 
 var MaoTweetArticleController;
 

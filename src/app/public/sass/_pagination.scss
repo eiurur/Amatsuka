@@ -1,0 +1,9 @@
+@charset "utf-8";
+
+.pagination__term {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px 0;
+  color: $theme-color;
+}

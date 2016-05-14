@@ -6,8 +6,11 @@ angular.module "myApp.directives"
       <dot-loader ng-if="!$ctrl.tweetList.items" class="user-sidebar__contents--box-loading-init">
       </dot-loader>
       <div ng-if="$ctrl.tweetList.isAuthenticatedWithMao">
-        <div infinite-scroll="$ctrl.tweetList.load()" infinite-scroll-distance="0" class="row-eq-height">
-          <div style="padding: 15px;" ng-repeat="item in $ctrl.tweetList.items" class="col-lg-4 col-md-6 col-sm-6">
+        <div class="col-sm-12">
+          <term-pagination></term-pagination>
+        </div>
+        <div infinite-scroll="$ctrl.tweetList.load()" infinite-scroll-distance="0" class="col-sm-12 row-eq-height">
+          <div style="padding: 15px" ng-repeat="item in $ctrl.tweetList.items" class="col-lg-4 col-md-6 col-sm-6">
             <mao-tweet-article item="item"></mao-tweet-article>
           </div>
         </div>
@@ -16,6 +19,9 @@ angular.module "myApp.directives"
           </dot-loader>
           <div ng-show="$ctrl.tweetList.isLast" class="text-center infinitescroll-content infinitescroll-message">終わりです
           </div>
+        </div>
+        <div class="col-sm-12">
+          <term-pagination></term-pagination>
         </div>
       </div>
       <div ng-if="!$ctrl.tweetList.isAuthenticatedWithMao" class="col-sm-12">
@@ -37,13 +43,35 @@ angular.module "myApp.directives"
     controller: MaoListContoller
 
 class MaoListContoller
-  constructor: (@$location, @Mao, @ListService) ->
+  constructor: (@$location, @$scope, @Mao, @ListService, URLParameterChecker, @TimeService) ->
     unless @ListService.hasListData() then @$location.path '/'
 
-    date = moment().add(-1, 'days').format('YYYY-MM-DD')
-    @tweetList = new @Mao(date)
 
-  # subscribe: ->
-  #   @$scope.$on 'MaoStatusController::publish', (event, args) => @date = args.date
+    urlParameterChecker = new URLParameterChecker()
+    if _.isEmpty(urlParameterChecker.queryParams)
+      urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD')
+    console.log urlParameterChecker.queryParams
 
-MaoListContoller.$inject = ['$location', 'Mao', 'ListService']
+    @date = moment().add(-1, 'days').format('YYYY-MM-DD')
+    @tweetList = new @Mao(@date)
+    @subscribe()
+    # 今はいらん
+    # @term = $routeParams.term
+
+  getTweet: (newQueryParams) ->
+    @date = @TimeService.normalizeDate 'days', newQueryParams.date
+    console.log 'getTweet ', @date
+    @tweetList = new @Mao(@date)
+    @tweetList.load()
+
+  subscribe: ->
+    @$scope.$on 'MaoStatusController::publish', (event, args) => @date = args.date
+
+    @$scope.$on 'termPagination::paginate', (event, args) =>
+      console.log 'termPagination::paginate on', args
+      @$location.search 'date', args.date
+      @getTweet(args)
+      return
+
+MaoListContoller.$inject = ['$location', '$scope', 'Mao', 'ListService', 'URLParameterChecker', 'TimeService']
+

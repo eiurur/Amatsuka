@@ -22,7 +22,14 @@ ul {
 }
 
 a {
+  color: $theme-color;
   cursor: pointer;
+  text-decoration: none;
+  transition: color ease .5s;
+  &:hover {
+    color: lighten($theme-color, 10%);
+    text-decoration: none
+  }
 }
 
 // <a>タグはdisabledがないので疑似的なスタイルを自前で用意する
