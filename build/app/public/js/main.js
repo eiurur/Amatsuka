@@ -1378,7 +1378,7 @@ angular.module("myApp.factories").factory('TweetCountList', ["$q", "$httpParamSe
             console.log('tweetCountist = ', tweetCountist);
             _this.maxCount = tweetCountist.data[0].postCount;
           }
-          tweetCountist.data.forEach(function(tweet) {
+          tweetCountist.data.map(function(tweet) {
             return _this.items.push(tweet);
           });
           _this.skip += _this.limit;
@@ -1405,9 +1405,10 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ToasterServ
   var Tweets;
   Tweets = (function() {
     function Tweets(items, maxId, type, twitterIdStr) {
-      if (maxId == null) {
-        maxId = void 0;
-      }
+      this.items = items;
+      this.maxId = maxId != null ? maxId : void 0;
+      this.type = type;
+      this.twitterIdStr = twitterIdStr != null ? twitterIdStr : null;
       this.checkError = __bind(this.checkError, this);
       this.assignTweet = __bind(this.assignTweet, this);
       this.normalizeTweet = __bind(this.normalizeTweet, this);
@@ -1415,10 +1416,6 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ToasterServ
       this.isLast = false;
       this.method = null;
       this.count = 40;
-      this.items = items;
-      this.maxId = maxId;
-      this.type = type;
-      this.twitterIdStr = twitterIdStr || null;
     }
 
     Tweets.prototype.normalizeTweet = function(data) {
@@ -2460,7 +2457,7 @@ angular.module("myApp.directives").directive('maoContainer', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<ul class=\"nav nav-pills nav-stacked col-md-1 col-sm-2\">\n  <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n    <a href=\"{{tab.href}}\" data-toggle=\"tab\" ng-click=\"$ctrl.select(tab.name)\" >{{tab.name}}</a>\n  </li>\n</ul>\n<div class=\"tab-content col-md-11 col-sm-10\">\n  <div id=\"tweets\" class=\"tab-pane active\">\n    <mao-list-container></mao-list-container>\n  </div>\n  <div id=\"stats\" class=\"tab-pane\">\n    <mao-ranking-post-number></mao-ranking-post-number>\n  </div>\n</div>",
+    template: "<ul class=\"nav nav-pills nav-stacked col-md-1 col-sm-2\">\n  <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n    <a href=\"{{tab.href}}\" data-toggle=\"tab\" ng-click=\"$ctrl.select(tab.id)\" >{{tab.name}}</a>\n  </li>\n</ul>\n<div class=\"tab-content col-md-11 col-sm-10\">\n  <div id=\"tweets\" class=\"tab-pane active\" ng-if=\"$ctrl.tabType == 'tweets'\">\n    <mao-list-container></mao-list-container>\n  </div>\n  <div id=\"stats\" class=\"tab-pane\" ng-if=\"$ctrl.tabType == 'stats'\">\n    <mao-ranking-post-number></mao-ranking-post-number>\n  </div>\n</div>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoContainerController
@@ -2471,24 +2468,28 @@ MaoContainerController = (function() {
   function MaoContainerController() {
     this.tabs = [
       {
-        "href": '#tweets',
-        "name": 'Tweets',
-        "active": true
+        'href': '#tweets',
+        'id': 'tweets',
+        'name': 'Tweets',
+        'active': true
       }, {
-        "href": '#stats',
-        "name": 'Stats',
-        "active": false
+        'href': '#stats',
+        'id': 'stats',
+        'name': 'Stats',
+        'active': false
       }
     ];
     console.log(this.tabs);
+    this.tabType = this.tabs[0].id;
   }
 
-  MaoContainerController.prototype.select = function(name) {
+  MaoContainerController.prototype.select = function(id) {
     console.log(name);
+    this.tabType = id;
     return this.tabs.forEach(function(tab) {
-      console.log(tab.name);
-      console.log(tab.name === name);
-      tab.active = tab.name === name ? true : false;
+      console.log(tab.id);
+      console.log(tab.id === id);
+      tab.active = tab.id === id ? true : false;
       return console.log(tab);
     });
   };

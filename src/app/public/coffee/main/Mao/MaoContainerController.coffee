@@ -5,14 +5,14 @@ angular.module "myApp.directives"
     template: """
       <ul class="nav nav-pills nav-stacked col-md-1 col-sm-2">
         <li ng-repeat="tab in $ctrl.tabs" ng-class="{active: tab.active}">
-          <a href="{{tab.href}}" data-toggle="tab" ng-click="$ctrl.select(tab.name)" >{{tab.name}}</a>
+          <a href="{{tab.href}}" data-toggle="tab" ng-click="$ctrl.select(tab.id)" >{{tab.name}}</a>
         </li>
       </ul>
       <div class="tab-content col-md-11 col-sm-10">
-        <div id="tweets" class="tab-pane active">
+        <div id="tweets" class="tab-pane active" ng-if="$ctrl.tabType == 'tweets'">
           <mao-list-container></mao-list-container>
         </div>
-        <div id="stats" class="tab-pane">
+        <div id="stats" class="tab-pane" ng-if="$ctrl.tabType == 'stats'">
           <mao-ranking-post-number></mao-ranking-post-number>
         </div>
       </div>
@@ -25,22 +25,29 @@ class MaoContainerController
   constructor: ->
     @tabs = [
       {
-        "href": '#tweets'
-        "name": 'Tweets'
-        "active": true
+        'href': '#tweets'
+        'id': 'tweets'
+        'name': 'Tweets'
+        'active': true
       }
       {
-        "href": '#stats'
-        "name": 'Stats'
-        "active": false
+        'href': '#stats'
+        'id': 'stats'
+        'name': 'Stats'
+        'active': false
       }
     ]
     console.log @tabs
+    @tabType = @tabs[0].id
 
-  select: (name) ->
+  select: (id) ->
     console.log name
+
+    # 一時的な措置
+    @tabType = id
+
     @tabs.forEach (tab) ->
-      console.log tab.name
-      console.log tab.name is name
-      tab.active = if tab.name is name then true else false
+      console.log tab.id
+      console.log tab.id is id
+      tab.active = if tab.id is id then true else false
       console.log tab

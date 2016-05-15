@@ -30,7 +30,7 @@ angular.module "myApp.factories"
           if @items.length is 0
             console.log 'tweetCountist = ', tweetCountist
             @maxCount = tweetCountist.data[0].postCount
-          tweetCountist.data.forEach (tweet) => @items.push tweet
+          tweetCountist.data.map (tweet) => @items.push tweet
           @skip += @limit
           @busy = false
         .catch (err) =>

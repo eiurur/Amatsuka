@@ -2,16 +2,11 @@ angular.module "myApp.factories"
   .factory 'Tweets', ($http, $q, ToasterService, TweetService, ListService) ->
 
     class Tweets
-      constructor: (items, maxId = undefined, type, twitterIdStr) ->
+      constructor: (@items, @maxId = undefined, @type, @twitterIdStr = null) ->
         @busy         = false
         @isLast       = false
         @method       = null
         @count        = 40
-        @items        = items
-        @maxId        = maxId
-        @type         = type
-        @twitterIdStr = twitterIdStr || null
-
 
       normalizeTweet: (data) =>
         return new Promise (resolve, reject) =>
