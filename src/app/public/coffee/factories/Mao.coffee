@@ -25,8 +25,8 @@ angular.module "myApp.factories"
           # tweet_objectからuserデータを取り出してViewに合わせたデータ構造に書き換える
           result = pictTweetList.map (item) -> user: item[0].user, pictTweetList: item
 
+          console.log 'pictTweetList = ', pictTweetList
           result = result.map (item) ->
-            console.log 'item = ', item
             # 複数枚イラストをここで平坦化。tweetオブジェクトも含めるのは、media.id_strはmediaのid_strであって、tweetのid_strではなく
             # show_statusesで必要なのはtweetのid_strであるのでここで付与する
             pictList = _.flatten item.pictTweetList.map (tweet) ->

@@ -19,3 +19,42 @@ a.dropdown-toggle {
 .dropdown-menu li a:hover, .dropdown-menu li a:focus, .dropdown-menu .active a, .dropdown-menu .active a:hover, .dropdown-menu .active a:focus {
   background-color: $amatsuka-color;
 }
+
+
+.progress {
+  background: $link-color;
+  margin-bottom: 0;
+  height: 3rem;
+  border-radius: 0;
+}
+
+.progress-bar {
+  background: $theme-color;
+  line-height: 3rem;
+  height: 3rem;
+  font-size: 2rem;
+  text-align: right;
+}
+
+
+// 何も選ばれていないtab
+.nav-pills > li > a {
+  color: $link-color;
+  border-radius: 0;
+}
+
+.nav > li > a:hover, .nav > li > a:focus {
+    color: $theme-color;
+    text-decoration: none;
+    background-color: transparent;
+}
+
+// 選ばれたタブ
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+    color: $theme-color;
+    background-color: transparent;
+    border-left: 1px solid $theme-color;
+}
+
+
+

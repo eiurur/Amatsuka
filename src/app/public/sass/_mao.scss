@@ -10,3 +10,32 @@ a.mao__link {
     color: lighten($mao-color, 10%);
   }
 }
+
+.mao__user {
+
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+
+  &__icon {
+    cursor: pointer;
+    max-width: 32px;
+    height: auto;
+    border-radius: 100%;
+  }
+
+  &__container {
+    display: inline-block;
+    // padding: 8px;
+    padding: 8px 8px 0 0;
+  }
+}
+
+.mao__pict__container {
+  background: $link-color;
+  height: 200px;
+}
+
+.mao__tweet__container {
+  padding: 32px 0;
+}

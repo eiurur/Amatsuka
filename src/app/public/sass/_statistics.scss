@@ -1,0 +1,26 @@
+@charset "utf-8";
+
+.fillbar {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+
+  &__user {
+    display: flex;
+    align-items: center;
+  }
+  &__icon {
+    border-radius: 4px;
+    width: 24px;
+  }
+  &__screen-name {
+    color: $link-color;
+    padding-left: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &__count {
+    padding-right: 8px;
+  }
+}

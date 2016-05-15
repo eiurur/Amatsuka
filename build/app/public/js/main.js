@@ -1144,9 +1144,9 @@ angular.module("myApp.factories").factory('Mao', ["$q", "$httpParamSerializer", 
               pictTweetList: item
             };
           });
+          console.log('pictTweetList = ', pictTweetList);
           result = result.map(function(item) {
             var pictList;
-            console.log('item = ', item);
             pictList = _.flatten(item.pictTweetList.map(function(tweet) {
               return tweet.extended_entities.media.map(function(media) {
                 return {
@@ -1339,6 +1339,64 @@ angular.module("myApp.factories").factory('Pict', ["$q", "toaster", "TweetServic
 
   })();
   return Pict;
+}]);
+
+angular.module("myApp.factories").factory('TweetCountList', ["$q", "$httpParamSerializer", "MaoService", function($q, $httpParamSerializer, MaoService) {
+  var TweetCountList;
+  TweetCountList = (function() {
+    function TweetCountList(date) {
+      this.date = date;
+      this.busy = false;
+      this.isLast = false;
+      this.limit = 20;
+      this.skip = 0;
+      this.maxCount = 1000;
+      this.items = [];
+      this.isAuthenticatedWithMao = true;
+    }
+
+    TweetCountList.prototype.load = function() {
+      var opts, qs;
+      if (this.busy || this.isLast) {
+        return;
+      }
+      this.busy = true;
+      opts = {
+        skip: this.skip,
+        limit: this.limit
+      };
+      qs = $httpParamSerializer(opts);
+      return MaoService.aggregateTweetCount(qs).then((function(_this) {
+        return function(tweetCountist) {
+          console.log('aggregateTweetCount ==> ', tweetCountist);
+          if (tweetCountist.data.length === 0) {
+            _this.busy = false;
+            _this.isLast = true;
+            return;
+          }
+          if (_this.items.length === 0) {
+            console.log('tweetCountist = ', tweetCountist);
+            _this.maxCount = tweetCountist.data[0].postCount;
+          }
+          tweetCountist.data.forEach(function(tweet) {
+            return _this.items.push(tweet);
+          });
+          _this.skip += _this.limit;
+          return _this.busy = false;
+        };
+      })(this))["catch"]((function(_this) {
+        return function(err) {
+          _this.isLast = true;
+          _this.busy = false;
+          return _this.isAuthenticatedWithMao = false;
+        };
+      })(this));
+    };
+
+    return TweetCountList;
+
+  })();
+  return TweetCountList;
 }]);
 
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
@@ -1883,9 +1941,14 @@ angular.module("myApp.services").service("MaoService", ["$http", function($http)
   return {
     findByMaoTokenAndDate: function(qs) {
       return $http.get("/api/mao?" + qs);
+    },
+    aggregateTweetCount: function(qs) {
+      return $http.get("/api/mao/stats/tweet/count?" + qs);
     }
   };
 }]);
+
+angular.module("myApp.services").service("StatService", ["$http", "$q", function($http, $q) {}]);
 
 angular.module("myApp.services").service("TermPeginateDataServicve", ["$rootScope", function($rootScope) {
   return {
@@ -2391,90 +2454,6 @@ angular.module("myApp.services").service("URLParameterService", ["$location", fu
   };
 }]);
 
-var MaoListContoller;
-
-angular.module("myApp.directives").directive('maoListContainer', function() {
-  return {
-    restrict: 'E',
-    scope: {},
-    template: "<dot-loader ng-if=\"!$ctrl.tweetList.items\" class=\"user-sidebar__contents--box-loading-init\">\n</dot-loader>\n<div ng-if=\"$ctrl.tweetList.isAuthenticatedWithMao\">\n  <div class=\"col-sm-12\">\n    <term-pagination></term-pagination>\n  </div>\n  <div infinite-scroll=\"$ctrl.tweetList.load()\" infinite-scroll-distance=\"0\" class=\"col-sm-12 row-eq-height\">\n    <div style=\"padding: 15px\" ng-repeat=\"item in $ctrl.tweetList.items\" class=\"col-lg-4 col-md-6 col-sm-6\">\n      <mao-tweet-article item=\"item\"></mao-tweet-article>\n    </div>\n  </div>\n  <div class=\"col-sm-12\">\n    <dot-loader ng-if=\"$ctrl.tweetList.busy\" class=\"infinitescroll-content\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweetList.isLast\" class=\"text-center infinitescroll-content infinitescroll-message\">終わりです\n    </div>\n  </div>\n  <div class=\"col-sm-12\">\n    <term-pagination></term-pagination>\n  </div>\n</div>\n<div ng-if=\"!$ctrl.tweetList.isAuthenticatedWithMao\" class=\"col-sm-12\">\n  <div class=\"infinitescroll-message\">\n    <p>MaoでのTwitter認証がされていないのでこの機能は利用できません。</p>\n    <p>MaoはAmatsukaのメンバーの人気の画像を毎日収集し、閲覧できる機能です。</p>\n    <p>認証は以下のリンク先で行えます</p>\n    <p>\n      <a href=\"https://ma0.herokuapp.com\" target=\"_blank\" class=\"mao__link\">\n        Mao\n        <i class=\"fa fa-external-link\"></i>\n      </a>\n    </p>\n  </div>\n</div>",
-    bindToController: {},
-    controllerAs: "$ctrl",
-    controller: MaoListContoller
-  };
-});
-
-MaoListContoller = (function() {
-  function MaoListContoller($location, $scope, Mao, ListService, URLParameterChecker, TimeService) {
-    var urlParameterChecker;
-    this.$location = $location;
-    this.$scope = $scope;
-    this.Mao = Mao;
-    this.ListService = ListService;
-    this.TimeService = TimeService;
-    if (!this.ListService.hasListData()) {
-      this.$location.path('/');
-    }
-    urlParameterChecker = new URLParameterChecker();
-    console.log(urlParameterChecker);
-    if (_.isEmpty(urlParameterChecker.queryParams)) {
-      urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD');
-    }
-    this.date = moment(urlParameterChecker.queryParams.date).add(-1, 'days').format('YYYY-MM-DD');
-    this.tweetList = new this.Mao(this.date);
-    this.subscribe();
-  }
-
-  MaoListContoller.prototype.getTweet = function(newQueryParams) {
-    this.date = this.TimeService.normalizeDate('days', newQueryParams.date);
-    console.log('getTweet ', this.date);
-    this.tweetList = new this.Mao(this.date);
-    return this.tweetList.load();
-  };
-
-  MaoListContoller.prototype.subscribe = function() {
-    this.$scope.$on('MaoStatusController::publish', (function(_this) {
-      return function(event, args) {
-        return _this.date = args.date;
-      };
-    })(this));
-    return this.$scope.$on('termPagination::paginate', (function(_this) {
-      return function(event, args) {
-        console.log('termPagination::paginate on', args);
-        _this.$location.search('date', args.date);
-        _this.getTweet(args);
-      };
-    })(this));
-  };
-
-  return MaoListContoller;
-
-})();
-
-MaoListContoller.$inject = ['$location', '$scope', 'Mao', 'ListService', 'URLParameterChecker', 'TimeService'];
-
-var MaoTweetArticleController;
-
-angular.module("myApp.directives").directive('maoTweetArticle', function() {
-  return {
-    restrict: 'E',
-    scope: {},
-    template: "<div class=\"media find__media\">\n  <a twitter-id-str=\"{{::$ctrl.item.user.id_str}}\" show-tweet=\"show-tweet\" class=\"pull-left\">\n    <img ng-src=\"{{::$ctrl.item.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"media-object thumbnail-img fade\"/>\n  </a>\n  <div class=\"media-body\">\n    <h4 class=\"media-heading\"><span class=\"name\">{{::$ctrl.item.user.name}}</span>\n      <span class=\"screen-name\">@{{::$ctrl.item.user.screen_name}}</span>\n    </h4>\n    <a href=\"{{::$ctrl.item.user.url}}\" target=\"_blank\" class=\"link\">{{::$ctrl.item.user.url}}</a>\n  </div>\n</div>\n<div class=\"find__pict-tweet--container\">\n  <div class=\"row\">\n    <div ng-repeat=\"pict in $ctrl.item.pictList | limitTo: 12\" class=\"col-lg-6 col-md-4 col-sm-6 col-xs-6\">\n      <div style=\"background-image: url('{{::pict.media.media_url_https}}:small')\" data-img-src=\"{{::pict.media.media_url_https}}\" tweet-id-str=\"{{::pict.tweet.id_str}}\" show-statuses=\"show-statuses\" class=\"find__pict-tweet--img\">\n      </div>\n    </div>\n  </div>\n</div>",
-    bindToController: {
-      item: '='
-    },
-    controllerAs: "$ctrl",
-    controller: MaoTweetArticleController
-  };
-});
-
-MaoTweetArticleController = (function() {
-  function MaoTweetArticleController() {}
-
-  return MaoTweetArticleController;
-
-})();
-
 var GridLayoutTweet;
 
 angular.module("myApp.directives").directive('gridLayoutTweet', function() {
@@ -2583,6 +2562,164 @@ TweetListController = (function() {
 })();
 
 TweetListController.$inject = ['$location', '$scope', 'AuthService', 'ListService', 'Tweets', 'TweetService'];
+
+var MaoContainerController;
+
+angular.module("myApp.directives").directive('maoContainer', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<ul class=\"nav nav-pills nav-stacked col-md-1 col-sm-2\">\n  <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n    <a href=\"{{tab.href}}\" data-toggle=\"tab\" ng-click=\"$ctrl.select(tab.name)\" >{{tab.name}}</a>\n  </li>\n</ul>\n<div class=\"tab-content col-md-11 col-sm-10\">\n  <div id=\"tweets\" class=\"tab-pane active\">\n    <mao-list-container></mao-list-container>\n  </div>\n  <div id=\"stats\" class=\"tab-pane\">\n    <mao-ranking-post-number></mao-ranking-post-number>\n  </div>\n</div>",
+    bindToController: {},
+    controllerAs: "$ctrl",
+    controller: MaoContainerController
+  };
+});
+
+MaoContainerController = (function() {
+  function MaoContainerController() {
+    this.tabs = [
+      {
+        "href": '#tweets',
+        "name": 'Tweets',
+        "active": true
+      }, {
+        "href": '#stats',
+        "name": 'Stats',
+        "active": false
+      }
+    ];
+    console.log(this.tabs);
+  }
+
+  MaoContainerController.prototype.select = function(name) {
+    console.log(name);
+    return this.tabs.forEach(function(tab) {
+      console.log(tab.name);
+      console.log(tab.name === name);
+      tab.active = tab.name === name ? true : false;
+      return console.log(tab);
+    });
+  };
+
+  return MaoContainerController;
+
+})();
+
+var MaoListContoller;
+
+angular.module("myApp.directives").directive('maoListContainer', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<dot-loader ng-if=\"!$ctrl.tweetList.items\" class=\"user-sidebar__contents--box-loading-init\">\n</dot-loader>\n<div ng-if=\"$ctrl.tweetList.isAuthenticatedWithMao\">\n\n  <div class=\"col-sm-12\">\n    <term-pagination></term-pagination>\n  </div>\n\n  <div infinite-scroll=\"$ctrl.tweetList.load()\" infinite-scroll-distance=\"0\" class=\"col-sm-12 row-eq-height\">\n    <div ng-repeat=\"item in $ctrl.tweetList.items\" class=\"col-lg-4 col-md-6 col-sm-6 mao__tweet__container\">\n      <mao-tweet-article item=\"item\"></mao-tweet-article>\n    </div>\n  </div>\n\n  <div class=\"col-sm-12\">\n    <dot-loader ng-if=\"$ctrl.tweetList.busy\" class=\"infinitescroll-content\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweetList.isLast\" class=\"text-center infinitescroll-content infinitescroll-message\">終わりです\n    </div>\n  </div>\n\n  <div class=\"col-sm-12 pagination__term__container--bottom\">\n    <term-pagination></term-pagination>\n  </div>\n\n</div>\n<div ng-if=\"!$ctrl.tweetList.isAuthenticatedWithMao\" class=\"col-sm-12\">\n  <div class=\"infinitescroll-message\">\n    <p>MaoでのTwitter認証がされていないのでこの機能は利用できません。</p>\n    <p>MaoはAmatsukaのメンバーの人気の画像を毎日収集し、閲覧できる機能です。</p>\n    <p>認証は以下のリンク先で行えます</p>\n    <p>\n      <a href=\"https://ma0.herokuapp.com\" target=\"_blank\" class=\"mao__link\">\n        Mao\n        <i class=\"fa fa-external-link\"></i>\n      </a>\n    </p>\n  </div>\n</div>",
+    bindToController: {},
+    controllerAs: "$ctrl",
+    controller: MaoListContoller
+  };
+});
+
+MaoListContoller = (function() {
+  function MaoListContoller($location, $scope, Mao, ListService, URLParameterChecker, TimeService) {
+    var urlParameterChecker;
+    this.$location = $location;
+    this.$scope = $scope;
+    this.Mao = Mao;
+    this.ListService = ListService;
+    this.TimeService = TimeService;
+    if (!this.ListService.hasListData()) {
+      this.$location.path('/');
+    }
+    urlParameterChecker = new URLParameterChecker();
+    console.log(urlParameterChecker);
+    if (_.isEmpty(urlParameterChecker.queryParams)) {
+      urlParameterChecker.queryParams.date = moment().format('YYYY-MM-DD');
+    }
+    this.date = moment(urlParameterChecker.queryParams.date).add(-1, 'days').format('YYYY-MM-DD');
+    this.tweetList = new this.Mao(this.date);
+    this.subscribe();
+  }
+
+  MaoListContoller.prototype.getTweet = function(newQueryParams) {
+    this.date = this.TimeService.normalizeDate('days', newQueryParams.date);
+    console.log('getTweet ', this.date);
+    this.tweetList = new this.Mao(this.date);
+    return this.tweetList.load();
+  };
+
+  MaoListContoller.prototype.subscribe = function() {
+    this.$scope.$on('MaoStatusController::publish', (function(_this) {
+      return function(event, args) {
+        return _this.date = args.date;
+      };
+    })(this));
+    return this.$scope.$on('termPagination::paginate', (function(_this) {
+      return function(event, args) {
+        console.log('termPagination::paginate on', args);
+        _this.$location.search('date', args.date);
+        _this.getTweet(args);
+      };
+    })(this));
+  };
+
+  return MaoListContoller;
+
+})();
+
+MaoListContoller.$inject = ['$location', '$scope', 'Mao', 'ListService', 'URLParameterChecker', 'TimeService'];
+
+var MaoRankingPostNumber;
+
+angular.module("myApp.directives").directive('maoRankingPostNumber', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<section infinite-scroll=\"$ctrl.tweetCountList.load()\" infinite-scroll-distance=\"0\" class=\"fillbars\">\n  <div ng-repeat=\"item in $ctrl.tweetCountList.items\" class=\"col-sm-12 fillbar\">\n    <div class=\"col-sm-3 fillbar__user\">\n      <img ng-src=\"{{item.postedBy.icon}}\" twitter-id-str=\"{{item.postedBy.twitterIdStr}}\" show-tweet img-preload class=\"fade fillbar__icon\">\n      <span class=\"fillbar__screen-name clickable\" twitter-id-str=\"{{item.postedBy.twitterIdStr}}\"  show-tweet>{{item.postedBy.screenName}}</span>\n    </div>\n    <div class=\"col-sm-9\">\n      <div class=\"progress\">\n        <div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"60\" aria-valuemin=\"0\" aria-valuemax=\"100\" ng-style=\"{ 'width': item.postCount / $ctrl.tweetCountList.maxCount * 100 + '%'}\">\n          <span class=\"fillbar__count\">\n            {{item.postCount}}\n          </span>\n        </div>\n      </div>\n    </div>\n  </div>\n</section>",
+    bindToController: {},
+    controllerAs: "$ctrl",
+    controller: MaoRankingPostNumber
+  };
+});
+
+MaoRankingPostNumber = (function() {
+  function MaoRankingPostNumber($location, $scope, TweetCountList, ListService, URLParameterChecker, TimeService) {
+    this.$location = $location;
+    this.$scope = $scope;
+    this.TweetCountList = TweetCountList;
+    this.ListService = ListService;
+    this.TimeService = TimeService;
+    '======> constructor MaoRankingPostNumber ';
+    this.tweetCountList = new this.TweetCountList();
+    console.log('@tweetCountList ', this.tweetCountList);
+  }
+
+  return MaoRankingPostNumber;
+
+})();
+
+MaoRankingPostNumber.$inject = ['$location', '$scope', 'TweetCountList', 'ListService', 'URLParameterChecker', 'TimeService'];
+
+var MaoTweetArticleController;
+
+angular.module("myApp.directives").directive('maoTweetArticle', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<div class=\"media mao__user\">\n  <a twitter-id-str=\"{{::$ctrl.item.user.id_str}}\" show-tweet=\"show-tweet\" class=\"pull-left\">\n    <img ng-src=\"{{::$ctrl.item.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"mao__user__icon fade\"/>\n  </a>\n  <div class=\"media-body\">\n    <h4 class=\"media-heading\">\n      <span class=\"name\">{{::$ctrl.item.user.name}}</span>\n      <span twitter-id-str=\"{{::$ctrl.item.user.id_str}}\" show-tweet class=\"screen-name clickable\">@{{::$ctrl.item.user.screen_name}}</span>\n    </h4>\n  </div>\n</div>\n<div class=\"find__pict-tweet--container\">\n  <div>\n    <div ng-repeat=\"pict in $ctrl.item.pictList | limitTo: 12\" class=\"col-lg-6 col-md-4 col-sm-6 col-xs-6 mao__user__container\">\n      <div class=\"mao__pict__container\">\n        <img ng-src=\"{{::pict.media.media_url_https}}:small\" data-img-src=\"{{::pict.media.media_url_https}}\" tweet-id-str=\"{{::pict.tweet.id_str}}\" show-statuses=\"show-statuses\" img-preload class=\"fade find__pict-tweet--img\">\n      </div>\n    </div>\n  </div>\n</div>",
+    bindToController: {
+      item: '='
+    },
+    controllerAs: "$ctrl",
+    controller: MaoTweetArticleController
+  };
+});
+
+MaoTweetArticleController = (function() {
+  function MaoTweetArticleController() {}
+
+  return MaoTweetArticleController;
+
+})();
 
 var ZoomImageContainerController;
 

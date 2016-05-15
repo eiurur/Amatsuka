@@ -1505,6 +1505,31 @@ a.mao__link:active {
   color: #f2c797;
 }
 
+.mao__user {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+.mao__user__icon {
+  cursor: pointer;
+  max-width: 32px;
+  height: auto;
+  border-radius: 100%;
+}
+.mao__user__container {
+  display: inline-block;
+  padding: 8px 8px 0 0;
+}
+
+.mao__pict__container {
+  background: #a1a1a1;
+  height: 200px;
+}
+
+.mao__tweet__container {
+  padding: 32px 0;
+}
+
 .extract-form {
   width: 100%;
   max-width: 400px;
@@ -1626,6 +1651,38 @@ a.dropdown-toggle {
   background-color: #f2446f;
 }
 
+.progress {
+  background: #a1a1a1;
+  margin-bottom: 0;
+  height: 3rem;
+  border-radius: 0;
+}
+
+.progress-bar {
+  background: #f2446f;
+  line-height: 3rem;
+  height: 3rem;
+  font-size: 2rem;
+  text-align: right;
+}
+
+.nav-pills > li > a {
+  color: #a1a1a1;
+  border-radius: 0;
+}
+
+.nav > li > a:hover, .nav > li > a:focus {
+  color: #f2446f;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
+  color: #f2446f;
+  background-color: transparent;
+  border-left: 1px solid #f2446f;
+}
+
 .image-layer__prev {
   cursor: pointer;
   height: 100%;
@@ -1696,8 +1753,36 @@ a.dropdown-toggle {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding: 20px 0;
+  padding-bottom: 20px;
   color: #f2446f;
+}
+
+.pagination__term__container--bottom {
+  padding-top: 60px;
+}
+
+.fillbar {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+}
+.fillbar__user {
+  display: flex;
+  align-items: center;
+}
+.fillbar__icon {
+  border-radius: 4px;
+  width: 24px;
+}
+.fillbar__screen-name {
+  color: #a1a1a1;
+  padding-left: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fillbar__count {
+  padding-right: 8px;
 }
 
 /*# sourceMappingURL=app.css.map */

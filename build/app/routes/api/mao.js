@@ -16,7 +16,7 @@
   settings = (process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'))).settings;
 
   module.exports = function(app) {
-    return app.get("/api/mao", function(req, res) {
+    app.get("/api/mao", function(req, res) {
       var _config;
       _config = null;
       return ConfigProvider.findOneById({
@@ -45,6 +45,27 @@
           console.error(err);
           return res.status(401).send(err);
         });
+      });
+    });
+    return app.get("/api/mao/stats/tweet/count", function(req, res) {
+      return axios.get("" + settings.MAO_HOST + "/api/stats/tweet/count", {
+        params: {
+          maoToken: my.createHash(req.session.passport.user._json.id_str + settings.MAO_TOKEN_SALT),
+          skip: req.query.skip - 0,
+          limit: req.query.limit - 0
+        }
+      }).then(function(response) {
+        console.log(response.data.length);
+        console.log(response.status);
+        if (response.status !== 200) {
+          new ((function() {
+            throw Error('Not Authorized');
+          })());
+        }
+        return res.send(response.data);
+      })["catch"](function(err) {
+        console.error(err);
+        return res.status(401).send(err);
       });
     });
   };

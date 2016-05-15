@@ -4,6 +4,13 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding: 20px 0;
+  // padding: 60px 0;
+
+  // tab-stackに合わせると20px
+  padding-bottom: 20px;
   color: $theme-color;
+}
+
+.pagination__term__container--bottom {
+  padding-top: 60px;
 }

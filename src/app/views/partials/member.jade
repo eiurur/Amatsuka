@@ -17,7 +17,9 @@
         .media-body
           h4.media-heading
             span.name {{::member.name}}
-            span.screen-name @{{::member.screen_name}}
+            span.screen-name.clickable(
+              twitter-id-str="{{::member.id_str}}",
+              show-tweet="show-tweet") @{{::member.screen_name}}
           span.btn-wrapper
           a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{::member.id_str}}', ng-disabled='isProcessing')
 

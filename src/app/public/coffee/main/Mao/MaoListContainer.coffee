@@ -6,23 +6,28 @@ angular.module "myApp.directives"
       <dot-loader ng-if="!$ctrl.tweetList.items" class="user-sidebar__contents--box-loading-init">
       </dot-loader>
       <div ng-if="$ctrl.tweetList.isAuthenticatedWithMao">
+
         <div class="col-sm-12">
           <term-pagination></term-pagination>
         </div>
+
         <div infinite-scroll="$ctrl.tweetList.load()" infinite-scroll-distance="0" class="col-sm-12 row-eq-height">
-          <div style="padding: 15px" ng-repeat="item in $ctrl.tweetList.items" class="col-lg-4 col-md-6 col-sm-6">
+          <div ng-repeat="item in $ctrl.tweetList.items" class="col-lg-4 col-md-6 col-sm-6 mao__tweet__container">
             <mao-tweet-article item="item"></mao-tweet-article>
           </div>
         </div>
+
         <div class="col-sm-12">
           <dot-loader ng-if="$ctrl.tweetList.busy" class="infinitescroll-content">
           </dot-loader>
           <div ng-show="$ctrl.tweetList.isLast" class="text-center infinitescroll-content infinitescroll-message">終わりです
           </div>
         </div>
-        <div class="col-sm-12">
+
+        <div class="col-sm-12 pagination__term__container--bottom">
           <term-pagination></term-pagination>
         </div>
+
       </div>
       <div ng-if="!$ctrl.tweetList.isAuthenticatedWithMao" class="col-sm-12">
         <div class="infinitescroll-message">
@@ -51,7 +56,7 @@ class MaoListContoller
     console.log urlParameterChecker
 
     if _.isEmpty(urlParameterChecker.queryParams)
-      urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD')
+      urlParameterChecker.queryParams.date = moment().format('YYYY-MM-DD')
 
     @date = moment(urlParameterChecker.queryParams.date).add(-1, 'days').format('YYYY-MM-DD')
     @tweetList = new @Mao(@date)
