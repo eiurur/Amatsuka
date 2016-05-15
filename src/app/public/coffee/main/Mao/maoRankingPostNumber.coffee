@@ -4,6 +4,7 @@ angular.module "myApp.directives"
     scope: {}
     template: """
     <section infinite-scroll="$ctrl.tweetCountList.load()" infinite-scroll-distance="0" class="fillbars">
+
       <div ng-repeat="item in $ctrl.tweetCountList.items" class="col-sm-12 fillbar">
         <div class="col-sm-3 fillbar__user">
           <img ng-src="{{item.postedBy.icon}}" twitter-id-str="{{item.postedBy.twitterIdStr}}" show-tweet img-preload class="fade fillbar__icon">
@@ -19,6 +20,14 @@ angular.module "myApp.directives"
           </div>
         </div>
       </div>
+
+      <div class="col-sm-12">
+        <dot-loader ng-if="$ctrl.tweetCountList.busy" class="infinitescroll-content">
+        </dot-loader>
+        <div ng-show="$ctrl.tweetCountList.isLast" class="text-center infinitescroll-content infinitescroll-message">終わりです
+        </div>
+      </div>
+
     </section>
     """
     bindToController: {}
