@@ -14,14 +14,19 @@ angular.module 'myApp.directives'
 
         imageLayer          = angular.element(document).find('.image-layer')
         imageLayerContainer = angular.element(document).find('.image-layer__container')
-        next                = null
-        prev                = null
+
+        # オーバーレイ部分をクリックしたら生成した要素は全て削除する
+        # (bindEvents関数の中でバインドしていたけどツイート読み込みが終了するまで拡大表示状態から抜け出せず、イラついていたのでここでバインド)
+        imageLayerContainer.on 'click', -> cleanup()
+
+        next = null
+        prev = null
 
         TweetService.showStatuses(tweetIdStr: attrs.tweetIdStr)
         .then (data) ->
           tweet = data.data
           bindEvents()
-          showTweetInfomation(tweet, imgIdx);
+          showTweetInfomation(tweet, imgIdx)
 
         showPrevNextElement = ->
           html = """
@@ -75,8 +80,6 @@ angular.module 'myApp.directives'
         bindEvents = ->
           ## For 単数枚
           # ClickEvent
-          # オーバーレイ部分をクリックしたら生成した要素は全て削除する
-          imageLayerContainer.on 'click', -> cleanup()
 
           # KeyEvent
           Mousetrap.bind 'd', -> angular.element(document).find('.image-layer__caption .fa-download').click()

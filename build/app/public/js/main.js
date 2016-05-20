@@ -613,6 +613,9 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
         zoomImageViewer.pipeLowToHighImage(attrs.imgSrc, attrs.imgSrc.replace(':small', '') + ':orig');
         imageLayer = angular.element(document).find('.image-layer');
         imageLayerContainer = angular.element(document).find('.image-layer__container');
+        imageLayerContainer.on('click', function() {
+          return cleanup();
+        });
         next = null;
         prev = null;
         TweetService.showStatuses({
@@ -657,9 +660,6 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           return zoomImageViewer.pipeLowToHighImage("" + src + ":small", "" + src + ":orig");
         };
         bindEvents = function() {
-          imageLayerContainer.on('click', function() {
-            return cleanup();
-          });
           Mousetrap.bind('d', function() {
             return angular.element(document).find('.image-layer__caption .fa-download').click();
           });
