@@ -50,8 +50,8 @@
         case 'getFavLists':
           params = {
             twitterIdStr: this.req.params.id,
-            maxId: this.req.params.maxId,
-            count: this.req.params.count
+            maxId: this.maxId,
+            count: 100
           };
           break;
       }
@@ -83,6 +83,9 @@
               data: tweetsNormalized
             });
           }
+          console.log(chalk.red('maxId, nextMaxId =============> '));
+          console.log(maxId);
+          console.log(nextMaxId);
           if (_this.maxId === nextMaxId) {
             _this.res.json({
               data: []

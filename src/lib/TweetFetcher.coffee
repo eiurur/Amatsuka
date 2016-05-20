@@ -34,8 +34,8 @@ module.exports = class TweetFetcher
         when 'getFavLists'
           params =
             twitterIdStr: @req.params.id
-            maxId: @req.params.maxId
-            count: @req.params.count
+            maxId: @maxId
+            count: 100
         else
       return params
 
@@ -70,9 +70,9 @@ module.exports = class TweetFetcher
 
         if !_.isEmpty tweetsNormalized then @res.json data: tweetsNormalized
 
-        # console.log chalk.red 'maxId, nextMaxId =============> '
-        # console.log maxId
-        # console.log nextMaxId
+        console.log chalk.red 'maxId, nextMaxId =============> '
+        console.log maxId
+        console.log nextMaxId
 
         if @maxId is nextMaxId then @res.json data: []
 
