@@ -2525,9 +2525,9 @@ MaoListContoller = (function() {
     urlParameterChecker = new URLParameterChecker();
     console.log(urlParameterChecker);
     if (_.isEmpty(urlParameterChecker.queryParams)) {
-      urlParameterChecker.queryParams.date = moment().format('YYYY-MM-DD');
+      urlParameterChecker.queryParams.date = moment().add(-1, 'days').format('YYYY-MM-DD');
     }
-    this.date = moment(urlParameterChecker.queryParams.date).add(-1, 'days').format('YYYY-MM-DD');
+    this.date = moment(urlParameterChecker.queryParams.date).format('YYYY-MM-DD');
     this.tweetList = new this.Mao(this.date);
     this.subscribe();
   }
