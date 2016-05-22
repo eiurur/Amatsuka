@@ -8,7 +8,7 @@ angular.module "myApp.directives"
       <div ng-if="$ctrl.tweetList.isAuthenticatedWithMao">
 
         <div class="col-sm-12">
-          <term-pagination></term-pagination>
+          <term-pagination total="$ctrl.tweetTotalNumber"></term-pagination>
         </div>
 
         <div infinite-scroll="$ctrl.tweetList.load()" infinite-scroll-distance="0" class="col-sm-12 row-eq-height">
@@ -25,7 +25,7 @@ angular.module "myApp.directives"
         </div>
 
         <div class="col-sm-12 pagination__term__container--bottom">
-          <term-pagination></term-pagination>
+          <term-pagination total="$ctrl.tweetTotalNumber"></term-pagination>
         </div>
 
       </div>
@@ -48,7 +48,7 @@ angular.module "myApp.directives"
     controller: MaoListContoller
 
 class MaoListContoller
-  constructor: (@$location, @$scope, @Mao, @ListService, URLParameterChecker, @TimeService) ->
+  constructor: (@$location, @$httpParamSerializer, @$scope, @Mao, @MaoService, @ListService, URLParameterChecker, @TimeService) ->
     unless @ListService.hasListData() then @$location.path '/'
 
 
@@ -60,6 +60,14 @@ class MaoListContoller
 
     @date = moment(urlParameterChecker.queryParams.date).format('YYYY-MM-DD')
     @tweetList = new @Mao(@date)
+
+    @tweetTotalNumber = 0
+    qs = @$httpParamSerializer date: @date
+    @MaoService.countTweetByMaoTokenAndDate(qs)
+    .then (response) =>
+      console.log 'countTweetByMaoTokenAndDate response = ', response
+      @tweetTotalNumber = response.data.count
+
     @subscribe()
     # 今はいらん
     # @term = $routeParams.term
@@ -79,5 +87,5 @@ class MaoListContoller
       @getTweet(args)
       return
 
-MaoListContoller.$inject = ['$location', '$scope', 'Mao', 'ListService', 'URLParameterChecker', 'TimeService']
+MaoListContoller.$inject = ['$location', '$httpParamSerializer', '$scope', 'Mao', 'MaoService', 'ListService', 'URLParameterChecker', 'TimeService']
 

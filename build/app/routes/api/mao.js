@@ -47,6 +47,25 @@
         });
       });
     });
+    app.get("/api/mao/tweets/count", function(req, res) {
+      return axios.get("" + settings.MAO_HOST + "/api/tweets/count", {
+        params: {
+          maoToken: my.createHash(req.session.passport.user._json.id_str + settings.MAO_TOKEN_SALT),
+          date: req.query.date
+        }
+      }).then(function(response) {
+        console.log(response);
+        if (response.status !== 200) {
+          new ((function() {
+            throw Error('Not Authorized');
+          })());
+        }
+        return res.send(response.data);
+      })["catch"](function(err) {
+        console.error('/api/map/tweets/count err ', err);
+        return res.status(401).send(err);
+      });
+    });
     return app.get("/api/mao/stats/tweet/count", function(req, res) {
       return axios.get("" + settings.MAO_HOST + "/api/stats/tweet/count", {
         params: {
