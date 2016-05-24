@@ -8,11 +8,11 @@ angular.module "myApp.directives"
           <a href="{{tab.href}}" data-toggle="tab" ng-click="$ctrl.select(tab.id)" >{{tab.name}}</a>
         </li>
       </ul>
-      <div class="tab-content col-md-11 col-sm-10">
-        <div id="tweets" class="tab-pane active" ng-if="$ctrl.tabType == 'tweets'">
+      <div class="row tab-content col-md-11 col-sm-10">
+        <div id="tweets" class="row tab-pane active" ng-if="$ctrl.tabType == 'tweets'">
           <mao-list-container></mao-list-container>
         </div>
-        <div id="stats" class="tab-pane" ng-if="$ctrl.tabType == 'stats'">
+        <div id="stats" class="row tab-pane" ng-if="$ctrl.tabType == 'stats'">
           <mao-ranking-post-number></mao-ranking-post-number>
         </div>
       </div>

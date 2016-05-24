@@ -862,17 +862,17 @@ i {
   width: 100%;
   color: #a1a1a1;
   /**
-   * timeline__post
-   */
+     * timeline__post
+     */
   /**
-   * timeline__icon
-   */
+     * timeline__icon
+     */
   /**
-   * timelne__header
-   */
+     * timelne__header
+     */
   /**
-   * timeline__footer
-   */
+     * timeline__footer
+     */
 }
 .timeline i {
   color: #a1a1a1;
@@ -903,7 +903,7 @@ i {
 .timeline__post--grid {
   width: 300px;
   margin: 10px 5px 0;
-  padding-top: 15px;
+  padding-top: 16px;
 }
 .timeline__post__image {
   max-width: 100%;
@@ -990,13 +990,13 @@ i {
 }
 .timeline__icon--grid {
   position: absolute;
-  top: 15px;
+  top: 16px;
   left: 8px;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
 }
 .timeline__icon--grid img {
-  max-width: 32px;
+  max-width: 36px;
 }
 .timeline__icon img {
   border-radius: 3px;
@@ -1010,7 +1010,7 @@ i {
   padding: 0 20px;
 }
 .timeline__header--grid {
-  line-height: 32px;
+  line-height: 36px;
   padding: 0 8px;
 }
 .timeline__header__user {
@@ -1021,7 +1021,7 @@ i {
   display: block;
 }
 .timeline__header__link {
-  margin-left: 44px;
+  margin-left: 48px;
 }
 .timeline__header__info--tile {
   flex: 1;
@@ -1135,55 +1135,55 @@ i {
   }
 
   .timeline__post {
-    padding-top: 15px;
+    padding-top: 16px;
     border-radius: 0;
   }
 
-  .timeline__post--header {
+  .timeline__header {
     line-height: 32px;
-    padding: 0 8px;
+    padding: 0 8px 0 52px;
   }
 
-  .timeline__post--header--info {
+  .timeline__header__info {
     line-height: 30px;
   }
 
-  .timeline__post--header--link {
-    margin-left: 44px;
+  .timeline__header__link {
+    margin-left: 48px;
   }
 
-  .timeline__post--header--rt_source {
+  .timeline__header__rt-source {
     line-height: 12px;
   }
 
-  .timeline__post--header--user {
+  .timeline__header__user {
     line-height: 12px;
     display: block;
   }
 
-  .timeline__post--header--rt_icon {
+  .timeline__header__rt-icon {
     padding: 0;
   }
 
-  .timeline__post--icon {
-    top: 15px;
+  .timeline__icon {
+    top: 16px;
     left: 8px;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
   }
-  .timeline__post--icon img {
-    max-width: 32px;
+  .timeline__icon img {
+    max-width: 36px;
   }
 
-  .timeline__post--text {
+  .timeline__post__text {
     padding: 0 8px;
   }
 
-  .timeline__post--blockquote {
+  .timeline__post__blockquote {
     padding: 0 8px;
   }
 
-  .timeline__post--footer {
+  .timeline__footer {
     padding: 0 8px;
   }
 
@@ -1205,8 +1205,12 @@ i {
   margin-top: 10px;
 }
 
+.member__media:first-child {
+  margin-top: 32px;
+}
+
 .media {
-  min-height: 100px;
+  min-height: 120px;
 }
 .media .thumbnail-img {
   cursor: pointer;
@@ -1241,6 +1245,20 @@ i {
   box-shadow: rgba(255, 255, 255, 0.5) 0 1px 0 inset;
 }
 
+/**
+ * [width description]
+ * Under 480px
+ * For iPhone6, etc.
+ */
+@media (max-width: 480px) {
+  .member__media:first-child {
+    margin-top: 16;
+  }
+
+  .media {
+    min-height: 100px;
+  }
+}
 .user-sidebar {
   top: 0;
   right: 0;

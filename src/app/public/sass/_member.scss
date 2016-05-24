@@ -14,8 +14,13 @@
   margin-top: 10px; // iconのサイズが縦64px。 paddibng-top: 10px だと、media-bodyの縦が64pxになる。
 }
 
+// Bootstrapのmediaの効果を打ち消し
+.member__media:first-child {
+  margin-top: 32px;
+}
+
 .media {
-  min-height: 100px; // ユーザ名とスクリーンネームが二行に渡っても表示が崩れない長さ
+  min-height: 120px; // ユーザ名とスクリーンネームが二行に渡っても表示が崩れない長さ
 
   .thumbnail-img {
     cursor: pointer; // ここでいいんかな？
@@ -52,4 +57,21 @@
   width: 100%;
   border-bottom: 1px solid rgba($link-color, .4);
   @include box-shadow(rgba(255,255,255,.5) 0 1px 0 inset);
+}
+
+
+/**
+ * [width description]
+ * Under 480px
+ * For iPhone6, etc.
+ */
+@media(max-width:480px)
+{
+  .member__media:first-child {
+    margin-top: 16;
+  }
+
+  .media {
+    min-height: 100px; // ユーザ名とスクリーンネームが二行に渡っても表示が崩れない長さ
+  }
 }

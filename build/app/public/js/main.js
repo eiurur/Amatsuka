@@ -35,6 +35,116 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   return $locationProvider.html5Mode(true);
 }]);
 
+angular.module("myApp.controllers", []);
+
+angular.module("myApp.directives", []).directive('dotLoader', function() {
+  return {
+    restrict: 'E',
+    template: '<div class="wrapper">\n  <div class="dot"></div>\n  <div class="dot"></div>\n  <div class="dot"></div>\n</div>'
+  };
+}).directive("imgPreload", function() {
+  return {
+    restrict: "A",
+    link: function(scope, element, attrs) {
+      element.on("load", function() {
+        element.addClass("in");
+      }).on("error", function() {});
+    }
+  };
+}).directive("scrollOnClick", function() {
+  return {
+    restrict: "A",
+    scope: {
+      scrollTo: "@"
+    },
+    link: function(scope, element, attrs) {
+      return element.on('click', function() {
+        return $('html, body').animate({
+          scrollTop: $(scope.scrollTo).offset().top
+        }, "slow");
+      });
+    }
+  };
+}).directive('downloadFromUrl', ["$q", "toaster", "DownloadService", function($q, toaster, DownloadService) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        var promises, urlList;
+        urlList = attrs.url.indexOf('[') === -1 ? [attrs.url] : JSON.parse(attrs.url);
+        promises = [];
+        toaster.pop('wait', "Now Downloading ...", '', 0, 'trustedHtml');
+        urlList.forEach(function(url, idx) {
+          return promises.push(DownloadService.exec(url, attrs.filename, idx));
+        });
+        return $q.all(promises).then(function(datas) {
+          toaster.clear();
+          return toaster.pop('success', "Finished Download", '', 2000, 'trustedHtml');
+        });
+      });
+    }
+  };
+}]).directive('icNavAutoclose', function() {
+  console.log('icNavAutoclose');
+  return function(scope, elm, attrs) {
+    var collapsible, visible;
+    collapsible = $(elm).find('.navbar-collapse');
+    visible = false;
+    collapsible.on('show.bs.collapse', function() {
+      visible = true;
+    });
+    collapsible.on('hide.bs.collapse', function() {
+      visible = false;
+    });
+    $(elm).find('a').each(function(index, element) {
+      $(element).click(function(e) {
+        if (e.target.className.indexOf('dropdown-toggle') !== -1) {
+          return;
+        }
+        if (visible && 'auto' === collapsible.css('overflow-y')) {
+          collapsible.collapse('hide');
+        }
+      });
+    });
+  };
+}).directive('clearLocalStorage', ["toaster", function(toaster) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        toaster.pop('wait', "Now Clearing ...", '', 0, 'trustedHtml');
+        window.localStorage.clear();
+        toaster.clear();
+        return toaster.pop('success', "Finished clearing the list data", '', 2000, 'trustedHtml');
+      });
+    }
+  };
+}]);
+
+angular.module("myApp.factories", []);
+
+angular.module("myApp.filters", []).filter("interpolate", ["version", function(version) {
+  return function(text) {
+    return String(text).replace(/\%VERSION\%/g, version);
+  };
+}]).filter("noHTML", function() {
+  return function(text) {
+    if (text != null) {
+      return text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/, '&amp;');
+    }
+  };
+}).filter('newlines', ["$sce", function($sce) {
+  return function(text) {
+    return $sce.trustAsHtml(text != null ? text.replace(/\n/g, '<br />') : '');
+  };
+}]).filter('trusted', ["$sce", function($sce) {
+  return function(url) {
+    return $sce.trustAsResourceUrl(url);
+  };
+}]);
+
+angular.module("myApp.services", []);
+
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
   $scope.isLoaded = false;
   $scope.isAuthenticated = AuthService.status.isAuthenticated;
@@ -2390,123 +2500,13 @@ angular.module("myApp.services").service("URLParameterService", ["$location", fu
   };
 }]);
 
-angular.module("myApp.controllers", []);
-
-angular.module("myApp.directives", []).directive('dotLoader', function() {
-  return {
-    restrict: 'E',
-    template: '<div class="wrapper">\n  <div class="dot"></div>\n  <div class="dot"></div>\n  <div class="dot"></div>\n</div>'
-  };
-}).directive("imgPreload", function() {
-  return {
-    restrict: "A",
-    link: function(scope, element, attrs) {
-      element.on("load", function() {
-        element.addClass("in");
-      }).on("error", function() {});
-    }
-  };
-}).directive("scrollOnClick", function() {
-  return {
-    restrict: "A",
-    scope: {
-      scrollTo: "@"
-    },
-    link: function(scope, element, attrs) {
-      return element.on('click', function() {
-        return $('html, body').animate({
-          scrollTop: $(scope.scrollTo).offset().top
-        }, "slow");
-      });
-    }
-  };
-}).directive('downloadFromUrl', ["$q", "toaster", "DownloadService", function($q, toaster, DownloadService) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      return element.on('click', function(event) {
-        var promises, urlList;
-        urlList = attrs.url.indexOf('[') === -1 ? [attrs.url] : JSON.parse(attrs.url);
-        promises = [];
-        toaster.pop('wait', "Now Downloading ...", '', 0, 'trustedHtml');
-        urlList.forEach(function(url, idx) {
-          return promises.push(DownloadService.exec(url, attrs.filename, idx));
-        });
-        return $q.all(promises).then(function(datas) {
-          toaster.clear();
-          return toaster.pop('success', "Finished Download", '', 2000, 'trustedHtml');
-        });
-      });
-    }
-  };
-}]).directive('icNavAutoclose', function() {
-  console.log('icNavAutoclose');
-  return function(scope, elm, attrs) {
-    var collapsible, visible;
-    collapsible = $(elm).find('.navbar-collapse');
-    visible = false;
-    collapsible.on('show.bs.collapse', function() {
-      visible = true;
-    });
-    collapsible.on('hide.bs.collapse', function() {
-      visible = false;
-    });
-    $(elm).find('a').each(function(index, element) {
-      $(element).click(function(e) {
-        if (e.target.className.indexOf('dropdown-toggle') !== -1) {
-          return;
-        }
-        if (visible && 'auto' === collapsible.css('overflow-y')) {
-          collapsible.collapse('hide');
-        }
-      });
-    });
-  };
-}).directive('clearLocalStorage', ["toaster", function(toaster) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      return element.on('click', function(event) {
-        toaster.pop('wait', "Now Clearing ...", '', 0, 'trustedHtml');
-        window.localStorage.clear();
-        toaster.clear();
-        return toaster.pop('success', "Finished clearing the list data", '', 2000, 'trustedHtml');
-      });
-    }
-  };
-}]);
-
-angular.module("myApp.factories", []);
-
-angular.module("myApp.filters", []).filter("interpolate", ["version", function(version) {
-  return function(text) {
-    return String(text).replace(/\%VERSION\%/g, version);
-  };
-}]).filter("noHTML", function() {
-  return function(text) {
-    if (text != null) {
-      return text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/, '&amp;');
-    }
-  };
-}).filter('newlines', ["$sce", function($sce) {
-  return function(text) {
-    return $sce.trustAsHtml(text != null ? text.replace(/\n/g, '<br />') : '');
-  };
-}]).filter('trusted', ["$sce", function($sce) {
-  return function(url) {
-    return $sce.trustAsResourceUrl(url);
-  };
-}]);
-
-angular.module("myApp.services", []);
-
 var MaoContainerController;
 
 angular.module("myApp.directives").directive('maoContainer', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<ul class=\"nav nav-pills nav-stacked col-md-1 col-sm-2\">\n  <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n    <a href=\"{{tab.href}}\" data-toggle=\"tab\" ng-click=\"$ctrl.select(tab.id)\" >{{tab.name}}</a>\n  </li>\n</ul>\n<div class=\"tab-content col-md-11 col-sm-10\">\n  <div id=\"tweets\" class=\"tab-pane active\" ng-if=\"$ctrl.tabType == 'tweets'\">\n    <mao-list-container></mao-list-container>\n  </div>\n  <div id=\"stats\" class=\"tab-pane\" ng-if=\"$ctrl.tabType == 'stats'\">\n    <mao-ranking-post-number></mao-ranking-post-number>\n  </div>\n</div>",
+    template: "<ul class=\"nav nav-pills nav-stacked col-md-1 col-sm-2\">\n  <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n    <a href=\"{{tab.href}}\" data-toggle=\"tab\" ng-click=\"$ctrl.select(tab.id)\" >{{tab.name}}</a>\n  </li>\n</ul>\n<div class=\"row tab-content col-md-11 col-sm-10\">\n  <div id=\"tweets\" class=\"row tab-pane active\" ng-if=\"$ctrl.tabType == 'tweets'\">\n    <mao-list-container></mao-list-container>\n  </div>\n  <div id=\"stats\" class=\"row tab-pane\" ng-if=\"$ctrl.tabType == 'stats'\">\n    <mao-ranking-post-number></mao-ranking-post-number>\n  </div>\n</div>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoContainerController
@@ -2622,7 +2622,7 @@ angular.module("myApp.directives").directive('maoRankingPostNumber', function() 
   return {
     restrict: 'E',
     scope: {},
-    template: "<section infinite-scroll=\"$ctrl.tweetCountList.load()\" infinite-scroll-distance=\"0\" class=\"fillbars\">\n\n  <div ng-repeat=\"item in $ctrl.tweetCountList.items\" class=\"col-sm-12 fillbar\">\n\n    <div class=\"col-sm-3 col-xs-3 fillbar__user\">\n      <img ng-src=\"{{item.postedBy.icon}}\" twitter-id-str=\"{{item.postedBy.twitterIdStr}}\" show-tweet img-preload class=\"fade fillbar__icon\">\n      <span class=\"fillbar__screen-name clickable\" twitter-id-str=\"{{item.postedBy.twitterIdStr}}\"  show-tweet>{{item.postedBy.screenName}}</span>\n    </div>\n    <div class=\"col-sm-9 col-xs-9\">\n      <div class=\"progress\">\n        <div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"60\" aria-valuemin=\"0\" aria-valuemax=\"100\" ng-style=\"{ 'width': item.postCount / $ctrl.tweetCountList.maxCount * 100 + '%'}\">\n          <span class=\"fillbar__count\">\n            {{item.postCount}}\n          </span>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"col-sm-12\">\n    <dot-loader ng-if=\"$ctrl.tweetCountList.busy\" class=\"infinitescroll-content\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweetCountList.isLast\" class=\"text-center infinitescroll-content infinitescroll-message\">終わりです\n    </div>\n  </div>\n\n</section>",
+    template: "<section infinite-scroll=\"$ctrl.tweetCountList.load()\" infinite-scroll-distance=\"0\" class=\"row fillbars\">\n\n  <div ng-repeat=\"item in $ctrl.tweetCountList.items\" class=\"col-sm-12 fillbar\">\n\n    <div class=\"col-sm-3 col-xs-3 fillbar__user\">\n      <img ng-src=\"{{item.postedBy.icon}}\" twitter-id-str=\"{{item.postedBy.twitterIdStr}}\" show-tweet img-preload class=\"fade fillbar__icon\">\n      <span class=\"fillbar__screen-name clickable\" twitter-id-str=\"{{item.postedBy.twitterIdStr}}\"  show-tweet>{{item.postedBy.screenName}}</span>\n    </div>\n    <div class=\"col-sm-9 col-xs-9\">\n      <div class=\"progress\">\n        <div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"60\" aria-valuemin=\"0\" aria-valuemax=\"100\" ng-style=\"{ 'width': item.postCount / $ctrl.tweetCountList.maxCount * 100 + '%'}\">\n          <span class=\"fillbar__count\">\n            {{item.postCount}}\n          </span>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"col-sm-12\">\n    <dot-loader ng-if=\"$ctrl.tweetCountList.busy\" class=\"infinitescroll-content\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweetCountList.isLast\" class=\"text-center infinitescroll-content infinitescroll-message\">終わりです\n    </div>\n  </div>\n\n</section>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoRankingPostNumber

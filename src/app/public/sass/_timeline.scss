@@ -3,311 +3,308 @@
 
 // リセット
 .timeline__container {
-    margin-right: 0;
-    margin-left: 0;
+  margin-right: 0;
+  margin-left: 0;
 }
 
 .timeline
 {
-    width: 100%;
+  width: 100%;
 
+  color: $link-color;
+  i
+  {
     color: $link-color;
-    i
-    {
-        color: $link-color;
+  }
+
+  &--tile {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  &--list {
+    padding: 0 0 30px 85px; // icon 64px +  ixonとpostとのpadding 21 = 85px
+  }
+
+
+  /**
+     * timeline__post
+     */
+  &__post {
+    font-size: $post--font-size;
+
+    position: relative;
+
+    max-width: $timeline__post--width;
+    margin: 0 0 20px 0;
+    padding-top: 15px;
+
+    border-radius: 3px;
+    background: $timeline__post--bg-color;
+    &--tile {
+      position: relative;
+      // width: 20%;
+      height: 20%;
+      background: transparent;
+      padding: 0 16px;
+      // padding: 15px 5px 0;
+      // padding-top: 15px;
     }
 
+    &--grid {
+      width: $timeline__post--width--grid;
+      margin: $timeline__post--margin--grid;
+      padding-top: $timeline__post--padding-vertical;
+    }
+
+    &__image {
+      max-width: 100%;
+      padding: 16px 0;
+      img
+      {
+        width: $timeline__img--width;
+      }
+      &--tile {
+        display: inline-block;
+        object-fit: cover;
+        width: 200px;
+        height: 200px;
+      }
+      &--grid {
+        padding: 10px 0;
+      }
+    }
+
+
+    &__video {
+      &--tile {
+        display: inline-block;
+        height: 200px;
+      }
+    }
+
+    video {
+      width: $timeline__img--width;
+    }
+
+    &__text {
+      @include tweet-text;
+      &--grid {
+        padding: 0 $timeline__post--padding-horizontal-smartphone;
+      }
+    }
+
+    &__blockquote {
+      @include tweet-text;
+      blockquote
+      {
+        margin: 0;
+        padding: 0;
+
+        border-left: solid 2px rgba(0,0,0,.12);
+      }
+
+      &--grid {
+        padding: 0 $timeline__post--padding-horizontal-smartphone;
+      }
+    }
+  }
+
+
+  /**
+     * timeline__icon
+     */
+  &__icon {
+    cursor: pointer;
     &--tile {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-start;
+      margin-right: 8px;
+      width: 32px;
+      height: 32px;
+      img {
+        max-width: 32px;
+      }
     }
 
     &--list {
-        padding: 0 0 30px 85px; // icon 64px +  ixonとpostとのpadding 21 = 85px
+      position: absolute;
+      top: 0;
+      left: -$timeline__post--icon--left;
+
+      width: 64px;
+      height: 64px;
+      img {
+        max-width: 64px;
+      }
     }
 
+    &--grid {
+      position: absolute;
+      top: $timeline__post--padding-vertical;
+      left: $timeline__post--padding-horizontal-smartphone;
 
-    /**
-     * timeline__post
-     */
-    &__post {
-        font-size: $post--font-size;
-
-        position: relative;
-
-        max-width: $timeline__post--width;
-        margin: 0 0 20px 0;
-        padding-top: 15px;
-
-        border-radius: 3px;
-        background: $timeline__post--bg-color;
-        &--tile {
-            position: relative;
-            // width: 20%;
-            height: 20%;
-            background: transparent;
-            padding: 0 16px;
-            // padding: 15px 5px 0;
-            // padding-top: 15px;
-        }
-
-        &--grid {
-            width: $timeline__post--width--grid;
-            margin: $timeline__post--margin--grid;
-            padding-top: $timeline__post--padding-vertical;
-        }
-
-        &__image {
-            max-width: 100%;
-            padding: 16px 0;
-            img
-            {
-                width: $timeline__img--width;
-            }
-            &--tile {
-              display: inline-block;
-              object-fit: cover;
-              width: 200px;
-              height: 200px;
-            }
-            &--grid {
-                padding: 10px 0;
-            }
-        }
-
-
-        &__video {
-            &--tile {
-              display: inline-block;
-              height: 200px;
-            }
-        }
-
-        video {
-            width: $timeline__img--width;
-        }
-
-        &__text {
-            @include tweet-text;
-            &--grid {
-                padding: 0 $timeline__post--padding-horizontal-smartphone;
-            }
-        }
-
-        &__blockquote {
-            @include tweet-text;
-            blockquote
-            {
-                margin: 0;
-                padding: 0;
-
-                border-left: solid 2px rgba(0,0,0,.12);
-            }
-
-            &--grid {
-                padding: 0 $timeline__post--padding-horizontal-smartphone;
-            }
-        }
+      width: $timeline__post--icon--width-smartphone;
+      height: $timeline__post--icon--width-smartphone;
+      img
+      {
+        max-width: $timeline__post--icon--width-smartphone;
+      }
     }
 
-
-    /**
-     * timeline__icon
-     */
-    &__icon {
-        cursor: pointer;
-        &--tile {
-            margin-right: 8px;
-            width: 32px;
-            height: 32px;
-            img {
-                max-width: 32px;
-            }
-        }
-
-        &--list {
-            position: absolute;
-            top: 0;
-            left: -$timeline__post--icon--left;
-
-            width: 64px;
-            height: 64px;
-            img {
-                max-width: 64px;
-            }
-        }
-
-        &--grid {
-            position: absolute;
-            top: $timeline__post--padding-vertical;
-            left: $timeline__post--padding-horizontal-smartphone;
-
-            width: $timeline__post--icon--width-smartphone;
-            height: $timeline__post--icon--width-smartphone;
-            img
-            {
-                max-width: $timeline__post--icon--width-smartphone;
-            }
-        }
-
-        img {
-            border-radius: 3px;
-        }
+    img {
+      border-radius: 3px;
     }
+  }
 
 
-    /**
+  /**
      * timelne__header
      */
-    &__header {
-        &--tile {
-            line-height: 32px;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        &--list {
-            @include post_padding;
-        }
-
-        &--grid {
-            line-height: $timeline__post--icon--width-smartphone;
-            padding: 0 $timeline__post--padding-horizontal-smartphone;
-        }
-
-        &__user {
-            cursor: pointer;
-            &--tile {
-
-            }
-            &--grid {
-                line-height: 12px;
-                display: block;
-            }
-        }
-
-        &__link {
-            margin-left: $timeline__post--padding-horizontal-smartphone + $timeline__post--icon--width-smartphone + 4px;
-        }
-
-        &__info {
-            &--tile {
-                flex: 1;
-            }
-            &--list {
-                display: inline-block;
-            }
-            &--grid {
-                line-height: 32px;
-                display: inline-block;
-            }
-        }
-
-        &__rt-source {
-            &--grid {
-                line-height: 12px;
-            }
-        }
-
-        &__rt-icon {
-            padding: 0 5px;
-            &--grid {
-                padding: 0;
-            }
-        }
-
-        &__label {
-            position: relative;
-            bottom: 2px;
-
-            margin-left: 5px;
-            padding: .1em .3em .3em;
-
-            cursor: pointer;
-            background-color: $label__follow-color;
-        }
-
-        &__time {
-            display: inline-block;
-            float: right;
-        }
-
-        a {
-            text-decoration: none;
-            color: $link-color;
-        }
+  &__header {
+    &--tile {
+      line-height: 32px;
+      display: flex;
+      align-items: flex-start;
     }
 
+    &--list {
+      @include post_padding;
+    }
 
-    /**
+    &--grid {
+      line-height: $timeline__post--icon--width-smartphone;
+      padding: 0 $timeline__post--padding-horizontal-smartphone;
+    }
+
+    &__user {
+      cursor: pointer;
+      &--tile {
+      }
+      &--grid {
+        line-height: 12px;
+        display: block;
+      }
+    }
+
+    &__link {
+      margin-left: $timeline__post--padding-horizontal-smartphone + $timeline__post--icon--width-smartphone + 4px;
+    }
+
+    &__info {
+      &--tile {
+        flex: 1;
+      }
+      &--list {
+        display: inline-block;
+      }
+      &--grid {
+        line-height: 32px;
+        display: inline-block;
+      }
+    }
+
+    &__rt-source {
+      &--grid {
+        line-height: 12px;
+      }
+    }
+
+    &__rt-icon {
+      padding: 0 5px;
+      &--grid {
+        padding: 0;
+      }
+    }
+
+    &__label {
+      position: relative;
+      bottom: 2px;
+
+      margin-left: 5px;
+      padding: .1em .3em .3em;
+
+      cursor: pointer;
+      background-color: $label__follow-color;
+    }
+
+    &__time {
+      display: inline-block;
+      float: right;
+    }
+
+    a {
+      text-decoration: none;
+      color: $link-color;
+    }
+  }
+
+
+  /**
      * timeline__footer
      */
-    &__footer {
-        line-height: 48px;
-        width: 100%;
-        height: 48px;
+  &__footer {
+    line-height: 48px;
+    width: 100%;
+    height: 48px;
 
-        &--list {
-            @include post_padding;
-        }
-
-        &--grid {
-            padding: 0 $timeline__post--padding-horizontal-smartphone;
-        }
-
-        &__contents {
-            text-align: right;
-            white-space: nowrap;
-            color: $link-color;
-        }
-
-        &__controls {
-            font-size: 120%;
-            font-weight: 600;
-            @include display-flex;
-            @include flex-direction(row);
-            @include align-items(baseline);
-            @include justify-content(space-between);
-        }
+    &--list {
+      @include post_padding;
     }
 
+    &--grid {
+      padding: 0 $timeline__post--padding-horizontal-smartphone;
+    }
+
+    &__contents {
+      text-align: right;
+      white-space: nowrap;
+      color: $link-color;
+    }
+
+    &__controls {
+      font-size: 120%;
+      font-weight: 600;
+      @include display-flex;
+      @include flex-direction(row);
+      @include align-items(baseline);
+      @include justify-content(space-between);
+    }
+  }
 }
 
 
 /* ⑦⑧⑨⑩triangle */
 .point-triangle {
-    position: relative;
-    &:after {
-        position: absolute;
-        content: " ";
-        height: 0;
-        width: 0;
-    }
-    & span {
-        position: absolute;
-        content: " ";
-        font-size: 12px;
-        font-weight: bold;
-        color: #fff;
-        z-index:100;
-    }
+  position: relative;
+  &:after {
+    position: absolute;
+    content: " ";
+    height: 0;
+    width: 0;
+  }
+  & span {
+    position: absolute;
+    content: " ";
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    z-index:100;
+  }
 }
 
 /* ⑦triangle-rt */
 .point-triangle-rt {
-    &:after {
-        top: 0;
-        right: 0;
-        border-bottom:3em solid transparent;
-        border-right:3em solid $amatsuka-color;
-
-    }
-    & span {
-        top: .4em;
-        right: .6em;
-        transform: rotate(45deg);
-    }
+  &:after {
+    top: 0;
+    right: 0;
+    border-bottom:3em solid transparent;
+    border-right:3em solid $amatsuka-color;
+  }
+  & span {
+    top: .4em;
+    right: .6em;
+    transform: rotate(45deg);
+  }
 }
 
 
@@ -319,93 +316,92 @@
  */
 @media(max-width:480px)
 {
+  .timeline__container {
+    margin-right: -15px;
+    margin-left: -15px;
+  }
 
-    .timeline__container {
-        margin-right: -15px;
-        margin-left: -15px;
-    }
+  .timeline
+  {
+    // アイコン表示するならこっち
+    // padding: 0 0 30px $timeline__post--icon--left - $timeline__post--icon--width-smartphone;
+    padding: 0 0 30px 0;
+  }
 
-    .timeline
+  .timeline__post
+  {
+    padding-top: $timeline__post--padding-vertical;
+    border-radius: 0; // reset用
+  }
+
+  // スマホ用のtumblrっぽいレイアウトにするならこれ
+  .timeline__header
+  {
+    line-height: 32px;
+
+    padding: 0 8px 0 52px;
+  }
+
+  .timeline__header__info
+  {
+    line-height: 30px;
+  }
+
+  .timeline__header__link
+  {
+    // 8 + 32 + 4 = 44px
+    margin-left: $timeline__post--padding-horizontal-smartphone + $timeline__post--icon--width-smartphone + 4px;
+  }
+
+  .timeline__header__rt-source {
+    line-height: 12px;
+  }
+
+  .timeline__header__user
+  {
+    line-height: 12px;
+
+    display: block;
+  }
+
+  .timeline__header__rt-icon
+  {
+    padding: 0;
+  }
+
+  .timeline__icon
+  {
+    top: $timeline__post--padding-vertical;
+    // 横にアイコン表示するならこっち
+    // left: -$timeline__post--icon--left + $timeline__post--icon--width-smartphone;
+    left: $timeline__post--padding-horizontal-smartphone;
+
+    width: $timeline__post--icon--width-smartphone;
+    height: $timeline__post--icon--width-smartphone;
+    img
     {
-        // アイコン表示するならこっち
-        // padding: 0 0 30px $timeline__post--icon--left - $timeline__post--icon--width-smartphone;
-        padding: 0 0 30px 0;
+      max-width: $timeline__post--icon--width-smartphone;
     }
+  }
 
-    .timeline__post
-    {
-        padding-top: $timeline__post--padding-vertical;
-        border-radius: 0; // reset用
-    }
+  .timeline__post__text
+  {
+    padding: 0 $timeline__post--padding-horizontal-smartphone;
+  }
 
-    // スマホ用のtumblrっぽいレイアウトにするならこれ
-    .timeline__post--header
-    {
-        line-height: $timeline__post--icon--width-smartphone;
+  .timeline__post__blockquote
+  {
+    padding: 0 $timeline__post--padding-horizontal-smartphone;
+  }
 
-        padding: 0 $timeline__post--padding-horizontal-smartphone;
-    }
+  .timeline__footer
+  {
+    padding: 0 $timeline__post--padding-horizontal-smartphone;
+  }
 
-    .timeline__post--header--info
-    {
-        line-height: 30px;
-    }
-
-    .timeline__post--header--link
-    {
-        // 8 + 32 + 4 = 44px
-        margin-left: $timeline__post--padding-horizontal-smartphone + $timeline__post--icon--width-smartphone + 4px;
-    }
-
-    .timeline__post--header--rt_source {
-        line-height: 12px;
-    }
-
-    .timeline__post--header--user
-    {
-        line-height: 12px;
-
-        display: block;
-    }
-
-    .timeline__post--header--rt_icon
-    {
-        padding: 0;
-    }
-
-    .timeline__post--icon
-    {
-        top: $timeline__post--padding-vertical;
-        // 横にアイコン表示するならこっち
-        // left: -$timeline__post--icon--left + $timeline__post--icon--width-smartphone;
-        left: $timeline__post--padding-horizontal-smartphone;
-
-        width: $timeline__post--icon--width-smartphone;
-        height: $timeline__post--icon--width-smartphone;
-        img
-        {
-            max-width: $timeline__post--icon--width-smartphone;
-        }
-    }
-
-    .timeline__post--text
-    {
-        padding: 0 $timeline__post--padding-horizontal-smartphone;
-    }
-
-    .timeline__post--blockquote
-    {
-        padding: 0 $timeline__post--padding-horizontal-smartphone;
-    }
-
-    .timeline__post--footer
-    {
-        padding: 0 $timeline__post--padding-horizontal-smartphone;
-    }
-
-    // これ謎
-    .col-xs-12
-    {
-        padding: 0;
-    }
+  // これ謎
+  .col-xs-12
+  {
+    padding: 0;
+  }
 }

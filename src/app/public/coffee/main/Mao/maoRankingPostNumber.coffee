@@ -3,7 +3,7 @@ angular.module "myApp.directives"
     restrict: 'E'
     scope: {}
     template: """
-    <section infinite-scroll="$ctrl.tweetCountList.load()" infinite-scroll-distance="0" class="fillbars">
+    <section infinite-scroll="$ctrl.tweetCountList.load()" infinite-scroll-distance="0" class="row fillbars">
 
       <div ng-repeat="item in $ctrl.tweetCountList.items" class="col-sm-12 fillbar">
 
