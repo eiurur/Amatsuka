@@ -36,16 +36,13 @@ angular.module "myApp.factories"
       checkError: (statusCode) =>
         console.log statusCode
         switch statusCode
-          when 429
-            # Rate limit exceeded
+          when 429 # Rate limit exceeded
             ToasterService.warning title: 'ツイート取得API制限', text: '15分お待ちください'
-          when 10100
-            # 最後まで読み込み終了
+          when 10100 # 最後まで読み込み終了
             @isLast = true
             @busy = false
             ToasterService.success title: '全ツイート取得完了', text: '全て読み込みました'
-          when 10110
-            # 取得するツイートが0
+          when 10110 # 取得するツイートが0
             @busy = false
         return
 

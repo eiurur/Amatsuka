@@ -32,8 +32,6 @@
           }
         }).then(function(response) {
           var tweets;
-          console.log(response.data.length);
-          console.log(response.status);
           if (response.status !== 200) {
             new ((function() {
               throw Error('Not Authorized');
@@ -54,7 +52,6 @@
           date: req.query.date
         }
       }).then(function(response) {
-        console.log(response);
         if (response.status !== 200) {
           new ((function() {
             throw Error('Not Authorized');
@@ -62,7 +59,7 @@
         }
         return res.send(response.data);
       })["catch"](function(err) {
-        console.error('/api/map/tweets/count err ', err);
+        console.error('/api/mao/tweets/count err ', err);
         return res.status(401).send(err);
       });
     });
@@ -74,8 +71,6 @@
           limit: req.query.limit - 0
         }
       }).then(function(response) {
-        console.log(response.data.length);
-        console.log(response.status);
         if (response.status !== 200) {
           new ((function() {
             throw Error('Not Authorized');
@@ -83,7 +78,7 @@
         }
         return res.send(response.data);
       })["catch"](function(err) {
-        console.error(err);
+        console.error('/api/mao/stats/tweets/count err ', err);
         return res.status(401).send(err);
       });
     });

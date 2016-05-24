@@ -27,8 +27,7 @@ twitterUtils = ->
         _.map t.extended_entities.media, (media) -> media.media_url+':orig'
       when 'media_url_https:orig'
         _.map t.extended_entities.media, (media) -> media.media_url_https+':orig'
-      when 'video_url'
-        # videoは一件のみ
+      when 'video_url' # videoは一件のみ投稿可能
         t.extended_entities?.media[0]?.video_info?.variants[0].url
       when 'name' then t.user.name
       when 'profile_banner_url' then t.user.profile_banner_url
@@ -67,19 +66,13 @@ twitterUtils = ->
       tweet = if _.has(tweet, 'tweetStr') then JSON.parse(tweet.tweetStr) else tweet
 
       # tweetを最初にgetして使いまわす方法
-      tweet = if @isRT(tweet) then tweet.retweeted_status else tweet
-      includeNgUser = config.ngUsername.some (element, index) => tweet.screen_name.indexOf(element.text) isnt -1
-      includeNgWord = config.ngWord.some (element, index) => tweet.text.indexOf(element.text) isnt -1
+      tweet               = if @isRT(tweet) then tweet.retweeted_status else tweet
+      includeNgUser       = config.ngUsername.some (element, index) => tweet.screen_name.indexOf(element.text) isnt -1
+      includeNgWord       = config.ngWord.some (element, index) => tweet.text.indexOf(element.text) isnt -1
       isRetweetLowerLimit = tweet.retweet_count < config.retweetLowerLimit
-      isFavLowerLimit = tweet.favorite_count < config.favLowerLimit
-      isOnlyTextTweet = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
+      isFavLowerLimit     = tweet.favorite_count < config.favLowerLimit
+      isOnlyTextTweet     = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
 
-      # tweetを毎回getする方法
-      # includeNgUser = config.ngUsername.some (element, index) => @get(tweet, 'screen_name', @isRT(tweet)).indexOf(element.text) isnt -1
-      # includeNgWord = config.ngWord.some (element, index) => @get(tweet, 'text', @isRT(tweet)).indexOf(element.text) isnt -1
-      # isRetweetLowerLimit = @get(tweet, 'tweet.retweet_count', @isRT(tweet)) < config.retweetLowerLimit
-      # isFavLowerLimit = @get(tweet, 'tweet.favorite_count', @isRT(tweet)) < config.favLowerLimit
-      # isOnlyTextTweet = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
       includeNgUser or includeNgWord or isRetweetLowerLimit or isFavLowerLimit or isOnlyTextTweet
 
 exports.twitterUtils = twitterUtils()

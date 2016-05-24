@@ -11,11 +11,10 @@ angular.module "myApp.controllers"
   if _.isEmpty AuthService.user then $location.path '/'
   unless ListService.hasListData() then $location.path '/'
 
-  $scope.isLoaded   = false
-  # $scope.layoutType = 'grid'
+  $scope.isLoaded = false
   ConfigService.get().then (config) -> $scope.layoutType = if config.isTileLayout then 'tile' else 'grid'
 
-  $scope.tweets = new Tweets([], undefined, 'fav', AuthService.user._json.id_str)
+  $scope.tweets    = new Tweets([], undefined, 'fav', AuthService.user._json.id_str)
   $scope.listIdStr = ListService.amatsukaList.data.id_str
   $scope.isLoaded  = true
 

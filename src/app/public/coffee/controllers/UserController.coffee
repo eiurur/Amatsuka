@@ -26,12 +26,6 @@ angular.module "myApp.controllers"
     # _.last(args)? is 画像ツイートが0
     maxId            = if _.last(args)? then TweetService.decStrNum(_.last(args).id_str) else 0
     tweetsNormalized = TweetService.normalizeTweets(args)
-
-    # For debug
-    # console.log '======> UserCtrl $on tweetData'
-    # console.log '_.last(args)? = ', _.last(args)?
-    # console.log 'maxId = ', maxId
-
     $scope.tweets    = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str)
     return
 

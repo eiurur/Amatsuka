@@ -184,21 +184,3 @@ angular.module "myApp.directives"
           domUserSidebarHeader.addClass('user-sidebar-out')
 
           $rootScope.$broadcast 'isClosed', true
-
-  # 動かなくなった。
-  # .directive 'newTweetLoad', ($rootScope, TweetService) ->
-  #   restrict: 'E'
-  #   scope:
-  #     listIdStr: '@'
-  #   template: '<a class="btn" ng-disabled="isProcessing">{{text}}</a>'
-  #   link: (scope, element, attrs) ->
-  #     scope.text = '新着を読み込む'
-  #     element.on 'click', ->
-  #       scope.isProcessing = true
-  #       params = listIdStr: scope.listIdStr, count: 50
-  #       TweetService.getListsStatuses(params)
-  #       .then (data) ->
-  #         console.log 'getListsStatuses', data.data
-  #         $rootScope.$broadcast 'newTweet', data.data
-  #         scope.text = '新着を読み込む'
-  #         scope.isProcessing = false

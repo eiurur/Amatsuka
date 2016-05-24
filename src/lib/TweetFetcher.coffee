@@ -48,6 +48,7 @@ module.exports = class TweetFetcher
       @maxId = maxId or @req.params.maxId
 
       params = @getRequestParams()
+
       if _.isEmpty params then res.json data: {}
 
       # console.log chalk.blue 'Before params =============> '
@@ -70,10 +71,11 @@ module.exports = class TweetFetcher
 
         if !_.isEmpty tweetsNormalized then @res.json data: tweetsNormalized
 
-        console.log chalk.red 'maxId, nextMaxId =============> '
-        console.log maxId
-        console.log nextMaxId
+        # console.log chalk.red 'maxId, nextMaxId =============> '
+        # console.log maxId
+        # console.log nextMaxId
 
+        # 最後まで読み終えたとき
         if @maxId is nextMaxId then @res.json data: []
 
         nextMaxIdDeced = my.decStrNum nextMaxId

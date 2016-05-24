@@ -1,8 +1,5 @@
 angular.module "myApp.factories"
   .factory 'List', ($q, toaster, TweetService, ListService, Member) ->
-
-    # TODO: ListクラスをBaseとする設計でAmatsukaListClassを修正。
-
     class List extends Member
       constructor: (name, idStr) ->
         super(name, idStr)

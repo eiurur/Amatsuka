@@ -25,8 +25,6 @@ class TermPaginationController
     if _.isEmpty(urlParameterChecker.queryParams)
       urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD')
     @date = @TimeService.normalizeDate('days', urlParameterChecker.queryParams.date)
-    console.log @date
-    console.log @total
     @subscribe()
     @bindKeyAction()
 

@@ -27,8 +27,6 @@ module.exports = (app) ->
           limit: req.query.limit - 0
           date: req.query.date
       .then (response) ->
-        console.log response.data.length
-        console.log response.status
         unless response.status is 200 then new throw Error('Not Authorized')
         tweets = twitterUtils.normalizeTweets(response.data, _config)
         res.send tweets
@@ -42,11 +40,10 @@ module.exports = (app) ->
         maoToken: my.createHash(req.session.passport.user._json.id_str + settings.MAO_TOKEN_SALT)
         date: req.query.date
     .then (response) ->
-      console.log response
       unless response.status is 200 then new throw Error('Not Authorized')
       res.send response.data
     .catch (err) ->
-      console.error '/api/map/tweets/count err ', err
+      console.error '/api/mao/tweets/count err ', err
       res.status(401).send(err)
 
   app.get "/api/mao/stats/tweet/count", (req, res) ->
@@ -55,13 +52,9 @@ module.exports = (app) ->
         maoToken: my.createHash(req.session.passport.user._json.id_str + settings.MAO_TOKEN_SALT)
         skip: req.query.skip - 0
         limit: req.query.limit - 0
-        # date: req.query.date
     .then (response) ->
-      console.log response.data.length
-      console.log response.status
       unless response.status is 200 then new throw Error('Not Authorized')
-      # tweets = twitterUtils.normalizeTweets(response.data, _config)
       res.send response.data
     .catch (err) ->
-      console.error err
+      console.error '/api/mao/stats/tweets/count err ', err
       res.status(401).send(err)

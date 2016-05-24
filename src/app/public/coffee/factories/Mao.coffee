@@ -48,11 +48,8 @@ angular.module "myApp.factories"
         qs = $httpParamSerializer(opts)
 
         MaoService.findByMaoTokenAndDate(qs)
-        .then (data) =>
-          console.log data
-          @normalizeTweets data.data
+        .then (data) => @normalizeTweets data.data
         .then (normalizedTweets) =>
-          console.log '==> ', normalizedTweets
           if normalizedTweets.length is 0
             @busy = false
             @isLast = true

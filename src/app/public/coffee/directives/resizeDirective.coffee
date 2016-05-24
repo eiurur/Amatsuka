@@ -20,4 +20,5 @@ angular.module "myApp.directives"
             $rootScope.$broadcast 'resize::resize', layoutType: layoutType
 
         , 200
+
         return

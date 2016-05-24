@@ -8,7 +8,11 @@ angular.module "myApp.directives"
       <div class="timeline__post--header--info">
         <div class="timeline__post--header--link">
           <span twitter-id-str="{{::$ctrl.tweet.user.id_str}}" show-tweet="show-tweet" class="timeline__post--header--user">{{::$ctrl.tweet.user.screen_name}}
-          </span><span ng-if="$ctrl.tweet.retweeted_status" class="timeline__post--header--rt_icon"><i class="fa fa-retweet"></i></span><a twitter-id-str="{{::$ctrl.tweet.retweeted_status.user.id_str}}" show-tweet="show-tweet" class="timeline__post--header--rt_source">{{::$ctrl.tweet.retweeted_status.user.screen_name}}
+          </span>
+          <span ng-if="$ctrl.tweet.retweeted_status" class="timeline__post--header--rt_icon">
+            <i class="fa fa-retweet"></i>
+          </span>
+          <a twitter-id-str="{{::$ctrl.tweet.retweeted_status.user.id_str}}" show-tweet="show-tweet" class="timeline__post--header--rt_source">{{::$ctrl.tweet.retweeted_status.user.screen_name}}
           </a>
           <followable ng-if="!$ctrl.tweet.followStatus" list-id-str="{{$ctrl.listIdStr}}" tweet="{{$ctrl.tweet}}" follow-status="$ctrl.tweet.followStatus">
           </followable>
@@ -42,7 +46,12 @@ angular.module "myApp.directives"
     </div>
     <div class="timeline__post--footer">
       <div class="timeline__post--footer--contents">
-        <div class="timeline__post--footer--contents--controls"><i retweet-num="$ctrl.tweet.retweetNum" retweeted="$ctrl.tweet.retweeted" tweet-id-str="{{::$ctrl.tweet.tweetIdStr}}" retweetable="retweetable" class="fa fa-retweet icon-retweet">{{$ctrl.tweet.retweetNum}}</i><i fav-num="$ctrl.tweet.favNum" favorited="$ctrl.tweet.favorited" tweet-id-str="{{::$ctrl.tweet.tweetIdStr}}" favoritable="favoritable" class="fa fa-heart icon-heart">{{$ctrl.tweet.favNum}}</i><a><i data-url="{{::$ctrl.tweet.extended_entities.media[0].media_url}}:orig" filename="{{::$ctrl.tweet.fileName}}" download-from-url="download-from-url" class="fa fa-download"></i></a>
+        <div class="timeline__post--footer--contents--controls">
+          <i retweet-num="$ctrl.tweet.retweetNum" retweeted="$ctrl.tweet.retweeted" tweet-id-str="{{::$ctrl.tweet.tweetIdStr}}" retweetable="retweetable" class="fa fa-retweet icon-retweet">{{$ctrl.tweet.retweetNum}}</i>
+          <i fav-num="$ctrl.tweet.favNum" favorited="$ctrl.tweet.favorited" tweet-id-str="{{::$ctrl.tweet.tweetIdStr}}" favoritable="favoritable" class="fa fa-heart icon-heart">{{$ctrl.tweet.favNum}}</i>
+          <a>
+            <i data-url="{{::$ctrl.tweet.extended_entities.media[0].media_url}}:orig" filename="{{::$ctrl.tweet.fileName}}" download-from-url="download-from-url" class="fa fa-download"></i>
+          </a>
         </div>
       </div>
     </div>

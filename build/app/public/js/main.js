@@ -35,116 +35,6 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll'
   return $locationProvider.html5Mode(true);
 }]);
 
-angular.module("myApp.controllers", []);
-
-angular.module("myApp.directives", []).directive('dotLoader', function() {
-  return {
-    restrict: 'E',
-    template: '<div class="wrapper">\n  <div class="dot"></div>\n  <div class="dot"></div>\n  <div class="dot"></div>\n</div>'
-  };
-}).directive("imgPreload", function() {
-  return {
-    restrict: "A",
-    link: function(scope, element, attrs) {
-      element.on("load", function() {
-        element.addClass("in");
-      }).on("error", function() {});
-    }
-  };
-}).directive("scrollOnClick", function() {
-  return {
-    restrict: "A",
-    scope: {
-      scrollTo: "@"
-    },
-    link: function(scope, element, attrs) {
-      return element.on('click', function() {
-        return $('html, body').animate({
-          scrollTop: $(scope.scrollTo).offset().top
-        }, "slow");
-      });
-    }
-  };
-}).directive('downloadFromUrl', ["$q", "toaster", "DownloadService", function($q, toaster, DownloadService) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      return element.on('click', function(event) {
-        var promises, urlList;
-        urlList = attrs.url.indexOf('[') === -1 ? [attrs.url] : JSON.parse(attrs.url);
-        promises = [];
-        toaster.pop('wait', "Now Downloading ...", '', 0, 'trustedHtml');
-        urlList.forEach(function(url, idx) {
-          return promises.push(DownloadService.exec(url, attrs.filename, idx));
-        });
-        return $q.all(promises).then(function(datas) {
-          toaster.clear();
-          return toaster.pop('success', "Finished Download", '', 2000, 'trustedHtml');
-        });
-      });
-    }
-  };
-}]).directive('icNavAutoclose', function() {
-  console.log('icNavAutoclose');
-  return function(scope, elm, attrs) {
-    var collapsible, visible;
-    collapsible = $(elm).find('.navbar-collapse');
-    visible = false;
-    collapsible.on('show.bs.collapse', function() {
-      visible = true;
-    });
-    collapsible.on('hide.bs.collapse', function() {
-      visible = false;
-    });
-    $(elm).find('a').each(function(index, element) {
-      $(element).click(function(e) {
-        if (e.target.className.indexOf('dropdown-toggle') !== -1) {
-          return;
-        }
-        if (visible && 'auto' === collapsible.css('overflow-y')) {
-          collapsible.collapse('hide');
-        }
-      });
-    });
-  };
-}).directive('clearLocalStorage', ["toaster", function(toaster) {
-  return {
-    restrict: 'A',
-    link: function(scope, element, attrs) {
-      return element.on('click', function(event) {
-        toaster.pop('wait', "Now Clearing ...", '', 0, 'trustedHtml');
-        window.localStorage.clear();
-        toaster.clear();
-        return toaster.pop('success', "Finished clearing the list data", '', 2000, 'trustedHtml');
-      });
-    }
-  };
-}]);
-
-angular.module("myApp.factories", []);
-
-angular.module("myApp.filters", []).filter("interpolate", ["version", function(version) {
-  return function(text) {
-    return String(text).replace(/\%VERSION\%/g, version);
-  };
-}]).filter("noHTML", function() {
-  return function(text) {
-    if (text != null) {
-      return text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/, '&amp;');
-    }
-  };
-}).filter('newlines', ["$sce", function($sce) {
-  return function(text) {
-    return $sce.trustAsHtml(text != null ? text.replace(/\n/g, '<br />') : '');
-  };
-}]).filter('trusted', ["$sce", function($sce) {
-  return function(url) {
-    return $sce.trustAsResourceUrl(url);
-  };
-}]);
-
-angular.module("myApp.services", []);
-
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
   $scope.isLoaded = false;
   $scope.isAuthenticated = AuthService.status.isAuthenticated;
@@ -332,8 +222,6 @@ angular.module("myApp.controllers").controller("FindCtrl", ["$scope", "$location
   }
   return $scope.pictList = new Pict();
 }]);
-
-
 
 angular.module("myApp.controllers").controller("HelpCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
   if (_.isEmpty(AuthService.user)) {
@@ -540,12 +428,6 @@ angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$location
   });
 }]);
 
-angular.module("myApp.directives").directive("appVersion", ["version", function(version) {
-  return function(scope, elm, attrs) {
-    elm.text(version);
-  };
-}]);
-
 angular.module("myApp.directives").directive('copyMember', ["$rootScope", "toaster", "TweetService", function($rootScope, toaster, TweetService) {
   return {
     restrict: 'A',
@@ -720,6 +602,62 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
 
 
 
+angular.module("myApp.directives").directive('showUserSidebar', ["$rootScope", "TweetService", function($rootScope, TweetService) {
+  return {
+    restrict: 'A',
+    scope: {
+      twitterIdStr: '@'
+    },
+    link: function(scope, element, attrs) {
+      var showUserSidebar;
+      showUserSidebar = function() {
+        return TweetService.showUsers({
+          twitterIdStr: scope.twitterIdStr
+        }).then(function(data) {
+          console.log(data);
+          $rootScope.$broadcast('userData', data.data);
+          return TweetService.getUserTimeline({
+            twitterIdStr: scope.twitterIdStr
+          });
+        }).then(function(data) {
+          console.log(data.data);
+          return $rootScope.$broadcast('tweetData', data.data);
+        });
+      };
+      return element.on('click', function() {
+        var $document, body, domUserSidebar, domUserSidebarHeader, isOpenedSidebar, layer;
+        $rootScope.$broadcast('isOpened', true);
+        $document = angular.element(document);
+        domUserSidebar = $document.find('.user-sidebar');
+        domUserSidebarHeader = $document.find('.user-sidebar__header');
+        isOpenedSidebar = 　domUserSidebar[0].className.indexOf('.user-sidebar-in') !== -1;
+        if (isOpenedSidebar) {
+          showUserSidebar();
+          return;
+        }
+
+        /*
+        初回(サイドバーは見えない状態が初期状態)
+         */
+        domUserSidebar.addClass('user-sidebar-in');
+        domUserSidebarHeader.removeClass('user-sidebar-out');
+        body = $document.find('body');
+        body.addClass('scrollbar-y-hidden');
+        layer = $document.find('.layer');
+        layer.addClass('fullscreen-overlay');
+        showUserSidebar();
+        return layer.on('click', function() {
+          body.removeClass('scrollbar-y-hidden');
+          layer.removeClass('fullscreen-overlay');
+          domUserSidebar.removeClass('user-sidebar-in');
+          domUserSidebarHeader.addClass('user-sidebar-out');
+          return $rootScope.$broadcast('isClosed', true);
+        });
+      });
+    }
+  };
+}]);
+
 var TermPaginationController;
 
 angular.module("myApp.directives").directive('termPagination', function() {
@@ -748,8 +686,6 @@ TermPaginationController = (function() {
       urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD');
     }
     this.date = this.TimeService.normalizeDate('days', urlParameterChecker.queryParams.date);
-    console.log(this.date);
-    console.log(this.total);
     this.subscribe();
     this.bindKeyAction();
   }
@@ -1182,12 +1118,10 @@ angular.module("myApp.factories").factory('Mao', ["$q", "$httpParamSerializer", 
       qs = $httpParamSerializer(opts);
       return MaoService.findByMaoTokenAndDate(qs).then((function(_this) {
         return function(data) {
-          console.log(data);
           return _this.normalizeTweets(data.data);
         };
       })(this)).then((function(_this) {
         return function(normalizedTweets) {
-          console.log('==> ', normalizedTweets);
           if (normalizedTweets.length === 0) {
             _this.busy = false;
             _this.isLast = true;
@@ -2456,114 +2390,115 @@ angular.module("myApp.services").service("URLParameterService", ["$location", fu
   };
 }]);
 
-var GridLayoutTweet;
+angular.module("myApp.controllers", []);
 
-angular.module("myApp.directives").directive('gridLayoutTweet', function() {
+angular.module("myApp.directives", []).directive('dotLoader', function() {
   return {
     restrict: 'E',
-    scope: {},
-    template: "<div class=\"timeline__post--header timeline__post--header--grid\">\n  <div class=\"timeline__post--header--info timeline__post--header--info--grid\">\n    <div class=\"timeline__post--header--link timeline__post--header--link--grid\">\n      <span twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--user timeline__post--header--user--grid\">{{::$ctrl.tweet.user.screen_name}}\n      </span><span ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--header--rt_icon timeline__post--header--rt_icon--grid\"><i class=\"fa fa-retweet\"></i></span><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--rt_source timeline__post--header--rt_source--grid\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n      <followable ng-if=\"!$ctrl.tweet.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" tweet=\"{{$ctrl.tweet}}\" follow-status=\"$ctrl.tweet.followStatus\">\n      </followable>\n    </div>\n  </div>\n  <div class=\"timeline__post--header--time\"><a href=\"https://{{::$ctrl.tweet.sourceUrl}}\" target=\"_blank\">{{::$ctrl.tweet.time}}\n    </a>\n  </div>\n</div>\n<div class=\"timeline__post--icon timeline__post--icon--grid\"><img ng-src=\"{{::$ctrl.tweet.user.profile_image_url_https}}\" img-preload=\"img-preload\" show-tweet=\"show-tweet\" twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" class=\"fade\"/>\n</div>\n<div ng-repeat=\"picUrl in $ctrl.tweet.picUrlList\" class=\"timeline__post--image timeline__post--image--grid\">\n  <img ng-if=\"!$ctrl.tweet.video_url\" ng-src=\"{{::picUrl}}\" img-preload=\"img-preload\" zoom-image=\"zoom-image\" data-img-src=\"{{::picUrl}}\" class=\"fade\"/>\n  <video ng-if=\"$ctrl.tweet.video_url\" poster=\"{{::picUrl}}\" autoplay=\"autoplay\" loop=\"loop\" controls=\"controls\" muted=\"muted\">\n    <source ng-src=\"{{::$ctrl.tweet.video_url | trusted}}\" type=\"video/mp4\">\n    </source>\n  </video>\n</div>\n<div ng-if=\"!config.isShowOnlyImage\" class=\"timeline__post__text__container\">\n  <div ng-if=\"!$ctrl.tweet.retweeted_status\" ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text timeline__post--text--grid\">\n  </div>\n  <div ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--blockquote timeline__post--blockquote--grid\">\n    <p><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n    </p>\n    <blockquote>\n      <div ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n      </div>\n    </blockquote>\n  </div>\n</div>\n<div class=\"timeline__post--footer timeline__post--footer--grid\">\n  <div class=\"timeline__post--footer--contents\">\n    <div class=\"timeline__post--footer--contents--controls\">\n      <i retweet-num=\"$ctrl.tweet.retweetNum\" retweeted=\"$ctrl.tweet.retweeted\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" retweetable=\"retweetable\" class=\"fa fa-retweet icon-retweet\">{{$ctrl.tweet.retweetNum}}</i><i fav-num=\"$ctrl.tweet.favNum\" favorited=\"$ctrl.tweet.favorited\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" favoritable=\"favoritable\" class=\"fa fa-heart icon-heart\">{{$ctrl.tweet.favNum}}</i>\n      <!-- aタグがないとtextとcontrolsの間の余白がなくなり、レイアウトが崩れる。--><a><i data-url=\"{{::$ctrl.tweet.picOrigUrlList}}\" filename=\"{{::$ctrl.tweet.fileName}}\" download-from-url=\"download-from-url\" class=\"fa fa-download\"></i></a>\n    </div>\n  </div>\n</div>",
-    bindToController: {
-      tweet: "=",
-      listIdStr: "="
-    },
-    controllerAs: "$ctrl",
-    controller: GridLayoutTweet
+    template: '<div class="wrapper">\n  <div class="dot"></div>\n  <div class="dot"></div>\n  <div class="dot"></div>\n</div>'
   };
-});
-
-GridLayoutTweet = (function() {
-  function GridLayoutTweet() {
-    console.log(this);
-  }
-
-  return GridLayoutTweet;
-
-})();
-
-var ListLayoutTweet;
-
-angular.module("myApp.directives").directive('listLayoutTweet', function() {
+}).directive("imgPreload", function() {
   return {
-    restrict: 'E',
-    scope: {},
-    template: "\n<div class=\"timeline__post--header\">\n  <div class=\"timeline__post--header--info\">\n    <div class=\"timeline__post--header--link\">\n      <span twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--user\">{{::$ctrl.tweet.user.screen_name}}\n      </span><span ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--header--rt_icon\"><i class=\"fa fa-retweet\"></i></span><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--rt_source\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n      <followable ng-if=\"!$ctrl.tweet.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" tweet=\"{{$ctrl.tweet}}\" follow-status=\"$ctrl.tweet.followStatus\">\n      </followable>\n    </div>\n  </div>\n  <div class=\"timeline__post--header--time\"><a href=\"https://{{::$ctrl.tweet.sourceUrl}}\" target=\"_blank\">{{::$ctrl.tweet.time}}\n    </a>\n  </div>\n</div>\n<div class=\"timeline__post--icon\"><img ng-src=\"{{::$ctrl.tweet.user.profile_image_url_https}}\" img-preload=\"img-preload\" show-tweet=\"show-tweet\" twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" class=\"fade\"/>\n</div>\n<div ng-repeat=\"picUrl in $ctrl.tweet.picUrlList\" class=\"timeline__post--image\">\n  <img ng-if=\"!$ctrl.tweet.video_url\" ng-src=\"{{::picUrl}}\" img-preload=\"img-preload\" zoom-image=\"zoom-image\" data-img-src=\"{{::picUrl}}\" class=\"fade\"/>\n  <video ng-if=\"$ctrl.tweet.video_url\" poster=\"{{::picUrl}}\" autoplay=\"autoplay\" loop=\"loop\" controls=\"controls\" muted=\"muted\">\n    <source ng-src=\"{{::$ctrl.tweet.video_url | trusted}}\" type=\"video/mp4\">\n    </source>\n  </video>\n</div>\n<div ng-if=\"!config.isShowOnlyImage\" class=\"timeline__post__text__container\">\n  <div ng-if=\"!$ctrl.tweet.retweeted_status\" ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n  </div>\n  <div ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--blockquote\">\n    <p><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n    </p>\n    <blockquote>\n      <div ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n      </div>\n    </blockquote>\n  </div>\n</div>\n<div class=\"timeline__post--footer\">\n  <div class=\"timeline__post--footer--contents\">\n    <div class=\"timeline__post--footer--contents--controls\"><i retweet-num=\"$ctrl.tweet.retweetNum\" retweeted=\"$ctrl.tweet.retweeted\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" retweetable=\"retweetable\" class=\"fa fa-retweet icon-retweet\">{{$ctrl.tweet.retweetNum}}</i><i fav-num=\"$ctrl.tweet.favNum\" favorited=\"$ctrl.tweet.favorited\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" favoritable=\"favoritable\" class=\"fa fa-heart icon-heart\">{{$ctrl.tweet.favNum}}</i><a><i data-url=\"{{::$ctrl.tweet.extended_entities.media[0].media_url}}:orig\" filename=\"{{::$ctrl.tweet.fileName}}\" download-from-url=\"download-from-url\" class=\"fa fa-download\"></i></a>\n    </div>\n  </div>\n</div>\n",
-    bindToController: {
-      tweet: "=",
-      listIdStr: "="
-    },
-    controllerAs: "$ctrl",
-    controller: ListLayoutTweet
-  };
-});
-
-ListLayoutTweet = (function() {
-  function ListLayoutTweet() {
-    console.log(this);
-  }
-
-  return ListLayoutTweet;
-
-})();
-
-var TweetListController;
-
-angular.module("myApp.directives").directive('tweetListContainer', function() {
-  return {
-    restrict: 'E',
-    scope: {},
-    template: "<dot-loader ng-if=\"!$ctrl.tweets.items\" class=\"user-sidebar__contents--box-loading-init\"></dot-loader>\n<div ng-if=\"$ctrl.message\" class=\"list__status--message text-center\">{{message}}\n</div>\n\n<span ng-if=\"$ctrl.layoutType == 'grid'\">\n  <div infinite-scroll=\"$ctrl.tweets.nextPage()\" infinite-scroll-distance=\"2\" infinite-scroll-disabled=\"$ctrl.tweets.busy\" masonry=\"masonry\" preserve-order=\"preserve-order\" class=\"timeline timeline--grid\">\n    <div ng-repeat=\"tweet in $ctrl.tweets.items\" class=\"masonry-brick timeline__post timeline__post--grid\">\n      <grid-layout-tweet tweet=\"tweet\" listIdStr=\"$ctrl.listIdStr\"></grid-layout-tweet>\n    </div>\n  </div>\n\n  <div class=\"loading-bar loading-bar--grid\">\n    <dot-loader ng-if=\"$ctrl.tweets.busy\" class=\"box-loading-padding-vertical\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweets.isLast\" class=\"text-center\">終わりです</div>\n  </div>\n</span>\n\n<span ng-if=\"$ctrl.layoutType == 'list'\">\n  <div infinite-scroll=\"$ctrl.tweets.nextPage()\" infinite-scroll-distance=\"2\" infinite-scroll-disabled=\"$ctrl.tweets.busy\" class=\"timeline timeline--list\">\n    <div ng-repeat=\"tweet in $ctrl.tweets.items\" class=\"timeline__post\">\n      <list-layout-tweet tweet=\"tweet\"></list-layout-tweet>\n    </div>\n\n    <div class=\"loading-bar\">\n      <dot-loader ng-if=\"$ctrl.tweets.busy\" class=\"box-loading-padding-vertical\">\n      </dot-loader>\n      <div ng-show=\"$ctrl.tweets.isLast\" class=\"text-center\">終わりです</div>\n    </div>\n  </div>\n</span>\n",
-    bindToController: {},
-    controllerAs: "$ctrl",
-    controller: TweetListController
-  };
-});
-
-TweetListController = (function() {
-  function TweetListController($location, $scope, AuthService, ListService, Tweets, TweetService) {
-    this.$location = $location;
-    this.$scope = $scope;
-    this.AuthService = AuthService;
-    this.ListService = ListService;
-    this.Tweets = Tweets;
-    this.TweetService = TweetService;
-    this.isLoaded = false;
-    this.layoutType = 'grid';
-    this.ListService.amatsukaList = {
-      data: JSON.parse(localStorage.getItem('amatsukaList')) || {},
-      member: JSON.parse(localStorage.getItem('amatsukaFollowList')) || []
-    };
-    if (!this.ListService.hasListData()) {
-      this.$location.path('/');
+    restrict: "A",
+    link: function(scope, element, attrs) {
+      element.on("load", function() {
+        element.addClass("in");
+      }).on("error", function() {});
     }
-    this.tweets = new this.Tweets([], void 0, 'fav', this.AuthService.user._json.id_str);
-    this.listIdStr = ListService.amatsukaList.data.id_str;
-    this.isLoaded = true;
-    this.subscribe();
-  }
-
-  TweetListController.prototype.subscribe = function() {
-    this.$scope.$on('addMember', (function(_this) {
-      return function(event, args) {
-        console.log('fav addMember on ', args);
-        return _this.TweetService.applyFollowStatusChange(_this.tweets.items, args);
-      };
-    })(this));
-    return this.$scope.$on('resize::resize', (function(_this) {
-      return function(event, args) {
-        console.log('fav resize::resize on ', args.layoutType);
-        return _this.$scope.$apply(function() {
-          return _this.layoutType = args.layoutType;
-        });
-      };
-    })(this));
   };
+}).directive("scrollOnClick", function() {
+  return {
+    restrict: "A",
+    scope: {
+      scrollTo: "@"
+    },
+    link: function(scope, element, attrs) {
+      return element.on('click', function() {
+        return $('html, body').animate({
+          scrollTop: $(scope.scrollTo).offset().top
+        }, "slow");
+      });
+    }
+  };
+}).directive('downloadFromUrl', ["$q", "toaster", "DownloadService", function($q, toaster, DownloadService) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        var promises, urlList;
+        urlList = attrs.url.indexOf('[') === -1 ? [attrs.url] : JSON.parse(attrs.url);
+        promises = [];
+        toaster.pop('wait', "Now Downloading ...", '', 0, 'trustedHtml');
+        urlList.forEach(function(url, idx) {
+          return promises.push(DownloadService.exec(url, attrs.filename, idx));
+        });
+        return $q.all(promises).then(function(datas) {
+          toaster.clear();
+          return toaster.pop('success', "Finished Download", '', 2000, 'trustedHtml');
+        });
+      });
+    }
+  };
+}]).directive('icNavAutoclose', function() {
+  console.log('icNavAutoclose');
+  return function(scope, elm, attrs) {
+    var collapsible, visible;
+    collapsible = $(elm).find('.navbar-collapse');
+    visible = false;
+    collapsible.on('show.bs.collapse', function() {
+      visible = true;
+    });
+    collapsible.on('hide.bs.collapse', function() {
+      visible = false;
+    });
+    $(elm).find('a').each(function(index, element) {
+      $(element).click(function(e) {
+        if (e.target.className.indexOf('dropdown-toggle') !== -1) {
+          return;
+        }
+        if (visible && 'auto' === collapsible.css('overflow-y')) {
+          collapsible.collapse('hide');
+        }
+      });
+    });
+  };
+}).directive('clearLocalStorage', ["toaster", function(toaster) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      return element.on('click', function(event) {
+        toaster.pop('wait', "Now Clearing ...", '', 0, 'trustedHtml');
+        window.localStorage.clear();
+        toaster.clear();
+        return toaster.pop('success', "Finished clearing the list data", '', 2000, 'trustedHtml');
+      });
+    }
+  };
+}]);
 
-  return TweetListController;
+angular.module("myApp.factories", []);
 
-})();
+angular.module("myApp.filters", []).filter("interpolate", ["version", function(version) {
+  return function(text) {
+    return String(text).replace(/\%VERSION\%/g, version);
+  };
+}]).filter("noHTML", function() {
+  return function(text) {
+    if (text != null) {
+      return text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/&/, '&amp;');
+    }
+  };
+}).filter('newlines', ["$sce", function($sce) {
+  return function(text) {
+    return $sce.trustAsHtml(text != null ? text.replace(/\n/g, '<br />') : '');
+  };
+}]).filter('trusted', ["$sce", function($sce) {
+  return function(url) {
+    return $sce.trustAsResourceUrl(url);
+  };
+}]);
 
-TweetListController.$inject = ['$location', '$scope', 'AuthService', 'ListService', 'Tweets', 'TweetService'];
+angular.module("myApp.services", []);
 
 var MaoContainerController;
 
@@ -2626,18 +2561,14 @@ angular.module("myApp.directives").directive('maoListContainer', function() {
 });
 
 MaoListContoller = (function() {
-  function MaoListContoller($location, $httpParamSerializer, $scope, Mao, MaoService, ListService, URLParameterChecker, TimeService) {
+  function MaoListContoller($location, $httpParamSerializer, $scope, Mao, MaoService, URLParameterChecker, TimeService) {
     var qs, urlParameterChecker;
     this.$location = $location;
     this.$httpParamSerializer = $httpParamSerializer;
     this.$scope = $scope;
     this.Mao = Mao;
     this.MaoService = MaoService;
-    this.ListService = ListService;
     this.TimeService = TimeService;
-    if (!this.ListService.hasListData()) {
-      this.$location.path('/');
-    }
     urlParameterChecker = new URLParameterChecker();
     console.log(urlParameterChecker);
     if (_.isEmpty(urlParameterChecker.queryParams)) {
@@ -2651,7 +2582,6 @@ MaoListContoller = (function() {
     });
     this.MaoService.countTweetByMaoTokenAndDate(qs).then((function(_this) {
       return function(response) {
-        console.log('countTweetByMaoTokenAndDate response = ', response);
         return _this.tweetTotalNumber = response.data.count;
       };
     })(this));
@@ -2660,9 +2590,9 @@ MaoListContoller = (function() {
 
   MaoListContoller.prototype.getTweet = function(newQueryParams) {
     this.date = this.TimeService.normalizeDate('days', newQueryParams.date);
-    console.log('getTweet ', this.date);
     this.tweetList = new this.Mao(this.date);
-    return this.tweetList.load();
+    this.tweetList.load();
+    return console.log('getTweet ', this.date);
   };
 
   MaoListContoller.prototype.subscribe = function() {
@@ -2684,7 +2614,7 @@ MaoListContoller = (function() {
 
 })();
 
-MaoListContoller.$inject = ['$location', '$httpParamSerializer', '$scope', 'Mao', 'MaoService', 'ListService', 'URLParameterChecker', 'TimeService'];
+MaoListContoller.$inject = ['$location', '$httpParamSerializer', '$scope', 'Mao', 'MaoService', 'URLParameterChecker', 'TimeService'];
 
 var MaoRankingPostNumber;
 
@@ -2692,7 +2622,7 @@ angular.module("myApp.directives").directive('maoRankingPostNumber', function() 
   return {
     restrict: 'E',
     scope: {},
-    template: "<section infinite-scroll=\"$ctrl.tweetCountList.load()\" infinite-scroll-distance=\"0\" class=\"fillbars\">\n\n  <div ng-repeat=\"item in $ctrl.tweetCountList.items\" class=\"col-sm-12 fillbar\">\n    <div class=\"col-sm-3 col-xs-3 fillbar__user\">\n      <img ng-src=\"{{item.postedBy.icon}}\" twitter-id-str=\"{{item.postedBy.twitterIdStr}}\" show-tweet img-preload class=\"fade fillbar__icon\">\n      <span class=\"fillbar__screen-name clickable\" twitter-id-str=\"{{item.postedBy.twitterIdStr}}\"  show-tweet>{{item.postedBy.screenName}}</span>\n    </div>\n    <div class=\"col-sm-9 col-xs-9\">\n      <div class=\"progress\">\n        <div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"60\" aria-valuemin=\"0\" aria-valuemax=\"100\" ng-style=\"{ 'width': item.postCount / $ctrl.tweetCountList.maxCount * 100 + '%'}\">\n          <span class=\"fillbar__count\">\n            {{item.postCount}}\n          </span>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"col-sm-12\">\n    <dot-loader ng-if=\"$ctrl.tweetCountList.busy\" class=\"infinitescroll-content\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweetCountList.isLast\" class=\"text-center infinitescroll-content infinitescroll-message\">終わりです\n    </div>\n  </div>\n\n</section>",
+    template: "<section infinite-scroll=\"$ctrl.tweetCountList.load()\" infinite-scroll-distance=\"0\" class=\"fillbars\">\n\n  <div ng-repeat=\"item in $ctrl.tweetCountList.items\" class=\"col-sm-12 fillbar\">\n\n    <div class=\"col-sm-3 col-xs-3 fillbar__user\">\n      <img ng-src=\"{{item.postedBy.icon}}\" twitter-id-str=\"{{item.postedBy.twitterIdStr}}\" show-tweet img-preload class=\"fade fillbar__icon\">\n      <span class=\"fillbar__screen-name clickable\" twitter-id-str=\"{{item.postedBy.twitterIdStr}}\"  show-tweet>{{item.postedBy.screenName}}</span>\n    </div>\n    <div class=\"col-sm-9 col-xs-9\">\n      <div class=\"progress\">\n        <div class=\"progress-bar\" role=\"progressbar\" aria-valuenow=\"60\" aria-valuemin=\"0\" aria-valuemax=\"100\" ng-style=\"{ 'width': item.postCount / $ctrl.tweetCountList.maxCount * 100 + '%'}\">\n          <span class=\"fillbar__count\">\n            {{item.postCount}}\n          </span>\n        </div>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"col-sm-12\">\n    <dot-loader ng-if=\"$ctrl.tweetCountList.busy\" class=\"infinitescroll-content\">\n    </dot-loader>\n    <div ng-show=\"$ctrl.tweetCountList.isLast\" class=\"text-center infinitescroll-content infinitescroll-message\">終わりです\n    </div>\n  </div>\n\n</section>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoRankingPostNumber
@@ -2700,22 +2630,15 @@ angular.module("myApp.directives").directive('maoRankingPostNumber', function() 
 });
 
 MaoRankingPostNumber = (function() {
-  function MaoRankingPostNumber($location, $scope, TweetCountList, ListService, URLParameterChecker, TimeService) {
-    this.$location = $location;
-    this.$scope = $scope;
-    this.TweetCountList = TweetCountList;
-    this.ListService = ListService;
-    this.TimeService = TimeService;
-    '======> constructor MaoRankingPostNumber ';
-    this.tweetCountList = new this.TweetCountList();
-    console.log('@tweetCountList ', this.tweetCountList);
+  function MaoRankingPostNumber(TweetCountList) {
+    this.tweetCountList = new TweetCountList();
   }
 
   return MaoRankingPostNumber;
 
 })();
 
-MaoRankingPostNumber.$inject = ['$location', '$scope', 'TweetCountList', 'ListService', 'URLParameterChecker', 'TimeService'];
+MaoRankingPostNumber.$inject = ['TweetCountList'];
 
 var MaoTweetArticleController;
 
@@ -2739,94 +2662,56 @@ MaoTweetArticleController = (function() {
 
 })();
 
-var ZoomImageContainerController;
+var GridLayoutTweet;
 
-angular.module("myApp.directives").directive('zoomImageContainer', function() {
+angular.module("myApp.directives").directive('gridLayoutTweet', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<span ng-show=\"$ctrl.isShown\">\n  <div class=\"layer\">\n  </div>\n  <div class=\"image-layer image-layer__overlay\">\n    <div class=\"image-layer__container\">\n      <img class=\"image-layer__img\"/>\n      <div class=\"image-layer__loading\">\n        <img src=\"./images/loaders/tail-spin.svg\" />\n      </div>\n    </div>\n  </div>\n</span>",
-    bindToController: {},
+    template: "<div class=\"timeline__post--header timeline__post--header--grid\">\n  <div class=\"timeline__post--header--info timeline__post--header--info--grid\">\n    <div class=\"timeline__post--header--link timeline__post--header--link--grid\">\n      <span twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--user timeline__post--header--user--grid\">{{::$ctrl.tweet.user.screen_name}}\n      </span><span ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--header--rt_icon timeline__post--header--rt_icon--grid\"><i class=\"fa fa-retweet\"></i></span><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--rt_source timeline__post--header--rt_source--grid\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n      <followable ng-if=\"!$ctrl.tweet.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" tweet=\"{{$ctrl.tweet}}\" follow-status=\"$ctrl.tweet.followStatus\">\n      </followable>\n    </div>\n  </div>\n  <div class=\"timeline__post--header--time\"><a href=\"https://{{::$ctrl.tweet.sourceUrl}}\" target=\"_blank\">{{::$ctrl.tweet.time}}\n    </a>\n  </div>\n</div>\n<div class=\"timeline__post--icon timeline__post--icon--grid\"><img ng-src=\"{{::$ctrl.tweet.user.profile_image_url_https}}\" img-preload=\"img-preload\" show-tweet=\"show-tweet\" twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" class=\"fade\"/>\n</div>\n<div ng-repeat=\"picUrl in $ctrl.tweet.picUrlList\" class=\"timeline__post--image timeline__post--image--grid\">\n  <img ng-if=\"!$ctrl.tweet.video_url\" ng-src=\"{{::picUrl}}\" img-preload=\"img-preload\" zoom-image=\"zoom-image\" data-img-src=\"{{::picUrl}}\" class=\"fade\"/>\n  <video ng-if=\"$ctrl.tweet.video_url\" poster=\"{{::picUrl}}\" autoplay=\"autoplay\" loop=\"loop\" controls=\"controls\" muted=\"muted\">\n    <source ng-src=\"{{::$ctrl.tweet.video_url | trusted}}\" type=\"video/mp4\">\n    </source>\n  </video>\n</div>\n<div ng-if=\"!config.isShowOnlyImage\" class=\"timeline__post__text__container\">\n  <div ng-if=\"!$ctrl.tweet.retweeted_status\" ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text timeline__post--text--grid\">\n  </div>\n  <div ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--blockquote timeline__post--blockquote--grid\">\n    <p><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n    </p>\n    <blockquote>\n      <div ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n      </div>\n    </blockquote>\n  </div>\n</div>\n<div class=\"timeline__post--footer timeline__post--footer--grid\">\n  <div class=\"timeline__post--footer--contents\">\n    <div class=\"timeline__post--footer--contents--controls\">\n      <i retweet-num=\"$ctrl.tweet.retweetNum\" retweeted=\"$ctrl.tweet.retweeted\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" retweetable=\"retweetable\" class=\"fa fa-retweet icon-retweet\">{{$ctrl.tweet.retweetNum}}</i>\n      <i fav-num=\"$ctrl.tweet.favNum\" favorited=\"$ctrl.tweet.favorited\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" favoritable=\"favoritable\" class=\"fa fa-heart icon-heart\">{{$ctrl.tweet.favNum}}</i>\n      <a>\n        <i data-url=\"{{::$ctrl.tweet.picOrigUrlList}}\" filename=\"{{::$ctrl.tweet.fileName}}\" download-from-url=\"download-from-url\" class=\"fa fa-download\"></i>\n      </a>\n    </div>\n  </div>\n</div>",
+    bindToController: {
+      tweet: "=",
+      listIdStr: "="
+    },
     controllerAs: "$ctrl",
-    controller: ZoomImageContainerController
+    controller: GridLayoutTweet
   };
 });
 
-ZoomImageContainerController = (function() {
-  function ZoomImageContainerController($location, $scope, ListService) {
-    this.$location = $location;
-    this.$scope = $scope;
-    this.ListService = ListService;
-    this.isShown = false;
-    this.html = angular.element(document).find('html');
-    this.body = angular.element(document).find('body');
-    this.imageLayerImg = angular.element(document).find('.image-layer__img');
-    this.imageLayerLoading = angular.element(document).find('.image-layer__loading');
-    this.imageLayerContainer = angular.element(document).find('.image-layer__container');
-    this.subscribe();
+GridLayoutTweet = (function() {
+  function GridLayoutTweet() {
+    console.log(this);
   }
 
-  ZoomImageContainerController.prototype.bindScrollEvent = function() {};
-
-  ZoomImageContainerController.prototype.bindKeyEvent = function() {};
-
-  ZoomImageContainerController.prototype.bindClickEvent = function() {
-    return this.imageLayerContainer.on('click', (function(_this) {
-      return function() {
-        return _this.isShown = false;
-      };
-    })(this));
-  };
-
-  ZoomImageContainerController.prototype.subscribe = function() {
-    return this.$scope.$on('zoomableImage::show', (function(_this) {
-      return function(event, args) {
-        var from, to, _ref;
-        console.log(args);
-        console.log(args.attrs.imgSrc);
-        _this.isShown = true;
-        _ref = [args.attrs.imgSrc, args.attrs.imgSrc.replace(':small', ':orig')], from = _ref[0], to = _ref[1];
-        _this.pipeLowToHighImage(from, to);
-        return _this.bindClickEvent();
-      };
-    })(this));
-  };
-
-  ZoomImageContainerController.prototype.setImageAndStyle = function(imgElement, html) {
-    var cH, cH_cW_percent, cW, direction, h, h_w_percent, w;
-    h = imgElement[0].naturalHeight;
-    w = imgElement[0].naturalWidth;
-    h_w_percent = h / w * 100;
-    cH = html[0].clientHeight;
-    cW = html[0].clientWidth;
-    cH_cW_percent = cH / cW * 100;
-    direction = h_w_percent - cH_cW_percent >= 0 ? 'h' : 'w';
-    return imgElement.addClass("image-layer__img-" + direction + "-wide");
-  };
-
-  ZoomImageContainerController.prototype.pipeLowToHighImage = function(from, to) {
-    this.imageLayerLoading.show();
-    this.imageLayerImg.hide();
-    this.imageLayerImg.removeClass();
-    console.log(from, to);
-    return this.imageLayerImg.attr('src', from).load((function(_this) {
-      return function() {
-        console.log('-> Middle');
-        _this.imageLayerLoading.hide();
-        _this.setImageAndStyle(_this.imageLayerImg, _this.html);
-        _this.imageLayerImg.fadeIn(1);
-        _this.imageLayerImg.off('load');
-        return _this.imageLayerImg.attr('src', to).load(function() {
-          console.log('-> High');
-          _this.setImageAndStyle(_this.imageLayerImg, _this.html);
-          return _this.imageLayerImg.fadeIn(1);
-        });
-      };
-    })(this));
-  };
-
-  return ZoomImageContainerController;
+  return GridLayoutTweet;
 
 })();
 
-ZoomImageContainerController.$inject = ['$location', '$scope', 'ListService'];
+var ListLayoutTweet;
+
+angular.module("myApp.directives").directive('listLayoutTweet', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "\n<div class=\"timeline__post--header\">\n  <div class=\"timeline__post--header--info\">\n    <div class=\"timeline__post--header--link\">\n      <span twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--user\">{{::$ctrl.tweet.user.screen_name}}\n      </span>\n      <span ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--header--rt_icon\">\n        <i class=\"fa fa-retweet\"></i>\n      </span>\n      <a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\" class=\"timeline__post--header--rt_source\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n      <followable ng-if=\"!$ctrl.tweet.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" tweet=\"{{$ctrl.tweet}}\" follow-status=\"$ctrl.tweet.followStatus\">\n      </followable>\n    </div>\n  </div>\n  <div class=\"timeline__post--header--time\"><a href=\"https://{{::$ctrl.tweet.sourceUrl}}\" target=\"_blank\">{{::$ctrl.tweet.time}}\n    </a>\n  </div>\n</div>\n<div class=\"timeline__post--icon\"><img ng-src=\"{{::$ctrl.tweet.user.profile_image_url_https}}\" img-preload=\"img-preload\" show-tweet=\"show-tweet\" twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" class=\"fade\"/>\n</div>\n<div ng-repeat=\"picUrl in $ctrl.tweet.picUrlList\" class=\"timeline__post--image\">\n  <img ng-if=\"!$ctrl.tweet.video_url\" ng-src=\"{{::picUrl}}\" img-preload=\"img-preload\" zoom-image=\"zoom-image\" data-img-src=\"{{::picUrl}}\" class=\"fade\"/>\n  <video ng-if=\"$ctrl.tweet.video_url\" poster=\"{{::picUrl}}\" autoplay=\"autoplay\" loop=\"loop\" controls=\"controls\" muted=\"muted\">\n    <source ng-src=\"{{::$ctrl.tweet.video_url | trusted}}\" type=\"video/mp4\">\n    </source>\n  </video>\n</div>\n<div ng-if=\"!config.isShowOnlyImage\" class=\"timeline__post__text__container\">\n  <div ng-if=\"!$ctrl.tweet.retweeted_status\" ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n  </div>\n  <div ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--blockquote\">\n    <p><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-tweet=\"show-tweet\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n    </p>\n    <blockquote>\n      <div ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n      </div>\n    </blockquote>\n  </div>\n</div>\n<div class=\"timeline__post--footer\">\n  <div class=\"timeline__post--footer--contents\">\n    <div class=\"timeline__post--footer--contents--controls\">\n      <i retweet-num=\"$ctrl.tweet.retweetNum\" retweeted=\"$ctrl.tweet.retweeted\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" retweetable=\"retweetable\" class=\"fa fa-retweet icon-retweet\">{{$ctrl.tweet.retweetNum}}</i>\n      <i fav-num=\"$ctrl.tweet.favNum\" favorited=\"$ctrl.tweet.favorited\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" favoritable=\"favoritable\" class=\"fa fa-heart icon-heart\">{{$ctrl.tweet.favNum}}</i>\n      <a>\n        <i data-url=\"{{::$ctrl.tweet.extended_entities.media[0].media_url}}:orig\" filename=\"{{::$ctrl.tweet.fileName}}\" download-from-url=\"download-from-url\" class=\"fa fa-download\"></i>\n      </a>\n    </div>\n  </div>\n</div>\n",
+    bindToController: {
+      tweet: "=",
+      listIdStr: "="
+    },
+    controllerAs: "$ctrl",
+    controller: ListLayoutTweet
+  };
+});
+
+ListLayoutTweet = (function() {
+  function ListLayoutTweet() {
+    console.log(this);
+  }
+
+  return ListLayoutTweet;
+
+})();
+
+
+
+

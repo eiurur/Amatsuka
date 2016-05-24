@@ -48,10 +48,7 @@ angular.module "myApp.directives"
     controller: MaoListContoller
 
 class MaoListContoller
-  constructor: (@$location, @$httpParamSerializer, @$scope, @Mao, @MaoService, @ListService, URLParameterChecker, @TimeService) ->
-    unless @ListService.hasListData() then @$location.path '/'
-
-
+  constructor: (@$location, @$httpParamSerializer, @$scope, @Mao, @MaoService, URLParameterChecker, @TimeService) ->
     urlParameterChecker = new URLParameterChecker()
     console.log urlParameterChecker
 
@@ -65,7 +62,6 @@ class MaoListContoller
     qs = @$httpParamSerializer date: @date
     @MaoService.countTweetByMaoTokenAndDate(qs)
     .then (response) =>
-      console.log 'countTweetByMaoTokenAndDate response = ', response
       @tweetTotalNumber = response.data.count
 
     @subscribe()
@@ -74,9 +70,9 @@ class MaoListContoller
 
   getTweet: (newQueryParams) ->
     @date = @TimeService.normalizeDate 'days', newQueryParams.date
-    console.log 'getTweet ', @date
     @tweetList = new @Mao(@date)
     @tweetList.load()
+    console.log 'getTweet ', @date
 
   subscribe: ->
     @$scope.$on 'MaoStatusController::publish', (event, args) => @date = args.date
@@ -87,5 +83,5 @@ class MaoListContoller
       @getTweet(args)
       return
 
-MaoListContoller.$inject = ['$location', '$httpParamSerializer', '$scope', 'Mao', 'MaoService', 'ListService', 'URLParameterChecker', 'TimeService']
+MaoListContoller.$inject = ['$location', '$httpParamSerializer', '$scope', 'Mao', 'MaoService', 'URLParameterChecker', 'TimeService']
 

@@ -6,6 +6,7 @@ angular.module "myApp.directives"
     <section infinite-scroll="$ctrl.tweetCountList.load()" infinite-scroll-distance="0" class="fillbars">
 
       <div ng-repeat="item in $ctrl.tweetCountList.items" class="col-sm-12 fillbar">
+
         <div class="col-sm-3 col-xs-3 fillbar__user">
           <img ng-src="{{item.postedBy.icon}}" twitter-id-str="{{item.postedBy.twitterIdStr}}" show-tweet img-preload class="fade fillbar__icon">
           <span class="fillbar__screen-name clickable" twitter-id-str="{{item.postedBy.twitterIdStr}}"  show-tweet>{{item.postedBy.screenName}}</span>
@@ -35,10 +36,7 @@ angular.module "myApp.directives"
     controller: MaoRankingPostNumber
 
 class MaoRankingPostNumber
-  constructor: (@$location, @$scope, @TweetCountList, @ListService, URLParameterChecker, @TimeService) ->
-    '======> constructor MaoRankingPostNumber '
+  constructor: (TweetCountList) ->
+    @tweetCountList = new TweetCountList()
 
-    @tweetCountList = new @TweetCountList()
-    console.log '@tweetCountList ', @tweetCountList
-
-MaoRankingPostNumber.$inject = ['$location', '$scope', 'TweetCountList', 'ListService', 'URLParameterChecker', 'TimeService']
+MaoRankingPostNumber.$inject = ['TweetCountList']

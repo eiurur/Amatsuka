@@ -5,13 +5,8 @@ angular.module "myApp.factories"
   .factory 'ZoomImageViewer', (GetterImageInfomation) ->
     class ZoomImageViewer
 
-      # Containerを表示
-      # 黒半透明の要素で画面全体を覆う
-      # 画像はいったん非表示
-      # 画像を読み込んでアサイン
-      #
-
       constructor: ->
+
         # windowのサイズを取得
         @html = angular.element(document).find('html')
         @body = angular.element(document).find('body')

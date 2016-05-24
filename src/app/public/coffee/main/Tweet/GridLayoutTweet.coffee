@@ -42,8 +42,11 @@ angular.module "myApp.directives"
       <div class="timeline__post--footer timeline__post--footer--grid">
         <div class="timeline__post--footer--contents">
           <div class="timeline__post--footer--contents--controls">
-            <i retweet-num="$ctrl.tweet.retweetNum" retweeted="$ctrl.tweet.retweeted" tweet-id-str="{{::$ctrl.tweet.tweetIdStr}}" retweetable="retweetable" class="fa fa-retweet icon-retweet">{{$ctrl.tweet.retweetNum}}</i><i fav-num="$ctrl.tweet.favNum" favorited="$ctrl.tweet.favorited" tweet-id-str="{{::$ctrl.tweet.tweetIdStr}}" favoritable="favoritable" class="fa fa-heart icon-heart">{{$ctrl.tweet.favNum}}</i>
-            <!-- aタグがないとtextとcontrolsの間の余白がなくなり、レイアウトが崩れる。--><a><i data-url="{{::$ctrl.tweet.picOrigUrlList}}" filename="{{::$ctrl.tweet.fileName}}" download-from-url="download-from-url" class="fa fa-download"></i></a>
+            <i retweet-num="$ctrl.tweet.retweetNum" retweeted="$ctrl.tweet.retweeted" tweet-id-str="{{::$ctrl.tweet.tweetIdStr}}" retweetable="retweetable" class="fa fa-retweet icon-retweet">{{$ctrl.tweet.retweetNum}}</i>
+            <i fav-num="$ctrl.tweet.favNum" favorited="$ctrl.tweet.favorited" tweet-id-str="{{::$ctrl.tweet.tweetIdStr}}" favoritable="favoritable" class="fa fa-heart icon-heart">{{$ctrl.tweet.favNum}}</i>
+            <a>
+              <i data-url="{{::$ctrl.tweet.picOrigUrlList}}" filename="{{::$ctrl.tweet.fileName}}" download-from-url="download-from-url" class="fa fa-download"></i>
+            </a>
           </div>
         </div>
       </div>
