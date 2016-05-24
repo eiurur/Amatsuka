@@ -1,0 +1,28 @@
+.col-md-12.col-sm-12.col-xs-12
+  form
+    .form-group
+      label.text(for='inputNGUsername') NG username
+      tags-input.bootstrap(ng-model='config.ngUsername', placeholder='Add a ng-username (ex) twitter, TwitterDevJP', replace-spaces-with-dashes='false', min-length="1")
+    .form-group
+      label.text(for='inputNGWord') NG word
+      tags-input.bootstrap(ng-model='config.ngWord', placeholder='Add a ng-word (ex) #ハッシュタグ, 名前, 禁止ワード', replace-spaces-with-dashes='false', min-length="1")
+    .form-group
+      label.text(for='inputRetweetLowerLimit') Retweet Lower Limit
+      .input-group.form
+        input.form-control.search-input.form__input--fav-lower-limit(type='number', ng-model='config.retweetLowerLimit', min='0')
+    .form-group
+      label.text(for='inputFavLowerLimit') Favorite Lower Limit
+      .input-group.form
+        input.form-control.search-input.form__input--fav-lower-limit(type='number', ng-model='config.favLowerLimit', min='0')
+    .checkbox
+      label.text
+        input(type='checkbox', ng-model='config.isIncludeRetweet')
+        | Include Retweet
+    .checkbox
+      label.text
+        input(type='checkbox', ng-model='config.isShowOnlyImage')
+        | Show only Image
+    .checkbox
+      label.text
+        input(type='checkbox', ng-model='config.isTileLayout')
+        | Chenge Layout to Tile Style.
