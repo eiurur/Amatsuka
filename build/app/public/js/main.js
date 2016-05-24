@@ -798,6 +798,11 @@ TermPaginationController = (function() {
     this.date = this.TimeService.normalizeDate('days', urlParameterChecker.queryParams.date);
     this.subscribe();
     this.bindKeyAction();
+    this.$scope.$on('$destroy', (function(_this) {
+      return function() {
+        return _this.unbindKeyAction();
+      };
+    })(this));
   }
 
   TermPaginationController.prototype.bindKeyAction = function() {
@@ -811,6 +816,10 @@ TermPaginationController = (function() {
         return _this.paginate(1);
       };
     })(this));
+  };
+
+  TermPaginationController.prototype.unbindKeyAction = function() {
+    return Mousetrap.unbind(['ctrl+left', 'ctrl+right']);
   };
 
   TermPaginationController.prototype.subscribe = function() {

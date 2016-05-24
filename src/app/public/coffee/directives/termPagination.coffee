@@ -25,12 +25,17 @@ class TermPaginationController
     if _.isEmpty(urlParameterChecker.queryParams)
       urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD')
     @date = @TimeService.normalizeDate('days', urlParameterChecker.queryParams.date)
+
     @subscribe()
     @bindKeyAction()
+    @$scope.$on '$destroy', => @unbindKeyAction()
 
   bindKeyAction: ->
     Mousetrap.bind ['ctrl+left'], => @paginate(-1)
     Mousetrap.bind ['ctrl+right'], => @paginate(1)
+
+  unbindKeyAction: ->
+    Mousetrap.unbind ['ctrl+left', 'ctrl+right']
 
   subscribe: ->
     @$scope.$on 'TermPeginateDataServicve::publish', (event, args) => @date = args.date
