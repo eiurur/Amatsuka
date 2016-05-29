@@ -49,7 +49,13 @@ div(ng-controller="UserCtrl")
             a(href="https://{{::tweet.sourceUrl}}", target="_blank")
               {{tweet.time}}
         .timeline__post__image(ng-repeat='picUrl in tweet.picUrlList')
-          img.fade(ng-if="!tweet.video_url", ng-src="{{::picUrl}}", img-preload="img-preload", zoom-image="zoom-image", data-img-src="{{::picUrl}}")
+          img.fade(
+            ng-if="!tweet.video_url",
+            ng-src="{{::picUrl}}",
+            img-preload="img-preload",
+            show-statuses="show-statuses",
+            tweet-id-str='{{::tweet.id_str}}',
+            data-img-src="{{::picUrl}}")
           video(ng-if="tweet.video_url", poster="{{::picUrl}}", autoplay, loop, controls, muted)
             source(ng-src="{{::tweet.video_url | trusted}}", type="video/mp4")
         .timeline__post__text__container(ng-if="!config.isShowOnlyImage")

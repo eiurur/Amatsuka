@@ -32,7 +32,8 @@
     ng-if="!tweet.video_url",
     ng-src="{{::picUrl}}",
     img-preload="img-preload",
-    zoom-image="zoom-image",
+    tweet-id-str='{{::tweet.id_str}}',
+    show-statuses="show-statuses"
     data-img-src="{{::picUrl}}")
   video.timeline__post__video(
     ng-if="tweet.video_url",
