@@ -597,7 +597,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
-        var bindEvents, cleanup, getImgIdx, imageLayer, imageLayerContainer, imgIdx, next, prev, showPrevNextElement, showTweetInfomation, switchImage, tweet, zoomImageViewer;
+        var bindEvents, cleanup, getImgIdx, getImgIdxBySrc, imageLayer, imageLayerContainer, imgIdx, next, prev, showPrevNextElement, showTweetInfomation, switchImage, tweet, upsertPictCounterElement, zoomImageViewer;
         WindowScrollableSwitcher.disableScrolling();
         tweet = null;
         imgIdx = 0;
@@ -615,8 +615,21 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
         }).then(function(data) {
           tweet = data.data;
           bindEvents();
-          return showTweetInfomation(tweet, imgIdx);
+          imgIdx = getImgIdxBySrc(tweet, attrs.imgSrc.replace(':small', ''));
+          showTweetInfomation(tweet, imgIdx);
+          return upsertPictCounterElement(tweet, imgIdx);
         });
+        upsertPictCounterElement = function(tweet, imgIdx) {
+          var html, imageLayerCounter, totalPictNumber;
+          totalPictNumber = tweet.extended_entities.media.length;
+          imageLayerCounter = angular.element(document).find('.image-layer__counter');
+          if (imageLayerCounter.length) {
+            imageLayerCounter.html("" + (imgIdx + 1) + " / " + totalPictNumber);
+            return;
+          }
+          html = "<div class=\"image-layer__counter\">\n  " + (imgIdx + 1) + " / " + totalPictNumber + "\n</div>";
+          return imageLayerContainer.after(html);
+        };
         showPrevNextElement = function() {
           var html;
           html = "<div class=\"image-layer__prev\">\n  <i class=\"fa fa-angle-left fa-2x feeding-arrow\"></i>\n</div>\n<div class=\"image-layer__next\">\n  <i class=\"fa fa-angle-right fa-2x feeding-arrow feeding-arrow-right__patch\"></i>\n</div>";
@@ -624,15 +637,19 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
         };
         showTweetInfomation = function(tweet, imgIdx) {
           var imageLayerCaptionHtml, item;
-          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__footer\">\n    <div class=\"timeline__footer__contents\">\n      <div class=\"timeline__footer__controls\">\n        <a href=\"" + tweet.entities.media[imgIdx].expanded_url + "\" target=\"_blank\">\n          <i class=\"fa fa-twitter icon-twitter\"></i>\n        </a>\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + tweet.id_str + "\" retweeted=\"" + tweet.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + tweet.id_str + "\" favorited=\"" + tweet.favorited + "\" favoritable=\"favoritable\"></i>\n        <a>\n          <i class=\"fa fa-download\" data-url=\"" + tweet.extended_entities.media[imgIdx].media_url_https + ":orig\" filename=\"" + tweet.user.screen_name + "_" + tweet.id_str + "\" download-from-url=\"download-from-url\"></i>\n        </a>\n      </div>\n    </div>\n  </div>\n</div>";
+          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__footer\">\n    <div class=\"timeline__footer__contents\">\n      <div class=\"timeline__footer__controls\">\n        <a href=\"" + tweet.extended_entities.media[imgIdx].expanded_url + "\" target=\"_blank\">\n          <i class=\"fa fa-twitter icon-twitter\"></i>\n        </a>\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + tweet.id_str + "\" retweeted=\"" + tweet.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + tweet.id_str + "\" favorited=\"" + tweet.favorited + "\" favoritable=\"favoritable\"></i>\n        <a>\n          <i class=\"fa fa-download\" data-url=\"" + tweet.extended_entities.media[imgIdx].media_url_https + ":orig\" filename=\"" + tweet.user.screen_name + "_" + tweet.id_str + "\" download-from-url=\"download-from-url\"></i>\n        </a>\n      </div>\n    </div>\n  </div>\n</div>";
           if (_.isEmpty(imageLayer.html())) {
             return;
           }
           item = $compile(imageLayerCaptionHtml)(scope).hide().fadeIn(300);
           return imageLayer.append(item);
         };
+        getImgIdxBySrc = function(tweet, src) {
+          return _.findIndex(tweet.extended_entities.media, {
+            'media_url_https': src
+          });
+        };
         getImgIdx = function(dir, originalIdx) {
-          console.log('before originalIdx = ', originalIdx);
           if (dir === 'next') {
             return (originalIdx + 1) % tweet.extended_entities.media.length;
           }
@@ -649,6 +666,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           var src;
           imgIdx = getImgIdx(dir, imgIdx);
           src = tweet.extended_entities.media[imgIdx].media_url_https;
+          upsertPictCounterElement(tweet, imgIdx);
           return zoomImageViewer.pipeLowToHighImage("" + src + ":small", "" + src + ":orig");
         };
         bindEvents = function() {
@@ -774,7 +792,7 @@ angular.module("myApp.directives").directive('termPagination', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"pagination__term\">\n  <div class=\"pagination__button\">\n    <a class=\"pagination__term--prev\" ng-click=\"$ctrl.paginate(-1)\"><</a>\n  </div>\n  <a class=\"pagination__term--active\">{{$ctrl.date}}   【{{$ctrl.total}}】\n  </a>\n  <div class=\"pagination__button\">\n  <a class=\"pagination__term--next\" ng-click=\"$ctrl.paginate(1)\">></a>\n  </div>\n</div>",
+    template: "<div class=\"pagination__term\">\n  <div class=\"pagination__button\">\n    <a class=\"pagination__term--prev\" ng-click=\"$ctrl.paginate(-1)\"><</a>\n  </div>\n  <a class=\"pagination__term--active\">{{$ctrl.date}}   【{{$ctrl.total}}】</a>\n  <div class=\"pagination__button\">\n    <a class=\"pagination__term--next\" ng-click=\"$ctrl.paginate(1)\">></a>\n  </div>\n</div>",
     bindToController: {
       term: "=",
       total: "="

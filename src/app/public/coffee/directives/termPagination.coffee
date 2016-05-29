@@ -7,10 +7,9 @@ angular.module "myApp.directives"
         <div class="pagination__button">
           <a class="pagination__term--prev" ng-click="$ctrl.paginate(-1)"><</a>
         </div>
-        <a class="pagination__term--active">{{$ctrl.date}}   【{{$ctrl.total}}】
-        </a>
+        <a class="pagination__term--active">{{$ctrl.date}}   【{{$ctrl.total}}】</a>
         <div class="pagination__button">
-        <a class="pagination__term--next" ng-click="$ctrl.paginate(1)">></a>
+          <a class="pagination__term--next" ng-click="$ctrl.paginate(1)">></a>
         </div>
       </div>
     """

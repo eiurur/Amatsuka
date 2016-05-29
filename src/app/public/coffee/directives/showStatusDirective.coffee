@@ -3,6 +3,11 @@ angular.module 'myApp.directives'
     restrict: 'A'
     link: (scope, element, attrs) ->
       element.on 'click', (event) ->
+
+        # directive + bTC版、ただし、遅いので不採用
+        # $rootScope.$broadcast('zoomableImage::show', imgSrc: attrs.imgSrc, tweetIdStr: attrs.tweetIdStr)
+        # $rootScope.$emit('zoomableImage::show', imgSrc: attrs.imgSrc, tweetIdStr: attrs.tweetIdStr)
+
         WindowScrollableSwitcher.disableScrolling()
 
         # TODO: Status?の部分をviewer同様、クラス化したい。
@@ -26,7 +31,27 @@ angular.module 'myApp.directives'
         .then (data) ->
           tweet = data.data
           bindEvents()
+          imgIdx = getImgIdxBySrc(tweet, attrs.imgSrc.replace(':small', ''))
           showTweetInfomation(tweet, imgIdx)
+          upsertPictCounterElement(tweet, imgIdx)
+
+        upsertPictCounterElement = (tweet, imgIdx) ->
+          totalPictNumber = tweet.extended_entities.media.length
+          imageLayerCounter = angular.element(document).find('.image-layer__counter')
+
+          # 更新
+          if imageLayerCounter.length
+            imageLayerCounter.html "#{imgIdx + 1} / #{totalPictNumber}"
+            return
+
+          # 挿入
+          html = """
+            <div class="image-layer__counter">
+              #{imgIdx + 1} / #{totalPictNumber}
+            </div>
+          """
+          imageLayerContainer.after html
+
 
         showPrevNextElement = ->
           html = """
@@ -45,7 +70,7 @@ angular.module 'myApp.directives'
               <div class="timeline__footer">
                 <div class="timeline__footer__contents">
                   <div class="timeline__footer__controls">
-                    <a href="#{tweet.entities.media[imgIdx].expanded_url}" target="_blank">
+                    <a href="#{tweet.extended_entities.media[imgIdx].expanded_url}" target="_blank">
                       <i class="fa fa-twitter icon-twitter"></i>
                     </a>
                     <i class="fa fa-retweet icon-retweet" tweet-id-str="#{tweet.id_str}" retweeted="#{tweet.retweeted}" retweetable="retweetable"></i>
@@ -64,8 +89,11 @@ angular.module 'myApp.directives'
           item = $compile(imageLayerCaptionHtml)(scope).hide().fadeIn(300)
           imageLayer.append(item)
 
+        getImgIdxBySrc = (tweet, src) ->
+          return _.findIndex tweet.extended_entities.media, 'media_url_https': src
+
+
         getImgIdx = (dir, originalIdx) ->
-          console.log 'before originalIdx = ', originalIdx
           if dir is 'next' then return (originalIdx + 1) % tweet.extended_entities.media.length
           if dir is 'prev'
             originalIdx = originalIdx - 1
@@ -74,6 +102,7 @@ angular.module 'myApp.directives'
         switchImage = (dir) ->
           imgIdx = getImgIdx(dir, imgIdx)
           src = tweet.extended_entities.media[imgIdx].media_url_https
+          upsertPictCounterElement(tweet, imgIdx)
           zoomImageViewer.pipeLowToHighImage("#{src}:small", "#{src}:orig")
 
 
