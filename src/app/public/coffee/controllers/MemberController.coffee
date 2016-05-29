@@ -14,6 +14,8 @@ angular.module "myApp.controllers"
   # Filter
   $scope.$watch 'searchWord.screen_name', (newData, oldData) ->
     return if newData is oldData
+
+    # 入力フォームが空(全メンバーを表示)
     if newData is ''
       $scope.list.members = []
       $scope.list.memberIdx = 0
@@ -23,5 +25,7 @@ angular.module "myApp.controllers"
         $scope.list.memberIdx++
       return
 
+    # 名前を入力したとき
+    screenNameTolowerCased = newData.toLowerCase()
     $scope.list.members = $scope.list.amatsukaMemberList.filter (element, index, array) ->
-      return element.screen_name.indexOf(newData) isnt -1
+      return element.screen_name.toLowerCase().indexOf(screenNameTolowerCased) isnt -1

@@ -474,7 +474,7 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$locati
   }
   $scope.list = new AmatsukaList('Amatsuka');
   return $scope.$watch('searchWord.screen_name', function(newData, oldData) {
-    var idx, member, _i, _len, _ref;
+    var idx, member, screenNameTolowerCased, _i, _len, _ref;
     if (newData === oldData) {
       return;
     }
@@ -492,8 +492,9 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$locati
       }
       return;
     }
+    screenNameTolowerCased = newData.toLowerCase();
     return $scope.list.members = $scope.list.amatsukaMemberList.filter(function(element, index, array) {
-      return element.screen_name.indexOf(newData) !== -1;
+      return element.screen_name.toLowerCase().indexOf(screenNameTolowerCased) !== -1;
     });
   });
 }]);
