@@ -67,7 +67,7 @@ twitterUtils = ->
 
       # tweetを最初にgetして使いまわす方法
       tweet               = if @isRT(tweet) then tweet.retweeted_status else tweet
-      includeNgUser       = config.ngUsername.some (element, index) => tweet.screen_name.indexOf(element.text) isnt -1
+      includeNgUser       = config.ngUsername.some (element, index) => tweet.user.screen_name.indexOf(element.text) isnt -1
       includeNgWord       = config.ngWord.some (element, index) => tweet.text.indexOf(element.text) isnt -1
       isRetweetLowerLimit = tweet.retweet_count < config.retweetLowerLimit
       isFavLowerLimit     = tweet.favorite_count < config.favLowerLimit

@@ -108,7 +108,7 @@
             tweet = _.has(tweet, 'tweetStr') ? JSON.parse(tweet.tweetStr) : tweet;
             tweet = _this.isRT(tweet) ? tweet.retweeted_status : tweet;
             includeNgUser = config.ngUsername.some(function(element, index) {
-              return tweet.screen_name.indexOf(element.text) !== -1;
+              return tweet.user.screen_name.indexOf(element.text) !== -1;
             });
             includeNgWord = config.ngWord.some(function(element, index) {
               return tweet.text.indexOf(element.text) !== -1;
