@@ -774,7 +774,7 @@ angular.module("myApp.directives").directive('termPagination', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"pagination__term\">\n  <a class=\"pagination__term--prev\" ng-click=\"$ctrl.paginate(-1)\"><\n  </a>\n  <a class=\"pagination__term--active\">{{$ctrl.date}}   【{{$ctrl.total}}】\n  </a>\n  <a class=\"pagination__term--next\" ng-click=\"$ctrl.paginate(1)\">>\n  </a>\n</div>",
+    template: "<div class=\"pagination__term\">\n  <div class=\"pagination__button\">\n    <a class=\"pagination__term--prev\" ng-click=\"$ctrl.paginate(-1)\"><</a>\n  </div>\n  <a class=\"pagination__term--active\">{{$ctrl.date}}   【{{$ctrl.total}}】\n  </a>\n  <div class=\"pagination__button\">\n  <a class=\"pagination__term--next\" ng-click=\"$ctrl.paginate(1)\">></a>\n  </div>\n</div>",
     bindToController: {
       term: "=",
       total: "="
@@ -2515,7 +2515,7 @@ angular.module("myApp.directives").directive('maoContainer', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<ul class=\"nav nav-pills nav-stacked col-md-1 col-sm-2\">\n  <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n    <a href=\"{{tab.href}}\" data-toggle=\"tab\" ng-click=\"$ctrl.select(tab.id)\" >{{tab.name}}</a>\n  </li>\n</ul>\n<div class=\"row tab-content col-md-11 col-sm-10\">\n  <div id=\"tweets\" class=\"row tab-pane active\" ng-if=\"$ctrl.tabType == 'tweets'\">\n    <mao-list-container></mao-list-container>\n  </div>\n  <div id=\"stats\" class=\"row tab-pane\" ng-if=\"$ctrl.tabType == 'stats'\">\n    <mao-ranking-post-number></mao-ranking-post-number>\n  </div>\n</div>",
+    template: "<ul class=\"nav nav-pills nav-stacked col-md-1 col-sm-2\">\n  <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n    <a href=\"{{tab.href}}\" data-toggle=\"tab\" ng-click=\"$ctrl.select(tab.id)\" >{{tab.name}}</a>\n  </li>\n</ul>\n<div class=\"tab-content col-md-11 col-sm-10\">\n  <div id=\"tweets\" class=\"row tab-pane active\" ng-if=\"$ctrl.tabType == 'tweets'\">\n    <mao-list-container></mao-list-container>\n  </div>\n  <div id=\"stats\" class=\"row tab-pane\" ng-if=\"$ctrl.tabType == 'stats'\">\n    <mao-ranking-post-number></mao-ranking-post-number>\n  </div>\n</div>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoContainerController

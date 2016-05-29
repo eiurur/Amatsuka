@@ -14,3 +14,20 @@
 .pagination__term__container--bottom {
   padding-top: 60px;
 }
+
+.pagination {
+  &__button {
+    border: 1px solid;
+    width: 32px;
+    height: 32px;
+    border-radius: 100%;
+    display: flex;
+
+    & a {
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      display: flex;
+    }
+  }
+}

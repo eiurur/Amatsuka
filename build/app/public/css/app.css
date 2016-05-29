@@ -1779,6 +1779,20 @@ a.dropdown-toggle {
   padding-top: 60px;
 }
 
+.pagination__button {
+  border: 1px solid;
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  display: flex;
+}
+.pagination__button a {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  display: flex;
+}
+
 .fillbar {
   display: flex;
   align-items: center;
