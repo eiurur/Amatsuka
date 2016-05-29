@@ -28,7 +28,7 @@
       show-tweet="show-tweet",
       twitter-id-str="{{::tweet.user.id_str}}")
   .timeline__header__info--tile
-    span.timeline__post--header--user(
+    span.timeline__post--header--user.clickable(
       ng-if="!tweet.retweeted_status",
       twitter-id-str="{{::tweet.user.id_str}}",
       show-tweet="show-tweet") {{::tweet.user.screen_name}}

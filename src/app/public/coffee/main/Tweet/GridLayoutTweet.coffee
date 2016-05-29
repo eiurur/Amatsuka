@@ -6,7 +6,7 @@ angular.module "myApp.directives"
       <div class="timeline__post--header timeline__post--header--grid">
         <div class="timeline__post--header--info timeline__post--header--info--grid">
           <div class="timeline__post--header--link timeline__post--header--link--grid">
-            <span twitter-id-str="{{::$ctrl.tweet.user.id_str}}" show-tweet="show-tweet" class="timeline__post--header--user timeline__post--header--user--grid">{{::$ctrl.tweet.user.screen_name}}
+            <span twitter-id-str="{{::$ctrl.tweet.user.id_str}}" show-tweet="show-tweet" class="timeline__post--header--user timeline__post--header--user--grid clickable">{{::$ctrl.tweet.user.screen_name}}
             </span><span ng-if="$ctrl.tweet.retweeted_status" class="timeline__post--header--rt_icon timeline__post--header--rt_icon--grid"><i class="fa fa-retweet"></i></span><a twitter-id-str="{{::$ctrl.tweet.retweeted_status.user.id_str}}" show-tweet="show-tweet" class="timeline__post--header--rt_source timeline__post--header--rt_source--grid">{{::$ctrl.tweet.retweeted_status.user.screen_name}}
             </a>
             <followable ng-if="!$ctrl.tweet.followStatus" list-id-str="{{$ctrl.listIdStr}}" tweet="{{$ctrl.tweet}}" follow-status="$ctrl.tweet.followStatus">

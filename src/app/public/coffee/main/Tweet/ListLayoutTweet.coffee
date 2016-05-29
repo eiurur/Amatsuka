@@ -7,7 +7,7 @@ angular.module "myApp.directives"
     <div class="timeline__post--header">
       <div class="timeline__post--header--info">
         <div class="timeline__post--header--link">
-          <span twitter-id-str="{{::$ctrl.tweet.user.id_str}}" show-tweet="show-tweet" class="timeline__post--header--user">{{::$ctrl.tweet.user.screen_name}}
+          <span twitter-id-str="{{::$ctrl.tweet.user.id_str}}" show-tweet="show-tweet" class="timeline__post--header--user clickable">{{::$ctrl.tweet.user.screen_name}}
           </span>
           <span ng-if="$ctrl.tweet.retweeted_status" class="timeline__post--header--rt_icon">
             <i class="fa fa-retweet"></i>
