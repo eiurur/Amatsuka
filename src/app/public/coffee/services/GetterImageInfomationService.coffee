@@ -1,7 +1,9 @@
 angular.module 'myApp.services'
   .service 'GetterImageInfomation', ->
     # 拡大画像の伸長方向の決定
-    getWideDirection: (imgElement, html) ->
+    getWideDirection: (imgElement) ->
+
+      html = angular.element(document).find('html')
 
       h = imgElement[0].naturalHeight
       w = imgElement[0].naturalWidth

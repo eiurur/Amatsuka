@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'infinite-scroll', 'wu.masonry', 'toaster', 'ngTagsInput', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).value('THROTTLE_MILLISECONDS', 300).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
+angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'ngTouch', 'infinite-scroll', 'wu.masonry', 'toaster', 'ngTagsInput', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).value('THROTTLE_MILLISECONDS', 300).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/index',
     controller: 'IndexCtrl'
@@ -593,17 +593,18 @@ angular.module("myApp.directives").directive('resize', ["$timeout", "$rootScope"
   };
 }]);
 
-angular.module('myApp.directives').directive('showStatuses', ["$compile", "GetterImageInfomation", "TweetService", "WindowScrollableSwitcher", "ZoomImageViewer", function($compile, GetterImageInfomation, TweetService, WindowScrollableSwitcher, ZoomImageViewer) {
+angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swipe", "TweetService", "WindowScrollableSwitcher", "ZoomImageViewer", function($compile, $swipe, TweetService, WindowScrollableSwitcher, ZoomImageViewer) {
   return {
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
-        var bindEvents, cleanup, getImgIdx, getImgIdxBySrc, imageLayer, imageLayerContainer, imgIdx, next, prev, showPrevNextElement, showTweetInfomation, switchImage, tweet, upsertPictCounterElement, zoomImageViewer;
+        var bindEvents, cleanup, getImgIdx, getImgIdxBySrc, html, imageLayer, imageLayerContainer, imgIdx, next, prev, showPrevNextElement, showTweetInfomation, switchImage, tweet, upsertPictCounterElement, zoomImageViewer;
         WindowScrollableSwitcher.disableScrolling();
         tweet = null;
         imgIdx = 0;
         zoomImageViewer = new ZoomImageViewer();
         zoomImageViewer.pipeLowToHighImage(attrs.imgSrc, attrs.imgSrc.replace(':small', '') + ':orig');
+        html = angular.element(document).find('html');
         imageLayer = angular.element(document).find('.image-layer');
         imageLayerContainer = angular.element(document).find('.image-layer__container');
         imageLayerContainer.on('click', function() {
@@ -621,7 +622,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           return upsertPictCounterElement(tweet, imgIdx);
         });
         upsertPictCounterElement = function(tweet, imgIdx) {
-          var html, imageLayerCounter, totalPictNumber;
+          var imageLayerCounter, totalPictNumber;
           totalPictNumber = tweet.extended_entities.media.length;
           imageLayerCounter = angular.element(document).find('.image-layer__counter');
           if (imageLayerCounter.length) {
@@ -632,7 +633,6 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           return imageLayerContainer.after(html);
         };
         showPrevNextElement = function() {
-          var html;
           html = "<div class=\"image-layer__prev\">\n  <i class=\"fa fa-angle-left fa-2x feeding-arrow\"></i>\n</div>\n<div class=\"image-layer__next\">\n  <i class=\"fa fa-angle-right fa-2x feeding-arrow feeding-arrow-right__patch\"></i>\n</div>";
           return imageLayerContainer.after(html);
         };
@@ -667,10 +667,14 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           var src;
           imgIdx = getImgIdx(dir, imgIdx);
           src = tweet.extended_entities.media[imgIdx].media_url_https;
+          console.log('switchImage');
+          console.log(imgIdx);
+          console.log(src);
           upsertPictCounterElement(tweet, imgIdx);
           return zoomImageViewer.pipeLowToHighImage("" + src + ":small", "" + src + ":orig");
         };
         bindEvents = function() {
+          var startCoords;
           Mousetrap.bind('d', function() {
             return angular.element(document).find('.image-layer__caption .fa-download').click();
           });
@@ -704,6 +708,29 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
           Mousetrap.bind(['right', 'j'], function() {
             return switchImage('next');
           });
+          startCoords = {};
+          $swipe.bind(zoomImageViewer.getImageLayerImg(), {
+            'start': function(coords, event) {
+              console.log('start');
+              return startCoords = coords;
+            },
+            'move': function(coords, event) {
+              return console.log('move');
+            },
+            'end': function(coords, event) {
+              console.log('Math.abs(startCoords.y - coords.y) = ', Math.abs(startCoords.y - coords.y));
+              if (startCoords.x > coords.x) {
+                switchImage('next');
+              } else {
+                switchImage('prev');
+              }
+              return startCoords = {};
+            },
+            'cancel': function(coords, event) {
+              console.log('cancel');
+              return cleanup();
+            }
+          });
           return imageLayerContainer.on('wheel', function(e) {
             var dir;
             dir = e.originalEvent.wheelDelta >= 0 ? 'prev' : 'next';
@@ -712,6 +739,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "Gette
         };
         return cleanup = function() {
           Mousetrap.unbind(['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r', 't']);
+          zoomImageViewer.getImageLayerImg().unbind('mousedown mousemove mouseup touchstart touchmove touchend touchcancel');
           imageLayer.html('');
           imageLayerContainer.html('');
           if (next != null) {
@@ -1086,8 +1114,7 @@ angular.module("myApp.directives").directive("zoomImage", ["$compile", "$rootSco
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function() {
-        var containerHTML, html, imageLayer, imageLayerContainer, imageLayerImg, imageLayerLoading;
-        html = angular.element(document).find('html');
+        var containerHTML, imageLayer, imageLayerContainer, imageLayerImg, imageLayerLoading;
         imageLayer = angular.element(document).find('.image-layer');
         containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n  <div class=\"image-layer__loading\">\n    <img src=\"./images/loaders/tail-spin.svg\" />\n  </div>\n</div>";
         imageLayer.html(containerHTML);
@@ -1097,7 +1124,7 @@ angular.module("myApp.directives").directive("zoomImage", ["$compile", "$rootSco
         imageLayerImg.hide();
         imageLayerImg.attr('src', ("" + attrs.imgSrc).replace(':small', ':orig')).load(function() {
           var direction;
-          direction = GetterImageInfomation.getWideDirection(imageLayerImg, html);
+          direction = GetterImageInfomation.getWideDirection(imageLayerImg);
           imageLayerImg.addClass("image-layer__img-" + direction + "-wide");
           imageLayerLoading.remove();
           return imageLayerImg.fadeIn(1);
@@ -1645,8 +1672,6 @@ angular.module("myApp.factories").factory('ZoomImageViewer', ["GetterImageInfoma
   ZoomImageViewer = (function() {
     function ZoomImageViewer() {
       var containerHTML;
-      this.html = angular.element(document).find('html');
-      this.body = angular.element(document).find('body');
       this.imageLayer = angular.element(document).find('.image-layer');
       containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n  <div class=\"image-layer__loading\">\n    <img src=\"./images/loaders/tail-spin.svg\" />\n  </div>\n</div>\n";
       this.imageLayer.html(containerHTML);
@@ -1655,9 +1680,13 @@ angular.module("myApp.factories").factory('ZoomImageViewer', ["GetterImageInfoma
       this.imageLayerLoading = angular.element(document).find('.image-layer__loading');
     }
 
-    ZoomImageViewer.prototype.setImageAndStyle = function(imgElement, html) {
+    ZoomImageViewer.prototype.getImageLayerImg = function() {
+      return this.imageLayerImg;
+    };
+
+    ZoomImageViewer.prototype.setImageAndStyle = function(imgElement) {
       var direction;
-      direction = GetterImageInfomation.getWideDirection(imgElement, html);
+      direction = GetterImageInfomation.getWideDirection(imgElement);
       return imgElement.addClass("image-layer__img-" + direction + "-wide");
     };
 
@@ -1669,7 +1698,7 @@ angular.module("myApp.factories").factory('ZoomImageViewer', ["GetterImageInfoma
         return function() {
           console.log('-> Middle');
           _this.imageLayerLoading.hide();
-          _this.setImageAndStyle(_this.imageLayerImg, _this.html);
+          _this.setImageAndStyle(_this.imageLayerImg);
           _this.imageLayerImg.fadeIn(1);
           _this.imageLayerImg.off('load');
           return _this.imageLayerImg.attr('src', to).load(function() {
@@ -1820,8 +1849,9 @@ angular.module("myApp.services").service('DownloadService', ["$http", "ConvertSe
 
 angular.module('myApp.services').service('GetterImageInfomation', function() {
   return {
-    getWideDirection: function(imgElement, html) {
-      var cH, cH_cW_percent, cW, direction, h, h_w_percent, w;
+    getWideDirection: function(imgElement) {
+      var cH, cH_cW_percent, cW, direction, h, h_w_percent, html, w;
+      html = angular.element(document).find('html');
       h = imgElement[0].naturalHeight;
       w = imgElement[0].naturalWidth;
       h_w_percent = h / w * 100;

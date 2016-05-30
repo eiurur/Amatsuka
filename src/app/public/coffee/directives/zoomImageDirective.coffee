@@ -7,9 +7,6 @@ angular.module "myApp.directives"
         # todo: 各アクションで画像の切替が可能なバージョン。ただし、重くて使い物にはならないのでいったんコメントアウト
         # $rootScope.$broadcast 'zoomableImage::show', tweets: scope.tweets, attrs: attrs
 
-        # windowのサイズを取得
-        html = angular.element(document).find('html')
-
         imageLayer = angular.element(document).find('.image-layer')
         containerHTML = """
           <div class="image-layer__container">
@@ -33,7 +30,7 @@ angular.module "myApp.directives"
         imageLayerImg
         .attr 'src', "#{attrs.imgSrc}".replace ':small', ':orig'
         .load ->
-          direction = GetterImageInfomation.getWideDirection(imageLayerImg, html)
+          direction = GetterImageInfomation.getWideDirection(imageLayerImg)
           imageLayerImg.addClass("image-layer__img-#{direction}-wide")
 
           # 満を持して表示

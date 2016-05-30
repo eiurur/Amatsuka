@@ -1,5 +1,5 @@
 angular.module 'myApp.directives'
-  .directive 'showStatuses', ($compile, GetterImageInfomation, TweetService, WindowScrollableSwitcher, ZoomImageViewer) ->
+  .directive 'showStatuses', ($compile, $swipe, TweetService, WindowScrollableSwitcher, ZoomImageViewer) ->
     restrict: 'A'
     link: (scope, element, attrs) ->
       element.on 'click', (event) ->
@@ -17,6 +17,7 @@ angular.module 'myApp.directives'
         zoomImageViewer = new ZoomImageViewer()
         zoomImageViewer.pipeLowToHighImage(attrs.imgSrc, attrs.imgSrc.replace(':small', '') + ':orig')
 
+        html                = angular.element(document).find('html')
         imageLayer          = angular.element(document).find('.image-layer')
         imageLayerContainer = angular.element(document).find('.image-layer__container')
 
@@ -102,6 +103,9 @@ angular.module 'myApp.directives'
         switchImage = (dir) ->
           imgIdx = getImgIdx(dir, imgIdx)
           src = tweet.extended_entities.media[imgIdx].media_url_https
+          console.log 'switchImage'
+          console.log imgIdx
+          console.log src
           upsertPictCounterElement(tweet, imgIdx)
           zoomImageViewer.pipeLowToHighImage("#{src}:small", "#{src}:orig")
 
@@ -132,6 +136,34 @@ angular.module 'myApp.directives'
           Mousetrap.bind ['left', 'k'], -> switchImage('prev')
           Mousetrap.bind ['right', 'j'], -> switchImage('next')
 
+          startCoords = {}
+          $swipe.bind zoomImageViewer.getImageLayerImg(),
+            'start': (coords, event) ->
+              console.log 'start'
+              startCoords = coords
+            'move': (coords, event) ->
+              console.log 'move'
+              # x = coords.x - startCoords.x
+              # x = Math.max(0, Math.min(html.clientWidth / 2, x))
+              # console.log x
+              # props = {}
+              # props.transform = 'translate3d(' + x + 'px, 0, 0)'
+              # zoomImageViewer.getImageLayerImg().css props
+            'end': (coords, event) ->
+              console.log 'Math.abs(startCoords.y - coords.y) = ', Math.abs(startCoords.y - coords.y)
+              # if Math.abs(startCoords.y - coords.y) > 300
+              #   cleanup()
+              #   return
+
+              if startCoords.x > coords.x # left-swipe
+                switchImage('next')
+              else
+                switchImage('prev')
+              startCoords = {}
+            'cancel': (coords, event) ->
+              console.log 'cancel'
+              cleanup()
+
           # ScrollEvent
           imageLayerContainer.on 'wheel', (e) ->
             # e.originalEvent.wheelDelta >= 0  === Scroll up
@@ -140,6 +172,7 @@ angular.module 'myApp.directives'
 
         cleanup = ->
           Mousetrap.unbind ['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r', 't']
+          zoomImageViewer.getImageLayerImg().unbind 'mousedown mousemove mouseup touchstart touchmove touchend touchcancel'
 
           imageLayer.html ''
           imageLayerContainer.html ''

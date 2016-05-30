@@ -6,11 +6,6 @@ angular.module "myApp.factories"
     class ZoomImageViewer
 
       constructor: ->
-
-        # windowのサイズを取得
-        @html = angular.element(document).find('html')
-        @body = angular.element(document).find('body')
-
         @imageLayer = angular.element(document).find('.image-layer')
         containerHTML = """
           <div class="image-layer__container">
@@ -29,8 +24,11 @@ angular.module "myApp.factories"
         @imageLayerImg = angular.element(document).find('.image-layer__img')
         @imageLayerLoading = angular.element(document).find('.image-layer__loading')
 
-      setImageAndStyle: (imgElement, html) ->
-        direction = GetterImageInfomation.getWideDirection(imgElement, html)
+      getImageLayerImg: ->
+        return @imageLayerImg
+
+      setImageAndStyle: (imgElement) ->
+        direction = GetterImageInfomation.getWideDirection(imgElement)
         imgElement.addClass("image-layer__img-#{direction}-wide")
 
       pipeLowToHighImage: (from, to) ->
@@ -43,7 +41,7 @@ angular.module "myApp.factories"
         .load =>
           console.log '-> Middle'
           @imageLayerLoading.hide()
-          @setImageAndStyle(@imageLayerImg, @html)
+          @setImageAndStyle(@imageLayerImg)
           @imageLayerImg.fadeIn(1)
 
           # loadの∞ループ回避

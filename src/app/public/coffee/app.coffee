@@ -2,6 +2,7 @@ angular.module('myApp', [
   'ngRoute'
   'ngAnimate'
   'ngSanitize'
+  'ngTouch'
   'infinite-scroll'
   'wu.masonry'
   'toaster'
