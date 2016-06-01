@@ -136,6 +136,7 @@ angular.module 'myApp.directives'
           Mousetrap.bind ['left', 'k'], -> switchImage('prev')
           Mousetrap.bind ['right', 'j'], -> switchImage('next')
 
+          # Swipe
           startCoords = {}
           $swipe.bind zoomImageViewer.getImageLayerImg(),
             'start': (coords, event) ->
@@ -154,7 +155,7 @@ angular.module 'myApp.directives'
               # if Math.abs(startCoords.y - coords.y) > 300
               #   cleanup()
               #   return
-
+              return if Math.abs(startCoords.y - coords.y) is 0
               if startCoords.x > coords.x # left-swipe
                 switchImage('next')
               else
