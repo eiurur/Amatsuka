@@ -4,7 +4,7 @@ div(ng-controller="UserCtrl")
   .user-sidebar__header
     .media.user-sidebar__controll(ng-if='user.name')
       a.pull-left(href='https://www.twitter.com/{{::user.screen_name}}', target="_blank")
-        img.media-object.thumbnail-img.fade(ng-src='{{::user.profile_image_url_https}}', img-preload="img-preload")
+        img.user-sidebar__profile__icon.fade(ng-src='{{::user.profile_image_url_https}}', img-preload="img-preload")
       .media-body
         h4.media-heading
           span.user-sidebar__profile--name {{::user.name}}

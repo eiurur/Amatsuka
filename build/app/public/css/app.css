@@ -1361,14 +1361,14 @@ i {
   color: #a1a1a1;
   margin-right: 5px;
 }
-.user-sidebar__profile--icon {
-  width: 73px;
-  height: 73px;
+.user-sidebar__profile__icon {
+  width: 64px;
+  height: 64px;
   margin: 0 auto;
   border-radius: 4px;
 }
-.user-sidebar__profile--icon img {
-  max-width: 73px;
+.user-sidebar__profile__icon img {
+  max-width: 64px;
   border-radius: 3px;
 }
 .user-sidebar__post {

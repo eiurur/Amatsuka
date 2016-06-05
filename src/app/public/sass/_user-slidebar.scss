@@ -123,16 +123,16 @@
       }
     }
 
-    &--icon
+    &__icon
     {
-      width: 73px;
-      height: 73px;
+      width: 64px;
+      height: 64px;
       margin: 0 auto;
 
       @include round(4px);
       img
       {
-        max-width: 73px;
+        max-width: 64px;
 
         border-radius: 3px;
       }
