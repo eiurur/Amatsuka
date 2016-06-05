@@ -46,6 +46,14 @@
   }
 }
 
+.i__center-padding {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+/**
+ * font-aweosomeの<i>で囲う文字列のfontが崩れるバグ用のパッチスタイル
+ */
 .fa:before {
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
@@ -53,11 +61,6 @@
 
 .fa {
   font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
-}
-
-.i__center-padding {
-  margin-right: 5px;
-  margin-left: 5px;
 }
 
 

@@ -25,7 +25,7 @@ angular.module "myApp.directives"
 
         # user-sidebarが開かれた状態で呼び出しされたら、
         # サイドバーを維持したまま他のユーザのツイートとプロフィールを表示
-        isOpenedSidebar =　domUserSidebar[0].className.indexOf('.user-sidebar-in') isnt -1
+        isOpenedSidebar =　domUserSidebar[0].className.indexOf('.user-sidebar--in') isnt -1
         if isOpenedSidebar
           do showUserSidebar
           return
@@ -33,8 +33,8 @@ angular.module "myApp.directives"
         ###
         初回(サイドバーは見えない状態が初期状態)
         ###
-        domUserSidebar.addClass('user-sidebar-in')
-        domUserSidebarHeader.removeClass('user-sidebar-out')
+        domUserSidebar.addClass('user-sidebar--in')
+        domUserSidebarHeader.removeClass('user-sidebar__controll--out')
 
         # bodyのスクロールバーを除去
         body =  $document.find('body')
@@ -51,7 +51,7 @@ angular.module "myApp.directives"
         layer.on 'click', ->
           body.removeClass('scrollbar-y-hidden')
           layer.removeClass('fullscreen-overlay')
-          domUserSidebar.removeClass('user-sidebar-in')
-          domUserSidebarHeader.addClass('user-sidebar-out')
+          domUserSidebar.removeClass('user-sidebar--in')
+          domUserSidebarHeader.addClass('user-sidebar__controll--out')
 
           $rootScope.$broadcast 'isClosed', true

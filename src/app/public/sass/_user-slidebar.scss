@@ -4,7 +4,6 @@
 {
   top: 0;
   right: 0;
-  // right: -$timeline__post--width - ($timeline__post--padding * 2);
 
   overflow-x: hidden;
   overflow-y: auto;
@@ -21,145 +20,144 @@
 
   // .user-sidebarは最初非表示。画面外に出しておく。
   @include transform(translate3d(100%, 0, 0));
-}
 
-// .user-sidebarを表示する。
-.user-sidebar-in
-{
-  @include transform(translate3d(0, 0, 0));
-}
+  // .user-sidebarを表示する。
+  &--in {
+    @include transform(translate3d(0, 0, 0));
+  }
 
-// .user-sidebar-controllを非表示にする。
-.user-sidebar-out
-{
-  // @include transform(translate3d(100%, 0, 0));
-  display: none;
-}
+  // サイドバー全体を固定化
+  &--fixed {
+    position: fixed;
+    z-index: 10000;
 
-// サイドバー全体を固定化
-.user-sidebar--fixed
-{
-  position: fixed;
-  z-index: 10000;
-}
+  }
 
-// フォローボタンはスクロールしても上部に固定するために用意。
-.user-sidebar__header {
+  // フォローボタンはスクロールしても上部に固定するために用意。
+  &__header {
 
-}
+  }
 
-.user-sidebar__controll
-{
-  top: 0px;
-  right: 0px;
-  background: rgba(255, 255, 255, 0.9);
-  position: fixed;
-  z-index: 10001;
-  max-width: 600px;
-  width: 100%;
-  padding: 20px 30px 0;
-
-  transition: .3s ease;
-}
-
-.user-sidebar__controll .btn {
-  margin-top: 10px;
-  margin-right: 5px;
-}
-
-.user-sidebar__profile--bio {
-
-
-}
-
-.user-sidebar__btn-follow
-{
-  &:hover
+  &__controll
   {
-    color: white;
-    background-color: $label__follow-color;
+    top: 0px;
+    right: 0px;
+    background: rgba(255, 255, 255, 0.9);
+    position: fixed;
+    z-index: 10001;
+    max-width: 600px;
+    width: 100%;
+    padding: 20px 30px 0;
+
+    transition: .3s ease;
+
+    &--in {
+      transform: translate3d(0,0,0);
+    }
+
+    &--out {
+      // @include transform(translate3d(100%, 0, 0));
+      display: none;
+    }
+
+    & .btn {
+      margin-top: 10px;
+      margin-right: 5px;
+    }
+
   }
-}
 
-
-.user-sidebar__icon-all-view:before {
-  content: "イラストを全て見る";
-}
-
-.user-sidebar__contents
-{
-  // width: 620px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 0;
-}
-
-.user-sidebar__profile
-{
-  width: 100%;
-  // min-height: 150px;
-  padding: 100px 30px 20px;
-
-  color: $sidebar-color;
-}
-
-.user-sidebar__profile--name
-{
-  color: $base-color;
-}
-
-
-.user-sidebar__profile--description
-{
-  font-size: .8em;
-  line-height: 1.8;
-
-  padding-top: 20px;
-}
-
-.user-sidebar__profile--url
-{
-  font-size: .7em;
-  line-height: 1.8;
-
-  padding-top: 5px;
-  i {
-    color: $link-color;
-    margin-right: 5px;
-  }
-}
-
-.user-sidebar__profile--icon
-{
-  width: 73px;
-  height: 73px;
-  margin: 0 auto;
-
-  @include round(4px);
-  img
+  &__btn-follow
   {
-    max-width: 73px;
-
-    border-radius: 3px;
+    &:hover
+    {
+      color: white;
+      background-color: $label__follow-color;
+    }
   }
-}
-
-.user-sidebar__post
-{
-  margin: 20px 30px;
-
-  @include zurui-box(.3);
-}
 
 
-.user-sidebar__contents--infinitescroll-message
-{
-  margin: 0 auto;
-}
+  &__icon-all-view:before {
+    content: "イラストを全て見る";
+  }
 
-.user-sidebar__contents--box-loading-init
-{
-  padding: 0 20px 20px;
+  &__contents
+  {
+    // width: 620px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  &__profile
+  {
+    width: 100%;
+    // min-height: 150px;
+    padding: 100px 30px 20px;
+
+    color: $sidebar-color;
+
+    &--name
+    {
+      color: $base-color;
+    }
+
+
+    &--description
+    {
+      font-size: .8em;
+      line-height: 1.8;
+
+      padding-top: 20px;
+    }
+
+    &--url
+    {
+      font-size: .7em;
+      line-height: 1.8;
+
+      padding-top: 5px;
+      i {
+        color: $link-color;
+        margin-right: 5px;
+      }
+    }
+
+    &--icon
+    {
+      width: 73px;
+      height: 73px;
+      margin: 0 auto;
+
+      @include round(4px);
+      img
+      {
+        max-width: 73px;
+
+        border-radius: 3px;
+      }
+    }
+  }
+
+
+  &__post
+  {
+    margin: 20px 30px;
+
+    @include zurui-box(.3);
+  }
+
+
+  &__contents--infinitescroll-message
+  {
+    margin: 0 auto;
+  }
+
+  &__contents--box-loading-init
+  {
+    padding: 0 20px 20px;
+  }
+
 }
 
 

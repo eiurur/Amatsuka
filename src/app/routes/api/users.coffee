@@ -13,3 +13,14 @@ module.exports = (app) ->
       res.json data: data
     .catch (error) ->
       res.json error: error
+
+  # TODO: 別ファイル化
+  # 汎用化したver
+  app.get '/api/twitter', (req, res) ->
+    console.log '/api/twitter', req.query
+    twitterClient = new TwitterClient(req.session.passport.user)
+    twitterClient.getViaAPI method: req.query.method, type: req.query.type, params: req.query
+    .then (data) ->
+      res.json data: data
+    .catch (error) ->
+      res.json error: error

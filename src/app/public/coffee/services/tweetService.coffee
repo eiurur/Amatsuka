@@ -1,5 +1,5 @@
 angular.module "myApp.services"
-  .service "TweetService", ($http, $q, $injector, ConfigService, ToasterService, toaster) ->
+  .service "TweetService", ($http, $httpParamSerializer, $q, $injector, BlackUserListService, ConfigService, ToasterService, toaster) ->
 
     activateLink: (t) ->
       t.replace(
@@ -162,6 +162,20 @@ angular.module "myApp.services"
         !_.has(tweet, 'extended_entities') or
         _.isEmpty(tweet.extended_entities.media)
 
+    # Blockしているときは、Twitter側でリジェクトしているため、アプリ側でrejectする必要はない。
+    # rejectTweetByBlockUser: (tweets) ->
+    #   blockUserList = BlackUserListService.block or (JSON.parse(localStorage.getItem 'amatsuka.blockUserList') || {})
+    #   rejecter = blockUserList.map (user) -> user.id_str
+    #   console.log 'rejectTweetByBlockUser'
+    #   console.log blockUserList.length
+    #   console.log rejecter
+    #   _.reject tweets, (tweet) =>
+    #     console.log tweet.user
+    #     console.log @get 'user.id_str', @isRT(tweet)
+    #     console.log rejecter.includes @get 'user.id_str', @isRT(tweet)
+    #     rejecter.includes @get 'user.id_str', @isRT(tweet)
+
+
     collectProfile: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/collect/profile', params)
@@ -232,6 +246,16 @@ angular.module "myApp.services"
     # TwitterAPIがAPI制限とかのエラーを返したときはsuccessメソッドの方へ渡されるため、
     # その中でresolve, rejectの分岐を行う
     ###
+
+    getViaAPI: (params = {}) ->
+      qs = $httpParamSerializer(params)
+      return $q (resolve, reject) ->
+        $http.get("/api/twitter?#{qs}")
+        .success (data) ->
+          return resolve data
+        .error (data) ->
+          return reject data
+
 
     ###
     List

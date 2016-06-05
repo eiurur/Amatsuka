@@ -17,7 +17,7 @@ div(ng-controller="UserCtrl")
   #scroll.user-sidebar.user-sidebar--fixed
 
     .media.user-sidebar__profile(ng-if='user.name')
-      .media-body.user-sidebar__profile--bio
+      .media-body
         .user-sidebar__profile--description(ng-bind-html='user.description | newlines')
         .user-sidebar__profile--url(ng-hide="user.url == null")
           i.fa.fa-link

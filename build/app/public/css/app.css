@@ -48,6 +48,14 @@
   color: #29A7E1 !important;
 }
 
+.i__center-padding {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+/**
+ * font-aweosomeの<i>で囲う文字列のfontが崩れるバグ用のパッチスタイル
+ */
 .fa:before {
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
@@ -55,11 +63,6 @@
 
 .fa {
   font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
-}
-
-.i__center-padding {
-  margin-right: 5px;
-  margin-left: 5px;
 }
 
 /**
@@ -1293,23 +1296,16 @@ i {
   -webkit-transform: translate3d(100%, 0, 0);
   transform: translate3d(100%, 0, 0);
 }
-
-.user-sidebar-in {
+.user-sidebar--in {
   -moz-transform: translate3d(0, 0, 0);
   -ms-transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
 }
-
-.user-sidebar-out {
-  display: none;
-}
-
 .user-sidebar--fixed {
   position: fixed;
   z-index: 10000;
 }
-
 .user-sidebar__controll {
   top: 0px;
   right: 0px;
@@ -1321,43 +1317,41 @@ i {
   padding: 20px 30px 0;
   transition: .3s ease;
 }
-
+.user-sidebar__controll--in {
+  transform: translate3d(0, 0, 0);
+}
+.user-sidebar__controll--out {
+  display: none;
+}
 .user-sidebar__controll .btn {
   margin-top: 10px;
   margin-right: 5px;
 }
-
 .user-sidebar__btn-follow:hover {
   color: white;
   background-color: #CCD1D9;
 }
-
 .user-sidebar__icon-all-view:before {
   content: "イラストを全て見る";
 }
-
 .user-sidebar__contents {
   width: 100%;
   margin: 0 auto;
   padding: 0;
 }
-
 .user-sidebar__profile {
   width: 100%;
   padding: 100px 30px 20px;
   color: #292929;
 }
-
 .user-sidebar__profile--name {
   color: #424242;
 }
-
 .user-sidebar__profile--description {
   font-size: .8em;
   line-height: 1.8;
   padding-top: 20px;
 }
-
 .user-sidebar__profile--url {
   font-size: .7em;
   line-height: 1.8;
@@ -1367,7 +1361,6 @@ i {
   color: #a1a1a1;
   margin-right: 5px;
 }
-
 .user-sidebar__profile--icon {
   width: 73px;
   height: 73px;
@@ -1378,18 +1371,15 @@ i {
   max-width: 73px;
   border-radius: 3px;
 }
-
 .user-sidebar__post {
   margin: 20px 30px;
   -moz-box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
   -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
   box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
 }
-
 .user-sidebar__contents--infinitescroll-message {
   margin: 0 auto;
 }
-
 .user-sidebar__contents--box-loading-init {
   padding: 0 20px 20px;
 }

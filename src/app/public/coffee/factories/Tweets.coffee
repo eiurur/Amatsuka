@@ -14,7 +14,9 @@ angular.module "myApp.factories"
           if _.isEmpty(data.data) then reject statusCode: 10100
 
           @maxId           = TweetService.decStrNum _.last(data.data).id_str
-          # itemsImageOnly = TweetService.filterIncludeImage data.data
+          # console.log 'Before itemsRejectedByBlockUser.length = ', data.data.length
+          # itemsRejectedByBlockUser   = TweetService.rejectTweetByBlockUser data.data
+          # console.log 'After itemsRejectedByBlockUser.length = ', itemsRejectedByBlockUser.length
           console.time('normalize_tweets')
           itemsNormalized  = TweetService.normalizeTweets data.data, ListService.amatsukaList.member
           console.timeEnd('normalize_tweets')

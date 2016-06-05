@@ -71,7 +71,6 @@ module.exports = class TwitterClient extends TwitterClientDefine
     # HACK 汚い
     opts.include_rts = if _.isUndefined params.includeRetweet then true else params.includeRetweet
 
-
     @getViaAPI
       method: 'getTimeline'
       type: 'user_timeline'
