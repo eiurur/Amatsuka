@@ -5,13 +5,13 @@ angular.module "myApp.directives"
     template: """
     <section infinite-scroll="$ctrl.tweetCountList.load()" infinite-scroll-distance="0" class="row fillbars">
 
-      <div ng-repeat="item in $ctrl.tweetCountList.items" class="col-sm-12 fillbar">
+      <div ng-repeat="item in $ctrl.tweetCountList.items" class="fillbar">
 
-        <div class="col-sm-3 col-xs-3 fillbar__user">
+        <div class="col-md-3 col-sm-3 col-xs-6 fillbar__user">
           <img ng-src="{{item.postedBy.icon}}" twitter-id-str="{{item.postedBy.twitterIdStr}}" show-tweet img-preload class="fade fillbar__icon">
           <span class="fillbar__screen-name clickable" twitter-id-str="{{item.postedBy.twitterIdStr}}"  show-tweet>{{item.postedBy.screenName}}</span>
         </div>
-        <div class="col-sm-9 col-xs-9">
+        <div class="col-md-9 col-sm-9 col-xs-6">
           <div class="progress">
             <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" ng-style="{ 'width': item.postCount / $ctrl.tweetCountList.maxCount * 100 + '%'}">
               <span class="fillbar__count">
