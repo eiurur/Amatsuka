@@ -161,6 +161,35 @@
 }
 
 
+// For tumblr style
+@media(max-width: 640px) {
+  .user-sidebar__controll
+  {
+    width: 90%;
+    padding: 15px;
+    min-height: 0px;
+    max-width: 90%;
+  }
+
+
+  .user-sidebar__profile {
+    padding: 100px 15px 15px;
+  }
+
+
+  .user-sidebar__post
+  {
+    margin: 20px 15px;
+  }
+
+
+  .media .media-body
+  {
+    padding-left: 0;  // reset
+  }
+
+}
+
 @media(max-width: 480px)
 {
   .user-sidebar__post--header--link
@@ -198,6 +227,7 @@
     width: 90%;
     padding: 15px;
     min-height: 0px;
+    max-width: 90%;
   }
 
   .media .thumbnail-img

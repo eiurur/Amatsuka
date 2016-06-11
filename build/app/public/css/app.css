@@ -1321,7 +1321,10 @@ i {
   transform: translate3d(0, 0, 0);
 }
 .user-sidebar__controll--out {
-  display: none;
+  -moz-transform: translate3d(100%, 0, 0);
+  -ms-transform: translate3d(100%, 0, 0);
+  -webkit-transform: translate3d(100%, 0, 0);
+  transform: translate3d(100%, 0, 0);
 }
 .user-sidebar__controll .btn {
   margin-top: 10px;
@@ -1384,6 +1387,26 @@ i {
   padding: 0 20px 20px;
 }
 
+@media (max-width: 640px) {
+  .user-sidebar__controll {
+    width: 90%;
+    padding: 15px;
+    min-height: 0px;
+    max-width: 90%;
+  }
+
+  .user-sidebar__profile {
+    padding: 100px 15px 15px;
+  }
+
+  .user-sidebar__post {
+    margin: 20px 15px;
+  }
+
+  .media .media-body {
+    padding-left: 0;
+  }
+}
 @media (max-width: 480px) {
   .user-sidebar__post--header--link {
     margin-left: 0;
@@ -1413,6 +1436,7 @@ i {
     width: 90%;
     padding: 15px;
     min-height: 0px;
+    max-width: 90%;
   }
 
   .media .thumbnail-img {
