@@ -25,18 +25,18 @@
     img.fade(
       ng-src="{{::tweet.user.profile_image_url_https}}",
       img-preload="img-preload",
-      show-tweet="show-tweet",
+      show-user-sidebar="show-user-sidebar",
       twitter-id-str="{{::tweet.user.id_str}}")
   .timeline__header__info--tile
     span.timeline__post--header--user.clickable(
       ng-if="!tweet.retweeted_status",
       twitter-id-str="{{::tweet.user.id_str}}",
-      show-tweet="show-tweet") {{::tweet.user.screen_name}}
+      show-user-sidebar="show-user-sidebar") {{::tweet.user.screen_name}}
     span(ng-if="tweet.retweeted_status")
       i.fa.fa-retweet
     a(
       twitter-id-str="{{::tweet.retweeted_status.user.id_str}}",
-      show-tweet="show-tweet") {{::tweet.retweeted_status.user.screen_name}}
+      show-user-sidebar="show-user-sidebar") {{::tweet.retweeted_status.user.screen_name}}
     followable(
       ng-if='!tweet.followStatus && tweet.retweeted_status',
       list-id-str="{{listIdStr}}",

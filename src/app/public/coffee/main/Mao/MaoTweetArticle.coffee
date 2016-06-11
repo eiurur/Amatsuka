@@ -4,13 +4,13 @@ angular.module "myApp.directives"
     scope: {}
     template: """
       <div class="media mao__user">
-        <a twitter-id-str="{{::$ctrl.item.user.id_str}}" show-tweet="show-tweet" class="pull-left">
+        <a twitter-id-str="{{::$ctrl.item.user.id_str}}" show-user-sidebar="show-user-sidebar" class="pull-left">
           <img ng-src="{{::$ctrl.item.user.profile_image_url_https}}" img-preload="img-preload" class="mao__user__icon fade"/>
         </a>
         <div class="media-body">
           <h4 class="media-heading">
             <span class="name">{{::$ctrl.item.user.name}}</span>
-            <span twitter-id-str="{{::$ctrl.item.user.id_str}}" show-tweet class="screen-name clickable">@{{::$ctrl.item.user.screen_name}}</span>
+            <span twitter-id-str="{{::$ctrl.item.user.id_str}}" show-user-sidebar class="screen-name clickable">@{{::$ctrl.item.user.screen_name}}</span>
           </h4>
         </div>
       </div>

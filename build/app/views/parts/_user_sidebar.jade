@@ -33,7 +33,7 @@ div(ng-controller="UserCtrl")
               div(ng-if="tweet.isRT")
                 span.timeline__header__rt-icon
                   i.fa.fa-retweet
-                a.timeline__header__rt-source(twitter-id-str="{{::tweet.retweeted_status.user.id_str}}", show-tweet="show-tweet")
+                a.timeline__header__rt-source(twitter-id-str="{{::tweet.retweeted_status.user.id_str}}", show-user-sidebar="show-user-sidebar")
                  {{::tweet.retweeted_status.user.screen_name}}
                 followable(
                   ng-if='!tweet.followStatus && tweet.retweeted_status',
@@ -62,7 +62,7 @@ div(ng-controller="UserCtrl")
           .timeline__post__text(ng-if="!tweet.retweeted_status", ng-bind-html='tweet.text | newlines')
           .timeline__post__blockquote(ng-if="tweet.retweeted_status")
             p
-              a(twitter-id-str="{{::tweet.retweeted_status.user.id_str}}", show-tweet="show-tweet")
+              a(twitter-id-str="{{::tweet.retweeted_status.user.id_str}}", show-user-sidebar="show-user-sidebar")
                 {{::tweet.retweeted_status.user.screen_name}}
             blockquote
               .timeline__post__text(ng-bind-html='tweet.text | newlines')

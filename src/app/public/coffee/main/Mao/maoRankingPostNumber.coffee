@@ -8,8 +8,8 @@ angular.module "myApp.directives"
       <div ng-repeat="item in $ctrl.tweetCountList.items" class="fillbar">
 
         <div class="col-md-3 col-sm-3 col-xs-6 fillbar__user">
-          <img ng-src="{{item.postedBy.icon}}" twitter-id-str="{{item.postedBy.twitterIdStr}}" show-tweet img-preload class="fade fillbar__icon">
-          <span class="fillbar__screen-name clickable" twitter-id-str="{{item.postedBy.twitterIdStr}}"  show-tweet>{{item.postedBy.screenName}}</span>
+          <img ng-src="{{item.postedBy.icon}}" twitter-id-str="{{item.postedBy.twitterIdStr}}" show-user-sidebar img-preload class="fade fillbar__icon">
+          <span class="fillbar__screen-name clickable" twitter-id-str="{{item.postedBy.twitterIdStr}}"  show-user-sidebar>{{item.postedBy.screenName}}</span>
         </div>
         <div class="col-md-9 col-sm-9 col-xs-6">
           <div class="progress">
