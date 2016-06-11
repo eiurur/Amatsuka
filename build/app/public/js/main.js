@@ -499,27 +499,19 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$locati
   });
 }]);
 
-angular.module("myApp.controllers").controller("UserCtrl", ["$scope", "$location", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, ConfigService, TweetService, ListService, Tweets) {
+angular.module("myApp.controllers").controller("UserSidebarCtrl", ["$scope", "$location", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, ConfigService, TweetService, ListService, Tweets) {
   $scope.isOpened = false;
   $scope.config = {};
-  $scope.$on('userData', function(event, args) {
+  $scope.$on('showUserSidebar::show', function(event, args) {
     if (!$scope.isOpened) {
       return;
     }
     $scope.user = ListService.normalizeMember(args);
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
-  });
-  $scope.$on('tweetData', function(event, args) {
-    var maxId, tweetsNormalized;
-    if (!$scope.isOpened) {
-      return;
-    }
     ConfigService.getFromDB().then(function(data) {
       return $scope.config = data;
     });
-    maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
-    tweetsNormalized = TweetService.normalizeTweets(args);
-    $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
+    $scope.tweets = new Tweets([], void 0, 'user_timeline', args.id_str);
   });
   $scope.$on('isOpened', function(event, args) {
     $scope.isOpened = true;
@@ -775,18 +767,12 @@ angular.module("myApp.directives").directive('showUserSidebar', ["$rootScope", "
           twitterIdStr: scope.twitterIdStr
         }).then(function(data) {
           console.log(data);
-          $rootScope.$broadcast('userData', data.data);
-          return TweetService.getUserTimeline({
-            twitterIdStr: scope.twitterIdStr
-          });
-        }).then(function(data) {
-          console.log(data.data);
-          return $rootScope.$broadcast('tweetData', data.data);
+          $rootScope.$broadcast('showUserSidebar::show', data.data);
         });
       };
       return element.on('click', function() {
         var $document, body, domUserSidebar, domUserSidebarHeader, isOpenedSidebar, layer;
-        $rootScope.$broadcast('isOpened', true);
+        $rootScope.$broadcast('showUserSidebar::isOpened', true);
         $document = angular.element(document);
         domUserSidebar = $document.find('.user-sidebar');
         domUserSidebarHeader = $document.find('.user-sidebar__header');
@@ -811,7 +797,7 @@ angular.module("myApp.directives").directive('showUserSidebar', ["$rootScope", "
           layer.removeClass('fullscreen-overlay');
           domUserSidebar.removeClass('user-sidebar--in');
           domUserSidebarHeader.addClass('user-sidebar__controll--out');
-          return $rootScope.$broadcast('isClosed', true);
+          return $rootScope.$broadcast('showUserSidebar::isClosed', true);
         });
       });
     }
@@ -1053,60 +1039,6 @@ angular.module("myApp.directives").directive('favoritable', ["TweetService", fun
           });
         }
         return scope.followStatus = !scope.followStatus;
-      });
-    }
-  };
-}]).directive('showTweet', ["$rootScope", "TweetService", function($rootScope, TweetService) {
-  return {
-    restrict: 'A',
-    scope: {
-      twitterIdStr: '@'
-    },
-    link: function(scope, element, attrs) {
-      var showTweet;
-      showTweet = function() {
-        return TweetService.showUsers({
-          twitterIdStr: scope.twitterIdStr
-        }).then(function(data) {
-          console.log(data);
-          $rootScope.$broadcast('userData', data.data);
-          return TweetService.getUserTimeline({
-            twitterIdStr: scope.twitterIdStr
-          });
-        }).then(function(data) {
-          console.log(data.data);
-          return $rootScope.$broadcast('tweetData', data.data);
-        });
-      };
-      return element.on('click', function() {
-        var $document, body, domUserSidebar, domUserSidebarHeader, isOpenedSidebar, layer;
-        $rootScope.$broadcast('isOpened', true);
-        $document = angular.element(document);
-        domUserSidebar = $document.find('.user-sidebar');
-        domUserSidebarHeader = $document.find('.user-sidebar__header');
-        isOpenedSidebar = 　domUserSidebar[0].className.indexOf('.user-sidebar--in') !== -1;
-        if (isOpenedSidebar) {
-          showTweet();
-          return;
-        }
-
-        /*
-        初回(サイドバーは見えない状態が初期状態)
-         */
-        domUserSidebar.addClass('user-sidebar--in');
-        domUserSidebarHeader.removeClass('user-sidebar__controll--out');
-        body = $document.find('body');
-        body.addClass('scrollbar-y-hidden');
-        layer = $document.find('.layer');
-        layer.addClass('fullscreen-overlay');
-        showTweet();
-        return layer.on('click', function() {
-          body.removeClass('scrollbar-y-hidden');
-          layer.removeClass('fullscreen-overlay');
-          domUserSidebar.removeClass('user-sidebar--in');
-          domUserSidebarHeader.addClass('user-sidebar__controll--out');
-          return $rootScope.$broadcast('isClosed', true);
-        });
       });
     }
   };

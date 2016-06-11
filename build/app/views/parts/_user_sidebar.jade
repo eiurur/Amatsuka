@@ -1,8 +1,8 @@
-div(ng-controller="UserCtrl")
+div(ng-controller="UserSidebarCtrl")
 
   //
   .user-sidebar__header
-    .media.user-sidebar__controll(ng-if='user.name')
+    .media.user-sidebar__controll(ng-if='user.screen_name')
       a.pull-left(href='https://www.twitter.com/{{::user.screen_name}}', target="_blank")
         img.user-sidebar__profile__icon.fade(ng-src='{{::user.profile_image_url_https}}', img-preload="img-preload")
       .media-body
@@ -16,7 +16,7 @@ div(ng-controller="UserCtrl")
 
   #scroll.user-sidebar.user-sidebar--fixed
 
-    .media.user-sidebar__profile(ng-if='user.name')
+    .media.user-sidebar__profile(ng-if='user.screen_name')
       .media-body
         .user-sidebar__profile--description(ng-bind-html='user.description | newlines')
         .user-sidebar__profile--url(ng-hide="user.url == null")

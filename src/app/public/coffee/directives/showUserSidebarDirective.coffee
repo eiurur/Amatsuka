@@ -9,15 +9,11 @@ angular.module "myApp.directives"
         TweetService.showUsers(twitterIdStr: scope.twitterIdStr)
         .then (data) ->
           console.log data
-          $rootScope.$broadcast 'userData', data.data
-          TweetService.getUserTimeline(twitterIdStr: scope.twitterIdStr)
-        .then (data) ->
-          console.log data.data
-          $rootScope.$broadcast 'tweetData', data.data
-
+          $rootScope.$broadcast 'showUserSidebar::show', data.data
+          return
 
       element.on 'click', ->
-        $rootScope.$broadcast 'isOpened', true
+        $rootScope.$broadcast 'showUserSidebar::isOpened', true
         $document = angular.element(document)
 
         domUserSidebar       =  $document.find('.user-sidebar')
@@ -54,4 +50,4 @@ angular.module "myApp.directives"
           domUserSidebar.removeClass('user-sidebar--in')
           domUserSidebarHeader.addClass('user-sidebar__controll--out')
 
-          $rootScope.$broadcast 'isClosed', true
+          $rootScope.$broadcast 'showUserSidebar::isClosed', true
