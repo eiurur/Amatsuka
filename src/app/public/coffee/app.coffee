@@ -33,9 +33,9 @@ angular.module('myApp', [
       controller: 'ExtractCtrl'
     .when '/mao',
       templateUrl: 'partials/mao'
-    .when '/fav',
-      templateUrl: 'partials/fav'
-      controller: 'FavCtrl'
+    .when '/like',
+      templateUrl: 'partials/like'
+      controller: 'LikeCtrl'
     .when '/config',
       templateUrl: 'partials/config'
       controller: 'ConfigCtrl'

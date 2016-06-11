@@ -53,7 +53,7 @@
 
 #     unless @ListService.hasListData() then @$location.path '/'
 
-#     @tweets = new @Tweets([], undefined, 'fav', @AuthService.user._json.id_str)
+#     @tweets = new @Tweets([], undefined, 'like', @AuthService.user._json.id_str)
 #     @listIdStr = ListService.amatsukaList.data.id_str
 #     @isLoaded  = true
 #     do @subscribe

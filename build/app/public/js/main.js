@@ -16,9 +16,9 @@ angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'ngTouch', 'infin
     controller: 'ExtractCtrl'
   }).when('/mao', {
     templateUrl: 'partials/mao'
-  }).when('/fav', {
-    templateUrl: 'partials/fav',
-    controller: 'FavCtrl'
+  }).when('/like', {
+    templateUrl: 'partials/like',
+    controller: 'LikeCtrl'
   }).when('/config', {
     templateUrl: 'partials/config',
     controller: 'ConfigCtrl'
@@ -202,7 +202,7 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
     if (JSON.stringify(newData) === JSON.stringify(oldData)) {
       return;
     }
-    if (!_.isNumber(newData.favLowerLimit)) {
+    if (!_.isNumber(newData.likeLowerLimit)) {
       return;
     }
     ConfigService.update();
@@ -297,32 +297,6 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
   });
 }]);
 
-angular.module("myApp.controllers").controller("FavCtrl", ["$scope", "$location", "AuthService", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, ConfigService, TweetService, ListService, Tweets) {
-  if (_.isEmpty(AuthService.user)) {
-    $location.path('/');
-  }
-  if (!ListService.hasListData()) {
-    $location.path('/');
-  }
-  $scope.isLoaded = false;
-  ConfigService.get().then(function(config) {
-    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
-  });
-  $scope.tweets = new Tweets([], void 0, 'fav', AuthService.user._json.id_str);
-  $scope.listIdStr = ListService.amatsukaList.data.id_str;
-  $scope.isLoaded = true;
-  $scope.$on('addMember', function(event, args) {
-    console.log('fav addMember on ', args);
-    TweetService.applyFollowStatusChange($scope.tweets.items, args);
-  });
-  return $scope.$on('resize::resize', function(event, args) {
-    console.log('fav resize::resize on ', args.layoutType);
-    $scope.$apply(function() {
-      $scope.layoutType = args.layoutType;
-    });
-  });
-}]);
-
 angular.module("myApp.controllers").controller("FindCtrl", ["$scope", "$location", "AuthService", "ListService", "Pict", function($scope, $location, AuthService, ListService, Pict) {
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
@@ -406,6 +380,32 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$locatio
   });
   return $scope.$on('resize::resize', function(event, args) {
     console.log('index resize::resize on ', args.layoutType);
+    $scope.$apply(function() {
+      $scope.layoutType = args.layoutType;
+    });
+  });
+}]);
+
+angular.module("myApp.controllers").controller("LikeCtrl", ["$scope", "$location", "AuthService", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, ConfigService, TweetService, ListService, Tweets) {
+  if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  if (!ListService.hasListData()) {
+    $location.path('/');
+  }
+  $scope.isLoaded = false;
+  ConfigService.get().then(function(config) {
+    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+  });
+  $scope.tweets = new Tweets([], void 0, 'like', AuthService.user._json.id_str);
+  $scope.listIdStr = ListService.amatsukaList.data.id_str;
+  $scope.isLoaded = true;
+  $scope.$on('addMember', function(event, args) {
+    console.log('like addMember on ', args);
+    TweetService.applyFollowStatusChange($scope.tweets.items, args);
+  });
+  return $scope.$on('resize::resize', function(event, args) {
+    console.log('like resize::resize on ', args.layoutType);
     $scope.$apply(function() {
       $scope.layoutType = args.layoutType;
     });
@@ -1637,7 +1637,7 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ToasterServ
           maxId: this.maxId,
           count: this.count
         });
-      } else if (this.type === 'fav') {
+      } else if (this.type === 'like') {
         this.method = TweetService.getFavLists({
           twitterIdStr: this.twitterIdStr,
           maxId: this.maxId,

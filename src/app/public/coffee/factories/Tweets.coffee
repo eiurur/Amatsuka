@@ -56,7 +56,7 @@ angular.module "myApp.factories"
 
         if @type is 'user_timeline'
           @method = TweetService.getUserTimeline(twitterIdStr: @twitterIdStr, maxId: @maxId, count: @count)
-        else if @type is 'fav'
+        else if @type is 'like'
           @method = TweetService.getFavLists(twitterIdStr: @twitterIdStr, maxId: @maxId, count: @count)
         else
           @method = TweetService.getListsStatuses(listIdStr: ListService.amatsukaList.data.id_str, maxId: @maxId, count: @count)
