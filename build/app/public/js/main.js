@@ -513,12 +513,12 @@ angular.module("myApp.controllers").controller("UserSidebarCtrl", ["$scope", "$l
     });
     $scope.tweets = new Tweets([], void 0, 'user_timeline', args.id_str);
   });
-  $scope.$on('isOpened', function(event, args) {
+  $scope.$on('showUserSidebar::isOpened', function(event, args) {
     $scope.isOpened = true;
     $scope.user = {};
     $scope.tweets = {};
   });
-  $scope.$on('isClosed', function(event, args) {
+  $scope.$on('showUserSidebar::isClosed', function(event, args) {
     $scope.isOpened = false;
     $scope.user = null;
     $scope.tweets = null;
