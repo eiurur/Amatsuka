@@ -1,16 +1,20 @@
 angular.module "myApp.directives"
-  .directive 'showUserSidebar', ($rootScope, TweetService) ->
+  .directive 'showUserSidebar', ($rootScope, TweetService, WindowScrollableSwitcher) ->
     restrict: 'A'
     scope:
       twitterIdStr: '@'
     link: (scope, element, attrs) ->
 
+
       showUserSidebar = ->
         TweetService.showUsers(twitterIdStr: scope.twitterIdStr)
         .then (data) ->
           console.log data
-          $rootScope.$broadcast 'showUserSidebar::show', data.data
-          return
+          $rootScope.$broadcast 'showUserSidebar::userData', data.data
+          TweetService.getUserTimeline(twitterIdStr: scope.twitterIdStr)
+        .then (data) ->
+          console.log data.data
+          $rootScope.$broadcast 'showUserSidebar::tweetData', data.data
 
       element.on 'click', ->
         $rootScope.$broadcast 'showUserSidebar::isOpened', true
@@ -36,6 +40,8 @@ angular.module "myApp.directives"
         body =  $document.find('body')
         body.addClass('scrollbar-y-hidden')
 
+        WindowScrollableSwitcher.disableScrolling()
+
         # 背景を半透明黒くして邪魔なものを隠す
         layer =  $document.find('.layer')
         layer.addClass('fullscreen-overlay')
@@ -49,5 +55,7 @@ angular.module "myApp.directives"
           layer.removeClass('fullscreen-overlay')
           domUserSidebar.removeClass('user-sidebar--in')
           domUserSidebarHeader.addClass('user-sidebar__controll--out')
+          WindowScrollableSwitcher.enableScrolling()
 
           $rootScope.$broadcast 'showUserSidebar::isClosed', true
+          return
