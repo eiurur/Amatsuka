@@ -681,6 +681,9 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
           Mousetrap.bind('f', function() {
             return angular.element(document).find('.image-layer__caption .icon-heart').click();
           });
+          Mousetrap.bind('l', function() {
+            return angular.element(document).find('.image-layer__caption .icon-heart').click();
+          });
           Mousetrap.bind('r', function() {
             return angular.element(document).find('.image-layer__caption .icon-retweet').click();
           });
@@ -741,7 +744,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
           });
         };
         return cleanup = function() {
-          Mousetrap.unbind(['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r', 't']);
+          Mousetrap.unbind(['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'l', 'q', 'r', 't']);
           zoomImageViewer.getImageLayerImg().unbind('mousedown mousemove mouseup touchstart touchmove touchend touchcancel');
           imageLayer.html('');
           imageLayerContainer.html('');
