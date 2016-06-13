@@ -117,6 +117,7 @@ angular.module 'myApp.directives'
           # KeyEvent
           Mousetrap.bind 'd', -> angular.element(document).find('.image-layer__caption .fa-download').click()
           Mousetrap.bind 'f', -> angular.element(document).find('.image-layer__caption .icon-heart').click()
+          Mousetrap.bind 'l', -> angular.element(document).find('.image-layer__caption .icon-heart').click()
           Mousetrap.bind 'r', -> angular.element(document).find('.image-layer__caption .icon-retweet').click()
           Mousetrap.bind 't', -> angular.element(document).find('.image-layer__caption .fa-twitter').click()
           Mousetrap.bind ['esc', 'q'], -> cleanup()
@@ -172,7 +173,7 @@ angular.module 'myApp.directives'
             switchImage(dir)
 
         cleanup = ->
-          Mousetrap.unbind ['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'q', 'r', 't']
+          Mousetrap.unbind ['left', 'right', 'esc', 'd', 'f', 'j', 'k', 'l', 'q', 'r', 't']
           zoomImageViewer.getImageLayerImg().unbind 'mousedown mousemove mouseup touchstart touchmove touchend touchcancel'
 
           imageLayer.html ''
