@@ -5,7 +5,7 @@ angular.module "myApp.factories"
       constructor: (@date) ->
         @busy   = false
         @isLast = false
-        @limit  = 20
+        @limit  = 30
         @skip   = 0
         @items  = []
         @isAuthenticatedWithMao = true

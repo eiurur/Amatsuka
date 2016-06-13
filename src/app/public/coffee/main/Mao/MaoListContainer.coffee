@@ -12,7 +12,7 @@ angular.module "myApp.directives"
         </div>
 
         <div infinite-scroll="$ctrl.tweetList.load()" infinite-scroll-distance="0">
-          <div ng-repeat="item in $ctrl.tweetList.items" class="col-lg-2 col-md-3 col-sm-4 mao__tweet__container">
+          <div ng-repeat="item in $ctrl.tweetList.items" class="col-lg-2 col-md-3 col-sm-4 col-xs-6 mao__tweet__container">
             <mao-tweet-article item="item"></mao-tweet-article>
           </div>
         </div>
