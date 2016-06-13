@@ -1,3 +1,5 @@
+@charset "utf-8";
+
 a.mao__link {
   // font-size: 2em;
   color: $mao-color;
@@ -13,15 +15,26 @@ a.mao__link {
 
 .mao__user {
 
-  min-height: 32px;
+  min-height: 8px;
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  margin-top: 8px;
 
   &__icon {
     cursor: pointer;
-    max-width: 32px;
+    max-height: 24px;
     height: auto;
     border-radius: 100%;
+
+    &__container {
+      margin-right: 0;
+    }
+  }
+
+  // .media .media-bodyの代わり
+  &__screen-name {
+    overflow: hidden;
+    zoom: 1;
   }
 
   &__container {
@@ -37,5 +50,5 @@ a.mao__link {
 }
 
 .mao__tweet__container {
-  padding: 32px 0;
+  padding: 23px 15px; // bootstrapのcol-*のpaddingのに合わせている
 }

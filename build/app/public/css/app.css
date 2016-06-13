@@ -1556,15 +1556,23 @@ a.mao__link:active {
 }
 
 .mao__user {
-  min-height: 32px;
+  min-height: 8px;
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  margin-top: 8px;
 }
 .mao__user__icon {
   cursor: pointer;
-  max-width: 32px;
+  max-height: 24px;
   height: auto;
   border-radius: 100%;
+}
+.mao__user__icon__container {
+  margin-right: 0;
+}
+.mao__user__screen-name {
+  overflow: hidden;
+  zoom: 1;
 }
 .mao__user__container {
   display: inline-block;
@@ -1577,7 +1585,7 @@ a.mao__link:active {
 }
 
 .mao__tweet__container {
-  padding: 32px 0;
+  padding: 23px 15px;
 }
 
 .extract-form {

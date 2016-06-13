@@ -11,8 +11,8 @@ angular.module "myApp.directives"
           <term-pagination total="$ctrl.tweetTotalNumber"></term-pagination>
         </div>
 
-        <div infinite-scroll="$ctrl.tweetList.load()" infinite-scroll-distance="0" class="col-sm-12 row-eq-height">
-          <div ng-repeat="item in $ctrl.tweetList.items" class="col-lg-4 col-md-6 col-sm-6 mao__tweet__container">
+        <div infinite-scroll="$ctrl.tweetList.load()" infinite-scroll-distance="0">
+          <div ng-repeat="item in $ctrl.tweetList.items" class="col-lg-2 col-md-3 col-sm-4 mao__tweet__container">
             <mao-tweet-article item="item"></mao-tweet-article>
           </div>
         </div>

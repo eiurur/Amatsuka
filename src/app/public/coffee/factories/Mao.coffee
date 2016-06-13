@@ -12,30 +12,15 @@ angular.module "myApp.factories"
 
       normalizeTweets: (tweets) =>
         return new Promise (resolve, reject) =>
-          tweets = tweets.map (item) => item.tweet = JSON.parse item.tweetStr
+          tweets = tweets.map (item) => JSON.parse item.tweetStr
 
           tweetsNormalized = TweetService.normalizeTweets tweets, ListService.amatsukaList.member
 
-          # 同じユーザのツイートを配列にまとめる
-          tweetsGroupBy = _(tweetsNormalized).groupBy((o) -> o.user.id_str).value()
+          result = tweetsNormalized.map (tweet) ->
+            tweet.extended_entities.media.map (media) ->
+              tweet: tweet, media: media
 
-          # tweet_id_str: tweet_object の形で返ってくるため、tweet_objectだけを抽出
-          pictTweetList = _.values(tweetsGroupBy)
-
-          # tweet_objectからuserデータを取り出してViewに合わせたデータ構造に書き換える
-          result = pictTweetList.map (item) -> user: item[0].user, pictTweetList: item
-
-          console.log 'pictTweetList = ', pictTweetList
-          result = result.map (item) ->
-            # 複数枚イラストをここで平坦化。tweetオブジェクトも含めるのは、media.id_strはmediaのid_strであって、tweetのid_strではなく
-            # show_statusesで必要なのはtweetのid_strであるのでここで付与する
-            pictList = _.flatten item.pictTweetList.map (tweet) ->
-              tweet.extended_entities.media.map (media) ->
-                tweet: tweet, media: media
-            user: item.user, pictList: pictList
-
-          console.log result
-          return resolve result
+          return resolve _.flatten result
 
       load: ->
         return if @busy or @isLast
