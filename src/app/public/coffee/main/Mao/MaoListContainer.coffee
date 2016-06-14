@@ -40,6 +40,9 @@ angular.module "myApp.directives"
               <i class="fa fa-external-link"></i>
             </a>
           </p>
+          <div class="mao__description__division"></div>
+          <div class="mao__description__image">
+          </div>
         </div>
       </div>
     """

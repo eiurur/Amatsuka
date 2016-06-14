@@ -1555,6 +1555,25 @@ a.mao__link:active {
   color: #f2c797;
 }
 
+.mao__description__division {
+  margin-top: 64px;
+}
+
+.mao__description__image {
+  background: url(../images/mao_image.jpg) top center/cover no-repeat;
+  width: 100%;
+  height: 640px;
+}
+
+.mao__texture-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url(../images/grid.png);
+}
+
 .mao__user {
   min-height: 8px;
   display: flex;
