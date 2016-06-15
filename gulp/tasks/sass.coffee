@@ -12,6 +12,7 @@ gulp.task "sass", ->
       compass: true
     .pipe gulp.dest config.dest
     .pipe $.rename suffix: '.min'
+    .pipe $.csscomb()
     .pipe $.cssmin()
     .pipe gulp.dest config.dest
     .pipe $.gzip()

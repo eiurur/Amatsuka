@@ -68,6 +68,7 @@
     "gulp-coffeelint": "^0.4.0",
     "gulp-concat": "^2.4.1",
     "gulp-copy": "0.0.2",
+    "gulp-csscomb": "^3.0.7",
     "gulp-csslint": "^0.1.5",
     "gulp-cssmin": "^0.1.6",
     "gulp-express": "^0.1.0",
