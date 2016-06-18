@@ -936,6 +936,7 @@ i {
 .timeline__post__image--tile {
   display: inline-block;
   object-fit: cover;
+  object-position: 50% 30%;
   width: 200px;
   height: 200px;
 }
@@ -1541,6 +1542,7 @@ i {
   width: 100%;
   height: 200px;
   object-fit: cover;
+  object-position: 50% 30%;
 }
 
 a.mao__link {
