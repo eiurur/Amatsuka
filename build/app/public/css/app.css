@@ -790,6 +790,18 @@ label {
     margin: 30px 0 14px;
   }
 
+  .login__description--catchcopy {
+    font-size: 16px;
+  }
+
+  .login__note {
+    font-size: 8px;
+  }
+
+  .login__description--about {
+    padding: 8px 0;
+  }
+
   .login__video--desktop {
     display: none;
   }
