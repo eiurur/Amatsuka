@@ -786,6 +786,10 @@ label {
     font-size: 24px;
   }
 
+  .login__start {
+    margin: 30px 0 14px;
+  }
+
   .login__video--desktop {
     display: none;
   }
@@ -795,7 +799,7 @@ label {
   }
 
   .login__bg {
-    background-image: url(../images/smarthph-compressor.gif);
+    background-image: url(../images/smartphone.gif);
   }
 
   .login__description {

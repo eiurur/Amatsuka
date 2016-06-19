@@ -204,6 +204,12 @@
     }
   }
 
+
+.login__start {
+  margin: 30px 0 14px; // .featureのpadding分を引くと30px
+ }
+
+
   .login__video--desktop {
     display: none;
   }
@@ -214,7 +220,7 @@
 
   .login__bg
   {
-    background-image: url(../images/smarthph-compressor.gif);
+    background-image: url(../images/smartphone.gif);
   }
   .login__description
   {
