@@ -1,5 +1,50 @@
 @charset "utf-8";
 
+.feature {
+  padding: 50px;
+
+  color: $link-color;
+  background: rgba(33, 33, 33, .8);
+  border-top: 1px solid $amatsuka-color;
+  border-bottom: 1px solid $amatsuka-color;
+
+  &-section {
+    padding: 44px 0 64px;
+    img {
+      margin-top: 20px; // bootstrapのh1と高さを合わせる
+    }
+  }
+
+  &__divider {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(66, 66, 66, 0.75), rgba(122, 122, 122, 0));
+    // margin: 48px auto;
+  }
+
+  h1
+  {
+    color: $amatsuka-color;
+  }
+
+  img {
+    width: 100%;
+  }
+}
+
+.login__start__container {
+  justify-content: center;
+}
+
+.login__start {
+  display: flex;
+  flex-direction: column;
+  margin: 64px 0 14px; // .featureのpadding分を引くと14px
+  .btn-wrapper {
+    margin: 0 auto;
+  }
+}
+
 .login__video {
   position: fixed;
   right: 0;
@@ -73,6 +118,10 @@
   {
     color: $amatsuka-color;
   }
+
+  img {
+    width: 100%;
+  }
 }
 
 .login__description--catchcopy
@@ -100,7 +149,8 @@
 
 .login__description--btn
 {
-  margin-top: 30px;
+  margin: 30px 8px 0 0;
+  border-radius: 0;
 }
 
 .login__demo-gif

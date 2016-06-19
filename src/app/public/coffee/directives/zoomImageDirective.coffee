@@ -35,7 +35,7 @@ angular.module "myApp.directives"
 
           # 満を持して表示
           imageLayerLoading.remove()
-          imageLayerImg.fadeIn(1)
+          imageLayerImg.fadeIn(500)
 
         # オーバーレイ部分をクリックしたら生成した要素は全て削除する
         imageLayerContainer = angular.element(document).find('.image-layer__container')

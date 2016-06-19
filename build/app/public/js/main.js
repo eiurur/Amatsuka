@@ -1081,7 +1081,7 @@ angular.module("myApp.directives").directive("zoomImage", ["$compile", "$rootSco
           direction = GetterImageInfomation.getWideDirection(imageLayerImg);
           imageLayerImg.addClass("image-layer__img-" + direction + "-wide");
           imageLayerLoading.remove();
-          return imageLayerImg.fadeIn(1);
+          return imageLayerImg.fadeIn(500);
         });
         imageLayerContainer = angular.element(document).find('.image-layer__container');
         return imageLayerContainer.on('click', function() {
