@@ -7,7 +7,7 @@ block body
       .spinner
 
     .h100per(ng-if='isLoaded')
-      .login__bg(ng-if='!isAuthenticated')
+      .login__container(ng-if='!isAuthenticated')
         include parts/_login
 
       .navbar-padding(ng-if='isAuthenticated')

@@ -1,25 +1,27 @@
-.login__description
-  h1
-    | Amatsuka
-  h3
-    p.login__description--catchcopy もうひとつのタイムラインをあなたに
+.login__bg
 
-  .login__description--about
-    p About
-    a(href='http://898525572.tumblr.com/post/110964826359', target="_blank")
-      i.fa.fa-angle-right
-      | 画像専用ツイートビューワー作りました。 - tumblr
-  div.btn-wrapper
-    a.btn.btn-lg.login__description--btn(href='/auth/twitter/callback', target='_self')
-      i.fa.fa-twitter
-      | Twitterでログイン (無料)
-    a.btn.btn-lg.login__description--btn(scroll-to='#feature', scroll-on-click)
-      i.fa.fa-angle-down(aria-hidden='true')
-      | 詳しく
-  .login__note
-    | ※ 勝手にツイートすることはありません。
+  .login__description
+    h1
+      | Amatsuka
+    h3
+      p.login__description--catchcopy もうひとつのタイムラインをあなたに
 
-  include _share
+    .login__description--about
+      p About
+      a(href='http://898525572.tumblr.com/post/110964826359', target="_blank")
+        i.fa.fa-angle-right
+        | 画像専用ツイートビューワー作りました。 - tumblr
+    div.btn-wrapper
+      a.btn.btn-lg.login__description--btn(href='/auth/twitter/callback', target='_self')
+        i.fa.fa-twitter
+        | Twitterでログイン (無料)
+      a.btn.btn-lg.login__description--btn(scroll-to='#feature', scroll-on-click)
+        i.fa.fa-angle-down(aria-hidden='true')
+        | 詳しく
+    .login__note
+      | ※ 勝手にツイートすることはありません。
+
+    include _share
 
 
 
