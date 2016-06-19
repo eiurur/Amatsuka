@@ -780,11 +780,7 @@ label {
  */
 @media (max-width: 480px) {
   .feature {
-    padding: 16px;
-    font-size: 16px;
-  }
-  .feature h1 {
-    font-size: 24px;
+    display: none;
   }
 
   .login__start {
