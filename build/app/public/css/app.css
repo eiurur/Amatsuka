@@ -1377,8 +1377,9 @@ i {
   position: fixed;
   z-index: 10001;
   max-width: 600px;
+  min-height: 100px;
   width: 100%;
-  padding: 20px 30px 0;
+  padding: 16px 30px 0;
   transition: .3s ease;
 }
 .user-sidebar__controll--in {
@@ -1411,7 +1412,12 @@ i {
   padding: 100px 30px 20px;
   color: #292929;
 }
-.user-sidebar__profile--name {
+.user-sidebar__profile__names {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.user-sidebar__profile__names--name {
   color: #424242;
 }
 .user-sidebar__profile--description {
@@ -1458,9 +1464,18 @@ i {
     min-height: 0px;
     max-width: 90%;
   }
+  .user-sidebar__controll .btn {
+    margin-top: 6px;
+    margin-right: 6px;
+  }
 
   .user-sidebar__profile {
     padding: 100px 15px 15px;
+  }
+
+  .user-sidebar__profile__icon {
+    width: 56px;
+    height: 56px;
   }
 
   .user-sidebar__post {

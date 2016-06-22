@@ -6,8 +6,8 @@ div(ng-controller="UserSidebarCtrl")
       a.pull-left(href='https://www.twitter.com/{{::user.screen_name}}', target="_blank")
         img.user-sidebar__profile__icon.fade(ng-src='{{::user.profile_image_url_https}}', img-preload="img-preload")
       .media-body
-        h4.media-heading
-          span.user-sidebar__profile--name {{::user.name}}
+        h4.media-heading.user-sidebar__profile__names
+          span.user-sidebar__profile__names--name {{::user.name}}
           span.screen-name @{{::user.screen_name}}
         span.btn-wrapper
         a.btn.btn-sm.user-sidebar__btn-follow(followable, follow-status='user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{::user.id_str}}', ng-disabled='isProcessing')

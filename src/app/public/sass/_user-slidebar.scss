@@ -46,8 +46,9 @@
     position: fixed;
     z-index: 10001;
     max-width: 600px;
+    min-height: 100px;
     width: 100%;
-    padding: 20px 30px 0;
+    padding: 16px 30px 0;
 
     transition: .3s ease;
 
@@ -92,14 +93,17 @@
   &__profile
   {
     width: 100%;
-    // min-height: 150px;
     padding: 100px 30px 20px;
 
     color: $sidebar-color;
 
-    &--name
-    {
-      color: $base-color;
+    &__names {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      &--name {
+        color: $base-color;
+      }
     }
 
 
@@ -169,11 +173,21 @@
     padding: 15px;
     min-height: 0px;
     max-width: 90%;
+
+    & .btn {
+      margin-top: 6px;
+      margin-right: 6px;
+    }
   }
 
 
   .user-sidebar__profile {
     padding: 100px 15px 15px;
+  }
+
+  .user-sidebar__profile__icon  {
+    width: 56px;
+    height: 56px;
   }
 
 
