@@ -32,15 +32,18 @@ angular.module "myApp.directives", []
     restrict: 'A'
     link: (scope, element, attrs) ->
       element.on 'click', (event) ->
+        toaster.pop 'wait', "Now Downloading ...", '', 0, 'trustedHtml'
 
         # findページでダウンロードボタンが押された場合は単発固定 + 文字列で渡される よってJSON.parseすると ["h", "t", ~]の形になり以降の処理に失敗する
         # その他からは"[~]"の形で渡されるため、処理を分岐させる。
-        urlList = if attrs.url.indexOf('[') is -1 then [attrs.url] else JSON.parse(attrs.url)
+        # urlList = if attrs.url.indexOf('[') is -1 then [attrs.url] else JSON.parse(attrs.url)
         promises = []
-
-        toaster.pop 'wait', "Now Downloading ...", '', 0, 'trustedHtml'
-        urlList.forEach (url, idx) ->
-          promises.push DownloadService.exec(url, attrs.filename, idx)
+        if attrs.url.indexOf('[') is -1
+          idx = attrs.imgIdx or 0
+          promises.push DownloadService.exec(attrs.url, attrs.filename, idx)
+        else
+          JSON.parse(attrs.url).forEach (url, idx) ->
+            promises.push DownloadService.exec(url, attrs.filename, idx)
 
         $q.all promises
         .then (datas) ->

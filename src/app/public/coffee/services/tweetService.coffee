@@ -109,6 +109,7 @@ angular.module "myApp.services"
         when 'user.retweet_count' then t.retweet_count
         when 'user.lang' then t.user.lang
         when 'user.url' then t.user.url
+        when 'user' then t.user
         else null
 
     expandTweetUrl: (tweet, isRT) ->

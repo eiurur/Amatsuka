@@ -32,6 +32,7 @@ angular.module 'myApp.directives'
         .then (data) ->
           tweet = data.data
           bindEvents()
+          tweet.user = TweetService.get(tweet, 'user')
           imgIdx = getImgIdxBySrc(tweet, attrs.imgSrc.replace(':small', ''))
           showTweetInfomation(tweet, imgIdx)
           upsertPictCounterElement(tweet, imgIdx)
@@ -77,7 +78,7 @@ angular.module 'myApp.directives'
                     <i class="fa fa-retweet icon-retweet" tweet-id-str="#{tweet.id_str}" retweeted="#{tweet.retweeted}" retweetable="retweetable"></i>
                     <i class="fa fa-heart icon-heart" tweet-id-str="#{tweet.id_str}" favorited="#{tweet.favorited}" favoritable="favoritable"></i>
                     <a>
-                      <i class="fa fa-download" data-url="#{tweet.extended_entities.media[imgIdx].media_url_https}:orig" filename="#{tweet.user.screen_name}_#{tweet.id_str}" download-from-url="download-from-url"></i>
+                      <i class="fa fa-download" data-url="#{tweet.extended_entities.media[imgIdx].media_url_https}:orig" filename="#{tweet.user.screen_name}_#{tweet.id_str}" img-idx=#{imgIdx} download-from-url="download-from-url"></i>
                     </a>
                   </div>
                 </div>
@@ -87,6 +88,7 @@ angular.module 'myApp.directives'
 
           # 読み込み前に拡大画像を閉じた場合はcaptionタグを表示させない
           return if _.isEmpty(imageLayer.html())
+          angular.element(document).find('.image-layer__caption').html("")
           item = $compile(imageLayerCaptionHtml)(scope).hide().fadeIn(300)
           imageLayer.append(item)
 
@@ -106,6 +108,8 @@ angular.module 'myApp.directives'
           console.log 'switchImage'
           console.log imgIdx
           console.log src
+          tweet.user = TweetService.get(tweet, 'user', TweetService.isRT(tweet))
+          showTweetInfomation(tweet, imgIdx)
           upsertPictCounterElement(tweet, imgIdx)
           zoomImageViewer.pipeLowToHighImage("#{src}:small", "#{src}:orig")
 

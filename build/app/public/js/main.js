@@ -70,13 +70,17 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
     restrict: 'A',
     link: function(scope, element, attrs) {
       return element.on('click', function(event) {
-        var promises, urlList;
-        urlList = attrs.url.indexOf('[') === -1 ? [attrs.url] : JSON.parse(attrs.url);
-        promises = [];
+        var idx, promises;
         toaster.pop('wait', "Now Downloading ...", '', 0, 'trustedHtml');
-        urlList.forEach(function(url, idx) {
-          return promises.push(DownloadService.exec(url, attrs.filename, idx));
-        });
+        promises = [];
+        if (attrs.url.indexOf('[') === -1) {
+          idx = attrs.imgIdx || 0;
+          promises.push(DownloadService.exec(attrs.url, attrs.filename, idx));
+        } else {
+          JSON.parse(attrs.url).forEach(function(url, idx) {
+            return promises.push(DownloadService.exec(url, attrs.filename, idx));
+          });
+        }
         return $q.all(promises).then(function(datas) {
           toaster.clear();
           return toaster.pop('success', "Finished Download", '', 2000, 'trustedHtml');
@@ -617,6 +621,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
         }).then(function(data) {
           tweet = data.data;
           bindEvents();
+          tweet.user = TweetService.get(tweet, 'user');
           imgIdx = getImgIdxBySrc(tweet, attrs.imgSrc.replace(':small', ''));
           showTweetInfomation(tweet, imgIdx);
           return upsertPictCounterElement(tweet, imgIdx);
@@ -638,10 +643,11 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
         };
         showTweetInfomation = function(tweet, imgIdx) {
           var imageLayerCaptionHtml, item;
-          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__footer\">\n    <div class=\"timeline__footer__contents\">\n      <div class=\"timeline__footer__controls\">\n        <a href=\"" + tweet.extended_entities.media[imgIdx].expanded_url + "\" target=\"_blank\">\n          <i class=\"fa fa-twitter icon-twitter\"></i>\n        </a>\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + tweet.id_str + "\" retweeted=\"" + tweet.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + tweet.id_str + "\" favorited=\"" + tweet.favorited + "\" favoritable=\"favoritable\"></i>\n        <a>\n          <i class=\"fa fa-download\" data-url=\"" + tweet.extended_entities.media[imgIdx].media_url_https + ":orig\" filename=\"" + tweet.user.screen_name + "_" + tweet.id_str + "\" download-from-url=\"download-from-url\"></i>\n        </a>\n      </div>\n    </div>\n  </div>\n</div>";
+          imageLayerCaptionHtml = "<div class=\"image-layer__caption\">\n  <div class=\"timeline__footer\">\n    <div class=\"timeline__footer__contents\">\n      <div class=\"timeline__footer__controls\">\n        <a href=\"" + tweet.extended_entities.media[imgIdx].expanded_url + "\" target=\"_blank\">\n          <i class=\"fa fa-twitter icon-twitter\"></i>\n        </a>\n        <i class=\"fa fa-retweet icon-retweet\" tweet-id-str=\"" + tweet.id_str + "\" retweeted=\"" + tweet.retweeted + "\" retweetable=\"retweetable\"></i>\n        <i class=\"fa fa-heart icon-heart\" tweet-id-str=\"" + tweet.id_str + "\" favorited=\"" + tweet.favorited + "\" favoritable=\"favoritable\"></i>\n        <a>\n          <i class=\"fa fa-download\" data-url=\"" + tweet.extended_entities.media[imgIdx].media_url_https + ":orig\" filename=\"" + tweet.user.screen_name + "_" + tweet.id_str + "\" img-idx=" + imgIdx + " download-from-url=\"download-from-url\"></i>\n        </a>\n      </div>\n    </div>\n  </div>\n</div>";
           if (_.isEmpty(imageLayer.html())) {
             return;
           }
+          angular.element(document).find('.image-layer__caption').html("");
           item = $compile(imageLayerCaptionHtml)(scope).hide().fadeIn(300);
           return imageLayer.append(item);
         };
@@ -670,6 +676,8 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
           console.log('switchImage');
           console.log(imgIdx);
           console.log(src);
+          tweet.user = TweetService.get(tweet, 'user', TweetService.isRT(tweet));
+          showTweetInfomation(tweet, imgIdx);
           upsertPictCounterElement(tweet, imgIdx);
           return zoomImageViewer.pipeLowToHighImage("" + src + ":small", "" + src + ":orig");
         };
@@ -2222,6 +2230,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
           return t.user.lang;
         case 'user.url':
           return t.user.url;
+        case 'user':
+          return t.user;
         default:
           return null;
       }
