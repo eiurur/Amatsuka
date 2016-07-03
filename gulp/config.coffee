@@ -80,6 +80,8 @@ module.exports =
       'bower_components/angular-masonry/angular-masonry.js'
       'bower_components/angularjs-toaster/toaster.js'
       'bower_components/ng-tags-input/ng-tags-input.js'
+      'bower_components/angulartics/dist/angulartics.min.js'
+      'bower_components/angulartics-google-analytics/dist/angulartics-ga.min.js'
     ]
     dest: dest + app_public + "/js/vendors/"
 
