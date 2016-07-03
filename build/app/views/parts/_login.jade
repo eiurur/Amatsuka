@@ -12,10 +12,10 @@
         i.fa.fa-angle-right
         | 画像専用ツイートビューワー作りました。 - tumblr
     div.btn-wrapper
-      a.btn.btn-lg.login__description--btn(href='/auth/twitter/callback', target='_self')
+      a.btn.btn-lg.login__description--btn(href='/auth/twitter/callback', target='_self', log="clickLoginButton,Click,Click")
         i.fa.fa-twitter
         | Twitterでログイン (無料)
-      a.btn.btn-lg.login__description--btn(scroll-to='#feature', scroll-on-click)
+      a.btn.btn-lg.login__description--btn(scroll-to='#feature', log="clickDetailBButton,Click,Click", scroll-on-click)
         i.fa.fa-angle-down(aria-hidden='true')
         | 詳しく
     .login__note
@@ -133,7 +133,7 @@
   .row.row-eq-height.feature-section.login__start__container
     .col-md-12.login__start
       span.btn-wrapper
-        a.btn.btn-lg.login__description--btn(href='/auth/twitter/callback', target='_self')
+        a.btn.btn-lg.login__description--btn(href='/auth/twitter/callback', target='_self', log="clickLoginButton,Click,Click")
           i.fa.fa-twitter
           | Twitterでログイン (無料)
       .login__note.text-center

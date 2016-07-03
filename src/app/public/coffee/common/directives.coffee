@@ -81,3 +81,27 @@ angular.module "myApp.directives", []
         window.localStorage.clear()
         toaster.clear()
         toaster.pop 'success', "Finished clearing the list data", '', 2000, 'trustedHtml'
+
+  # http://liginc.co.jp/web/js/other-js/137655
+  .directive 'log', ($analytics) ->
+    restrict: 'A'
+    link: (scope, element, attrs) ->
+
+      clickHandler = (e) ->
+        params = attrs.log
+        if !params
+          return
+        params = params.split(',')
+        options = {}
+        if params[1]
+          options.category = params[1]
+        if params[2]
+          options.label = params[2]
+        $analytics.eventTrack params[0], options
+        return
+
+      element.on 'click', clickHandler
+      scope.$on '$destroy', ->
+        element.off 'click', clickHandler
+        return
+      return

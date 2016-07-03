@@ -7,6 +7,8 @@ angular.module('myApp', [
   'wu.masonry'
   'toaster'
   'ngTagsInput'
+  'angulartics'
+  'angulartics.google.analytics'
   'myApp.controllers'
   'myApp.filters'
   'myApp.services'

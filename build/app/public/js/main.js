@@ -1,4 +1,4 @@
-angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'ngTouch', 'infinite-scroll', 'wu.masonry', 'toaster', 'ngTagsInput', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).value('THROTTLE_MILLISECONDS', 300).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
+angular.module('myApp', ['ngRoute', 'ngAnimate', 'ngSanitize', 'ngTouch', 'infinite-scroll', 'wu.masonry', 'toaster', 'ngTagsInput', 'angulartics', 'angulartics.google.analytics', 'myApp.controllers', 'myApp.filters', 'myApp.services', 'myApp.factories', 'myApp.directives']).value('THROTTLE_MILLISECONDS', 300).config(["$routeProvider", "$locationProvider", function($routeProvider, $locationProvider) {
   $routeProvider.when('/', {
     templateUrl: 'partials/index',
     controller: 'IndexCtrl'
@@ -120,6 +120,33 @@ angular.module("myApp.directives", []).directive('dotLoader', function() {
         window.localStorage.clear();
         toaster.clear();
         return toaster.pop('success', "Finished clearing the list data", '', 2000, 'trustedHtml');
+      });
+    }
+  };
+}]).directive('log', ["$analytics", function($analytics) {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs) {
+      var clickHandler;
+      clickHandler = function(e) {
+        var options, params;
+        params = attrs.log;
+        if (!params) {
+          return;
+        }
+        params = params.split(',');
+        options = {};
+        if (params[1]) {
+          options.category = params[1];
+        }
+        if (params[2]) {
+          options.label = params[2];
+        }
+        $analytics.eventTrack(params[0], options);
+      };
+      element.on('click', clickHandler);
+      scope.$on('$destroy', function() {
+        element.off('click', clickHandler);
       });
     }
   };
