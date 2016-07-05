@@ -13,6 +13,7 @@ gulp.task 'coffee_app_public', ->
     .pipe $.coffeelint(optFile: optFile)
     .pipe $.coffeelint.reporter()
     .pipe $.coffee(bare: true)
+    .pipe $.remember('coffee_app_public')
     .pipe $.concat('main.js')
     .pipe ngAnnotate()
     .pipe gulp.dest config.dest

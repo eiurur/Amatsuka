@@ -7,7 +7,6 @@ config = require('../config').sass
 gulp.task "sass", ->
   gulp.src config.src
     .pipe $.plumber()
-    .pipe $.cached('sass')
     .pipe sass
       style: "expanded"
       compass: true
