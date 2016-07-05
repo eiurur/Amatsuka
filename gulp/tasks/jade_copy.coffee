@@ -6,5 +6,6 @@ config = require('../config').jade_copy
 gulp.task 'jade_copy', ->
   gulp.src config.src
     .pipe $.plumber()
+    .pipe $.changed(config.dest)
     .pipe gulp.dest config.dest
     .pipe $.notify 'jade_copy task complete'

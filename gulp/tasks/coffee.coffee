@@ -8,6 +8,7 @@ optFile = path.resolve 'config.json'
 gulp.task 'coffee', ->
   gulp.src config.src
     .pipe $.plumber()
+    .pipe $.cached('coffee')
     .pipe $.coffeelint(optFile: optFile)
     .pipe $.coffeelint.reporter()
     .pipe $.coffee()
