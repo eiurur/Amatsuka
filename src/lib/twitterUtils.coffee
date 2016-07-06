@@ -57,7 +57,7 @@ twitterUtils = ->
     config.ngUsername or= []
     config.ngWord or= []
     config.retweetLowerLimit or= 0
-    config.favLowerLimit or= 0
+    config.likeLowerLimit or= 0
     # console.log(config)
 
     _.reject tweets, (tweet) =>
@@ -70,9 +70,9 @@ twitterUtils = ->
       includeNgUser       = config.ngUsername.some (element, index) => tweet.user.screen_name.indexOf(element.text) isnt -1
       includeNgWord       = config.ngWord.some (element, index) => tweet.text.indexOf(element.text) isnt -1
       isRetweetLowerLimit = tweet.retweet_count < config.retweetLowerLimit
-      isFavLowerLimit     = tweet.favorite_count < config.favLowerLimit
+      isLikeLowerLimit     = tweet.favorite_count < config.likeLowerLimit
       isOnlyTextTweet     = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
 
-      includeNgUser or includeNgWord or isRetweetLowerLimit or isFavLowerLimit or isOnlyTextTweet
+      includeNgUser or includeNgWord or isRetweetLowerLimit or isLikeLowerLimit or isOnlyTextTweet
 
 exports.twitterUtils = twitterUtils()
