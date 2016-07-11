@@ -937,6 +937,13 @@ i {
   color: white;
 }
 
+.navbar-default a.active {
+  color: #f2446f !important;
+  text-decoration: underline solid #f2446f;
+  border-bottom: 1px solid #f2446f;
+  padding-bottom: 16px;
+}
+
 .timeline__container {
   margin-right: 0;
   margin-left: 0;

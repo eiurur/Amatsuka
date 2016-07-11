@@ -570,6 +570,22 @@ angular.module("myApp.controllers").controller("UserSidebarCtrl", ["$scope", "$l
   });
 }]);
 
+angular.module("myApp.directives").directive('isActiveNav', ["$location", function($location) {
+  return {
+    restrict: 'A',
+    link: function(scope, element) {
+      scope.location = $location;
+      return scope.$watch('location.path()', function(currentPath) {
+        if (currentPath === element[0].attributes['href'].nodeValue) {
+          element.addClass('active');
+        } else {
+          element.removeClass('active');
+        }
+      });
+    }
+  };
+}]);
+
 angular.module("myApp.directives").directive('copyMember', ["$rootScope", "toaster", "TweetService", function($rootScope, toaster, TweetService) {
   return {
     restrict: 'A',

@@ -1,0 +1,8 @@
+@charset "utf-8";
+
+.navbar-default a.active {
+  color: $theme-color !important;
+  text-decoration: underline solid $theme-color;
+  border-bottom: 1px solid $theme-color;
+  padding-bottom: 16px;
+}

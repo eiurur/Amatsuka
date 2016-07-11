@@ -73,6 +73,11 @@ angular.module "myApp.controllers"
       params = twitterIdStr: $routeParams.id
     filterPic(params)
 
+  # $scope.dump = ->
+  #   console.log $scope.extract.tweets.map (tweet) -> image: tweet.extended_entities.media[0].media_url_https + ":large", src: tweet.extended_entities.media[0].display_url
+
+
+
   $scope.execFilteringPictWithKeyword = ->
     console.log $scope.filter
     filterPic()

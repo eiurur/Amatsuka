@@ -16,31 +16,31 @@ nav.navbar-default.navbar-fixed-top(ic-nav-autoclose)
       //-   button.btn.btn-default(type='submit') Submit
       ul.nav.navbar-nav.navbar-right
         li
-          a(href="/")
+          a(href="/", is-active-nav)
             i.fa.fa-home
             | Home
         li
-          a(href='/member')
+          a(href='/member', is-active-nav)
             i.fa.fa-users
             | Member
         li
-          a(href='/like')
+          a(href='/like', is-active-nav)
             i.fa.fa-heart
             | Like
         li
-          a(href='/list')
+          a(href='/list', is-active-nav)
             i.fa.fa-list-ul
             | List
         li
-          a(href='/find')
+          a(href='/find', is-active-nav)
             i.fa.fa-search
             | Find
         li
-          a(href='/extract')
+          a(href='/extract', is-active-nav)
             i.fa.fa-filter
             | Extract
         li
-          a(href='/mao')
+          a(href='/mao', is-active-nav)
             i.fa.fa-bullseye
             | Mao
         li.dropdown
@@ -52,11 +52,11 @@ nav.navbar-default.navbar-fixed-top(ic-nav-autoclose)
             //- span.caret
           ul.dropdown-menu
             li
-              a(href='/config')
+              a(href='/config', is-active-nav)
                 i.fa.fa-cog
                 | Config
             li
-              a(href='/help')
+              a(href='/help', is-active-nav)
                 i.fa.fa-question-circle
                 | Help
             li
