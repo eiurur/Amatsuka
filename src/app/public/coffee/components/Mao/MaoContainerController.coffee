@@ -3,11 +3,15 @@ angular.module "myApp.directives"
     restrict: 'E'
     scope: {}
     template: """
-      <ul class="nav nav-pills nav-stacked col-md-1 col-sm-2">
-        <li ng-repeat="tab in $ctrl.tabs" ng-class="{active: tab.active}">
-          <a href="{{tab.href}}" data-toggle="tab" ng-click="$ctrl.select(tab.id)" >{{tab.name}}</a>
-        </li>
-      </ul>
+      <div class="col-md-1 col-sm-2">
+        <div class="row">
+        <ul class="nav nav-pills nav-stacked col-md-12">
+          <li ng-repeat="tab in $ctrl.tabs" ng-class="{active: tab.active}">
+            <a href="{{tab.href}}" data-toggle="tab" ng-click="$ctrl.select(tab.id)" >{{tab.name}}</a>
+          </li>
+        </ul>
+        </div>
+      </div>
       <div class="tab-content col-md-11 col-sm-10">
         <div id="tweets" class="row tab-pane active" ng-if="$ctrl.tabType == 'tweets'">
           <mao-list-container></mao-list-container>

@@ -2608,65 +2608,13 @@ angular.module("myApp.services").service("URLParameterService", ["$location", fu
   };
 }]);
 
-var GridLayoutTweet;
-
-angular.module("myApp.directives").directive('gridLayoutTweet', function() {
-  return {
-    restrict: 'E',
-    scope: {},
-    template: "<div class=\"timeline__post--header timeline__post--header--grid\">\n  <div class=\"timeline__post--header--info timeline__post--header--info--grid\">\n    <div class=\"timeline__post--header--link timeline__post--header--link--grid\">\n      <span twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\" class=\"timeline__post--header--user timeline__post--header--user--grid clickable\">{{::$ctrl.tweet.user.screen_name}}\n      </span><span ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--header--rt_icon timeline__post--header--rt_icon--grid\"><i class=\"fa fa-retweet\"></i></span><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\" class=\"timeline__post--header--rt_source timeline__post--header--rt_source--grid\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n      <followable ng-if=\"!$ctrl.tweet.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" tweet=\"{{$ctrl.tweet}}\" follow-status=\"$ctrl.tweet.followStatus\">\n      </followable>\n    </div>\n  </div>\n  <div class=\"timeline__post--header--time\"><a href=\"https://{{::$ctrl.tweet.sourceUrl}}\" target=\"_blank\">{{::$ctrl.tweet.time}}\n    </a>\n  </div>\n</div>\n<div class=\"timeline__post--icon timeline__post--icon--grid\"><img ng-src=\"{{::$ctrl.tweet.user.profile_image_url_https}}\" img-preload=\"img-preload\" show-user-sidebar=\"show-user-sidebar\" twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" class=\"fade\"/>\n</div>\n<div ng-repeat=\"picUrl in $ctrl.tweet.picUrlList\" class=\"timeline__post--image timeline__post--image--grid\">\n  <img ng-if=\"!$ctrl.tweet.video_url\" ng-src=\"{{::picUrl}}\" img-preload=\"img-preload\" zoom-image=\"zoom-image\" data-img-src=\"{{::picUrl}}\" class=\"fade\"/>\n  <video ng-if=\"$ctrl.tweet.video_url\" poster=\"{{::picUrl}}\" autoplay=\"autoplay\" loop=\"loop\" controls=\"controls\" muted=\"muted\">\n    <source ng-src=\"{{::$ctrl.tweet.video_url | trusted}}\" type=\"video/mp4\">\n    </source>\n  </video>\n</div>\n<div ng-if=\"!config.isShowOnlyImage\" class=\"timeline__post__text__container\">\n  <div ng-if=\"!$ctrl.tweet.retweeted_status\" ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text timeline__post--text--grid\">\n  </div>\n  <div ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--blockquote timeline__post--blockquote--grid\">\n    <p><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n    </p>\n    <blockquote>\n      <div ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n      </div>\n    </blockquote>\n  </div>\n</div>\n<div class=\"timeline__post--footer timeline__post--footer--grid\">\n  <div class=\"timeline__post--footer--contents\">\n    <div class=\"timeline__post--footer--contents--controls\">\n      <i retweet-num=\"$ctrl.tweet.retweetNum\" retweeted=\"$ctrl.tweet.retweeted\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" retweetable=\"retweetable\" class=\"fa fa-retweet icon-retweet\">{{$ctrl.tweet.retweetNum}}</i>\n      <i fav-num=\"$ctrl.tweet.favNum\" favorited=\"$ctrl.tweet.favorited\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" favoritable=\"favoritable\" class=\"fa fa-heart icon-heart\">{{$ctrl.tweet.favNum}}</i>\n      <a>\n        <i data-url=\"{{::$ctrl.tweet.picOrigUrlList}}\" filename=\"{{::$ctrl.tweet.fileName}}\" download-from-url=\"download-from-url\" class=\"fa fa-download\"></i>\n      </a>\n    </div>\n  </div>\n</div>",
-    bindToController: {
-      tweet: "=",
-      listIdStr: "="
-    },
-    controllerAs: "$ctrl",
-    controller: GridLayoutTweet
-  };
-});
-
-GridLayoutTweet = (function() {
-  function GridLayoutTweet() {
-    console.log(this);
-  }
-
-  return GridLayoutTweet;
-
-})();
-
-var ListLayoutTweet;
-
-angular.module("myApp.directives").directive('listLayoutTweet', function() {
-  return {
-    restrict: 'E',
-    scope: {},
-    template: "\n<div class=\"timeline__post--header\">\n  <div class=\"timeline__post--header--info\">\n    <div class=\"timeline__post--header--link\">\n      <span twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\" class=\"timeline__post--header--user clickable\">{{::$ctrl.tweet.user.screen_name}}\n      </span>\n      <span ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--header--rt_icon\">\n        <i class=\"fa fa-retweet\"></i>\n      </span>\n      <a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\" class=\"timeline__post--header--rt_source\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n      <followable ng-if=\"!$ctrl.tweet.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" tweet=\"{{$ctrl.tweet}}\" follow-status=\"$ctrl.tweet.followStatus\">\n      </followable>\n    </div>\n  </div>\n  <div class=\"timeline__post--header--time\"><a href=\"https://{{::$ctrl.tweet.sourceUrl}}\" target=\"_blank\">{{::$ctrl.tweet.time}}\n    </a>\n  </div>\n</div>\n<div class=\"timeline__post--icon\"><img ng-src=\"{{::$ctrl.tweet.user.profile_image_url_https}}\" img-preload=\"img-preload\" show-user-sidebar=\"show-user-sidebar\" twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" class=\"fade\"/>\n</div>\n<div ng-repeat=\"picUrl in $ctrl.tweet.picUrlList\" class=\"timeline__post--image\">\n  <img ng-if=\"!$ctrl.tweet.video_url\" ng-src=\"{{::picUrl}}\" img-preload=\"img-preload\" zoom-image=\"zoom-image\" data-img-src=\"{{::picUrl}}\" class=\"fade\"/>\n  <video ng-if=\"$ctrl.tweet.video_url\" poster=\"{{::picUrl}}\" autoplay=\"autoplay\" loop=\"loop\" controls=\"controls\" muted=\"muted\">\n    <source ng-src=\"{{::$ctrl.tweet.video_url | trusted}}\" type=\"video/mp4\">\n    </source>\n  </video>\n</div>\n<div ng-if=\"!config.isShowOnlyImage\" class=\"timeline__post__text__container\">\n  <div ng-if=\"!$ctrl.tweet.retweeted_status\" ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n  </div>\n  <div ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--blockquote\">\n    <p><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n    </p>\n    <blockquote>\n      <div ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n      </div>\n    </blockquote>\n  </div>\n</div>\n<div class=\"timeline__post--footer\">\n  <div class=\"timeline__post--footer--contents\">\n    <div class=\"timeline__post--footer--contents--controls\">\n      <i retweet-num=\"$ctrl.tweet.retweetNum\" retweeted=\"$ctrl.tweet.retweeted\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" retweetable=\"retweetable\" class=\"fa fa-retweet icon-retweet\">{{$ctrl.tweet.retweetNum}}</i>\n      <i fav-num=\"$ctrl.tweet.favNum\" favorited=\"$ctrl.tweet.favorited\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" favoritable=\"favoritable\" class=\"fa fa-heart icon-heart\">{{$ctrl.tweet.favNum}}</i>\n      <a>\n        <i data-url=\"{{::$ctrl.tweet.extended_entities.media[0].media_url}}:orig\" filename=\"{{::$ctrl.tweet.fileName}}\" download-from-url=\"download-from-url\" class=\"fa fa-download\"></i>\n      </a>\n    </div>\n  </div>\n</div>\n",
-    bindToController: {
-      tweet: "=",
-      listIdStr: "="
-    },
-    controllerAs: "$ctrl",
-    controller: ListLayoutTweet
-  };
-});
-
-ListLayoutTweet = (function() {
-  function ListLayoutTweet() {
-    console.log(this);
-  }
-
-  return ListLayoutTweet;
-
-})();
-
-
-
 var MaoContainerController;
 
 angular.module("myApp.directives").directive('maoContainer', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<ul class=\"nav nav-pills nav-stacked col-md-1 col-sm-2\">\n  <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n    <a href=\"{{tab.href}}\" data-toggle=\"tab\" ng-click=\"$ctrl.select(tab.id)\" >{{tab.name}}</a>\n  </li>\n</ul>\n<div class=\"tab-content col-md-11 col-sm-10\">\n  <div id=\"tweets\" class=\"row tab-pane active\" ng-if=\"$ctrl.tabType == 'tweets'\">\n    <mao-list-container></mao-list-container>\n  </div>\n  <div id=\"stats\" class=\"row tab-pane\" ng-if=\"$ctrl.tabType == 'stats'\">\n    <mao-ranking-post-number></mao-ranking-post-number>\n  </div>\n</div>",
+    template: "<div class=\"col-md-1 col-sm-2\">\n  <div class=\"row\">\n  <ul class=\"nav nav-pills nav-stacked col-md-12\">\n    <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n      <a href=\"{{tab.href}}\" data-toggle=\"tab\" ng-click=\"$ctrl.select(tab.id)\" >{{tab.name}}</a>\n    </li>\n  </ul>\n  </div>\n</div>\n<div class=\"tab-content col-md-11 col-sm-10\">\n  <div id=\"tweets\" class=\"row tab-pane active\" ng-if=\"$ctrl.tabType == 'tweets'\">\n    <mao-list-container></mao-list-container>\n  </div>\n  <div id=\"stats\" class=\"row tab-pane\" ng-if=\"$ctrl.tabType == 'stats'\">\n    <mao-ranking-post-number></mao-ranking-post-number>\n  </div>\n</div>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoContainerController
@@ -2821,5 +2769,57 @@ MaoTweetArticleController = (function() {
   return MaoTweetArticleController;
 
 })();
+
+var GridLayoutTweet;
+
+angular.module("myApp.directives").directive('gridLayoutTweet', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<div class=\"timeline__post--header timeline__post--header--grid\">\n  <div class=\"timeline__post--header--info timeline__post--header--info--grid\">\n    <div class=\"timeline__post--header--link timeline__post--header--link--grid\">\n      <span twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\" class=\"timeline__post--header--user timeline__post--header--user--grid clickable\">{{::$ctrl.tweet.user.screen_name}}\n      </span><span ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--header--rt_icon timeline__post--header--rt_icon--grid\"><i class=\"fa fa-retweet\"></i></span><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\" class=\"timeline__post--header--rt_source timeline__post--header--rt_source--grid\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n      <followable ng-if=\"!$ctrl.tweet.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" tweet=\"{{$ctrl.tweet}}\" follow-status=\"$ctrl.tweet.followStatus\">\n      </followable>\n    </div>\n  </div>\n  <div class=\"timeline__post--header--time\"><a href=\"https://{{::$ctrl.tweet.sourceUrl}}\" target=\"_blank\">{{::$ctrl.tweet.time}}\n    </a>\n  </div>\n</div>\n<div class=\"timeline__post--icon timeline__post--icon--grid\"><img ng-src=\"{{::$ctrl.tweet.user.profile_image_url_https}}\" img-preload=\"img-preload\" show-user-sidebar=\"show-user-sidebar\" twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" class=\"fade\"/>\n</div>\n<div ng-repeat=\"picUrl in $ctrl.tweet.picUrlList\" class=\"timeline__post--image timeline__post--image--grid\">\n  <img ng-if=\"!$ctrl.tweet.video_url\" ng-src=\"{{::picUrl}}\" img-preload=\"img-preload\" zoom-image=\"zoom-image\" data-img-src=\"{{::picUrl}}\" class=\"fade\"/>\n  <video ng-if=\"$ctrl.tweet.video_url\" poster=\"{{::picUrl}}\" autoplay=\"autoplay\" loop=\"loop\" controls=\"controls\" muted=\"muted\">\n    <source ng-src=\"{{::$ctrl.tweet.video_url | trusted}}\" type=\"video/mp4\">\n    </source>\n  </video>\n</div>\n<div ng-if=\"!config.isShowOnlyImage\" class=\"timeline__post__text__container\">\n  <div ng-if=\"!$ctrl.tweet.retweeted_status\" ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text timeline__post--text--grid\">\n  </div>\n  <div ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--blockquote timeline__post--blockquote--grid\">\n    <p><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n    </p>\n    <blockquote>\n      <div ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n      </div>\n    </blockquote>\n  </div>\n</div>\n<div class=\"timeline__post--footer timeline__post--footer--grid\">\n  <div class=\"timeline__post--footer--contents\">\n    <div class=\"timeline__post--footer--contents--controls\">\n      <i retweet-num=\"$ctrl.tweet.retweetNum\" retweeted=\"$ctrl.tweet.retweeted\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" retweetable=\"retweetable\" class=\"fa fa-retweet icon-retweet\">{{$ctrl.tweet.retweetNum}}</i>\n      <i fav-num=\"$ctrl.tweet.favNum\" favorited=\"$ctrl.tweet.favorited\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" favoritable=\"favoritable\" class=\"fa fa-heart icon-heart\">{{$ctrl.tweet.favNum}}</i>\n      <a>\n        <i data-url=\"{{::$ctrl.tweet.picOrigUrlList}}\" filename=\"{{::$ctrl.tweet.fileName}}\" download-from-url=\"download-from-url\" class=\"fa fa-download\"></i>\n      </a>\n    </div>\n  </div>\n</div>",
+    bindToController: {
+      tweet: "=",
+      listIdStr: "="
+    },
+    controllerAs: "$ctrl",
+    controller: GridLayoutTweet
+  };
+});
+
+GridLayoutTweet = (function() {
+  function GridLayoutTweet() {
+    console.log(this);
+  }
+
+  return GridLayoutTweet;
+
+})();
+
+var ListLayoutTweet;
+
+angular.module("myApp.directives").directive('listLayoutTweet', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "\n<div class=\"timeline__post--header\">\n  <div class=\"timeline__post--header--info\">\n    <div class=\"timeline__post--header--link\">\n      <span twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\" class=\"timeline__post--header--user clickable\">{{::$ctrl.tweet.user.screen_name}}\n      </span>\n      <span ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--header--rt_icon\">\n        <i class=\"fa fa-retweet\"></i>\n      </span>\n      <a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\" class=\"timeline__post--header--rt_source\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n      <followable ng-if=\"!$ctrl.tweet.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" tweet=\"{{$ctrl.tweet}}\" follow-status=\"$ctrl.tweet.followStatus\">\n      </followable>\n    </div>\n  </div>\n  <div class=\"timeline__post--header--time\"><a href=\"https://{{::$ctrl.tweet.sourceUrl}}\" target=\"_blank\">{{::$ctrl.tweet.time}}\n    </a>\n  </div>\n</div>\n<div class=\"timeline__post--icon\"><img ng-src=\"{{::$ctrl.tweet.user.profile_image_url_https}}\" img-preload=\"img-preload\" show-user-sidebar=\"show-user-sidebar\" twitter-id-str=\"{{::$ctrl.tweet.user.id_str}}\" class=\"fade\"/>\n</div>\n<div ng-repeat=\"picUrl in $ctrl.tweet.picUrlList\" class=\"timeline__post--image\">\n  <img ng-if=\"!$ctrl.tweet.video_url\" ng-src=\"{{::picUrl}}\" img-preload=\"img-preload\" zoom-image=\"zoom-image\" data-img-src=\"{{::picUrl}}\" class=\"fade\"/>\n  <video ng-if=\"$ctrl.tweet.video_url\" poster=\"{{::picUrl}}\" autoplay=\"autoplay\" loop=\"loop\" controls=\"controls\" muted=\"muted\">\n    <source ng-src=\"{{::$ctrl.tweet.video_url | trusted}}\" type=\"video/mp4\">\n    </source>\n  </video>\n</div>\n<div ng-if=\"!config.isShowOnlyImage\" class=\"timeline__post__text__container\">\n  <div ng-if=\"!$ctrl.tweet.retweeted_status\" ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n  </div>\n  <div ng-if=\"$ctrl.tweet.retweeted_status\" class=\"timeline__post--blockquote\">\n    <p><a twitter-id-str=\"{{::$ctrl.tweet.retweeted_status.user.id_str}}\" show-user-sidebar=\"show-user-sidebar\">{{::$ctrl.tweet.retweeted_status.user.screen_name}}\n      </a>\n    </p>\n    <blockquote>\n      <div ng-bind-html=\"$ctrl.tweet.text | newlines\" class=\"timeline__post--text\">\n      </div>\n    </blockquote>\n  </div>\n</div>\n<div class=\"timeline__post--footer\">\n  <div class=\"timeline__post--footer--contents\">\n    <div class=\"timeline__post--footer--contents--controls\">\n      <i retweet-num=\"$ctrl.tweet.retweetNum\" retweeted=\"$ctrl.tweet.retweeted\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" retweetable=\"retweetable\" class=\"fa fa-retweet icon-retweet\">{{$ctrl.tweet.retweetNum}}</i>\n      <i fav-num=\"$ctrl.tweet.favNum\" favorited=\"$ctrl.tweet.favorited\" tweet-id-str=\"{{::$ctrl.tweet.tweetIdStr}}\" favoritable=\"favoritable\" class=\"fa fa-heart icon-heart\">{{$ctrl.tweet.favNum}}</i>\n      <a>\n        <i data-url=\"{{::$ctrl.tweet.extended_entities.media[0].media_url}}:orig\" filename=\"{{::$ctrl.tweet.fileName}}\" download-from-url=\"download-from-url\" class=\"fa fa-download\"></i>\n      </a>\n    </div>\n  </div>\n</div>\n",
+    bindToController: {
+      tweet: "=",
+      listIdStr: "="
+    },
+    controllerAs: "$ctrl",
+    controller: ListLayoutTweet
+  };
+});
+
+ListLayoutTweet = (function() {
+  function ListLayoutTweet() {
+    console.log(this);
+  }
+
+  return ListLayoutTweet;
+
+})();
+
+
 
 
