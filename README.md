@@ -11,7 +11,7 @@ What's this
 
 Twitter Client - Viewer for Image.
 
-![demo](https://dl.dropboxusercontent.com/u/31717228/Amatsuka/demo.gif)
+![demo](https://github.com/eiurur/Amatsuka/raw/master/demo.gif)
 
 動機
 ======
@@ -56,7 +56,7 @@ Feature
 - [ ] Streaming
 - [ ] Block
 - [ ] Mute
-- [x] Suggest user
+- [ ] Suggest user
 - [x] config
 - [x] Toggle the tpye of display (only user's tweet or include retweet)
 - [x] Download multiple images
