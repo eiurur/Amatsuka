@@ -6,6 +6,7 @@ angular.module "myApp.controllers"
     TweetService
     ListService
     ConfigService
+    BlackUserListService
     Tweets
     ) ->
   return if _.isEmpty AuthService.user
@@ -71,6 +72,17 @@ angular.module "myApp.controllers"
     console.log '=> 終わり'
     return
 
+  # Block, mute
+  tasks = [
+    TweetService.getMuteUserIdList(twitterIdStr: AuthService.user._json.id_str)
+    TweetService. getBlockUserIdList(twitterIdStr: AuthService.user._json.id_str)
+  ]
+  Promise.all(tasks)
+  .then (results) =>
+    console.log 'mutes = ', results[0].data.ids
+    console.log 'blocks = ', results[1].data.ids
+    BlackUserListService.mute.set results[0].data.ids
+    BlackUserListService.block.set results[1].data.ids
 
   $scope.$on 'addMember', (event, args) ->
     console.log 'index addMember on ', args

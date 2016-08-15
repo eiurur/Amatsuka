@@ -17,9 +17,18 @@ module.exports = (app) ->
   # TODO: 別ファイル化
   # 汎用化したver
   app.get '/api/twitter', (req, res) ->
-    console.log '/api/twitter', req.query
+    console.log 'GET /api/twitter', req.query
     twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.getViaAPI method: req.query.method, type: req.query.type, params: req.query
+    .then (data) ->
+      res.json data: data
+    .catch (error) ->
+      res.json error: error
+
+  app.post '/api/twitter', (req, res) ->
+    console.log 'POST /api/twitter', req.body
+    twitterClient = new TwitterClient(req.session.passport.user)
+    twitterClient.postViaAPI method: req.body.method, type: req.body.type, params: req.body
     .then (data) ->
       res.json data: data
     .catch (error) ->

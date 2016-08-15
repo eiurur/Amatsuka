@@ -258,6 +258,15 @@ angular.module "myApp.services"
           return reject data
 
 
+    postViaAPI: (params) ->
+      return $q (resolve, reject) ->
+        $http.post("/api/twitter", params)
+        .success (data) ->
+          return resolve data
+        .error (data) ->
+          return reject data
+
+
     ###
     List
     ###
@@ -338,6 +347,39 @@ angular.module "myApp.services"
         $http.get("/api/friends/list/#{params.twitterIdStr}/#{params.count}")
           .success (data) ->
             return resolve data
+
+    ###
+    Block, Mute
+    ###
+    mute: (params) ->
+      opts = {}
+      opts.user_id = params.twitterIdStr
+      opts.method = 'mutes'
+      opts.type = if params.isMuting then 'users/destroy' else 'users/create'
+      return @postViaAPI opts
+
+    block: (params) ->
+      opts = {}
+      opts.user_id = params.twitterIdStr
+      opts.method = 'blocks'
+      opts.type = if params.isMuting then 'destroy' else 'create'
+      return @postViaAPI opts
+
+    getMuteUserIdList: (params) ->
+      opts =
+        method: 'mutes'
+        type: 'users/ids'
+        stringify_ids: true
+        twitterIdStr: params.twitterIdStr
+      return @getViaAPI opts
+
+    getBlockUserIdList: (params) ->
+      opts =
+        method: 'blocks'
+        type: 'ids'
+        stringify_ids: true
+        twitterIdStr: params.twitterIdStr
+      return @getViaAPI opts
 
     ###
     User
