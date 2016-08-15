@@ -1387,6 +1387,7 @@ i {
   min-height: 100px;
   width: 100%;
   padding: 16px 30px 0;
+  overflow: visible !important;
   transition: .3s ease;
 }
 .user-sidebar__controll--in {
@@ -1418,6 +1419,9 @@ i {
   width: 100%;
   padding: 100px 30px 20px;
   color: #292929;
+}
+.user-sidebar__profile__body {
+  overflow: visible !important;
 }
 .user-sidebar__profile__names {
   text-overflow: ellipsis;

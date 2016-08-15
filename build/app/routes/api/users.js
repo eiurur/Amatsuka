@@ -22,14 +22,32 @@
         });
       });
     });
-    return app.get('/api/twitter', function(req, res) {
+    app.get('/api/twitter', function(req, res) {
       var twitterClient;
-      console.log('/api/twitter', req.query);
+      console.log('GET /api/twitter', req.query);
       twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.getViaAPI({
         method: req.query.method,
         type: req.query.type,
         params: req.query
+      }).then(function(data) {
+        return res.json({
+          data: data
+        });
+      })["catch"](function(error) {
+        return res.json({
+          error: error
+        });
+      });
+    });
+    return app.post('/api/twitter', function(req, res) {
+      var twitterClient;
+      console.log('POST /api/twitter', req.body);
+      twitterClient = new TwitterClient(req.session.passport.user);
+      return twitterClient.postViaAPI({
+        method: req.body.method,
+        type: req.body.type,
+        params: req.body
       }).then(function(data) {
         return res.json({
           data: data
