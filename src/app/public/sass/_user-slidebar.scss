@@ -21,11 +21,11 @@
   transition: .3s ease;
 
   // .user-sidebarは最初非表示。画面外に出しておく。
-  @include transform(translateX(100%));
+  @include transform(translate3d(100%, 0, 0));
 
   // .user-sidebarを表示する。
   &--in {
-    @include transform(translateX(0));
+    @include transform(translate3d(0, 0, 0));
   }
 
   // サイドバー全体を固定化
@@ -59,11 +59,11 @@
     transition: .3s ease;
 
     &--in {
-      transform: translateX();
+      transform: translate3d(0,0,0);
     }
 
     &--out {
-      @include transform(translateX(100%));
+      @include transform(translate3d(100%, 0, 0));
       // display: none;
     }
 
