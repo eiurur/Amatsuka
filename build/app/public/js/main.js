@@ -176,6 +176,80 @@ angular.module("myApp.filters", []).filter("interpolate", ["version", function(v
 
 angular.module("myApp.services", []);
 
+var UserActionButtonDropdownsController;
+
+angular.module("myApp.directives").directive('userActionButtonDropdowns', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<div class=\"btn-group\">\n  <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n    … <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\">\n    <li><a href=\"#\" ng-click=\"$ctrl.mute()\">{{$ctrl.muteMenuText}}</a></li>\n    <li><a href=\"#\" ng-click=\"$ctrl.block()\">{{$ctrl.blockMenuText}}</a></li>\n  </ul>\n</div>",
+    bindToController: {
+      user: "="
+    },
+    controllerAs: "$ctrl",
+    controller: UserActionButtonDropdownsController
+  };
+});
+
+UserActionButtonDropdownsController = (function() {
+  function UserActionButtonDropdownsController($httpParamSerializer, BlackUserListService, TweetService) {
+    this.$httpParamSerializer = $httpParamSerializer;
+    this.BlackUserListService = BlackUserListService;
+    this.TweetService = TweetService;
+    this.muteIdList = this.BlackUserListService.mute.get();
+    this.blockIdList = this.BlackUserListService.block.get();
+    this.setMute();
+    this.setBlock();
+  }
+
+  UserActionButtonDropdownsController.prototype.setMute = function(reversedMuteCondition) {
+    this.isMuting = reversedMuteCondition || this.muteIdList.includes(this.user.id_str);
+    return this.muteMenuText = this.isMuting ? 'Mute解除' : 'Mute';
+  };
+
+  UserActionButtonDropdownsController.prototype.setBlock = function(reversedBlockCondition) {
+    this.isBlocking = reversedBlockCondition || this.blockIdList.includes(this.user.id_str);
+    return this.blockMenuText = this.isBlocking ? 'Block解除' : 'Block';
+  };
+
+  UserActionButtonDropdownsController.prototype.mute = function() {
+    var opts;
+    opts = {
+      isMuting: this.isMuting,
+      twitterIdStr: this.user.id_str
+    };
+    this.setMute(!this.isMuting);
+    this.muteIdList.push(this.user.id_str);
+    this.BlackUserListService.mute.set(this.muteIdList);
+    return this.TweetService.mute(opts).then((function(_this) {
+      return function(result) {
+        return console.log(result);
+      };
+    })(this));
+  };
+
+  UserActionButtonDropdownsController.prototype.block = function() {
+    var opts;
+    opts = {
+      isBlocking: this.isBlocking,
+      twitterIdStr: this.user.id_str
+    };
+    this.setBlock(!this.isBlocking);
+    this.blockIdList.push(this.user.id_str);
+    this.BlackUserListService.block.set(this.blockIdList);
+    return this.TweetService.block(opts).then((function(_this) {
+      return function(result) {
+        return console.log(result);
+      };
+    })(this));
+  };
+
+  return UserActionButtonDropdownsController;
+
+})();
+
+UserActionButtonDropdownsController.$inject = ['$httpParamSerializer', 'BlackUserListService', 'TweetService'];
+
 angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
   $scope.isLoaded = false;
   $scope.isAuthenticated = AuthService.status.isAuthenticated;
@@ -584,80 +658,6 @@ angular.module("myApp.controllers").controller("UserSidebarCtrl", ["$scope", "$l
     TweetService.applyFollowStatusChange($scope.tweets.items, args);
   });
 }]);
-
-var UserActionButtonDropdownsController;
-
-angular.module("myApp.directives").directive('userActionButtonDropdowns', function() {
-  return {
-    restrict: 'E',
-    scope: {},
-    template: "<div class=\"btn-group\">\n  <button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n    … <span class=\"caret\"></span>\n  </button>\n  <ul class=\"dropdown-menu\">\n    <li><a href=\"#\" ng-click=\"$ctrl.mute()\">{{$ctrl.muteMenuText}}</a></li>\n    <li><a href=\"#\" ng-click=\"$ctrl.block()\">{{$ctrl.blockMenuText}}</a></li>\n  </ul>\n</div>",
-    bindToController: {
-      user: "="
-    },
-    controllerAs: "$ctrl",
-    controller: UserActionButtonDropdownsController
-  };
-});
-
-UserActionButtonDropdownsController = (function() {
-  function UserActionButtonDropdownsController($httpParamSerializer, BlackUserListService, TweetService) {
-    this.$httpParamSerializer = $httpParamSerializer;
-    this.BlackUserListService = BlackUserListService;
-    this.TweetService = TweetService;
-    this.muteIdList = this.BlackUserListService.mute.get();
-    this.blockIdList = this.BlackUserListService.block.get();
-    this.setMute();
-    this.setBlock();
-  }
-
-  UserActionButtonDropdownsController.prototype.setMute = function(reversedMuteCondition) {
-    this.isMuting = reversedMuteCondition || this.muteIdList.includes(this.user.id_str);
-    return this.muteMenuText = this.isMuting ? 'Mute解除' : 'Mute';
-  };
-
-  UserActionButtonDropdownsController.prototype.setBlock = function(reversedBlockCondition) {
-    this.isBlocking = reversedBlockCondition || this.blockIdList.includes(this.user.id_str);
-    return this.blockMenuText = this.isBlocking ? 'Block解除' : 'Block';
-  };
-
-  UserActionButtonDropdownsController.prototype.mute = function() {
-    var opts;
-    opts = {
-      isMuting: this.isMuting,
-      twitterIdStr: this.user.id_str
-    };
-    this.setMute(!this.isMuting);
-    this.muteIdList.push(this.user.id_str);
-    this.BlackUserListService.mute.set(this.muteIdList);
-    return this.TweetService.mute(opts).then((function(_this) {
-      return function(result) {
-        return console.log(result);
-      };
-    })(this));
-  };
-
-  UserActionButtonDropdownsController.prototype.block = function() {
-    var opts;
-    opts = {
-      isBlocking: this.isBlocking,
-      twitterIdStr: this.user.id_str
-    };
-    this.setBlock(!this.isBlocking);
-    this.blockIdList.push(this.user.id_str);
-    this.BlackUserListService.block.set(this.blockIdList);
-    return this.TweetService.block(opts).then((function(_this) {
-      return function(result) {
-        return console.log(result);
-      };
-    })(this));
-  };
-
-  return UserActionButtonDropdownsController;
-
-})();
-
-UserActionButtonDropdownsController.$inject = ['$httpParamSerializer', 'BlackUserListService', 'TweetService'];
 
 angular.module("myApp.directives").directive('isActiveNav', ["$location", function($location) {
   return {
