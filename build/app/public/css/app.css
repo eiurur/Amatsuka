@@ -1361,17 +1361,18 @@ i {
   max-width: 600px;
   height: 100%;
   background: white;
+  will-change: transform;
   transition: .3s ease;
-  -moz-transform: translate3d(100%, 0, 0);
-  -ms-transform: translate3d(100%, 0, 0);
-  -webkit-transform: translate3d(100%, 0, 0);
-  transform: translate3d(100%, 0, 0);
+  -moz-transform: translateX(100%);
+  -ms-transform: translateX(100%);
+  -webkit-transform: translateX(100%);
+  transform: translateX(100%);
 }
 .user-sidebar--in {
-  -moz-transform: translate3d(0, 0, 0);
-  -ms-transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
+  -moz-transform: translateX(0);
+  -ms-transform: translateX(0);
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
 }
 .user-sidebar--fixed {
   position: fixed;
@@ -1391,13 +1392,13 @@ i {
   transition: .3s ease;
 }
 .user-sidebar__controll--in {
-  transform: translate3d(0, 0, 0);
+  transform: translateX();
 }
 .user-sidebar__controll--out {
-  -moz-transform: translate3d(100%, 0, 0);
-  -ms-transform: translate3d(100%, 0, 0);
-  -webkit-transform: translate3d(100%, 0, 0);
-  transform: translate3d(100%, 0, 0);
+  -moz-transform: translateX(100%);
+  -ms-transform: translateX(100%);
+  -webkit-transform: translateX(100%);
+  transform: translateX(100%);
 }
 .user-sidebar__controll .btn {
   margin-top: 10px;
