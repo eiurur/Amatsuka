@@ -54,8 +54,8 @@ Feature
 - [x] Zoom up a image
 - [x] Masonry
 - [ ] Streaming
-- [ ] Block
-- [ ] Mute
+- [x] Block
+- [x] Mute
 - [ ] Suggest user
 - [x] config
 - [x] Toggle the tpye of display (only user's tweet or include retweet)
