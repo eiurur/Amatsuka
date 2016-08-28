@@ -72,11 +72,17 @@
       .section--divider
 
       .timeline.timeline--tile(ng-if='layoutType == "tile"')
+        .user-sidebar__contents--infinitescroll-message.extract__loading__container(ng-if='isLoading')
+          dot-loader
+          p.extract__loading__message.user-sidebar__contents--infinitescroll-message
+            | Now fetching. This process will take a long time.
         .timeline__post.timeline__post--tile.col-lg-2.col-md-3.col-sm-4(ng-repeat='tweet in extract.tweets')
           include ../parts/post/_tile
-        dot-loader.user-sidebar__contents--infinitescroll-message(ng-if='isLoading')
 
       .timeline.timeline--grid(ng-if='layoutType == "grid"', masonry='masonry', preserve-order)
+        .user-sidebar__contents--infinitescroll-message.extract__loading__container(ng-if='isLoading')
+          dot-loader
+          p.extract__loading__message.user-sidebar__contents--infinitescroll-message
+            | Now fetching. This process will take a long time.
         .masonry-brick.timeline__post.timeline__post--grid(ng-repeat='tweet in extract.tweets')
           include ../parts/post/_grid
-        dot-loader.user-sidebar__contents--infinitescroll-message(ng-if='isLoading')

@@ -336,6 +336,7 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
   };
   $scope.extract = {};
   $scope.extract.tweets = [];
+  $scope.isLoading = false;
   ConfigService.get().then(function(config) {
     return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
   });

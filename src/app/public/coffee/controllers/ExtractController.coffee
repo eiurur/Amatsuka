@@ -17,11 +17,12 @@ angular.module "myApp.controllers"
   $scope.filter         = screenName: '', keyword: '', isIncludeRetweet: false
   $scope.extract        = {}
   $scope.extract.tweets = []
+  $scope.isLoading      = false
 
   ConfigService.get().then (config) -> $scope.layoutType = if config.isTileLayout then 'tile' else 'grid'
 
   filterPic = (params = screenName: $scope.filter.screenName) ->
-    $scope.isLoading = true;
+    $scope.isLoading = true
 
     # screenNameからuserDataを取得(id_strが必要)
     TweetService.showUsers(params)

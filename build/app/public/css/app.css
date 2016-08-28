@@ -1715,6 +1715,16 @@ a.mao__link:active {
   line-height: 1.8;
 }
 
+.extract__loading__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.extract__loading__message {
+  padding-top: 3em;
+  color: #f2446f;
+}
+
 .extract__post--grid {
   max-width: 300px;
   margin: 10px 5px 0;

@@ -16,6 +16,16 @@
     line-height: 1.8;
 }
 
+.extract__loading__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.extract__loading__message {
+  padding-top: 3em;
+  color: $amatsuka-color;
+}
+
 .extract__post--grid {
     max-width: $timeline__post--width--grid;
     margin: $timeline__post--margin--grid;
