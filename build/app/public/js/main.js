@@ -307,7 +307,9 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
     if (JSON.stringify(newData) === JSON.stringify(oldData)) {
       return;
     }
-    if (!_.isNumber(newData.likeLowerLimit)) {
+    console.log($scope.configForm);
+    console.log($scope.configForm.$valid);
+    if (!$scope.configForm.$valid) {
       return;
     }
     ConfigService.update();
@@ -1619,7 +1621,7 @@ angular.module("myApp.factories").factory('TweetCountList', ["$q", "$httpParamSe
 
 var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ToasterService", "TweetService", "ListService", function($http, $q, ToasterService, TweetService, ListService) {
+angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigService", "ToasterService", "TweetService", "ListService", function($http, $q, ConfigService, ToasterService, TweetService, ListService) {
   var Tweets;
   Tweets = (function() {
     function Tweets(items, maxId, type, twitterIdStr) {
@@ -1633,7 +1635,11 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ToasterServ
       this.busy = false;
       this.isLast = false;
       this.method = null;
-      this.count = 40;
+      ConfigService.get().then((function(_this) {
+        return function(data) {
+          return _this.count = data.tweetNumberAtOnce || 40;
+        };
+      })(this));
     }
 
     Tweets.prototype.normalizeTweet = function(data) {
@@ -1648,8 +1654,8 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ToasterServ
               statusCode: 10100
             });
           }
-          _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
           console.time('normalize_tweets');
+          _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
           itemsNormalized = TweetService.normalizeTweets(data.data, ListService.amatsukaList.member);
           console.timeEnd('normalize_tweets');
           return resolve(itemsNormalized);

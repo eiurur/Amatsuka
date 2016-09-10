@@ -17,7 +17,9 @@ angular.module "myApp.controllers"
     # この判定がないとConfigページを開くたびに設定がリセットされてしまう。
     return if JSON.stringify(newData) is JSON.stringify(oldData)
 
-    return unless _.isNumber newData.likeLowerLimit
+    console.log $scope.configForm
+    console.log $scope.configForm.$valid
+    return unless $scope.configForm.$valid
 
     # localStorageのデータを更新
     do ConfigService.update

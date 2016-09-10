@@ -1,23 +1,20 @@
 angular.module "myApp.factories"
-  .factory 'Tweets', ($http, $q, ToasterService, TweetService, ListService) ->
+  .factory 'Tweets', ($http, $q, ConfigService, ToasterService, TweetService, ListService) ->
 
     class Tweets
       constructor: (@items, @maxId = undefined, @type, @twitterIdStr = null) ->
-        @busy         = false
-        @isLast       = false
-        @method       = null
-        @count        = 40
+        @busy   = false
+        @isLast = false
+        @method = null
+        ConfigService.get().then (data) => @count = data.tweetNumberAtOnce or 40
 
       normalizeTweet: (data) =>
         return new Promise (resolve, reject) =>
           if data.error? then reject data.error
           if _.isEmpty(data.data) then reject statusCode: 10100
 
-          @maxId           = TweetService.decStrNum _.last(data.data).id_str
-          # console.log 'Before itemsRejectedByBlockUser.length = ', data.data.length
-          # itemsRejectedByBlockUser   = TweetService.rejectTweetByBlockUser data.data
-          # console.log 'After itemsRejectedByBlockUser.length = ', itemsRejectedByBlockUser.length
           console.time('normalize_tweets')
+          @maxId           = TweetService.decStrNum _.last(data.data).id_str
           itemsNormalized  = TweetService.normalizeTweets data.data, ListService.amatsukaList.member
           console.timeEnd('normalize_tweets')
           resolve itemsNormalized
