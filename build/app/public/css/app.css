@@ -1862,6 +1862,10 @@ a.dropdown-toggle {
   border-left: 1px solid #f2446f;
 }
 
+.input-group > select {
+  padding-bottom: 3px;
+}
+
 .image-layer__prev {
   cursor: pointer;
   height: 100%;

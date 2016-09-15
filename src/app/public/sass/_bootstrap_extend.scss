@@ -57,4 +57,12 @@ a.dropdown-toggle {
 }
 
 
+// 突然ずれ始めた。原因不明。一時しのぎ
+.input-group {
+  & > select {
+    padding-bottom: 3px;
+  }
+}
+
+
 
