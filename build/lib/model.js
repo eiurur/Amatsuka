@@ -183,11 +183,17 @@
     };
 
     IllustratorProvider.prototype.findById = function(params, callback) {
-      console.log("\n============> Illustrator findUserByID\n");
-      return Illustrator.findOne({
-        twitterIdStr: params.twitterIdStr
-      }, function(err, user) {
-        return callback(err, user);
+      return new Promise(function(resolve, reject) {
+        console.log("\n============> Illustrator findUserByID\n");
+        console.log(params);
+        return Illustrator.findOne({
+          twitterIdStr: params.twitterIdStr
+        }, function(err, user) {
+          if (err) {
+            return reject(err);
+          }
+          return resolve(user);
+        });
       });
     };
 
@@ -220,6 +226,24 @@
           updatedAt: -1
         }).exec(function(err, pictList) {
           console.timeEnd('Pict find');
+          if (err) {
+            return reject(err);
+          }
+          return resolve(pictList);
+        });
+      });
+    };
+
+    PictProvider.prototype.findByIllustratorObjectId = function(params, callback) {
+      return new Promise(function(resolve, reject) {
+        console.log("\n============> Pict findByIllustratorObjectId\n");
+        console.time('Pict findByIllustratorObjectId');
+        return Pict.find({
+          postedBy: params.postedBy
+        }).populate('postedBy').sort({
+          updatedAt: -1
+        }).exec(function(err, pictList) {
+          console.timeEnd('Pict findByIllustratorObjectId');
           if (err) {
             return reject(err);
           }

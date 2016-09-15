@@ -32,11 +32,6 @@
   }
 
   &__pict-tweet--img {
-    cursor: pointer;
-    display: inline-block;
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    object-position: 50% 30%;
+    @include crop-image(200px);
   }
 }

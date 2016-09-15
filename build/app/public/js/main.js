@@ -2464,6 +2464,17 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
         });
       });
     },
+    getPopularTweet: function(params) {
+      var qs;
+      qs = $httpParamSerializer(params);
+      return $q(function(resolve, reject) {
+        return $http.get("/api/collect/picts?" + qs).success(function(data) {
+          return resolve(data);
+        }).error(function(data) {
+          return reject(data);
+        });
+      });
+    },
     getPictCount: function() {
       return $q(function(resolve, reject) {
         return $http.get("/api/collect/count").success(function(data) {
@@ -2928,6 +2939,46 @@ MaoTweetArticleController = (function() {
   return MaoTweetArticleController;
 
 })();
+
+var PopularImageListContainerController;
+
+angular.module("myApp.directives").directive('popularImageListContainer', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<section class=\"popular-tweets row\">\n  <div class=\"col-md-4 col-sm-4 col-xs-4\" ng-repeat=\"tweet in $ctrl.tweets\">\n    <div class=\"popular-tweet\">\n      <img ng-src=\"{{::tweet.mediaUrl}}:small\" data-img-src=\"{{::tweet.mediaUrl}}:small\" tweet-id-str=\"{{::tweet.tweetIdStr}}\" show-statuses=\"show-statuses\" img-preload class=\"fade popular-tweets__img\">\n    </div>\n  </div>\n</section>",
+    bindToController: {
+      twitterIdStr: '='
+    },
+    controllerAs: "$ctrl",
+    controller: PopularImageListContainerController
+  };
+});
+
+PopularImageListContainerController = (function() {
+  PopularImageListContainerController.prototype.LIMIT = 3;
+
+  function PopularImageListContainerController(TweetService) {
+    var opts;
+    this.TweetService = TweetService;
+    console.log(this.twitterIdStr);
+    opts = {
+      twitterIdStr: this.twitterIdStr,
+      limit: this.LIMIT
+    };
+    this.TweetService.getPopularTweet(opts).then((function(_this) {
+      return function(data) {
+        console.log(data);
+        return _this.tweets = data.pictTweetList.slice(0, 3);
+      };
+    })(this));
+  }
+
+  return PopularImageListContainerController;
+
+})();
+
+PopularImageListContainerController.$inject = ['TweetService'];
 
 var GridLayoutTweet;
 

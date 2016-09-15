@@ -18,6 +18,15 @@
   top: 50%;
 }
 
+@mixin crop-image($height: 200px) {
+  cursor: pointer;
+  display: inline-block;
+  width: 100%;
+  height: $height;
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+
 @mixin tweet-text {
   padding: 0 20px 10px;
   color: $link-color;

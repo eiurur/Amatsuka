@@ -193,6 +193,15 @@ angular.module "myApp.services"
           .error (data) ->
             return reject data
 
+    getPopularTweet: (params) ->
+      qs = $httpParamSerializer(params)
+      return $q (resolve, reject) ->
+        $http.get("/api/collect/picts?#{qs}")
+          .success (data) ->
+            return resolve data
+          .error (data) ->
+            return reject data
+
     getPictCount: ->
       return $q (resolve, reject) ->
         $http.get("/api/collect/count")

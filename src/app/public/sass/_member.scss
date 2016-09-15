@@ -14,19 +14,24 @@
   margin-top: 10px; // iconのサイズが縦64px。 paddibng-top: 10px だと、media-bodyの縦が64pxになる。
 }
 
+.member {
+  padding: 16px;
+}
+
 // Bootstrapのmediaの効果を打ち消し
 .member__media:first-child {
-  margin-top: 32px;
+  margin-top: 48px;
 }
 
 .media {
-  min-height: 120px; // ユーザ名とスクリーンネームが二行に渡っても表示が崩れない長さ
+  // min-height: 120px; // ユーザ名とスクリーンネームが二行に渡っても表示が崩れない長さ
+  margin-bottom: 32px;
 
   .thumbnail-img {
     cursor: pointer; // ここでいいんかな？
     max-width: 64px;
     height: auto;
-    border-radius: 100%;
+    border-radius: 8px;
   }
 
   .user-icon {
@@ -34,6 +39,12 @@
   }
 
   .media-heading {
+    // 一行に収めよう。IDは隠れる場合もあるけどユーザページ開けばいいだろ。
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: $sub-color;
+
     .name {
       color: white;
       font-size: 0.8em;
@@ -42,13 +53,13 @@
     .screen-name {
       margin-left: 8px;
       font-size: 0.8em;
-      color: $link-color;
+      color: $sub-color;
     }
   }
 
-  .media-body {
-    padding-left: 8px;
-  }
+  // .media-body {
+  //   padding-left: 8px;
+  // }
 }
 
 .member__divider {
@@ -59,6 +70,9 @@
   @include box-shadow(rgba(255,255,255,.5) 0 1px 0 inset);
 }
 
+.popular-tweets__img {
+  @include crop-image(120px);
+}
 
 /**
  * [width description]
@@ -68,10 +82,10 @@
 @media(max-width:480px)
 {
   .member__media:first-child {
-    margin-top: 16;
+    margin-top: 16px;
   }
 
-  .media {
-    min-height: 100px; // ユーザ名とスクリーンネームが二行に渡っても表示が崩れない長さ
-  }
+  // .media {
+  //   min-height: 100px; // ユーザ名とスクリーンネームが二行に渡っても表示が崩れない長さ
+  // }
 }

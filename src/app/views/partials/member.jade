@@ -8,8 +8,8 @@
       i.fa.fa-search
     input.form-control.search-input(type='text', placeholder='Search', ng-model="searchWord.screen_name", ng-model-options="{debounce: 300}")
 
-  .row(infinite-scroll='list.loadMoreMember()')
-    .col-md-4.col-sm-6(ng-repeat="member in list.members")
+  .row.row-eq-height(infinite-scroll='list.loadMoreMember()')
+    .col-md-4.col-sm-6.member(ng-repeat="member in list.members")
       .media.member__media
         a.pull-left(twitter-id-str="{{::member.id_str}}", show-user-sidebar="show-user-sidebar")
           img.media-object.thumbnail-img.fade(ng-src='{{::member.profile_image_url_https}}', img-preload="img-preload")
@@ -21,4 +21,5 @@
               show-user-sidebar="show-user-sidebar") @{{::member.screen_name}}
           span.btn-wrapper
           a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{::member.id_str}}', ng-disabled='isProcessing')
+      popular-image-list-container(twitter-id-str='member.id_str')
 

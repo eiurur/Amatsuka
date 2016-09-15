@@ -150,12 +150,14 @@ class IllustratorProvider
         return resolve illustratorList
 
   findById: (params, callback) ->
-    console.log "\n============> Illustrator findUserByID\n"
-    # console.log params
-    Illustrator.findOne
-      twitterIdStr: params.twitterIdStr
-    , (err, user) ->
-      callback err, user
+    return new Promise (resolve, reject) ->
+      console.log "\n============> Illustrator findUserByID\n"
+      console.log params
+      Illustrator.findOne
+        twitterIdStr: params.twitterIdStr
+      , (err, user) ->
+        if err then return reject err
+        return resolve user
 
   findOneAndUpdate: (params, callback) ->
     illustrator = null
@@ -183,6 +185,19 @@ class PictProvider
       .sort updatedAt: -1
       .exec (err, pictList) ->
         console.timeEnd 'Pict find'
+        if err then return reject err
+        return resolve pictList
+
+  findByIllustratorObjectId: (params, callback) ->
+    return new Promise (resolve, reject) ->
+      console.log "\n============> Pict findByIllustratorObjectId\n"
+      # console.log params
+      console.time 'Pict findByIllustratorObjectId'
+      Pict.find(postedBy: params.postedBy)
+      .populate 'postedBy'
+      .sort updatedAt: -1
+      .exec (err, pictList) ->
+        console.timeEnd 'Pict findByIllustratorObjectId'
         if err then return reject err
         return resolve pictList
 

@@ -1,5 +1,5 @@
 (function() {
-  var PictCollection, PictProvider, path, settings, _;
+  var IllustratorProvider, PictCollection, PictProvider, path, settings, _, _ref;
 
   _ = require('lodash');
 
@@ -7,7 +7,7 @@
 
   PictCollection = require(path.resolve('build', 'lib', 'PictCollection'));
 
-  PictProvider = require(path.resolve('build', 'lib', 'model')).PictProvider;
+  _ref = require(path.resolve('build', 'lib', 'model')), PictProvider = _ref.PictProvider, IllustratorProvider = _ref.IllustratorProvider;
 
   settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
 
@@ -19,6 +19,31 @@
         });
       })["catch"](function(err) {
         return console.log(err);
+      });
+    });
+    app.get('/api/collect/picts', function(req, res) {
+      console.log('/api/collect/picts/?');
+      return IllustratorProvider.findById({
+        twitterIdStr: req.query.twitterIdStr
+      }).then(function(illustrator) {
+        console.log(illustrator);
+        if (illustrator == null) {
+          res.status(400).send(null);
+          return;
+        }
+        console.log('GOGOGO');
+        console.log(illustrator != null);
+        console.log(illustrator._id);
+        return PictProvider.findByIllustratorObjectId({
+          postedBy: illustrator._id,
+          limit: req.query.limit || 3
+        });
+      }).then(function(data) {
+        console.log(data);
+        return res.send(data[0]);
+      })["catch"](function(err) {
+        console.error('/api/collect/picts/:twitterIdStr?', err);
+        return res.status(400).send(err);
       });
     });
     app.get('/api/collect/:skip?/:limit?', function(req, res) {

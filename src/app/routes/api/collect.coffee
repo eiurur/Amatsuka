@@ -1,7 +1,7 @@
 _              = require 'lodash'
 path           = require 'path'
 PictCollection = require path.resolve 'build', 'lib', 'PictCollection'
-{PictProvider} = require path.resolve 'build', 'lib', 'model'
+{PictProvider, IllustratorProvider} = require path.resolve 'build', 'lib', 'model'
 settings       = if process.env.NODE_ENV is 'production'
   require path.resolve 'build', 'lib', 'configs', 'production'
 else
@@ -17,6 +17,29 @@ module.exports = (app) ->
       res.json count: count
     .catch (err) ->
       console.log err
+
+  app.get '/api/collect/picts', (req, res) ->
+    console.log '/api/collect/picts/?'
+    IllustratorProvider.findById
+      twitterIdStr: req.query.twitterIdStr
+    .then (illustrator) ->
+      console.log illustrator
+      unless illustrator?
+        res.status(400).send(null)
+        return
+      console.log 'GOGOGO'
+      console.log illustrator?
+      console.log illustrator._id
+
+      PictProvider.findByIllustratorObjectId
+        postedBy: illustrator._id
+        limit: req.query.limit or 3
+    .then (data) ->
+      console.log data
+      res.send data[0]
+    .catch (err) ->
+      console.error '/api/collect/picts/:twitterIdStr?', err
+      res.status(400).send(err)
 
   app.get '/api/collect/:skip?/:limit?', (req, res) ->
     PictProvider.find
