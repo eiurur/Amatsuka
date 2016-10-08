@@ -17,6 +17,7 @@ exports.serve = ->
     passport       = require 'passport'
     session        = require 'express-session'
     compression    = require 'compression'
+    opbeat         = require 'opbeat'
     MongoStore     = require('connect-mongo')(session)
 
     options =
@@ -82,7 +83,9 @@ exports.serve = ->
           error: err
 
     # production only
-    app.locals.pretty = false  if env is 'production'
+    if env is 'production'
+      app.locals.pretty = false
+      app.use opbeat.middleware.express()
 
     console.log settings
 

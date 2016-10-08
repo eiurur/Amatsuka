@@ -47,6 +47,7 @@
     "mousetrap": "^1.5.3",
     "node-cache": "^1.0.3",
     "node-twitter-api": "^1.5.0",
+    "opbeat": "^3.17.2",
     "passport": "^0.2.1",
     "passport-twitter": "^1.0.2",
     "redis": "^0.12.1",

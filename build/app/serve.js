@@ -5,7 +5,7 @@
     path = require('path');
     settings = (process.env.NODE_ENV === 'production' ? require('../lib/configs/production') : require('../lib/configs/development')).settings;
     app = module.exports = (function() {
-      var MongoStore, bodyParser, cacheOptions, compression, cookieParser, env, express, fs, methodOverride, morgan, options, passport, session, stream;
+      var MongoStore, bodyParser, cacheOptions, compression, cookieParser, env, express, fs, methodOverride, morgan, opbeat, options, passport, session, stream;
       express = require('express');
       bodyParser = require('body-parser');
       cookieParser = require('cookie-parser');
@@ -14,6 +14,7 @@
       passport = require('passport');
       session = require('express-session');
       compression = require('compression');
+      opbeat = require('opbeat');
       MongoStore = require('connect-mongo')(session);
       options = {
         secret: settings.COOKIE_SECRET,
@@ -76,6 +77,7 @@
       }
       if (env === 'production') {
         app.locals.pretty = false;
+        app.use(opbeat.middleware.express());
       }
       console.log(settings);
       return app;
