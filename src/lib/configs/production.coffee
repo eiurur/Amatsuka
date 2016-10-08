@@ -1,6 +1,7 @@
 TwitterAPI    = require 'node-twitter-api'
 TW_CK         = process.env.TW_CK
 TW_CS         = process.env.TW_CS
+TW_CS         = process.env.TW_CS
 TW_AT         = process.env.TW_AT
 TW_AS         = process.env.TW_AS
 TW_ID_STR     = process.env.TW_ID_STR
@@ -33,6 +34,29 @@ exports.settings =
     callback: CALLBACK_URL
 
   defaultUserIds: '87658369,123720322,124814283,437523928,2228681658'
+
+  TWS: [
+    {
+      TW_STR: TW_STR
+      TW_AT: TW_AT
+      TW_AS: TW_AS
+    }
+    {
+      TW_ID_STR: TW_ID_STR_2
+      TW_AT: process.env.TW_AT_2
+      TW_AS: process.env.TW_AS_2
+    }
+    {
+      TW_ID_STR: TW_ID_STR_3
+      TW_AT: process.env.TW_AT_3
+      TW_AS: process.env.TW_AS_3
+    }
+    {
+      TW_ID_STR: TW_ID_STR_4
+      TW_AT: process.env.TW_AT_4
+      TW_AS: process.env.TW_AS_4
+    }
+  ]
 
   targetList: [
     'g1un1u'

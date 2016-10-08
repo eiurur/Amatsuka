@@ -1,7 +1,9 @@
 (function() {
-  var IllustratorProvider, PictCollection, Promise, path, settings, _;
+  var EggSlicer, IllustratorProvider, PictCollection, Promise, path, settings, _;
 
   path = require('path');
+
+  EggSlicer = require('egg-slicer');
 
   _ = require('lodash');
 
@@ -15,26 +17,34 @@
 
   exports.cronTaskCollectPicts = function() {
     return IllustratorProvider.find().then(function(profileList) {
-      var promises, user;
+      var slicedProfileList;
       console.log(profileList.length);
-      user = {
-        _json: {
-          id_str: settings.TW_ID_STR
-        },
-        twitter_token: settings.TW_AT,
-        twitter_token_secret: settings.TW_AS
-      };
-      promises = [];
-      profileList.forEach(function(profile, idx) {
-        var pictCollection;
-        pictCollection = new PictCollection(user, profile.twitterIdStr, idx);
-        return promises.push(pictCollection.collectProfileAndPicts());
-      });
-      return Promise.all(promises).then(function(resultList) {
-        console.log('Succeeded!');
-      })["catch"](function(err) {
-        console.error('Failed.', err);
-      });
+      console.log(settings.TWS);
+      console.log(settings.TWS.length);
+      slicedProfileList = EggSlicer.slice(profileList, settings.TWS.length);
+      return slicedProfileList.map((function(_this) {
+        return function(pl, i) {
+          var promises, user;
+          user = {
+            _json: {
+              id_str: settings.TWS[i].TW_ID_STR
+            },
+            twitter_token: settings.TWS[i].TW_AT,
+            twitter_token_secret: settings.TWS[i].TW_AS
+          };
+          promises = [];
+          pl.forEach(function(profile, idx) {
+            var pictCollection;
+            pictCollection = new PictCollection(user, profile.twitterIdStr, idx);
+            return promises.push(pictCollection.collectProfileAndPicts());
+          });
+          return Promise.all(promises).then(function(resultList) {
+            console.log('Succeeded!');
+          })["catch"](function(err) {
+            console.error('Failed.', err);
+          });
+        };
+      })(this));
     });
   };
 

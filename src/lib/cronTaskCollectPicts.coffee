@@ -1,4 +1,5 @@
 path                  = require 'path'
+EggSlicer             = require 'egg-slicer'
 _                     = require 'lodash'
 Promise               = require "bluebird"
 PictCollection        = require path.resolve 'build', 'lib', 'PictCollection'
@@ -12,22 +13,47 @@ exports.cronTaskCollectPicts = ->
   IllustratorProvider.find()
   .then (profileList) ->
     console.log profileList.length
+    console.log settings.TWS
+    console.log settings.TWS.length
 
-    user =
-      _json:
-        id_str: settings.TW_ID_STR
-      twitter_token: settings.TW_AT
-      twitter_token_secret: settings.TW_AS
+    # 1人で回しても終わらないので並列で収集する。
+    slicedProfileList = EggSlicer.slice(profileList, settings.TWS.length)
+    slicedProfileList.map (pl, i) =>
+      user =
+        _json:
+          id_str: settings.TWS[i].TW_ID_STR
+        twitter_token: settings.TWS[i].TW_AT
+        twitter_token_secret: settings.TWS[i].TW_AS
 
-    promises = []
-    profileList.forEach (profile, idx) ->
-      pictCollection = new PictCollection(user, profile.twitterIdStr, idx)
-      promises.push pictCollection.collectProfileAndPicts()
+      promises = []
+      pl.forEach (profile, idx) ->
+        pictCollection = new PictCollection(user, profile.twitterIdStr, idx)
+        promises.push pictCollection.collectProfileAndPicts()
 
-    Promise.all promises
-    .then (resultList) ->
-      console.log 'Succeeded!'
-      return
-    .catch (err) ->
-      console.error 'Failed.', err
-      return
+      Promise.all promises
+      .then (resultList) ->
+        console.log 'Succeeded!'
+        return
+      .catch (err) ->
+        console.error 'Failed.', err
+        return
+
+    # return
+    # user =
+    #   _json:
+    #     id_str: settings.TW_ID_STR
+    #   twitter_token: settings.TW_AT
+    #   twitter_token_secret: settings.TW_AS
+
+    # promises = []
+    # profileList.forEach (profile, idx) ->
+    #   pictCollection = new PictCollection(user, profile.twitterIdStr, idx)
+    #   promises.push pictCollection.collectProfileAndPicts()
+
+    # Promise.all promises
+    # .then (resultList) ->
+    #   console.log 'Succeeded!'
+    #   return
+    # .catch (err) ->
+    #   console.error 'Failed.', err
+    #   return

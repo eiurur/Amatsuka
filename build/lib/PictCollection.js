@@ -27,7 +27,7 @@
       this.pictList = [];
       this.userTimelineMaxId = null;
       this.isContinue = true;
-      this.PROFILE_REQUEST_INTERVAL = 60 * 1000 * idx;
+      this.PROFILE_REQUEST_INTERVAL = 70 * 1000 * idx;
       this.USER_TIMELINE_REQUEST_INTERVAL = 60 * 1000;
     }
 

@@ -15,7 +15,7 @@ module.exports = class PictCollection
     @pictList = []
     @userTimelineMaxId = null
     @isContinue = true
-    @PROFILE_REQUEST_INTERVAL = 60 * 1000 * idx
+    @PROFILE_REQUEST_INTERVAL = 70 * 1000 * idx
     @USER_TIMELINE_REQUEST_INTERVAL = 60 * 1000
 
   # For Cron task
