@@ -37,7 +37,7 @@ exports.settings =
 
   TWS: [
     {
-      TW_STR: TW_STR
+      TW_STR: TW_ID_STR
       TW_AT: TW_AT
       TW_AS: TW_AS
     }

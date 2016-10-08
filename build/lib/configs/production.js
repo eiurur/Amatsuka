@@ -47,7 +47,7 @@
     defaultUserIds: '87658369,123720322,124814283,437523928,2228681658',
     TWS: [
       {
-        TW_STR: TW_STR,
+        TW_STR: TW_ID_STR,
         TW_AT: TW_AT,
         TW_AS: TW_AS
       }, {
