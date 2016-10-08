@@ -51,15 +51,15 @@
         TW_AT: TW_AT,
         TW_AS: TW_AS
       }, {
-        TW_ID_STR: TW_ID_STR_2,
+        TW_ID_STR: process.env.TW_ID_STR_2,
         TW_AT: process.env.TW_AT_2,
         TW_AS: process.env.TW_AS_2
       }, {
-        TW_ID_STR: TW_ID_STR_3,
+        TW_ID_STR: process.env.TW_ID_STR_3,
         TW_AT: process.env.TW_AT_3,
         TW_AS: process.env.TW_AS_3
       }, {
-        TW_ID_STR: TW_ID_STR_4,
+        TW_ID_STR: process.env.TW_ID_STR_4,
         TW_AT: process.env.TW_AT_4,
         TW_AS: process.env.TW_AS_4
       }
