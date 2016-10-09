@@ -19,7 +19,7 @@ module.exports = (app) ->
       console.log err
 
   app.get '/api/collect/picts', (req, res) ->
-    console.log '/api/collect/picts/?'
+    console.log '/api/collect/picts/ req.query.twitterIdStr =', req.query.twitterIdStr
     IllustratorProvider.findById
       twitterIdStr: req.query.twitterIdStr
     .then (illustrator) ->
@@ -27,7 +27,7 @@ module.exports = (app) ->
       unless illustrator?
         res.status(400).send(null)
         return
-      console.log 'GOGOGO'
+      console.log 'PictProvider.findByIllustratorObjectId --->'
       console.log illustrator?
       console.log illustrator._id
 
@@ -35,10 +35,11 @@ module.exports = (app) ->
         postedBy: illustrator._id
         limit: req.query.limit or 3
     .then (data) ->
-      console.log data
+      console.log data[0].postedBy
+      console.log data[0].pictTweetList.length
       res.send data[0]
     .catch (err) ->
-      console.error '/api/collect/picts/:twitterIdStr?', err
+      console.error 'app.get /api/collect/picts/ error ', err
       res.status(400).send(err)
 
   app.get '/api/collect/:skip?/:limit?', (req, res) ->

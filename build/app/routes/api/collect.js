@@ -22,7 +22,7 @@
       });
     });
     app.get('/api/collect/picts', function(req, res) {
-      console.log('/api/collect/picts/?');
+      console.log('/api/collect/picts/ req.query.twitterIdStr =', req.query.twitterIdStr);
       return IllustratorProvider.findById({
         twitterIdStr: req.query.twitterIdStr
       }).then(function(illustrator) {
@@ -31,7 +31,7 @@
           res.status(400).send(null);
           return;
         }
-        console.log('GOGOGO');
+        console.log('PictProvider.findByIllustratorObjectId --->');
         console.log(illustrator != null);
         console.log(illustrator._id);
         return PictProvider.findByIllustratorObjectId({
@@ -39,10 +39,11 @@
           limit: req.query.limit || 3
         });
       }).then(function(data) {
-        console.log(data);
+        console.log(data[0].postedBy);
+        console.log(data[0].pictTweetList.length);
         return res.send(data[0]);
       })["catch"](function(err) {
-        console.error('/api/collect/picts/:twitterIdStr?', err);
+        console.error('app.get /api/collect/picts/ error ', err);
         return res.status(400).send(err);
       });
     });

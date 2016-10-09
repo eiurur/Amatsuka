@@ -38,6 +38,9 @@ IllustratorSchema = new Schema
   createdAt:
     type: Date
     default: Date.now()
+  updatedAt:
+    type: Date
+    default: Date.now()
 
 PictTweetSchema = new Schema
   tweetIdStr: String
@@ -164,6 +167,7 @@ class IllustratorProvider
     console.log "\n============> Illustrator upsert\n"
     # console.log params
     illustrator = params.illustrator
+    illustrator.updatedAt = Date.now()
     Illustrator.findOneAndUpdate
       twitterIdStr: params.illustrator.twitterIdStr
     , illustrator,

@@ -28,7 +28,7 @@
       this.userTimelineMaxId = null;
       this.isContinue = true;
       this.PROFILE_REQUEST_INTERVAL = 70 * 1000 * idx;
-      this.USER_TIMELINE_REQUEST_INTERVAL = 60 * 1000;
+      this.USER_TIMELINE_REQUEST_INTERVAL = 4 * 1000;
     }
 
     PictCollection.prototype.collectProfileAndPicts = function() {

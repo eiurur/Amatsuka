@@ -46,6 +46,10 @@
     createdAt: {
       type: Date,
       "default": Date.now()
+    },
+    updatedAt: {
+      type: Date,
+      "default": Date.now()
     }
   });
 
@@ -202,6 +206,7 @@
       illustrator = null;
       console.log("\n============> Illustrator upsert\n");
       illustrator = params.illustrator;
+      illustrator.updatedAt = Date.now();
       return Illustrator.findOneAndUpdate({
         twitterIdStr: params.illustrator.twitterIdStr
       }, illustrator, {
