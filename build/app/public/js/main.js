@@ -250,418 +250,6 @@ UserActionButtonDropdownsController = (function() {
 
 UserActionButtonDropdownsController.$inject = ['$httpParamSerializer', 'BlackUserListService', 'TweetService'];
 
-angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
-  $scope.isLoaded = false;
-  $scope.isAuthenticated = AuthService.status.isAuthenticated;
-  if (AuthService.status.isAuthenticated) {
-    $scope.isLoaded = true;
-    return;
-  }
-  return AuthService.isAuthenticated().success(function(data) {
-    if (_.isNull(data.data)) {
-      $scope.isLoaded = true;
-      $location.path('/');
-      return;
-    }
-    AuthService.status.isAuthenticated = true;
-    $scope.isAuthenticated = AuthService.status.isAuthenticated;
-    AuthService.user = data.data;
-    $scope.user = data.data;
-    return $scope.isLoaded = true;
-  }).error(function(status, data) {
-    console.log(status);
-    return console.log(data);
-  });
-}]);
-
-angular.module("myApp.controllers").controller("AmatsukaListCtrl", ["AuthService", "ListService", function(AuthService, ListService) {
-  var amatsukaFollowList, amatsukaList;
-  if (_.isEmpty(AuthService.user)) {
-    return;
-  }
-  amatsukaList = localStorage.getItem('amatsukaList');
-  amatsukaList = amatsukaList === 'undefined' ? {} : JSON.parse(amatsukaList);
-  amatsukaFollowList = localStorage.getItem('amatsukaFollowList');
-  amatsukaFollowList = amatsukaFollowList === 'undefined' ? [] : JSON.parse(amatsukaFollowList);
-  if (_.isEmpty(amatsukaList)) {
-    window.localStorage.clear();
-  }
-  return ListService.amatsukaList = {
-    data: amatsukaList,
-    member: amatsukaFollowList
-  };
-}]);
-
-angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$location", "AuthService", "ConfigService", function($scope, $location, AuthService, ConfigService) {
-  if (_.isEmpty(AuthService.user)) {
-    $location.path('/');
-  }
-  ConfigService.getFromDB().then(function(config) {
-    return ConfigService.set(config);
-  })["catch"](function(e) {
-    return ConfigService.init();
-  })["finally"](function() {
-    return $scope.config = ConfigService.config;
-  });
-  return $scope.$watch('config', function(newData, oldData) {
-    if (JSON.stringify(newData) === JSON.stringify(oldData)) {
-      return;
-    }
-    console.log($scope.configForm);
-    console.log($scope.configForm.$valid);
-    if (!$scope.configForm.$valid) {
-      return;
-    }
-    ConfigService.update();
-    ConfigService.save2DB().then(function(data) {
-      return console.log(data);
-    })["catch"](function(error) {
-      return console.log(error);
-    });
-  }, true);
-}]);
-
-angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$routeParams", "$location", "Tweets", "AuthService", "TweetService", "ListService", "ConfigService", function($scope, $routeParams, $location, Tweets, AuthService, TweetService, ListService, ConfigService) {
-  var filterPic, params;
-  if (_.isEmpty(AuthService.user)) {
-    $location.path('/');
-  }
-  if (!ListService.hasListData()) {
-    $location.path('/');
-  }
-  $scope.listIdStr = ListService.amatsukaList.data.id_str;
-  $scope.layoutType = 'grid';
-  $scope.filter = {
-    screenName: '',
-    keyword: '',
-    isIncludeRetweet: false
-  };
-  $scope.extract = {};
-  $scope.extract.tweets = [];
-  $scope.isLoading = false;
-  ConfigService.get().then(function(config) {
-    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
-  });
-  filterPic = function(params) {
-    if (params == null) {
-      params = {
-        screenName: $scope.filter.screenName
-      };
-    }
-    $scope.isLoading = true;
-    return TweetService.showUsers(params).then(function(data) {
-      return $scope.extract.user = ListService.normalizeMember(data.data);
-    }).then(function(user) {
-      return TweetService.getAllPict({
-        twitterIdStr: user.id_str,
-        isIncludeRetweet: $scope.filter.isIncludeRetweet
-      });
-    }).then(function(tweetListContainedImage) {
-      console.log(tweetListContainedImage);
-      return _.chain(tweetListContainedImage).filter(function(tweet) {
-        return ~tweet.text.indexOf($scope.filter.keyword);
-      }).value();
-    }).then(function(data) {
-      var tweets;
-      console.log(data);
-      tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
-      $scope.extract.tweets = tweets.sort(function(a, b) {
-        return b.totalNum - a.totalNum;
-      });
-      console.log($scope.extract.tweets);
-      return $scope.isLoading = false;
-    });
-  };
-  if ($routeParams.id === void 0) {
-    console.log('undefined');
-  } else {
-    console.log($scope.filter.keyword);
-    if ($routeParams.id.indexOf('@' === -1)) {
-      console.log('@ScreenName');
-      params = {
-        screenName: $routeParams.id
-      };
-    } else {
-      console.log('id_str');
-      params = {
-        twitterIdStr: $routeParams.id
-      };
-    }
-    filterPic(params);
-  }
-  $scope.execFilteringPictWithKeyword = function() {
-    console.log($scope.filter);
-    return filterPic();
-  };
-  $scope.$on('addMember', function(event, args) {
-    console.log('index addMember on ', args);
-    TweetService.applyFollowStatusChange($scope.extract.tweets, args);
-  });
-  return $scope.$on('resize::resize', function(event, args) {
-    console.log('index resize::resize on ', args.layoutType);
-    $scope.$apply(function() {
-      $scope.layoutType = args.layoutType;
-    });
-  });
-}]);
-
-angular.module("myApp.controllers").controller("FindCtrl", ["$scope", "$location", "AuthService", "ListService", "Pict", function($scope, $location, AuthService, ListService, Pict) {
-  if (_.isEmpty(AuthService.user)) {
-    $location.path('/');
-  }
-  if (!ListService.hasListData()) {
-    $location.path('/');
-  }
-  return $scope.pictList = new Pict();
-}]);
-
-angular.module("myApp.controllers").controller("HelpCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
-  if (_.isEmpty(AuthService.user)) {
-    return $location.path('/');
-  }
-}]);
-
-angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "ConfigService", "BlackUserListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, ConfigService, BlackUserListService, Tweets) {
-  var tasks, upsertAmatsukaList;
-  if (_.isEmpty(AuthService.user)) {
-    return;
-  }
-  if (_.isEmpty(ListService.amatsukaList.data)) {
-    window.localStorage.clear();
-  }
-  $scope.listIdStr = '';
-  $scope.isLoaded = false;
-  $scope.layoutType = 'grid';
-  ConfigService.get().then(function(config) {
-    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
-  });
-  $scope.message = 'リストデータの確認中';
-  upsertAmatsukaList = function() {
-    $scope.message = 'リストデータの更新中';
-    return ListService.update().then(function(data) {
-      console.log('==> update() then data = ', data);
-      $scope.tweets = new Tweets([]);
-    })["catch"](function(error) {
-      console.log('==> update() catch error = ', error);
-      $scope.message = 'リストを作成中';
-      return ListService.init().then(function(data) {
-        console.log('===> init() then data ', data);
-        ConfigService.init();
-        return ConfigService.save2DB();
-      }).then(function(data) {
-        console.log('===> ConfigService then data = ', data);
-        return $scope.tweets = new Tweets([]);
-      });
-    })["finally"](function() {
-      console.log('==> update() finally');
-      return $scope.message = '';
-    });
-  };
-  ListService.isSameAmatsukaList().then(function(_isSameAmatsukaList) {
-    console.log('=> _isSameAmatsukaList = ', _isSameAmatsukaList);
-    if (_isSameAmatsukaList) {
-      $scope.tweets = new Tweets([]);
-      (function() {
-        ListService.update().then(function(data) {
-          return console.log('ok');
-        });
-      })();
-      return;
-    }
-    console.log('=> false _isSameAmatsukaList');
-    return upsertAmatsukaList();
-  })["catch"](function(error) {
-    return console.log('=> catch isSameAmatsukaList error = ', error);
-  })["finally"](function() {
-    console.log('=> isSameAmatsukaList() finally');
-    ConfigService.getFromDB().then(function(data) {
-      return $scope.config = data;
-    });
-    $scope.listIdStr = ListService.amatsukaList.data.id_str;
-    $scope.isLoaded = true;
-    $scope.message = '';
-    console.log('=> 終わり');
-  });
-  tasks = [
-    TweetService.getMuteUserIdList({
-      twitterIdStr: AuthService.user._json.id_str
-    }), TweetService.getBlockUserIdList({
-      twitterIdStr: AuthService.user._json.id_str
-    })
-  ];
-  Promise.all(tasks).then((function(_this) {
-    return function(results) {
-      console.log('mutes = ', results[0].data.ids);
-      console.log('blocks = ', results[1].data.ids);
-      BlackUserListService.mute.set(results[0].data.ids);
-      return BlackUserListService.block.set(results[1].data.ids);
-    };
-  })(this));
-  $scope.$on('addMember', function(event, args) {
-    console.log('index addMember on ', args);
-    TweetService.applyFollowStatusChange($scope.tweets.items, args);
-  });
-  return $scope.$on('resize::resize', function(event, args) {
-    console.log('index resize::resize on ', args.layoutType);
-    $scope.$apply(function() {
-      $scope.layoutType = args.layoutType;
-    });
-  });
-}]);
-
-angular.module("myApp.controllers").controller("LikeCtrl", ["$scope", "$location", "AuthService", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, ConfigService, TweetService, ListService, Tweets) {
-  if (_.isEmpty(AuthService.user)) {
-    $location.path('/');
-  }
-  if (!ListService.hasListData()) {
-    $location.path('/');
-  }
-  $scope.isLoaded = false;
-  ConfigService.get().then(function(config) {
-    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
-  });
-  $scope.tweets = new Tweets([], void 0, 'like', AuthService.user._json.id_str);
-  $scope.listIdStr = ListService.amatsukaList.data.id_str;
-  $scope.isLoaded = true;
-  $scope.$on('addMember', function(event, args) {
-    console.log('like addMember on ', args);
-    TweetService.applyFollowStatusChange($scope.tweets.items, args);
-  });
-  return $scope.$on('resize::resize', function(event, args) {
-    console.log('like resize::resize on ', args.layoutType);
-    $scope.$apply(function() {
-      $scope.layoutType = args.layoutType;
-    });
-  });
-}]);
-
-angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "List", "Member", "AmatsukaList", function($scope, $location, AuthService, TweetService, ListService, List, Member, AmatsukaList) {
-  if (_.isEmpty(AuthService.user)) {
-    $location.path('/');
-  }
-  if (!ListService.hasListData()) {
-    $location.path('/');
-  }
-  $scope.amatsukaList = new AmatsukaList('Amatsuka');
-  TweetService.getListsList(AuthService.user._json.id_str).then(function(data) {
-    var l, myFriendParams;
-    l = _.reject(data.data, function(list) {
-      return list.full_name === ("@" + AuthService.user.username + "/amatsuka");
-    });
-    $scope.ownList = l || [];
-    myFriendParams = {
-      name: "friends",
-      full_name: "friends",
-      id_str: AuthService.user.id_str,
-      uri: '/following'
-    };
-    return $scope.ownList.push(myFriendParams);
-  })["catch"](function(error) {
-    return console.log('listController = ', error);
-  });
-  $scope.$watch('sourceListData', function(list) {
-    if ((list != null ? list.name : void 0) == null) {
-      return;
-    }
-    console.log(list);
-    return (function() {
-      $scope.sourceList = {};
-      $scope.sourceList = list.name === 'friends' ? new Member(list.name, AuthService.user._json.id_str) : new List(list.name, list.id_str);
-      $scope.sourceList.loadMember();
-    })();
-  });
-  $scope.$on('list:addMember', function(event, args) {
-    console.log('list:copyMember on', args);
-    $scope.amatsukaList.updateAmatsukaList();
-  });
-  $scope.$on('list:copyMember', function(event, args) {
-    console.log('list:copyMember on', args);
-    $scope.amatsukaList.updateAmatsukaList();
-    $scope.sourceList.members = ListService.changeFollowStatusAllMembers($scope.sourceList.members, true);
-    $('.btn-follow').each(function() {
-      return this.innerText = 'フォロー解除';
-    });
-  });
-  return $scope.$on('list:removeMember', function(event, args) {
-    console.log('list:removeMember on', args);
-    $scope.amatsukaList.updateAmatsukaList();
-  });
-}]);
-
-angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$location", "AuthService", "ListService", "AmatsukaList", function($scope, $location, AuthService, ListService, AmatsukaList) {
-  if (_.isEmpty(AuthService.user)) {
-    $location.path('/');
-  }
-  if (!ListService.hasListData()) {
-    $location.path('/');
-  }
-  $scope.list = new AmatsukaList('Amatsuka');
-  return $scope.$watch('searchWord.screen_name', function(newData, oldData) {
-    var idx, member, screenNameTolowerCased, _i, _len, _ref;
-    if (newData === oldData) {
-      return;
-    }
-    if (newData === '') {
-      $scope.list.members = [];
-      $scope.list.memberIdx = 0;
-      _ref = $scope.list.amatsukaMemberList;
-      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
-        member = _ref[idx];
-        if (idx > 20) {
-          return;
-        }
-        $scope.list.members.push(member);
-        $scope.list.memberIdx++;
-      }
-      return;
-    }
-    screenNameTolowerCased = newData.toLowerCase();
-    return $scope.list.members = $scope.list.amatsukaMemberList.filter(function(element, index, array) {
-      return element.screen_name.toLowerCase().indexOf(screenNameTolowerCased) !== -1;
-    });
-  });
-}]);
-
-angular.module("myApp.controllers").controller("UserSidebarCtrl", ["$scope", "$location", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, ConfigService, TweetService, ListService, Tweets) {
-  $scope.isOpened = false;
-  $scope.config = {};
-  $scope.$on('showUserSidebar::userData', function(event, args) {
-    if (!$scope.isOpened) {
-      return;
-    }
-    $scope.user = ListService.normalizeMember(args);
-    $scope.listIdStr = ListService.amatsukaList.data.id_str;
-  });
-  $scope.$on('showUserSidebar::tweetData', function(event, args) {
-    var maxId, tweetsNormalized;
-    if (!$scope.isOpened) {
-      return;
-    }
-    ConfigService.getFromDB().then(function(data) {
-      return $scope.config = data;
-    });
-    maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
-    tweetsNormalized = TweetService.normalizeTweets(args);
-    $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
-  });
-  $scope.$on('showUserSidebar::isOpened', function(event, args) {
-    $scope.isOpened = true;
-    $scope.user = {};
-    $scope.tweets = {};
-  });
-  $scope.$on('showUserSidebar::isClosed', function(event, args) {
-    $scope.isOpened = false;
-    $scope.user = {};
-    $scope.tweets = {};
-  });
-  return $scope.$on('addMember', function(event, args) {
-    if (_.isUndefined($scope.tweets)) {
-      return;
-    }
-    TweetService.applyFollowStatusChange($scope.tweets.items, args);
-  });
-}]);
-
 angular.module("myApp.directives").directive('isActiveNav', ["$location", function($location) {
   return {
     restrict: 'A',
@@ -1234,6 +822,418 @@ angular.module("myApp.directives").directive("zoomImage", ["$compile", "$rootSco
       });
     }
   };
+}]);
+
+angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
+  $scope.isLoaded = false;
+  $scope.isAuthenticated = AuthService.status.isAuthenticated;
+  if (AuthService.status.isAuthenticated) {
+    $scope.isLoaded = true;
+    return;
+  }
+  return AuthService.isAuthenticated().success(function(data) {
+    if (_.isNull(data.data)) {
+      $scope.isLoaded = true;
+      $location.path('/');
+      return;
+    }
+    AuthService.status.isAuthenticated = true;
+    $scope.isAuthenticated = AuthService.status.isAuthenticated;
+    AuthService.user = data.data;
+    $scope.user = data.data;
+    return $scope.isLoaded = true;
+  }).error(function(status, data) {
+    console.log(status);
+    return console.log(data);
+  });
+}]);
+
+angular.module("myApp.controllers").controller("AmatsukaListCtrl", ["AuthService", "ListService", function(AuthService, ListService) {
+  var amatsukaFollowList, amatsukaList;
+  if (_.isEmpty(AuthService.user)) {
+    return;
+  }
+  amatsukaList = localStorage.getItem('amatsukaList');
+  amatsukaList = amatsukaList === 'undefined' ? {} : JSON.parse(amatsukaList);
+  amatsukaFollowList = localStorage.getItem('amatsukaFollowList');
+  amatsukaFollowList = amatsukaFollowList === 'undefined' ? [] : JSON.parse(amatsukaFollowList);
+  if (_.isEmpty(amatsukaList)) {
+    window.localStorage.clear();
+  }
+  return ListService.amatsukaList = {
+    data: amatsukaList,
+    member: amatsukaFollowList
+  };
+}]);
+
+angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$location", "AuthService", "ConfigService", function($scope, $location, AuthService, ConfigService) {
+  if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  ConfigService.getFromDB().then(function(config) {
+    return ConfigService.set(config);
+  })["catch"](function(e) {
+    return ConfigService.init();
+  })["finally"](function() {
+    return $scope.config = ConfigService.config;
+  });
+  return $scope.$watch('config', function(newData, oldData) {
+    if (JSON.stringify(newData) === JSON.stringify(oldData)) {
+      return;
+    }
+    console.log($scope.configForm);
+    console.log($scope.configForm.$valid);
+    if (!$scope.configForm.$valid) {
+      return;
+    }
+    ConfigService.update();
+    ConfigService.save2DB().then(function(data) {
+      return console.log(data);
+    })["catch"](function(error) {
+      return console.log(error);
+    });
+  }, true);
+}]);
+
+angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$routeParams", "$location", "Tweets", "AuthService", "TweetService", "ListService", "ConfigService", function($scope, $routeParams, $location, Tweets, AuthService, TweetService, ListService, ConfigService) {
+  var filterPic, params;
+  if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  if (!ListService.hasListData()) {
+    $location.path('/');
+  }
+  $scope.listIdStr = ListService.amatsukaList.data.id_str;
+  $scope.layoutType = 'grid';
+  $scope.filter = {
+    screenName: '',
+    keyword: '',
+    isIncludeRetweet: false
+  };
+  $scope.extract = {};
+  $scope.extract.tweets = [];
+  $scope.isLoading = false;
+  ConfigService.get().then(function(config) {
+    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+  });
+  filterPic = function(params) {
+    if (params == null) {
+      params = {
+        screenName: $scope.filter.screenName
+      };
+    }
+    $scope.isLoading = true;
+    return TweetService.showUsers(params).then(function(data) {
+      return $scope.extract.user = ListService.normalizeMember(data.data);
+    }).then(function(user) {
+      return TweetService.getAllPict({
+        twitterIdStr: user.id_str,
+        isIncludeRetweet: $scope.filter.isIncludeRetweet
+      });
+    }).then(function(tweetListContainedImage) {
+      console.log(tweetListContainedImage);
+      return _.chain(tweetListContainedImage).filter(function(tweet) {
+        return ~tweet.text.indexOf($scope.filter.keyword);
+      }).value();
+    }).then(function(data) {
+      var tweets;
+      console.log(data);
+      tweets = TweetService.normalizeTweets(data, ListService.amatsukaList.member);
+      $scope.extract.tweets = tweets.sort(function(a, b) {
+        return b.totalNum - a.totalNum;
+      });
+      console.log($scope.extract.tweets);
+      return $scope.isLoading = false;
+    });
+  };
+  if ($routeParams.id === void 0) {
+    console.log('undefined');
+  } else {
+    console.log($scope.filter.keyword);
+    if ($routeParams.id.indexOf('@' === -1)) {
+      console.log('@ScreenName');
+      params = {
+        screenName: $routeParams.id
+      };
+    } else {
+      console.log('id_str');
+      params = {
+        twitterIdStr: $routeParams.id
+      };
+    }
+    filterPic(params);
+  }
+  $scope.execFilteringPictWithKeyword = function() {
+    console.log($scope.filter);
+    return filterPic();
+  };
+  $scope.$on('addMember', function(event, args) {
+    console.log('index addMember on ', args);
+    TweetService.applyFollowStatusChange($scope.extract.tweets, args);
+  });
+  return $scope.$on('resize::resize', function(event, args) {
+    console.log('index resize::resize on ', args.layoutType);
+    $scope.$apply(function() {
+      $scope.layoutType = args.layoutType;
+    });
+  });
+}]);
+
+angular.module("myApp.controllers").controller("FindCtrl", ["$scope", "$location", "AuthService", "ListService", "Pict", function($scope, $location, AuthService, ListService, Pict) {
+  if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  if (!ListService.hasListData()) {
+    $location.path('/');
+  }
+  return $scope.pictList = new Pict();
+}]);
+
+angular.module("myApp.controllers").controller("HelpCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
+  if (_.isEmpty(AuthService.user)) {
+    return $location.path('/');
+  }
+}]);
+
+angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "ConfigService", "BlackUserListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, ConfigService, BlackUserListService, Tweets) {
+  var tasks, upsertAmatsukaList;
+  if (_.isEmpty(AuthService.user)) {
+    return;
+  }
+  if (_.isEmpty(ListService.amatsukaList.data)) {
+    window.localStorage.clear();
+  }
+  $scope.listIdStr = '';
+  $scope.isLoaded = false;
+  $scope.layoutType = 'grid';
+  ConfigService.get().then(function(config) {
+    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+  });
+  $scope.message = 'リストデータの確認中';
+  upsertAmatsukaList = function() {
+    $scope.message = 'リストデータの更新中';
+    return ListService.update().then(function(data) {
+      console.log('==> update() then data = ', data);
+      $scope.tweets = new Tweets([]);
+    })["catch"](function(error) {
+      console.log('==> update() catch error = ', error);
+      $scope.message = 'リストを作成中';
+      return ListService.init().then(function(data) {
+        console.log('===> init() then data ', data);
+        ConfigService.init();
+        return ConfigService.save2DB();
+      }).then(function(data) {
+        console.log('===> ConfigService then data = ', data);
+        return $scope.tweets = new Tweets([]);
+      });
+    })["finally"](function() {
+      console.log('==> update() finally');
+      return $scope.message = '';
+    });
+  };
+  ListService.isSameAmatsukaList().then(function(_isSameAmatsukaList) {
+    console.log('=> _isSameAmatsukaList = ', _isSameAmatsukaList);
+    if (_isSameAmatsukaList) {
+      $scope.tweets = new Tweets([]);
+      (function() {
+        ListService.update().then(function(data) {
+          return console.log('ok');
+        });
+      })();
+      return;
+    }
+    console.log('=> false _isSameAmatsukaList');
+    return upsertAmatsukaList();
+  })["catch"](function(error) {
+    return console.log('=> catch isSameAmatsukaList error = ', error);
+  })["finally"](function() {
+    console.log('=> isSameAmatsukaList() finally');
+    ConfigService.getFromDB().then(function(data) {
+      return $scope.config = data;
+    });
+    $scope.listIdStr = ListService.amatsukaList.data.id_str;
+    $scope.isLoaded = true;
+    $scope.message = '';
+    console.log('=> 終わり');
+  });
+  tasks = [
+    TweetService.getMuteUserIdList({
+      twitterIdStr: AuthService.user._json.id_str
+    }), TweetService.getBlockUserIdList({
+      twitterIdStr: AuthService.user._json.id_str
+    })
+  ];
+  Promise.all(tasks).then((function(_this) {
+    return function(results) {
+      console.log('mutes = ', results[0].data.ids);
+      console.log('blocks = ', results[1].data.ids);
+      BlackUserListService.mute.set(results[0].data.ids);
+      return BlackUserListService.block.set(results[1].data.ids);
+    };
+  })(this));
+  $scope.$on('addMember', function(event, args) {
+    console.log('index addMember on ', args);
+    TweetService.applyFollowStatusChange($scope.tweets.items, args);
+  });
+  return $scope.$on('resize::resize', function(event, args) {
+    console.log('index resize::resize on ', args.layoutType);
+    $scope.$apply(function() {
+      $scope.layoutType = args.layoutType;
+    });
+  });
+}]);
+
+angular.module("myApp.controllers").controller("LikeCtrl", ["$scope", "$location", "AuthService", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, AuthService, ConfigService, TweetService, ListService, Tweets) {
+  if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  if (!ListService.hasListData()) {
+    $location.path('/');
+  }
+  $scope.isLoaded = false;
+  ConfigService.get().then(function(config) {
+    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+  });
+  $scope.tweets = new Tweets([], void 0, 'like', AuthService.user._json.id_str);
+  $scope.listIdStr = ListService.amatsukaList.data.id_str;
+  $scope.isLoaded = true;
+  $scope.$on('addMember', function(event, args) {
+    console.log('like addMember on ', args);
+    TweetService.applyFollowStatusChange($scope.tweets.items, args);
+  });
+  return $scope.$on('resize::resize', function(event, args) {
+    console.log('like resize::resize on ', args.layoutType);
+    $scope.$apply(function() {
+      $scope.layoutType = args.layoutType;
+    });
+  });
+}]);
+
+angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "List", "Member", "AmatsukaList", function($scope, $location, AuthService, TweetService, ListService, List, Member, AmatsukaList) {
+  if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  if (!ListService.hasListData()) {
+    $location.path('/');
+  }
+  $scope.amatsukaList = new AmatsukaList('Amatsuka');
+  TweetService.getListsList(AuthService.user._json.id_str).then(function(data) {
+    var l, myFriendParams;
+    l = _.reject(data.data, function(list) {
+      return list.full_name === ("@" + AuthService.user.username + "/amatsuka");
+    });
+    $scope.ownList = l || [];
+    myFriendParams = {
+      name: "friends",
+      full_name: "friends",
+      id_str: AuthService.user.id_str,
+      uri: '/following'
+    };
+    return $scope.ownList.push(myFriendParams);
+  })["catch"](function(error) {
+    return console.log('listController = ', error);
+  });
+  $scope.$watch('sourceListData', function(list) {
+    if ((list != null ? list.name : void 0) == null) {
+      return;
+    }
+    console.log(list);
+    return (function() {
+      $scope.sourceList = {};
+      $scope.sourceList = list.name === 'friends' ? new Member(list.name, AuthService.user._json.id_str) : new List(list.name, list.id_str);
+      $scope.sourceList.loadMember();
+    })();
+  });
+  $scope.$on('list:addMember', function(event, args) {
+    console.log('list:copyMember on', args);
+    $scope.amatsukaList.updateAmatsukaList();
+  });
+  $scope.$on('list:copyMember', function(event, args) {
+    console.log('list:copyMember on', args);
+    $scope.amatsukaList.updateAmatsukaList();
+    $scope.sourceList.members = ListService.changeFollowStatusAllMembers($scope.sourceList.members, true);
+    $('.btn-follow').each(function() {
+      return this.innerText = 'フォロー解除';
+    });
+  });
+  return $scope.$on('list:removeMember', function(event, args) {
+    console.log('list:removeMember on', args);
+    $scope.amatsukaList.updateAmatsukaList();
+  });
+}]);
+
+angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$location", "AuthService", "ListService", "AmatsukaList", function($scope, $location, AuthService, ListService, AmatsukaList) {
+  if (_.isEmpty(AuthService.user)) {
+    $location.path('/');
+  }
+  if (!ListService.hasListData()) {
+    $location.path('/');
+  }
+  $scope.list = new AmatsukaList('Amatsuka');
+  return $scope.$watch('searchWord.screen_name', function(newData, oldData) {
+    var idx, member, screenNameTolowerCased, _i, _len, _ref;
+    if (newData === oldData) {
+      return;
+    }
+    if (newData === '') {
+      $scope.list.members = [];
+      $scope.list.memberIdx = 0;
+      _ref = $scope.list.amatsukaMemberList;
+      for (idx = _i = 0, _len = _ref.length; _i < _len; idx = ++_i) {
+        member = _ref[idx];
+        if (idx > 20) {
+          return;
+        }
+        $scope.list.members.push(member);
+        $scope.list.memberIdx++;
+      }
+      return;
+    }
+    screenNameTolowerCased = newData.toLowerCase();
+    return $scope.list.members = $scope.list.amatsukaMemberList.filter(function(element, index, array) {
+      return element.screen_name.toLowerCase().indexOf(screenNameTolowerCased) !== -1;
+    });
+  });
+}]);
+
+angular.module("myApp.controllers").controller("UserSidebarCtrl", ["$scope", "$location", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, ConfigService, TweetService, ListService, Tweets) {
+  $scope.isOpened = false;
+  $scope.config = {};
+  $scope.$on('showUserSidebar::userData', function(event, args) {
+    if (!$scope.isOpened) {
+      return;
+    }
+    $scope.user = ListService.normalizeMember(args);
+    $scope.listIdStr = ListService.amatsukaList.data.id_str;
+  });
+  $scope.$on('showUserSidebar::tweetData', function(event, args) {
+    var maxId, tweetsNormalized;
+    if (!$scope.isOpened) {
+      return;
+    }
+    ConfigService.getFromDB().then(function(data) {
+      return $scope.config = data;
+    });
+    maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
+    tweetsNormalized = TweetService.normalizeTweets(args);
+    $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
+  });
+  $scope.$on('showUserSidebar::isOpened', function(event, args) {
+    $scope.isOpened = true;
+    $scope.user = {};
+    $scope.tweets = {};
+  });
+  $scope.$on('showUserSidebar::isClosed', function(event, args) {
+    $scope.isOpened = false;
+    $scope.user = {};
+    $scope.tweets = {};
+  });
+  return $scope.$on('addMember', function(event, args) {
+    if (_.isUndefined($scope.tweets)) {
+      return;
+    }
+    TweetService.applyFollowStatusChange($scope.tweets.items, args);
+  });
 }]);
 
 angular.module("myApp.factories").factory('AmatsukaList', ["TweetService", "ListService", function(TweetService, ListService) {

@@ -20,6 +20,6 @@
               twitter-id-str="{{::member.id_str}}",
               show-user-sidebar="show-user-sidebar") @{{::member.screen_name}}
           span.btn-wrapper
-          a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{::member.id_str}}', ng-disabled='isProcessing')
+          a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{list.idStr}}', twitter-id-str='{{::member.id_str}}', ng-disabled='isProcessing')
       popular-image-list-container(twitter-id-str='member.id_str')
 
