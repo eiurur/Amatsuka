@@ -1,0 +1,45 @@
+.col-md-12
+
+  form.form-horizontal
+    .form-group.help__wrapper--q
+      label.col-sm-1.control-label Q.
+      .col-sm-10
+        p.form-control-static リストのメンバーをコピーしたけど人数が少ないように感じる。
+    .form-group.text
+      label.col-sm-1.control-label A.
+      .col-sm-10
+        p.form-control-static Twitterの方で保存処理が完了していない可能性があります。少しだけお待ちください。それでも変わらないようでしたら、もう一度コピーを実行してみてください。
+
+  form.form-horizontal
+    .form-group.help__wrapper--q
+      label.col-sm-1.control-label Q.
+      .col-sm-10
+        p.form-control-static ホーム画面に何も表示されない。一向に処理が進まない。
+    .form-group.text
+      label.col-sm-1.control-label A.
+      .col-sm-10
+        p.form-control-static 高速化のためリストデータをキャッシュとしてlocalStorageに保存・管理しています。そこのデータに齟齬が生じていることが原因だと思われます。<br>下のクリアボタンを押してlocalStorageをクリアしてください。そのあと、<a href="/">ホーム</a>に戻ってリスト情報を更新してください。<br>※ クリアボタンを押してもリスト自体が削除されるわけではありません
+    .form-group
+      label.col-sm-1.control-label
+      .col-sm-10
+        button.btn(clear-local-storage) クリアする
+
+  form.form-horizontal
+    .form-group.help__wrapper--q
+      label.col-sm-1.control-label Q.
+      .col-sm-10
+        p.form-control-static Amatsukaリストが重複作成される。
+    .form-group.text
+      label.col-sm-1.control-label A.
+      .col-sm-10
+        p.form-control-static 新規に作成されて重複したAmatsukaリストを全て削除したあと、上のクリアボタンを押していただき、同様に<a href="/">ホーム</a>へ戻ってリスト情報を更新してください。
+
+  form.form-horizontal
+    .form-group.help__wrapper--q
+      label.col-sm-1.control-label Q.
+      .col-sm-10
+        p.form-control-static 上のQ＆Aに載っていない不具合が見られる。
+    .form-group.text
+      label.col-sm-1.control-label A.
+      .col-sm-10
+        p.form-control-static <a href="https://github.com/eiurur/Amatsuka/issues" target="_blank">リポジトリ(Github)</a>にissueを投げつけてください。迅速に対応いたします。

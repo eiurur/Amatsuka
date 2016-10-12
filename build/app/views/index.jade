@@ -1,0 +1,24 @@
+extends layout
+
+block body
+  .h100per(ng-controller='AdminUserCtrl')
+
+    .cover-until-authenticated(ng-if='!isLoaded')
+      .spinner
+
+    .h100per(ng-if='isLoaded')
+      .login__container(ng-if='!isAuthenticated')
+        include parts/_login
+
+      .navbar-padding(ng-if='isAuthenticated')
+        zoom-image-container
+        toaster-container
+        include parts/_layer
+        include parts/_nav
+
+        .site-main(ng-controller="AmatsukaListCtrl", resize="resize")
+          .col-md-12(ng-view)
+
+        include parts/_user_sidebar
+
+        a.arrow-top(scroll-to='body', scroll-on-click)

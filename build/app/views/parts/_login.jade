@@ -1,0 +1,143 @@
+.login__bg
+
+  .login__description
+    h1
+      | Amatsuka
+    h3
+      p.login__description--catchcopy もうひとつのタイムラインをあなたに
+
+    .login__description--about
+      p About
+      a(href='http://898525572.tumblr.com/post/110964826359', target="_blank")
+        i.fa.fa-angle-right
+        | 画像専用ツイートビューワー作りました。 - tumblr
+    div.btn-wrapper
+      a.btn.btn-lg.login__description--btn(href='/auth/twitter/callback', target='_self', log="clickLoginButton,Click,Click")
+        i.fa.fa-twitter
+        | Twitterでログイン (無料)
+      a.btn.btn-lg.login__description--btn(scroll-to='#feature', log="clickDetailBButton,Click,Click", scroll-on-click)
+        i.fa.fa-angle-down(aria-hidden='true')
+        | 詳しく
+    .login__note
+      | ※ 勝手にツイートすることはありません。
+
+    include _share
+
+
+
+#feature.feature
+  .row.row-eq-height.feature-section
+    .col-md-6
+      #carousel-example-generic.carousel.slide(data-ride='carousel')
+        // Indicators
+        ol.carousel-indicators
+          li.active(data-target='#carousel-example-generic', data-slide-to='0')
+          li(data-target='#carousel-example-generic', data-slide-to='1')
+          li(data-target='#carousel-example-generic', data-slide-to='2')
+        // Wrapper for slides
+        .carousel-inner(role='listbox')
+          .item.active
+            img(ng-src='./images/description/masonry.jpg', alt='...', img-src='./images/description/masonry.jpg', zoom-image)
+          .item
+            img(ng-src='./images/description/tile.jpg', alt='...', img-src='./images/description/tile.jpg', zoom-image)
+          .item
+            img(ng-src='./images/description/zoom.jpg', alt='...', img-src='./images/description/zoom.jpg', zoom-image)
+
+    .col-md-6
+      h1
+        イラストが見たいだけ、余計なことで悩みたくない
+      p
+        ul
+          li 「この人の絵が好き」
+          li 「フォローする前にイラストと日常ツイートの頻度を調べないと。でも毎回するのも面倒になってきた」
+          li 「リスト運用もメンバーの追加と削除に手間がかかりすぎて億劫に感じる」
+        br
+        | 自分のタイムラインへの影響を気にせず、また、Twitterのようにワンクリックでフォローができるように
+        | 本サービスはAmatsukaという名前のプライベートリストを作成、それをタイムラインとして扱うことで上記の問題を解決します。
+
+  .feature__divider
+
+  .row.row-eq-height.feature-section
+    .col-md-6
+      h1
+        お気に入りの管理も見やすく、使いやすく
+      p
+        | originalサイズのイラストをワンクリックでダウンロードすることもできます。
+    .col-md-6
+      img(ng-src='./images/description/fav.jpg', img-src='./images/description/fav.jpg', alt='...', zoom-image)
+
+  .feature__divider
+
+  .row.row-eq-height.feature-section
+    .col-md-6
+      img(ng-src='./images/description/list.jpg', img-src='./images/description/list.jpg', alt='...', zoom-image)
+    .col-md-6
+      h1
+        既存リストからの移行も簡単
+      p
+        既にイラストレーターを管理しているリストがある場合もボタン1つで移行することができます。
+
+  .feature__divider
+
+  .row.row-eq-height.feature-section
+    .col-md-6
+      h1
+        気ままに探す
+      p
+        効率的に、本能的に、お気に入りのイラストレータを探そう。
+
+    .col-md-6
+
+      #carousel-find.carousel.slide(data-ride='carousel')
+        // Indicators
+        ol.carousel-indicators
+          li.active(data-target='#carousel-find', data-slide-to='0')
+          li(data-target='#carousel-find', data-slide-to='1')
+          li(data-target='#carousel-find', data-slide-to='2')
+        // Wrapper for slides
+        .carousel-inner(role='listbox')
+          .item.active
+            img(ng-src='./images/description/find_1.jpg', img-src='./images/description/find_1.jpg', alt='...', zoom-image)
+          .item
+            img(ng-src='./images/description/find_2.jpg', img-src='./images/description/find_2.jpg', alt='...', zoom-image)
+          .item
+            img(ng-src='./images/description/find_3.jpg', img-src='./images/description/find_3.jpg', alt='...', zoom-image)
+
+  .feature__divider
+
+  .row.row-eq-height.feature-section
+    .col-md-6
+      img(ng-src='./images/description/extract.jpg', img-src='./images/description/extract.jpg', alt='...', zoom-image)
+    .col-md-6
+      h1
+        人気順に一覧表示
+      p
+        気になったイラストレータを見つけても、過去の画像を遡るのが大変だった経験はありませんか？
+        本サービスは過去のイラストをバックグラウンドで遡り、自動で人気順にソート、一覧で表示する機能を備えています。
+
+  .feature__divider
+
+  .row.row-eq-height.feature-section
+    .col-md-6
+      h1
+        見逃し防止機能
+      p
+        通常、リストのツイートは3200件しか閲覧することができませんが、連携サービスである
+        a(href="https://ma0.herokuapp.com", target="_blank") Mao
+        で認証を行うと、Amatsukaリストのメンバーのイラストを毎日自動収集してくれます。それをAmatsukaから閲覧することができるため、フォローイングが増えたとしても見逃すことがなくなります。
+    .col-md-6
+      img(ng-src='./images/description/mao.jpg', img-src='./images/description/mao.jpg', alt='...', zoom-image)
+
+  .feature__divider
+
+  .row.row-eq-height.feature-section.login__start__container
+    .col-md-12.login__start
+      span.btn-wrapper
+        a.btn.btn-lg.login__description--btn(href='/auth/twitter/callback', target='_self', log="clickLoginButton,Click,Click")
+          i.fa.fa-twitter
+          | Twitterでログイン (無料)
+      .login__note.text-center
+        | ※ 勝手にツイートすることはありません。
+
+
+  .image-layer

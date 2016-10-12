@@ -1,0 +1,61 @@
+.col-md-12.col-sm-12.col-xs-12
+  form.form-inline.list__select--group
+    .form-group
+      .input-group
+        span.input-group-addon
+          i.fa.fa-list-ul
+        select(ng-model='sourceListData', ng-options='l.full_name for l in ownList')
+
+    // コピー実行ボタン(for smartphone)
+    .form-group
+      button.btn.btn-stretch.list__copy-btn(ng-if="sourceList.members", source-list='sourceList', ng-disabled="sourceList.members.length == 0", copy-member)
+        i.fa.fa-copy
+        | Copy members to AmatsukaList
+
+
+.col-md-5.col-sm-12.col-xs-12
+  div(ng-if="sourceList.members.length == 0")
+    dot-loader
+
+  // ソースとなるリスト
+  h3(ng-if="sourceList.members.length > 0")
+    span.text.list__copy-target
+      コピー元 :
+    a.external-link(href='https://twitter.com{{sourceListData.uri}}', target='_blank')
+      {{sourceList.name}} ({{sourceList.members.length}}人)
+  .scrollable.stylish-scrollbar.list-member__container(ng-if="sourceList.members.length > 0")
+    div(ng-repeat="member in sourceList.members")
+      .media
+        a.pull-left(twitter-id-str="{{member.id_str}}", show-user-sidebar="show-user-sidebar")
+          img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url_https}}', img-preload="img-preload")
+        .media-body
+          h4.media-heading
+            span.name {{member.name}}
+            span.screen-name @{{member.screen_name}}
+          span.btn-wrapper
+          a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{amatsukaList.idStr}}', twitter-id-str='{{member.id_str}}', ng-disabled='isProcessing')
+      .member__divider
+
+// コピー実行アイコン > (for pc)
+.col-md-2.hidden-sm.hidden-xs
+  .list__controlls--copy(ng-if="sourceList.members.length > 0")
+    a.list__controlls--copy--icon(source-list='sourceList', copy-member)
+
+// Amatsukaリスト
+.col-md-5.col-sm-12.col-xs-12
+  h3
+    span.text.list__copy-target
+      コピー先 :
+    a.external-link(href='https://twitter.com/{{user.username}}/lists/amatsuka', target='_blank')
+      {{amatsukaList.name}} ({{amatsukaList.amatsukaMemberLength}}人)
+  #amatsuka-list__scrollable.scrollable.stylish-scrollbar
+    .list-member__container(infinite-scroll='amatsukaList.loadMoreMember()',infinite-scroll-distance='0', infinite-scroll-container="'#amatsuka-list__scrollable'")
+      div(ng-repeat="member in amatsukaList.members")
+        .media
+          a.pull-left(twitter-id-str="{{member.id_str}}", show-user-sidebar="show-user-sidebar")
+            img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url_https}}', img-preload="img-preload")
+          .media-body
+            h4.media-heading
+              span.name {{member.name}}
+              span.screen-name @{{member.screen_name}}
+        .member__divider
