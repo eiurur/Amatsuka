@@ -31,4 +31,4 @@ exports.manageCron = ->
         return
 
       start: true
-      timeZone: 'Japan/Tokyo'
+      timeZone: 'Asia/Tokyo'
