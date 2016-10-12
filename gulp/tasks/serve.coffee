@@ -7,7 +7,7 @@ config    = require('../config').serve
 
 gulp.task "serve", ->
   serverPath = config.dest + '/app.js'
-  node [serverPath]
+  node serverPath, [], []
   # setInterval (->), 1000
 
   # gulp.src config.dest

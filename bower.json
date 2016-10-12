@@ -14,9 +14,6 @@
     "test",
     "tests"
   ],
-  "resolutions": {
-    "angular": "1.4.14"
-  },
   "dependencies": {
     "lodash": "~2.4.1",
     "moment": "~2.8.3",
