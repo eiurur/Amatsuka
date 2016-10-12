@@ -11,7 +11,8 @@
     "build": "gulp build",
     "dev": "gulp",
     "start": "node build/app.js",
-    "test": "mocha --require espower-coffee/guess test/*.coffee"
+    "test": "mocha --require espower-coffee/guess test/*.coffee",
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "async": "^0.9.0",
