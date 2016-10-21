@@ -1,9 +1,0 @@
-span(ng-if='layoutType == "list"')
-  .timeline.timeline--list(
-    infinite-scroll='tweets.nextPage()',
-    infinite-scroll-distance='2',
-    infinite-scroll-disabled='tweets.busy')
-    .timeline__post(ng-repeat='tweet in tweets.items')
-      include ../post/_list
-    .loading-bar
-      include ../_loading_fin
