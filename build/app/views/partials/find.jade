@@ -1,0 +1,43 @@
+dot-loader.user-sidebar__contents--box-loading-init(ng-if='!pictList.items')
+
+.col-md-12.col-sm-12.col-xs-12
+
+  div(infinite-scroll='pictList.load()',infinite-scroll-distance='0')
+    div(ng-repeat="pict in pictList.items")
+      .row
+        .col-sm-12
+          .media.find__media
+            a.pull-left(
+              twitter-id-str="{{::pict.postedBy.twitterIdStr}}",
+              show-user-sidebar="show-user-sidebar")
+              img.media-object.thumbnail-img.fade(
+                ng-src='{{::pict.postedBy.icon}}',
+                img-preload="img-preload")
+            //- img.fade(
+            //-   ng-src='{{::pict.postedBy.profileBannerUrl}}',
+            //-   img-preload="img-preload")
+            .media-body
+              h4.media-heading
+                span.name {{::pict.postedBy.name}}
+                span.screen-name.clickable(
+                  twitter-id-str="{{::pict.postedBy.twitterIdStr}}",
+                  show-user-sidebar="show-user-sidebar") @{{::pict.postedBy.screenName}}
+              a.link(
+                href='{{::pict.postedBy.url}}',
+                target='_blank') {{::pict.postedBy.url}}
+      .row.find__pict-tweet--container
+        .col-md-12
+          .find__pict-tweet--img__container.col-xs-6.col-sm-6.col-md-4.col-lg-3(ng-repeat="pictTweet in pict.pictTweetList | limitTo: 12")
+            .find__pict__container
+              img.find__pict-tweet--img.fade(
+                ng-src="{{::pictTweet.mediaUrl}}:small",
+                data-img-src="{{::pictTweet.mediaUrl}}",
+                tweet-id-str='{{::pictTweet.tweetIdStr}}',
+                show-statuses="show-statuses",
+                img-preload="img-preload")
+
+      .find__divider(ng-show="!$last")
+
+
+    dot-loader.infinitescroll-content(ng-if='pictList.busy')
+    .text-center.infinitescroll-content.infinitescroll-message(ng-show='pictList.isLast') 終わりです
