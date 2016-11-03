@@ -2855,7 +2855,7 @@ MaoContainerController = (function() {
 
 })();
 
-MaoContainerController.$inject = ['$scope', '$TermPeginateDataServicve', '$httpParamSerializer', 'MaoService', 'TimeService'];
+MaoContainerController.$inject = ['$scope', 'TermPeginateDataServicve', '$httpParamSerializer', 'MaoService', 'TimeService'];
 
 var MaoListContoller;
 
