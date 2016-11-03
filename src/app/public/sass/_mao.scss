@@ -71,3 +71,37 @@ a.mao__link {
 .mao__tweet__container {
   padding: 23px 15px; // bootstrapのcol-*のpaddingのに合わせている
 }
+
+.mao__calender-list {
+  padding-bottom: 24px;
+  margin-bottom: 72px;
+  overflow-x: scroll;
+  word-wrap: normal;
+  white-space:nowrap;
+
+  & a {
+    color: $link-color;
+    border-radius: 0;
+    font-size: 1.3rem;
+    &:hover {
+      color: $theme-color;
+    }
+  }
+
+  & li {
+    display: inline-block;
+    margin-right: 32px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &.active {
+      & a {
+        color: $theme-color;
+      }
+    }
+
+  }
+
+}

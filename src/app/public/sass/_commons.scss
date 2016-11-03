@@ -493,6 +493,19 @@
   background-color: $amatsuka-color;
 }
 
+.stylish-scrollbar--vertical::-webkit-scrollbar
+{
+  // width: 4px;
+  height: 1px;
+
+  background-color: transparant;
+}
+
+.stylish-scrollbar--vertical::-webkit-scrollbar-thumb
+{
+  background-color: $amatsuka-color;
+}
+
 /**
  * Click
  */

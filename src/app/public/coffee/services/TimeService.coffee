@@ -13,3 +13,6 @@ angular.module "myApp.services"
         when 'weeks' then return moment(date).add(amount, 'weeks').format('YYYY-MM-DD')
         when 'month' then return moment(date).add(amount, 'months').date('1').format('YYYY-MM-DD')
         else return moment().format('YYYY-MM-DD')
+
+    getDatesPerMonth: ->
+      return Array.from(Array(30).keys()).map (day) -> moment().subtract(day + 1, 'days').format('YYYY-MM-DD')

@@ -35,6 +35,7 @@ angular.module('myApp', [
       controller: 'ExtractCtrl'
     .when '/mao',
       templateUrl: 'partials/mao'
+      reloadOnSearch: false
     .when '/like',
       templateUrl: 'partials/like'
       controller: 'LikeCtrl'

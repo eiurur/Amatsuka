@@ -23,10 +23,12 @@ angular.module "myApp.directives", []
     restrict: "A"
     scope:
       scrollTo: "@"
+      speed: "@"
     link: (scope, element, attrs) ->
       element.on 'click', ->
+        speed = scope.speed or 0
         $('html, body').animate
-          scrollTop: $(scope.scrollTo).offset().top, "slow"
+          scrollTop: $(scope.scrollTo).offset().top, speed
 
   .directive 'downloadFromUrl', ($q, toaster, DownloadService) ->
     restrict: 'A'

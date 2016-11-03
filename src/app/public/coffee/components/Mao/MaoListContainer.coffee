@@ -5,10 +5,10 @@ angular.module "myApp.directives"
     template: """
       <dot-loader ng-if="!$ctrl.tweetList.items" class="user-sidebar__contents--box-loading-init">
       </dot-loader>
-      <div ng-if="$ctrl.tweetList.isAuthenticatedWithMao">
+      <div ng-show="$ctrl.tweetList.isAuthenticatedWithMao">
 
         <div class="col-sm-12">
-          <term-pagination total="$ctrl.tweetTotalNumber"></term-pagination>
+          <term-pagination date="$ctrl.date" total="$ctrl.tweetTotalNumber"></term-pagination>
         </div>
 
         <div class="row">
@@ -29,7 +29,7 @@ angular.module "myApp.directives"
         </div>
 
         <div class="col-sm-12 pagination__term__container--bottom">
-          <term-pagination total="$ctrl.tweetTotalNumber"></term-pagination>
+          <term-pagination date="$ctrl.date" total="$ctrl.tweetTotalNumber"></term-pagination>
         </div>
 
       </div>
@@ -66,26 +66,40 @@ class MaoListContoller
     @tweetList = new @Mao(@date)
 
     @tweetTotalNumber = 0
-    qs = @$httpParamSerializer date: @date
-    @MaoService.countTweetByMaoTokenAndDate(qs)
-    .then (response) =>
-      @tweetTotalNumber = response.data.count
+    @getTweetTotalNumber()
+    # @MaoService.countTweetByMaoTokenAndDate(qs)
+    # .then (response) => @tweetTotalNumber = response.data.count
+
 
     @subscribe()
     # 今はいらん
     # @term = $routeParams.term
 
+  getTweetTotalNumber: ->
+    qs = @$httpParamSerializer date: @date
+    @MaoService.countTweetByMaoTokenAndDate(qs)
+    .then (response) => @tweetTotalNumber = response.data.count
+
   getTweet: (newQueryParams) ->
     @date = @TimeService.normalizeDate 'days', newQueryParams.date
     @tweetList = new @Mao(@date)
     @tweetList.load()
+    @getTweetTotalNumber()
     console.log 'getTweet ', @date
 
   subscribe: ->
-    @$scope.$on 'MaoStatusController::publish', (event, args) => @date = args.date
+    @$scope.$on 'MaoStatusController::publish', (event, args) =>
+      @date = args.date
+      return
 
     @$scope.$on 'termPagination::paginate', (event, args) =>
       console.log 'termPagination::paginate on', args
+      @$location.search 'date', args.date
+      @getTweet(args)
+      return
+
+    @$scope.$on 'MaoContainerController::paginate', (event, args) =>
+      console.log 'MaoContainerController::paginate on', args
       @$location.search 'date', args.date
       @getTweet(args)
       return

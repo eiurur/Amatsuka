@@ -5,15 +5,19 @@ angular.module "myApp.directives"
     template: """
       <div class="pagination__term">
         <div class="pagination__button">
-          <a class="pagination__term--prev" ng-click="$ctrl.paginate(-1)"><</a>
+          <a
+            class="pagination__term--prev"
+            scroll-on-click="scroll-on-click" scroll-to="body"
+            ng-click="$ctrl.paginate(1)"><</a>
         </div>
         <a class="pagination__term--active">{{$ctrl.date}}   【{{$ctrl.total}}】</a>
         <div class="pagination__button">
-          <a class="pagination__term--next" ng-click="$ctrl.paginate(1)">></a>
+          <a class="pagination__term--next" ng-click="$ctrl.paginate(-1)">></a>
         </div>
       </div>
     """
     bindToController:
+      date: "="
       term: "="
       total: "="
     controller: TermPaginationController
@@ -21,13 +25,13 @@ angular.module "myApp.directives"
 
 class TermPaginationController
   constructor: (@$scope, @TimeService, @TermPeginateDataServicve, URLParameterChecker) ->
-    urlParameterChecker = new URLParameterChecker()
-    console.log 'TermPaginationController ', urlParameterChecker.queryParams
-    if _.isEmpty(urlParameterChecker.queryParams)
-      urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD')
-    @date = @TimeService.normalizeDate('days', urlParameterChecker.queryParams.date)
+    # urlParameterChecker = new URLParameterChecker()
+    # console.log 'TermPaginationController ', urlParameterChecker.queryParams
+    # if _.isEmpty(urlParameterChecker.queryParams)
+    #   urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD')
+    # @date = @TimeService.normalizeDate('days', urlParameterChecker.queryParams.date)
 
-    @subscribe()
+    # @subscribe()
     @bindKeyAction()
     @$scope.$on '$destroy', => @unbindKeyAction()
 
@@ -38,8 +42,8 @@ class TermPaginationController
   unbindKeyAction: ->
     Mousetrap.unbind ['ctrl+left', 'ctrl+right']
 
-  subscribe: ->
-    @$scope.$on 'TermPeginateDataServicve::publish', (event, args) => @date = args.date
+  # subscribe: ->
+  #   @$scope.$on 'TermPeginateDataServicve::publish', (event, args) => @date = args.date
 
   paginate: (amount) ->
     @date = @TimeService.changeDate('days', @date, amount)
