@@ -2781,7 +2781,7 @@ angular.module("myApp.directives").directive('maoContainer', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"col-md-12\">\n  <div ng-if=\"$ctrl.tabs.length == 0\">\n    <dot-loader class=\"infinitescroll-content\">\n  </div>\n  <div ng-show=\"$ctrl.tabs.length > 0\">\n    <ul class=\"mao__calender-list stylish-scrollbar--vertical\">\n      <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n        <a data-toggle=\"tab\" ng-click=\"$ctrl.onSelected(tab)\" >{{tab.name}}</a>\n      </li>\n    </ul>\n  </div>\n</div>\n<div class=\"tab-content col-md-12\">\n  <div id=\"tweets\" class=\"row tab-pane active\">\n    <mao-list-container></mao-list-container>\n  </div>\n</div>",
+    template: "<div class=\"col-md-12\">\n  <div ng-if=\"$ctrl.loaded\">\n    <dot-loader class=\"infinitescroll-content\">\n  </div>\n  <div ng-show=\"$ctrl.tabs.length > 0\">\n    <ul class=\"mao__calender-list stylish-scrollbar--vertical\">\n      <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n        <a data-toggle=\"tab\" ng-click=\"$ctrl.onSelected(tab)\" >{{tab.name}}</a>\n      </li>\n    </ul>\n  </div>\n</div>\n<div class=\"tab-content col-md-12\">\n  <div id=\"tweets\" class=\"row tab-pane active\">\n    <mao-list-container></mao-list-container>\n  </div>\n</div>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoContainerController
@@ -2796,6 +2796,7 @@ MaoContainerController = (function() {
     this.$httpParamSerializer = $httpParamSerializer;
     this.MaoService = MaoService;
     this.TimeService = TimeService;
+    this.loaded = true;
     this.tabs = [];
     this.tabType = "";
     this.$timeout((function() {
@@ -2827,7 +2828,12 @@ MaoContainerController = (function() {
             active: false
           };
         });
-        return _this.tabs[0].active = true;
+        _this.tabs[0].active = true;
+        return _this.loaded = false;
+      };
+    })(this))["catch"]((function(_this) {
+      return function(err) {
+        return _this.loaded = false;
       };
     })(this));
   };

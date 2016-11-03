@@ -4,7 +4,7 @@ angular.module "myApp.directives"
     scope: {}
     template: """
       <div class="col-md-12">
-        <div ng-if="$ctrl.tabs.length == 0">
+        <div ng-if="$ctrl.loaded">
           <dot-loader class="infinitescroll-content">
         </div>
         <div ng-show="$ctrl.tabs.length > 0">
@@ -27,6 +27,7 @@ angular.module "myApp.directives"
 
 class MaoContainerController
   constructor: (@$scope, @$timeout, @TermPeginateDataServicve, @$httpParamSerializer, @MaoService, @TimeService) ->
+    @loaded = true
     @tabs = []
     @tabType = ""
     @$timeout (-> @fetchTabData()).bind(@), 1000 # (=> @fetchTabData())だと表示されない
@@ -46,6 +47,9 @@ class MaoContainerController
         name: "#{targetDates[i].substr(5)} (#{response.data.count})"
         active: false
       @tabs[0].active = true
+      @loaded = false
+    .catch (err) => @loaded = false
+
       # @tabs.reverse()
       # $('.mao__calender-list').animate({scrollLeft: 100000}, 0)
 
