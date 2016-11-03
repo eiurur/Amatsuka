@@ -4,3 +4,13 @@
 .help__wrapper--q {
   color: $amatsuka-color;
 }
+
+.help__container {
+  & a {
+    color: $link-color;
+    border-bottom: 1px solid $amatsuka-color;
+    &:hover {
+      color: $amatsuka-color;
+    }
+  }
+}
