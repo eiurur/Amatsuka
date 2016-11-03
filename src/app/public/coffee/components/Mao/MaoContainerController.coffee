@@ -4,11 +4,16 @@ angular.module "myApp.directives"
     scope: {}
     template: """
       <div class="col-md-12">
+        <div ng-if="$ctrl.tabs.length == 0">
+          <dot-loader class="infinitescroll-content">
+        </div>
+        <div ng-show="$ctrl.tabs.length > 0">
           <ul class="mao__calender-list stylish-scrollbar--vertical">
             <li ng-repeat="tab in $ctrl.tabs" ng-class="{active: tab.active}">
               <a data-toggle="tab" ng-click="$ctrl.onSelected(tab)" >{{tab.name}}</a>
             </li>
           </ul>
+        </div>
       </div>
       <div class="tab-content col-md-12">
         <div id="tweets" class="row tab-pane active">
@@ -21,10 +26,10 @@ angular.module "myApp.directives"
     controller: MaoContainerController
 
 class MaoContainerController
-  constructor: (@$scope, @TermPeginateDataServicve, @$httpParamSerializer, @MaoService, @TimeService) ->
+  constructor: (@$scope, @$timeout, @TermPeginateDataServicve, @$httpParamSerializer, @MaoService, @TimeService) ->
     @tabs = []
     @tabType = ""
-    @fetchTabData()
+    @$timeout (-> @fetchTabData()).bind(@), 1000 # (=> @fetchTabData())だと表示されない
     @subscribe()
 
   fetchTabData: ->
@@ -54,5 +59,5 @@ class MaoContainerController
     @$scope.$on 'termPagination::paginate', (event, args) =>
       @activateLink id: args.date
 
-MaoContainerController.$inject = ['$scope', 'TermPeginateDataServicve', '$httpParamSerializer', 'MaoService', 'TimeService']
+MaoContainerController.$inject = ['$scope', '$timeout', 'TermPeginateDataServicve', '$httpParamSerializer', 'MaoService', 'TimeService']
 

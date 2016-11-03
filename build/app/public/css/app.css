@@ -407,8 +407,9 @@
  */
 .wrapper {
   width: 3em;
-  margin: 3em auto;
+  margin: 1em auto;
   padding-right: 100px;
+  height: 60px;
 }
 
 .dot:nth-child(1) {

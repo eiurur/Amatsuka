@@ -8,11 +8,11 @@ angular.module "myApp.directives"
           <a
             class="pagination__term--prev"
             scroll-on-click="scroll-on-click" scroll-to="body"
-            ng-click="$ctrl.paginate(1)"><</a>
+            ng-click="$ctrl.paginate($ctrl.NEXT)"><</a>
         </div>
         <a class="pagination__term--active">{{$ctrl.date}}   【{{$ctrl.total}}】</a>
         <div class="pagination__button">
-          <a class="pagination__term--next" ng-click="$ctrl.paginate(-1)">></a>
+          <a class="pagination__term--next" ng-click="$ctrl.paginate($ctrl.PREV)">></a>
         </div>
       </div>
     """
@@ -25,12 +25,14 @@ angular.module "myApp.directives"
 
 class TermPaginationController
   constructor: (@$scope, @TimeService, @TermPeginateDataServicve, URLParameterChecker) ->
+    @NEXT = 1
+    @PREV = -1
     @bindKeyAction()
     @$scope.$on '$destroy', => @unbindKeyAction()
 
   bindKeyAction: ->
-    Mousetrap.bind ['ctrl+left'], => @paginate(-1)
-    Mousetrap.bind ['ctrl+right'], => @paginate(1)
+    Mousetrap.bind ['ctrl+left'], => @paginate(@NEXT)
+    Mousetrap.bind ['ctrl+right'], => @paginate(@PREV)
 
   unbindKeyAction: ->
     Mousetrap.unbind ['ctrl+left', 'ctrl+right']

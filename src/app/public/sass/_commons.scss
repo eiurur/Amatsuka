@@ -414,9 +414,11 @@
 .wrapper
 {
   width: 3em;
-  margin: 3em auto;
+  margin: 1em auto;
   // 中心に移動するために追加。
   padding-right: 100px;
+
+  height: 60px;
 }
 
 .dot:nth-child(1)

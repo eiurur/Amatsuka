@@ -977,7 +977,7 @@ angular.module("myApp.directives").directive('termPagination', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"pagination__term\">\n  <div class=\"pagination__button\">\n    <a\n      class=\"pagination__term--prev\"\n      scroll-on-click=\"scroll-on-click\" scroll-to=\"body\"\n      ng-click=\"$ctrl.paginate(1)\"><</a>\n  </div>\n  <a class=\"pagination__term--active\">{{$ctrl.date}}   【{{$ctrl.total}}】</a>\n  <div class=\"pagination__button\">\n    <a class=\"pagination__term--next\" ng-click=\"$ctrl.paginate(-1)\">></a>\n  </div>\n</div>",
+    template: "<div class=\"pagination__term\">\n  <div class=\"pagination__button\">\n    <a\n      class=\"pagination__term--prev\"\n      scroll-on-click=\"scroll-on-click\" scroll-to=\"body\"\n      ng-click=\"$ctrl.paginate($ctrl.NEXT)\"><</a>\n  </div>\n  <a class=\"pagination__term--active\">{{$ctrl.date}}   【{{$ctrl.total}}】</a>\n  <div class=\"pagination__button\">\n    <a class=\"pagination__term--next\" ng-click=\"$ctrl.paginate($ctrl.PREV)\">></a>\n  </div>\n</div>",
     bindToController: {
       date: "=",
       term: "=",
@@ -993,6 +993,8 @@ TermPaginationController = (function() {
     this.$scope = $scope;
     this.TimeService = TimeService;
     this.TermPeginateDataServicve = TermPeginateDataServicve;
+    this.NEXT = 1;
+    this.PREV = -1;
     this.bindKeyAction();
     this.$scope.$on('$destroy', (function(_this) {
       return function() {
@@ -1004,12 +1006,12 @@ TermPaginationController = (function() {
   TermPaginationController.prototype.bindKeyAction = function() {
     Mousetrap.bind(['ctrl+left'], (function(_this) {
       return function() {
-        return _this.paginate(-1);
+        return _this.paginate(_this.NEXT);
       };
     })(this));
     return Mousetrap.bind(['ctrl+right'], (function(_this) {
       return function() {
-        return _this.paginate(1);
+        return _this.paginate(_this.PREV);
       };
     })(this));
   };
@@ -2779,7 +2781,7 @@ angular.module("myApp.directives").directive('maoContainer', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"col-md-12\">\n    <ul class=\"mao__calender-list stylish-scrollbar--vertical\">\n      <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n        <a data-toggle=\"tab\" ng-click=\"$ctrl.onSelected(tab)\" >{{tab.name}}</a>\n      </li>\n    </ul>\n</div>\n<div class=\"tab-content col-md-12\">\n  <div id=\"tweets\" class=\"row tab-pane active\">\n    <mao-list-container></mao-list-container>\n  </div>\n</div>",
+    template: "<div class=\"col-md-12\">\n  <div ng-if=\"$ctrl.tabs.length == 0\">\n    <dot-loader class=\"infinitescroll-content\">\n  </div>\n  <div ng-show=\"$ctrl.tabs.length > 0\">\n    <ul class=\"mao__calender-list stylish-scrollbar--vertical\">\n      <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n        <a data-toggle=\"tab\" ng-click=\"$ctrl.onSelected(tab)\" >{{tab.name}}</a>\n      </li>\n    </ul>\n  </div>\n</div>\n<div class=\"tab-content col-md-12\">\n  <div id=\"tweets\" class=\"row tab-pane active\">\n    <mao-list-container></mao-list-container>\n  </div>\n</div>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoContainerController
@@ -2787,15 +2789,18 @@ angular.module("myApp.directives").directive('maoContainer', function() {
 });
 
 MaoContainerController = (function() {
-  function MaoContainerController($scope, TermPeginateDataServicve, $httpParamSerializer, MaoService, TimeService) {
+  function MaoContainerController($scope, $timeout, TermPeginateDataServicve, $httpParamSerializer, MaoService, TimeService) {
     this.$scope = $scope;
+    this.$timeout = $timeout;
     this.TermPeginateDataServicve = TermPeginateDataServicve;
     this.$httpParamSerializer = $httpParamSerializer;
     this.MaoService = MaoService;
     this.TimeService = TimeService;
     this.tabs = [];
     this.tabType = "";
-    this.fetchTabData();
+    this.$timeout((function() {
+      return this.fetchTabData();
+    }).bind(this), 1000);
     this.subscribe();
   }
 
@@ -2855,7 +2860,7 @@ MaoContainerController = (function() {
 
 })();
 
-MaoContainerController.$inject = ['$scope', 'TermPeginateDataServicve', '$httpParamSerializer', 'MaoService', 'TimeService'];
+MaoContainerController.$inject = ['$scope', '$timeout', 'TermPeginateDataServicve', '$httpParamSerializer', 'MaoService', 'TimeService'];
 
 var MaoListContoller;
 
