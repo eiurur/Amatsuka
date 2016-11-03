@@ -186,6 +186,9 @@ module.exports = class PictCollection
       screenName: @illustratorRawData.screen_name
       icon: @illustratorRawData.profile_image_url_https
       url: @illustratorRawData.url
+      profileBackgroundColor: @illustratorRawData.profile_background_color
+      profileBackgroundImageUrl: @illustratorRawData.profile_background_image_url_https
+      profileBannerUrl: @illustratorRawData.profile_banner_url
       description: @illustratorRawData.description
 
   getIllustratorData: ->

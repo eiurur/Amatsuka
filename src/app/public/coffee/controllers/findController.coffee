@@ -10,3 +10,4 @@ angular.module "myApp.controllers"
   unless ListService.hasListData() then $location.path '/'
 
   $scope.pictList = new Pict()
+  console.log $scope.pictList

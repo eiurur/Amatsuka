@@ -34,6 +34,9 @@ IllustratorSchema = new Schema
   screenName:String
   icon: String
   url: String
+  profileBackgroundColor: String
+  profileBackgroundImageUrl: String
+  profileBannerUrl: String
   description: String
   createdAt:
     type: Date

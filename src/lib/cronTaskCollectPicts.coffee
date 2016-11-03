@@ -37,23 +37,3 @@ exports.cronTaskCollectPicts = ->
       .catch (err) ->
         console.error 'Failed.', err
         return
-
-    # return
-    # user =
-    #   _json:
-    #     id_str: settings.TW_ID_STR
-    #   twitter_token: settings.TW_AT
-    #   twitter_token_secret: settings.TW_AS
-
-    # promises = []
-    # profileList.forEach (profile, idx) ->
-    #   pictCollection = new PictCollection(user, profile.twitterIdStr, idx)
-    #   promises.push pictCollection.collectProfileAndPicts()
-
-    # Promise.all promises
-    # .then (resultList) ->
-    #   console.log 'Succeeded!'
-    #   return
-    # .catch (err) ->
-    #   console.error 'Failed.', err
-    #   return
