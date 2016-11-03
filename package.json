@@ -12,7 +12,7 @@
     "dev": "gulp",
     "start": "node build/app.js",
     "test": "mocha --require espower-coffee/guess test/*.coffee",
-    "postinstall": "npm cache clean && bower cache clean && ./node_modules/bower/bin/bower install"
+    "postinstall": "npm cache clean"
   },
   "dependencies": {
     "async": "^0.9.0",
