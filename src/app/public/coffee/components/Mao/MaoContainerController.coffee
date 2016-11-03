@@ -46,6 +46,8 @@ class MaoContainerController
         name: "#{targetDates[i].substr(5)} (#{response.data.count})"
         active: false
       @tabs[0].active = true
+      # @tabs.reverse()
+      # $('.mao__calender-list').animate({scrollLeft: 100000}, 0)
 
   activateLink: (clickedTab) ->
     @tabType = clickedTab.id

@@ -977,7 +977,7 @@ angular.module("myApp.directives").directive('termPagination', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"pagination__term\">\n  <div class=\"pagination__button\">\n    <a\n      class=\"pagination__term--prev\"\n      scroll-on-click=\"scroll-on-click\" scroll-to=\"body\"\n      ng-click=\"$ctrl.paginate($ctrl.NEXT)\"><</a>\n  </div>\n  <a class=\"pagination__term--active\">{{$ctrl.date}}   【{{$ctrl.total}}】</a>\n  <div class=\"pagination__button\">\n    <a class=\"pagination__term--next\" ng-click=\"$ctrl.paginate($ctrl.PREV)\">></a>\n  </div>\n</div>",
+    template: "<div class=\"pagination__term\">\n  <div class=\"pagination__button\">\n    <a\n      class=\"pagination__term--prev\"\n      scroll-on-click=\"scroll-on-click\" scroll-to=\"body\"\n      ng-click=\"$ctrl.paginate($ctrl.PREV)\"><</a>\n  </div>\n  <a class=\"pagination__term--active\">{{$ctrl.date}}   【{{$ctrl.total}}】</a>\n  <div class=\"pagination__button\">\n    <a class=\"pagination__term--next\" ng-click=\"$ctrl.paginate($ctrl.NEXT)\">></a>\n  </div>\n</div>",
     bindToController: {
       date: "=",
       term: "=",
@@ -1006,12 +1006,12 @@ TermPaginationController = (function() {
   TermPaginationController.prototype.bindKeyAction = function() {
     Mousetrap.bind(['ctrl+left'], (function(_this) {
       return function() {
-        return _this.paginate(_this.NEXT);
+        return _this.paginate(_this.PREV);
       };
     })(this));
     return Mousetrap.bind(['ctrl+right'], (function(_this) {
       return function() {
-        return _this.paginate(_this.PREV);
+        return _this.paginate(_this.NEXT);
       };
     })(this));
   };
