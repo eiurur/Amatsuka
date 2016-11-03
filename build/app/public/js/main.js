@@ -2855,6 +2855,8 @@ MaoContainerController = (function() {
 
 })();
 
+MaoContainerController.$inject = ['$scope', '$TermPeginateDataServicve', '$httpParamSerializer', 'MaoService', 'TimeService'];
+
 var MaoListContoller;
 
 angular.module("myApp.directives").directive('maoListContainer', function() {

@@ -53,3 +53,6 @@ class MaoContainerController
   subscribe: ->
     @$scope.$on 'termPagination::paginate', (event, args) =>
       @activateLink id: args.date
+
+MaoContainerController.$inject = ['$scope', '$TermPeginateDataServicve', '$httpParamSerializer', 'MaoService', 'TimeService']
+
