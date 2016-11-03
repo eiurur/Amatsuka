@@ -25,13 +25,6 @@ angular.module "myApp.directives"
 
 class TermPaginationController
   constructor: (@$scope, @TimeService, @TermPeginateDataServicve, URLParameterChecker) ->
-    # urlParameterChecker = new URLParameterChecker()
-    # console.log 'TermPaginationController ', urlParameterChecker.queryParams
-    # if _.isEmpty(urlParameterChecker.queryParams)
-    #   urlParameterChecker.queryParams.date = moment().subtract(1, 'days').format('YYYY-MM-DD')
-    # @date = @TimeService.normalizeDate('days', urlParameterChecker.queryParams.date)
-
-    # @subscribe()
     @bindKeyAction()
     @$scope.$on '$destroy', => @unbindKeyAction()
 
@@ -41,9 +34,6 @@ class TermPaginationController
 
   unbindKeyAction: ->
     Mousetrap.unbind ['ctrl+left', 'ctrl+right']
-
-  # subscribe: ->
-  #   @$scope.$on 'TermPeginateDataServicve::publish', (event, args) => @date = args.date
 
   paginate: (amount) ->
     @date = @TimeService.changeDate('days', @date, amount)

@@ -55,25 +55,20 @@ angular.module "myApp.directives"
     controller: MaoListContoller
 
 class MaoListContoller
-  constructor: (@$location, @$httpParamSerializer, @$scope, @Mao, @MaoService, URLParameterChecker, @TimeService) ->
-    urlParameterChecker = new URLParameterChecker()
-    console.log urlParameterChecker
+  constructor: (@$location, @$httpParamSerializer, @$scope, @Mao, @MaoService, @URLParameterChecker, @TimeService) ->
+    @date = null
+    @tweetTotalNumber = 0
 
+    @setDate()
+    @tweetList = new @Mao(@date)
+    @getTweetTotalNumber()
+    @subscribe()
+
+  setDate: ->
+    urlParameterChecker = new @URLParameterChecker()
     if _.isEmpty(urlParameterChecker.queryParams)
       urlParameterChecker.queryParams.date = moment().add(-1, 'days').format('YYYY-MM-DD')
-
     @date = moment(urlParameterChecker.queryParams.date).format('YYYY-MM-DD')
-    @tweetList = new @Mao(@date)
-
-    @tweetTotalNumber = 0
-    @getTweetTotalNumber()
-    # @MaoService.countTweetByMaoTokenAndDate(qs)
-    # .then (response) => @tweetTotalNumber = response.data.count
-
-
-    @subscribe()
-    # 今はいらん
-    # @term = $routeParams.term
 
   getTweetTotalNumber: ->
     qs = @$httpParamSerializer date: @date
