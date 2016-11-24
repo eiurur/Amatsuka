@@ -1,22 +1,8 @@
 div(ng-controller="UserSidebarCtrl")
 
   //
-  .user-sidebar__header
-    .media.user-sidebar__controll(ng-if='user.screen_name')
-      a.pull-left(href='https://www.twitter.com/{{::user.screen_name}}', target="_blank")
-        img.user-sidebar__profile__icon.fade(ng-src='{{::user.profile_image_url_https}}', img-preload="img-preload")
-      .media-body.user-sidebar__profile__body
-        h4.media-heading.user-sidebar__profile__names
-          span.user-sidebar__profile__names--name {{::user.name}}
-          span.screen-name @{{::user.screen_name}}
-        span.btn-wrapper
-        a.btn.btn-sm.user-sidebar__btn-follow(followable, follow-status='user.followStatus', list-id-str='{{listIdStr}}', twitter-id-str='{{::user.id_str}}', ng-disabled='isProcessing')
-        a.btn.btn-sm.user-sidebar__icon-all-view(href="/extract/@{{::user.screen_name}}", target="_blank")
-          i.fa.fa-external-link-square.i__center-padding
-        user-action-button-dropdowns(user="user")
-
+  user-profile(user="user")
   #scroll.user-sidebar.user-sidebar--fixed
-
     .media.user-sidebar__profile(ng-if='user.screen_name')
       .media-body
         .user-sidebar__profile--description(ng-bind-html='user.description | newlines')
@@ -25,7 +11,11 @@ div(ng-controller="UserSidebarCtrl")
           a(href="{{::user.url}}", target="_blank") {{::user.url}}
 
     // code from index.jade(少しだけ表示内容がかわってる。)
-    .timeline.user-sidebar__contents(infinite-scroll='tweets.nextPage()',infinite-scroll-distance='1', infinite-scroll-disabled='tweets.busy', infinite-scroll-container="'#scroll'")
+    .timeline.user-sidebar__contents(
+      infinite-scroll='tweets.nextPage()',
+      infinite-scroll-distance='1',
+      infinite-scroll-disabled='tweets.busy',
+      infinite-scroll-container="'#scroll'")
       dot-loader.user-sidebar__contents--box-loading-init(ng-if='!tweets.items')
       .timeline__post.user-sidebar__post(ng-repeat='tweet in tweets.items | orderBy: "id_str": "DESC"')
         .timeline__header.timeline__header--list

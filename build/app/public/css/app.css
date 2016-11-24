@@ -1422,6 +1422,9 @@ i {
   -webkit-transform: translate3d(100%, 0, 0);
   transform: translate3d(100%, 0, 0);
 }
+.user-sidebar__controll--hide {
+  transform: translateY(-100px);
+}
 .user-sidebar__controll .btn {
   margin-top: 10px;
   margin-right: 5px;

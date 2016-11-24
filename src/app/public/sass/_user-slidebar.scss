@@ -67,6 +67,10 @@
       // display: none;
     }
 
+    &--hide {
+      transform: translateY(-100px);
+    }
+
     & .btn {
       margin-top: 10px;
       margin-right: 5px;
@@ -254,7 +258,6 @@
     padding: 15px;
     min-height: 0px;
     max-width: 90%;
-
   }
 
   .media .thumbnail-img
