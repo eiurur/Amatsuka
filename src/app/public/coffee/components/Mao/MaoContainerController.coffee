@@ -30,7 +30,7 @@ class MaoContainerController
     @loaded = true
     @tabs = []
     @tabType = ""
-    @$timeout (-> @fetchTabData()).bind(@), 1000 # (=> @fetchTabData())だと表示されない
+    @$timeout (-> @fetchTabData()).bind(@), 3000 # (=> @fetchTabData())だと表示されない
     @subscribe()
 
   fetchTabData: ->
