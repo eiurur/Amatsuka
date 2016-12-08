@@ -37,7 +37,7 @@ module.exports = (app) ->
     .catch (error) ->
       res.json error: error
 
-  # GET リストのメンバー
+  # GET リストのメンバー(statusとentitesは除外する)
   app.get '/api/lists/members/:id?/:count?', (req, res) ->
     twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.getListsMembers

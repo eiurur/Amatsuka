@@ -325,6 +325,46 @@ angular.module("myApp.controllers").controller("ConfigCtrl", ["$scope", "$locati
   }, true);
 }]);
 
+angular.module("myApp.controllers").controller("DrawerCtrl", ["$scope", "$location", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, ConfigService, TweetService, ListService, Tweets) {
+  $scope.isOpened = false;
+  $scope.config = {};
+  $scope.$on('showDrawer::userData', function(event, args) {
+    if (!$scope.isOpened) {
+      return;
+    }
+    $scope.user = ListService.normalizeMember(args);
+    $scope.listIdStr = ListService.amatsukaList.data.id_str;
+  });
+  $scope.$on('showDrawer::tweetData', function(event, args) {
+    var maxId, tweetsNormalized;
+    if (!$scope.isOpened) {
+      return;
+    }
+    ConfigService.getFromDB().then(function(data) {
+      return $scope.config = data;
+    });
+    maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
+    tweetsNormalized = TweetService.normalizeTweets(args);
+    $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
+  });
+  $scope.$on('showDrawer::isOpened', function(event, args) {
+    $scope.isOpened = true;
+    $scope.user = {};
+    $scope.tweets = {};
+  });
+  $scope.$on('showDrawer::isClosed', function(event, args) {
+    $scope.isOpened = false;
+    $scope.user = {};
+    $scope.tweets = {};
+  });
+  return $scope.$on('addMember', function(event, args) {
+    if (_.isUndefined($scope.tweets)) {
+      return;
+    }
+    TweetService.applyFollowStatusChange($scope.tweets.items, args);
+  });
+}]);
+
 angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$routeParams", "$location", "Tweets", "AuthService", "TweetService", "ListService", "ConfigService", function($scope, $routeParams, $location, Tweets, AuthService, TweetService, ListService, ConfigService) {
   var filterPic, params;
   if (_.isEmpty(AuthService.user)) {
@@ -2160,13 +2200,8 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
         };
       })(this)).then((function(_this) {
         return function(data) {
-          var members;
-          members = data.data.users.map(function(user) {
-            delete user.status;
-            delete user.entities;
-            return user;
-          });
-          _this.amatsukaList.member = members;
+          console.log('list members ', data.data.users);
+          _this.amatsukaList.member = data.data.users;
           localStorage.setItem('amatsukaFollowList', JSON.stringify(_this.amatsukaList.member));
           return data.data.users;
         };
@@ -3019,6 +3054,8 @@ MaoListContoller = (function() {
 
 MaoListContoller.$inject = ['$location', '$httpParamSerializer', '$scope', 'Mao', 'MaoService', 'URLParameterChecker', 'TimeService'];
 
+
+
 var MaoTweetArticleController;
 
 angular.module("myApp.directives").directive('maoTweetArticle', function() {
@@ -3080,8 +3117,6 @@ PopularImageListContainerController = (function() {
 })();
 
 PopularImageListContainerController.$inject = ['TweetService'];
-
-
 
 var GridLayoutTweet;
 
@@ -3178,43 +3213,3 @@ UserProfileController = (function() {
 UserProfileController.$inject = [];
 
 
-
-angular.module("myApp.controllers").controller("DrawerCtrl", ["$scope", "$location", "ConfigService", "TweetService", "ListService", "Tweets", function($scope, $location, ConfigService, TweetService, ListService, Tweets) {
-  $scope.isOpened = false;
-  $scope.config = {};
-  $scope.$on('showDrawer::userData', function(event, args) {
-    if (!$scope.isOpened) {
-      return;
-    }
-    $scope.user = ListService.normalizeMember(args);
-    $scope.listIdStr = ListService.amatsukaList.data.id_str;
-  });
-  $scope.$on('showDrawer::tweetData', function(event, args) {
-    var maxId, tweetsNormalized;
-    if (!$scope.isOpened) {
-      return;
-    }
-    ConfigService.getFromDB().then(function(data) {
-      return $scope.config = data;
-    });
-    maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
-    tweetsNormalized = TweetService.normalizeTweets(args);
-    $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
-  });
-  $scope.$on('showDrawer::isOpened', function(event, args) {
-    $scope.isOpened = true;
-    $scope.user = {};
-    $scope.tweets = {};
-  });
-  $scope.$on('showDrawer::isClosed', function(event, args) {
-    $scope.isOpened = false;
-    $scope.user = {};
-    $scope.tweets = {};
-  });
-  return $scope.$on('addMember', function(event, args) {
-    if (_.isUndefined($scope.tweets)) {
-      return;
-    }
-    TweetService.applyFollowStatusChange($scope.tweets.items, args);
-  });
-}]);
