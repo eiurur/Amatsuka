@@ -11,14 +11,14 @@
   .row.row-eq-height(infinite-scroll='list.loadMoreMember()')
     .col-md-4.col-sm-6.member(ng-repeat="member in list.members")
       .media.member__media
-        a.pull-left(twitter-id-str="{{::member.id_str}}", show-user-sidebar="show-user-sidebar")
+        a.pull-left(twitter-id-str="{{::member.id_str}}", show-drawer="show-drawer")
           img.media-object.thumbnail-img.fade(ng-src='{{::member.profile_image_url_https}}', img-preload="img-preload")
         .media-body
           h4.media-heading
             span.name {{::member.name}}
             span.screen-name.clickable(
               twitter-id-str="{{::member.id_str}}",
-              show-user-sidebar="show-user-sidebar") @{{::member.screen_name}}
+              show-drawer="show-drawer") @{{::member.screen_name}}
           span.btn-wrapper
           a.btn.btn-sm.btn-follow(followable, follow-status='member.followStatus', list-id-str='{{list.idStr}}', twitter-id-str='{{::member.id_str}}', ng-disabled='isProcessing')
       popular-image-list-container(twitter-id-str='member.id_str')

@@ -48,7 +48,6 @@ angular.module "myApp.controllers"
       console.log '==> update() finally'
       $scope.message = ''
 
-
   # localStorageに保存されているAmatsukaListが別のアカウントかどうかチェックする
   ListService.isSameAmatsukaList()
   .then (_isSameAmatsukaList) ->

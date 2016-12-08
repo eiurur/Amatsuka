@@ -47,7 +47,7 @@
         img.media-object.thumbnail-img.fade(
           ng-src='{{extract.user.profile_image_url_https}}',
           img-preload="img-preload",
-          show-user-sidebar="show-user-sidebar",
+          show-drawer="show-drawer",
           twitter-id-str="{{extract.user.id_str}}")
       .media-body
         h4.media-heading
@@ -62,7 +62,7 @@
 
     .media-body.extract__profile--bio
       .extract__profile--description(ng-bind-html='extract.user.description | newlines')
-      .user-sidebar__profile--url(ng-hide="extract.user.url == null")
+      .drawer__profile--url(ng-hide="extract.user.url == null")
         i.fa.fa-link
         a(href="{{extract.user.url}}", target="_blank") {{extract.user.url}}
 
@@ -72,17 +72,17 @@
       .section--divider
 
       .timeline.timeline--tile(ng-if='layoutType == "tile"')
-        .user-sidebar__contents--infinitescroll-message.extract__loading__container(ng-if='isLoading')
+        .drawer__contents--infinitescroll-message.extract__loading__container(ng-if='isLoading')
           dot-loader
-          p.extract__loading__message.user-sidebar__contents--infinitescroll-message
+          p.extract__loading__message.drawer__contents--infinitescroll-message
             | Now fetching. This process will take a long time.
         .timeline__post.timeline__post--tile.col-lg-2.col-md-3.col-sm-4(ng-repeat='tweet in extract.tweets')
           include ../parts/post/_tile
 
       .timeline.timeline--grid(ng-if='layoutType == "grid"', masonry='masonry', preserve-order)
-        .user-sidebar__contents--infinitescroll-message.extract__loading__container(ng-if='isLoading')
+        .drawer__contents--infinitescroll-message.extract__loading__container(ng-if='isLoading')
           dot-loader
-          p.extract__loading__message.user-sidebar__contents--infinitescroll-message
+          p.extract__loading__message.drawer__contents--infinitescroll-message
             | Now fetching. This process will take a long time.
         .masonry-brick.timeline__post.timeline__post--grid(ng-repeat='tweet in extract.tweets')
           include ../parts/post/_grid

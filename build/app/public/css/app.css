@@ -1579,6 +1579,199 @@ i {
     padding-top: 8px;
   }
 }
+.drawer {
+  top: 0;
+  right: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 90%;
+  max-width: 600px;
+  height: 100%;
+  background: white;
+  will-change: transform;
+  transition: .3s ease;
+  -moz-transform: translate3d(100%, 0, 0);
+  -ms-transform: translate3d(100%, 0, 0);
+  -webkit-transform: translate3d(100%, 0, 0);
+  transform: translate3d(100%, 0, 0);
+}
+.drawer--in {
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+.drawer--fixed {
+  position: fixed;
+  z-index: 10000;
+}
+.drawer__controll {
+  top: 0px;
+  right: 0px;
+  background: rgba(255, 255, 255, 0.9);
+  position: fixed;
+  z-index: 10001;
+  max-width: 600px;
+  min-height: 100px;
+  width: 100%;
+  padding: 16px 30px 0;
+  overflow: visible !important;
+  transition: .3s ease;
+}
+.drawer__controll--in {
+  transform: translate3d(0, 0, 0);
+}
+.drawer__controll--out {
+  -moz-transform: translate3d(100%, 0, 0);
+  -ms-transform: translate3d(100%, 0, 0);
+  -webkit-transform: translate3d(100%, 0, 0);
+  transform: translate3d(100%, 0, 0);
+}
+.drawer__controll--hide {
+  transform: translateY(-100px);
+}
+.drawer__controll .btn {
+  margin-top: 10px;
+  margin-right: 5px;
+}
+.drawer__btn-follow:hover {
+  color: white;
+  background-color: #CCD1D9;
+}
+.drawer__icon-all-view:before {
+  content: "イラストを全て見る";
+}
+.drawer__contents {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+.drawer__profile {
+  width: 100%;
+  padding: 100px 30px 20px;
+  color: #292929;
+}
+.drawer__profile__body {
+  overflow: visible !important;
+}
+.drawer__profile__names {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.drawer__profile__names--name {
+  color: #424242;
+}
+.drawer__profile--description {
+  font-size: .8em;
+  line-height: 1.8;
+  padding-top: 20px;
+}
+.drawer__profile--url {
+  font-size: .7em;
+  line-height: 1.8;
+  padding-top: 5px;
+}
+.drawer__profile--url i {
+  color: #a1a1a1;
+  margin-right: 5px;
+}
+.drawer__profile__icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  border-radius: 4px;
+}
+.drawer__profile__icon img {
+  max-width: 64px;
+  border-radius: 3px;
+}
+.drawer__post {
+  margin: 20px 30px;
+  -moz-box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0 0 2px;
+}
+.drawer__contents--infinitescroll-message {
+  margin: 0 auto;
+}
+.drawer__contents--box-loading-init {
+  padding: 0 20px 20px;
+}
+
+@media (max-width: 640px) {
+  .drawer__controll {
+    width: 90%;
+    padding: 15px;
+    min-height: 0px;
+    max-width: 90%;
+  }
+  .drawer__profile {
+    padding: 100px 15px 15px;
+  }
+  .drawer__profile__icon {
+    width: 56px;
+    height: 56px;
+  }
+  .drawer__post {
+    margin: 20px 15px;
+  }
+  .drawer .btn {
+    margin-top: 6px;
+    margin-right: 6px;
+  }
+
+  .media .media-body {
+    padding-left: 0;
+  }
+}
+@media (max-width: 480px) {
+  .drawer {
+    font-size: 70%;
+    padding: 88px 0 0 0;
+  }
+  .drawer__post--header--link {
+    margin-left: 0;
+  }
+  .drawer__profile {
+    padding: 15px;
+  }
+  .drawer__profile--description {
+    padding-top: 25px;
+  }
+  .drawer__post {
+    margin: 20px 15px;
+  }
+  .drawer__controll {
+    width: 90%;
+    padding: 15px;
+    min-height: 0px;
+    max-width: 90%;
+  }
+  .drawer__icon-all-view:before {
+    content: "全て見る";
+  }
+  .drawer__profile--description {
+    padding-top: 8px;
+  }
+
+  .media .thumbnail-img {
+    max-width: 48px;
+  }
+
+  .media .media-body {
+    padding-left: 0;
+  }
+
+  .media-heading {
+    font-size: 70%;
+  }
+
+  .btn-follow {
+    margin: 0;
+  }
+}
 .list-member__container {
   padding-left: 20px;
 }

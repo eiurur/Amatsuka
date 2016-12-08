@@ -97,7 +97,12 @@ angular.module "myApp.services"
         localStorage.setItem 'amatsukaList', JSON.stringify(@amatsukaList.data)
         TweetService.getListsMembers(listIdStr: @amatsukaList.data.id_str)
       .then (data) =>
-        @amatsukaList.member = data.data.users
+        # ユーザの情報をすべて含めてlocalStorageに保存すると1500人弱で許容量を超過してエラーが起きるので不要な情報を削ぐ
+        members = data.data.users.map (user) ->
+          delete user.status
+          delete user.entities
+          user
+        @amatsukaList.member = members
         localStorage.setItem 'amatsukaFollowList', JSON.stringify(@amatsukaList.member)
         data.data.users
 

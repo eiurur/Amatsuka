@@ -2,12 +2,12 @@
   .timeline__header__info--list
     span.timeline__header__user(
       twitter-id-str="{{::tweet.user.id_str}}",
-      show-user-sidebar="show-user-sidebar") {{::tweet.user.screen_name}}
+      show-drawer="show-drawer") {{::tweet.user.screen_name}}
     span.timeline__header__rt-icon(ng-if="tweet.retweeted_status")
       i.fa.fa-retweet
     a(
       twitter-id-str="{{::tweet.retweeted_status.user.id_str}}",
-      show-user-sidebar="show-user-sidebar") {{::tweet.retweeted_status.user.screen_name}}
+      show-drawer="show-drawer") {{::tweet.retweeted_status.user.screen_name}}
     followable(
       ng-if='!tweet.followStatus && tweet.retweeted_status',
       list-id-str="{{listIdStr}}",
@@ -25,7 +25,7 @@
   img.fade(
     ng-src="{{::tweet.user.profile_image_url_https}}",
     img-preload="img-preload",
-    show-user-sidebar="show-user-sidebar",
+    show-drawer="show-drawer",
     twitter-id-str="{{::tweet.user.id_str}}")
 .timeline__post__image(ng-repeat='picUrl in tweet.picUrlList')
   img.fade(
@@ -46,7 +46,7 @@
     p
       a(
         twitter-id-str="{{::tweet.retweeted_status.user.id_str}}",
-        show-user-sidebar="show-user-sidebar") {{::tweet.retweeted_status.user.screen_name}}
+        show-drawer="show-drawer") {{::tweet.retweeted_status.user.screen_name}}
     blockquote
       .timeline__post__text(ng-bind-html='tweet.text | newlines')
 .timeline__footer.timeline__footer--list

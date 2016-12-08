@@ -6,8 +6,8 @@ angular.module "myApp.directives"
       <div class="timeline__post--header timeline__post--header--grid">
         <div class="timeline__post--header--info timeline__post--header--info--grid">
           <div class="timeline__post--header--link timeline__post--header--link--grid">
-            <span twitter-id-str="{{::$ctrl.tweet.user.id_str}}" show-user-sidebar="show-user-sidebar" class="timeline__post--header--user timeline__post--header--user--grid clickable">{{::$ctrl.tweet.user.screen_name}}
-            </span><span ng-if="$ctrl.tweet.retweeted_status" class="timeline__post--header--rt_icon timeline__post--header--rt_icon--grid"><i class="fa fa-retweet"></i></span><a twitter-id-str="{{::$ctrl.tweet.retweeted_status.user.id_str}}" show-user-sidebar="show-user-sidebar" class="timeline__post--header--rt_source timeline__post--header--rt_source--grid">{{::$ctrl.tweet.retweeted_status.user.screen_name}}
+            <span twitter-id-str="{{::$ctrl.tweet.user.id_str}}" show-drawer="show-drawer" class="timeline__post--header--user timeline__post--header--user--grid clickable">{{::$ctrl.tweet.user.screen_name}}
+            </span><span ng-if="$ctrl.tweet.retweeted_status" class="timeline__post--header--rt_icon timeline__post--header--rt_icon--grid"><i class="fa fa-retweet"></i></span><a twitter-id-str="{{::$ctrl.tweet.retweeted_status.user.id_str}}" show-drawer="show-drawer" class="timeline__post--header--rt_source timeline__post--header--rt_source--grid">{{::$ctrl.tweet.retweeted_status.user.screen_name}}
             </a>
             <followable ng-if="!$ctrl.tweet.followStatus" list-id-str="{{$ctrl.listIdStr}}" tweet="{{$ctrl.tweet}}" follow-status="$ctrl.tweet.followStatus">
             </followable>
@@ -17,7 +17,7 @@ angular.module "myApp.directives"
           </a>
         </div>
       </div>
-      <div class="timeline__post--icon timeline__post--icon--grid"><img ng-src="{{::$ctrl.tweet.user.profile_image_url_https}}" img-preload="img-preload" show-user-sidebar="show-user-sidebar" twitter-id-str="{{::$ctrl.tweet.user.id_str}}" class="fade"/>
+      <div class="timeline__post--icon timeline__post--icon--grid"><img ng-src="{{::$ctrl.tweet.user.profile_image_url_https}}" img-preload="img-preload" show-drawer="show-drawer" twitter-id-str="{{::$ctrl.tweet.user.id_str}}" class="fade"/>
       </div>
       <div ng-repeat="picUrl in $ctrl.tweet.picUrlList" class="timeline__post--image timeline__post--image--grid">
         <img ng-if="!$ctrl.tweet.video_url" ng-src="{{::picUrl}}" img-preload="img-preload" zoom-image="zoom-image" data-img-src="{{::picUrl}}" class="fade"/>
@@ -30,7 +30,7 @@ angular.module "myApp.directives"
         <div ng-if="!$ctrl.tweet.retweeted_status" ng-bind-html="$ctrl.tweet.text | newlines" class="timeline__post--text timeline__post--text--grid">
         </div>
         <div ng-if="$ctrl.tweet.retweeted_status" class="timeline__post--blockquote timeline__post--blockquote--grid">
-          <p><a twitter-id-str="{{::$ctrl.tweet.retweeted_status.user.id_str}}" show-user-sidebar="show-user-sidebar">{{::$ctrl.tweet.retweeted_status.user.screen_name}}
+          <p><a twitter-id-str="{{::$ctrl.tweet.retweeted_status.user.id_str}}" show-drawer="show-drawer">{{::$ctrl.tweet.retweeted_status.user.screen_name}}
             </a>
           </p>
           <blockquote>

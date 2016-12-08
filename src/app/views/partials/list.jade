@@ -26,7 +26,7 @@
   .scrollable.stylish-scrollbar.list-member__container(ng-if="sourceList.members.length > 0")
     div(ng-repeat="member in sourceList.members")
       .media
-        a.pull-left(twitter-id-str="{{member.id_str}}", show-user-sidebar="show-user-sidebar")
+        a.pull-left(twitter-id-str="{{member.id_str}}", show-drawer="show-drawer")
           img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url_https}}', img-preload="img-preload")
         .media-body
           h4.media-heading
@@ -52,7 +52,7 @@
     .list-member__container(infinite-scroll='amatsukaList.loadMoreMember()',infinite-scroll-distance='0', infinite-scroll-container="'#amatsuka-list__scrollable'")
       div(ng-repeat="member in amatsukaList.members")
         .media
-          a.pull-left(twitter-id-str="{{member.id_str}}", show-user-sidebar="show-user-sidebar")
+          a.pull-left(twitter-id-str="{{member.id_str}}", show-drawer="show-drawer")
             img.media-object.thumbnail-img.fade(ng-src='{{member.profile_image_url_https}}', img-preload="img-preload")
           .media-body
             h4.media-heading

@@ -1,0 +1,271 @@
+@charset "utf-8";
+
+.drawer
+{
+  top: 0;
+  right: 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  // 慣性スクロールを有効にする
+  -webkit-overflow-scrolling: touch;
+
+  width: 90%;
+  max-width: 600px;
+  height: 100%;
+  background: white;
+
+  will-change: transform;
+
+  transition: .3s ease;
+
+  // drawerは最初非表示。画面外に出しておく。
+  @include transform(translate3d(100%, 0, 0));
+
+  // drawerを表示する。
+  &--in {
+    @include transform(translate3d(0, 0, 0));
+  }
+
+  // サイドバー全体を固定化
+  &--fixed {
+    position: fixed;
+    z-index: 10000;
+  }
+
+  // スクロールしてもフォローボタンを上部に固定するために用意。
+  &__header {
+
+  }
+
+  &__controll
+  {
+    top: 0px;
+    right: 0px;
+    background: rgba(255, 255, 255, 0.9);
+    position: fixed;
+    z-index: 10001;
+    max-width: 600px;
+    min-height: 100px;
+    width: 100%;
+    padding: 16px 30px 0;
+
+    // .mediaのoverflow: hidden; のせいで
+    // block, muteのdropdownが隠れてしまうため上書き
+    overflow: visible !important;
+
+    transition: .3s ease;
+
+    &--in {
+      transform: translate3d(0,0,0);
+    }
+
+    &--out {
+      @include transform(translate3d(100%, 0, 0));
+      // display: none;
+    }
+
+    &--hide {
+      transform: translateY(-100px);
+    }
+
+    & .btn {
+      margin-top: 10px;
+      margin-right: 5px;
+    }
+
+  }
+
+  &__btn-follow
+  {
+    &:hover
+    {
+      color: white;
+      background-color: $label__follow-color;
+    }
+  }
+
+
+  &__icon-all-view:before {
+    content: "イラストを全て見る";
+  }
+
+  &__contents
+  {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+  }
+
+  &__profile
+  {
+    width: 100%;
+    padding: 100px 30px 20px;
+
+    color: $sidebar-color;
+
+    &__body {
+      // .mediaのoverflow: hidden; のせいで
+      // block, muteのdropdownが隠れてしまうため上書き
+      overflow: visible !important;
+    }
+
+    &__names {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      &--name {
+        color: $base-color;
+      }
+    }
+
+    &--description
+    {
+      font-size: .8em;
+      line-height: 1.8;
+      padding-top: 20px;
+    }
+
+    &--url
+    {
+      font-size: .7em;
+      line-height: 1.8;
+
+      padding-top: 5px;
+      i {
+        color: $link-color;
+        margin-right: 5px;
+      }
+    }
+
+    &__icon
+    {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto;
+
+      @include round(4px);
+      img
+      {
+        max-width: 64px;
+
+        border-radius: 3px;
+      }
+    }
+  }
+
+
+  &__post
+  {
+    margin: 20px 30px;
+
+    @include zurui-box(.3);
+  }
+
+
+  &__contents--infinitescroll-message
+  {
+    margin: 0 auto;
+  }
+
+  &__contents--box-loading-init
+  {
+    padding: 0 20px 20px;
+  }
+}
+
+
+// For tumblr style
+@media(max-width: 640px) {
+  .drawer {
+
+    &__controll {
+      width: 90%;
+      padding: 15px;
+      min-height: 0px;
+      max-width: 90%;
+    }
+
+    &__profile {
+      padding: 100px 15px 15px;
+    }
+
+    &__profile__icon  {
+      width: 56px;
+      height: 56px;
+    }
+
+    &__post {
+      margin: 20px 15px;
+    }
+
+    & .btn {
+      margin-top: 6px;
+      margin-right: 6px;
+    }
+  }
+
+  .media .media-body {
+    padding-left: 0;  // reset
+  }
+}
+
+@media(max-width: 480px) {
+  .drawer {
+    font-size: $font-size-percent-smartphone;
+    padding: 88px 0 0 0;
+
+    &__post--header--link {
+      margin-left: 0; // アイコン表示がない分を相殺
+    }
+
+    &__profile {
+      padding: $timeline__post--padding-horizontal;
+
+      &--description {
+        padding-top: 25px;
+      }
+    }
+
+
+    &__post {
+      margin: 20px $timeline__post--padding-horizontal;
+    }
+
+    &__controll {
+      width: 90%;
+      padding: 15px;
+      min-height: 0px;
+      max-width: 90%;
+    }
+
+    &__icon-all-view:before {
+      content: "全て見る";
+    }
+
+    &__profile--description {
+      padding-top: 8px;
+    }
+  }
+
+  .media .thumbnail-img
+  {
+    max-width: 48px;
+  }
+
+  .media .media-body
+  {
+    padding-left: 0;  // reset
+  }
+
+  .media-heading
+  {
+    font-size: $font-size-percent-smartphone;
+  }
+
+  .btn-follow  {
+    margin: 0;
+  }
+
+}

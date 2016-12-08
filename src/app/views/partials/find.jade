@@ -1,4 +1,4 @@
-dot-loader.user-sidebar__contents--box-loading-init(ng-if='!pictList.items')
+dot-loader.drawer__contents--box-loading-init(ng-if='!pictList.items')
 
 .col-md-12.col-sm-12.col-xs-12
 
@@ -9,7 +9,7 @@ dot-loader.user-sidebar__contents--box-loading-init(ng-if='!pictList.items')
           .media.find__media
             a.pull-left(
               twitter-id-str="{{::pict.postedBy.twitterIdStr}}",
-              show-user-sidebar="show-user-sidebar")
+              show-drawer="show-drawer")
               img.media-object.thumbnail-img.fade(
                 ng-src='{{::pict.postedBy.icon}}',
                 img-preload="img-preload")
@@ -21,7 +21,7 @@ dot-loader.user-sidebar__contents--box-loading-init(ng-if='!pictList.items')
                 span.name {{::pict.postedBy.name}}
                 span.screen-name.clickable(
                   twitter-id-str="{{::pict.postedBy.twitterIdStr}}",
-                  show-user-sidebar="show-user-sidebar") @{{::pict.postedBy.screenName}}
+                  show-drawer="show-drawer") @{{::pict.postedBy.screenName}}
               a.link(
                 href='{{::pict.postedBy.url}}',
                 target='_blank') {{::pict.postedBy.url}}
