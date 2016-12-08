@@ -3,7 +3,7 @@ angular.module "myApp.directives"
     restrict: 'E'
     scope: {}
     template: """
-      <dot-loader ng-if="!$ctrl.tweetList.items" class="user-sidebar__contents--box-loading-init">
+      <dot-loader ng-if="!$ctrl.tweetList.items" class="drawer__contents--box-loading-init">
       </dot-loader>
       <div ng-show="$ctrl.tweetList.isAuthenticatedWithMao">
 
