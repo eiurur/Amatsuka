@@ -159,9 +159,9 @@ class IllustratorProvider
     return new Promise (resolve, reject) ->
       console.log "\n============> Illustrator findUserByID\n"
       console.log params
-      Illustrator.findOne
-        twitterIdStr: params.twitterIdStr
-      , (err, user) ->
+      opts = twitterIdStr: params.twitterIdStr
+      Illustrator.where(opts)
+      .findOne (err, user) ->
         if err then return reject err
         return resolve user
 
@@ -200,7 +200,7 @@ class PictProvider
       console.log "\n============> Pict findByIllustratorObjectId\n"
       # console.log params
       console.time 'Pict findByIllustratorObjectId'
-      Pict.find(postedBy: params.postedBy)
+      Pict.findOne(postedBy: params.postedBy)
       .populate 'postedBy'
       .sort updatedAt: -1
       .exec (err, pictList) ->

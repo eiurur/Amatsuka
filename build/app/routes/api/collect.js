@@ -35,14 +35,13 @@
         console.log(illustrator != null);
         console.log(illustrator._id);
         return PictProvider.findByIllustratorObjectId({
-          postedBy: illustrator._id,
-          limit: req.query.limit || 3
+          postedBy: illustrator._id
         });
       }).then(function(data) {
         console.log(data);
-        console.log(data[0].postedBy);
-        console.log(data[0].pictTweetList.length);
-        return res.send(data[0]);
+        console.log(data.postedBy);
+        console.log(data.pictTweetList.length);
+        return res.send(data);
       })["catch"](function(err) {
         console.error('app.get /api/collect/picts/ error ', err);
         return res.status(400).send(err);

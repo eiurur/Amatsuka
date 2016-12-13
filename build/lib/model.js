@@ -191,11 +191,13 @@
 
     IllustratorProvider.prototype.findById = function(params, callback) {
       return new Promise(function(resolve, reject) {
+        var opts;
         console.log("\n============> Illustrator findUserByID\n");
         console.log(params);
-        return Illustrator.findOne({
+        opts = {
           twitterIdStr: params.twitterIdStr
-        }, function(err, user) {
+        };
+        return Illustrator.where(opts).findOne(function(err, user) {
           if (err) {
             return reject(err);
           }
@@ -246,7 +248,7 @@
       return new Promise(function(resolve, reject) {
         console.log("\n============> Pict findByIllustratorObjectId\n");
         console.time('Pict findByIllustratorObjectId');
-        return Pict.find({
+        return Pict.findOne({
           postedBy: params.postedBy
         }).populate('postedBy').sort({
           updatedAt: -1

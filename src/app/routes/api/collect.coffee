@@ -33,12 +33,11 @@ module.exports = (app) ->
 
       PictProvider.findByIllustratorObjectId
         postedBy: illustrator._id
-        limit: req.query.limit or 3
     .then (data) ->
       console.log data
-      console.log data[0].postedBy
-      console.log data[0].pictTweetList.length
-      res.send data[0]
+      console.log data.postedBy
+      console.log data.pictTweetList.length
+      res.send data
     .catch (err) ->
       console.error 'app.get /api/collect/picts/ error ', err
       res.status(400).send(err)
