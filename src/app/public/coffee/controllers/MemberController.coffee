@@ -11,6 +11,13 @@ angular.module "myApp.controllers"
 
   $scope.list = new AmatsukaList('Amatsuka')
 
+  $scope.sortText = '登録が新しい順'
+  $scope.newSortOrder = true
+  $scope.onReverse = ->
+    $scope.newSortOrder = !$scope.newSortOrder
+    $scope.sortText = if $scope.newSortOrder then '登録が新しい順' else '登録が古い順'
+    $scope.list.reverse()
+
   $scope.$watch 'searchWord.screen_name', (newData, oldData) ->
     return if newData is oldData
 

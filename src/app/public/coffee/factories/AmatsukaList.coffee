@@ -41,4 +41,10 @@ angular.module "myApp.factories"
         if @memberIdx > @amatsukaMemberLength then @isLast = true
         return
 
+      reverse: ->
+        @amatsukaMemberList.reverse()
+        @memberIdx = 0
+        @members = []
+        @loadMoreMember()
+
     AmatsukaList
