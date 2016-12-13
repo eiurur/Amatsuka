@@ -1,7 +1,7 @@
 div(ng-controller="DrawerCtrl")
 
   //
-  user-profile(user="user")
+  user-profile(user="user", list-id-str="listIdStr")
   #scroll.drawer.drawer--fixed
     .media.drawer__profile(ng-if='user.screen_name')
       .media-body

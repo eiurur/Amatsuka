@@ -14,7 +14,7 @@ angular.module "myApp.directives"
               <span class="screen-name">@{{::$ctrl.user.screen_name}}</span>
             </h4>
             <span class="btn-wrapper"></span>
-            <a followable="followable" follow-status="$ctrl.user.followStatus" list-id-str="{{listIdStr}}" twitter-id-str="{{::$ctrl.user.id_str}}" ng-disabled="isProcessing" class="btn btn-sm drawer__btn-follow"></a>
+            <a followable="followable" follow-status="$ctrl.user.followStatus" list-id-str="{{$ctrl.listIdStr}}" twitter-id-str="{{::$ctrl.user.id_str}}" ng-disabled="isProcessing" class="btn btn-sm drawer__btn-follow"></a>
             <a href="/extract/@{{::$ctrl.user.screen_name}}" target="_blank" class="btn btn-sm drawer__icon-all-view">
               <i class="fa fa-external-link-square i__center-padding"></i>
             </a>
@@ -25,6 +25,7 @@ angular.module "myApp.directives"
     """
     bindToController:
       user: "="
+      listIdStr: "="
     controllerAs: "$ctrl"
     controller: UserProfileController
 
