@@ -192,7 +192,6 @@
         user_id: params.twitterIdStr || '',
         scren_name: params.screenName || '',
         count: ~~params.count || settings.MAX_NUM_GET_LIST_MEMBERS,
-        include_entities: false,
         skip_status: true
       };
       return this.getViaAPI({

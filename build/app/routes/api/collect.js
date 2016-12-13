@@ -26,7 +26,7 @@
       return IllustratorProvider.findById({
         twitterIdStr: req.query.twitterIdStr
       }).then(function(illustrator) {
-        console.log(illustrator);
+        console.log('IllustratorProvider.findById result = ', illustrator);
         if (illustrator == null) {
           res.status(400).send(null);
           return;
@@ -39,6 +39,7 @@
           limit: req.query.limit || 3
         });
       }).then(function(data) {
+        console.log(data);
         console.log(data[0].postedBy);
         console.log(data[0].pictTweetList.length);
         return res.send(data[0]);
