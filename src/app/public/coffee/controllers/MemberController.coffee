@@ -11,7 +11,6 @@ angular.module "myApp.controllers"
 
   $scope.list = new AmatsukaList('Amatsuka')
 
-  # Filter
   $scope.$watch 'searchWord.screen_name', (newData, oldData) ->
     return if newData is oldData
 

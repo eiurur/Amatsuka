@@ -8,8 +8,8 @@ else
 
 CRON_JOBS = [
   {
-    time: '10 0 4,12 * *'
-    # time: '52 20 * * *'
+    time: '10 0 4,14 * *'
+    # time: '48 20 * * *'
     # time: '*/1 * * * *'
     # time: '30 * * * *'
     job: cronTaskCollectPicts
