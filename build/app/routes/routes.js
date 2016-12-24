@@ -11,7 +11,7 @@
 
   UserProvider = require(path.resolve('build', 'lib', 'model')).UserProvider;
 
-  settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
+  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 
   module.exports = function(app) {
     app.get('/logout', function(req, res) {

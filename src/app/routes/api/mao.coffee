@@ -4,10 +4,7 @@ path             = require 'path'
 {twitterUtils}   = require path.resolve 'build', 'lib', 'twitterUtils'
 {ConfigProvider} = require path.resolve 'build', 'lib', 'model'
 {my}             = require path.resolve 'build', 'lib', 'my'
-{settings}       = if process.env.NODE_ENV is 'production'
-  require path.resolve 'build', 'lib', 'configs', 'production'
-else
-  require path.resolve 'build', 'lib', 'configs', 'development'
+settings         = require path.resolve 'build', 'lib', 'configs', 'settings'
 
 module.exports = (app) ->
 

@@ -1,10 +1,8 @@
+path       = require 'path'
 _          = require 'lodash'
 request    = require 'request'
 {my}       = require './my'
-{settings} = if process.env.NODE_ENV is "production"
-  require './configs/production'
-else
-  require './configs/development'
+{settings} = require path.resolve 'build', 'lib', 'configs', 'settings'
 
 class TwitterClientDefine
   constructor: (@user) ->

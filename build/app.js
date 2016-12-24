@@ -9,7 +9,7 @@
 
   manageCron = require(path.resolve('build', 'lib', 'manageCron')).manageCron;
 
-  settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
+  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 
   tasks4startUp = [
     function(callback) {

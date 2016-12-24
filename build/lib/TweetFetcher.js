@@ -15,7 +15,7 @@
 
   twitterUtils = require(path.resolve('build', 'lib', 'twitterUtils')).twitterUtils;
 
-  settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
+  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 
   module.exports = TweetFetcher = (function() {
     function TweetFetcher(req, res1, queryType, maxId1, config) {

@@ -5,11 +5,7 @@ chalk            = require 'chalk'
 TwitterClient    = require path.resolve 'build', 'lib', 'TwitterClient'
 {my}             = require path.resolve 'build', 'lib', 'my'
 {twitterUtils}   = require path.resolve 'build', 'lib', 'twitterUtils'
-settings         = if process.env.NODE_ENV is 'production'
-  require path.resolve 'build', 'lib', 'configs', 'production'
-else
-  require path.resolve 'build', 'lib', 'configs', 'development'
-
+{settings}       = require path.resolve 'build', 'lib', 'configs', 'settings'
 
 # JSON API
 module.exports = class TweetFetcher

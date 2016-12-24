@@ -1,8 +1,10 @@
 (function() {
-  var TwitterClient, TwitterClientDefine, _, my, request, settings,
+  var TwitterClient, TwitterClientDefine, _, my, path, request, settings,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
+
+  path = require('path');
 
   _ = require('lodash');
 
@@ -10,7 +12,7 @@
 
   my = require('./my').my;
 
-  settings = (process.env.NODE_ENV === "production" ? require('./configs/production') : require('./configs/development')).settings;
+  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 
   TwitterClientDefine = (function() {
     function TwitterClientDefine(user) {

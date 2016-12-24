@@ -3,7 +3,7 @@
     var app, http, path, settings;
     http = require('http');
     path = require('path');
-    settings = (process.env.NODE_ENV === 'production' ? require('../lib/configs/production') : require('../lib/configs/development')).settings;
+    settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
     app = module.exports = (function() {
       var MongoStore, bodyParser, cacheOptions, compression, cookieParser, env, express, fs, methodOverride, morgan, opbeat, options, passport, session, stream;
       express = require('express');

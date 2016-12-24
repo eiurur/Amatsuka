@@ -263,8 +263,8 @@ angular.module "myApp.services"
         $http.get("/api/twitter?#{qs}")
         .success (data) ->
           return resolve data
-        .error (data) ->
-          return reject data
+        .error (err) ->
+          return reject err
 
 
     postViaAPI: (params) ->

@@ -13,7 +13,7 @@
 
   my = require(path.resolve('build', 'lib', 'my')).my;
 
-  settings = (process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'))).settings;
+  settings = require(path.resolve('build', 'lib', 'configs', 'settings'));
 
   module.exports = function(app) {
     app.get("/api/mao", function(req, res) {

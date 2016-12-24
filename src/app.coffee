@@ -2,10 +2,7 @@ path         = require 'path'
 async        = require 'async'
 {serve}      = require path.resolve 'build', 'app', 'serve'
 {manageCron} = require path.resolve 'build', 'lib', 'manageCron'
-settings     = if process.env.NODE_ENV is 'production'
-  require path.resolve 'build', 'lib', 'configs', 'production'
-else
-  require path.resolve 'build', 'lib', 'configs', 'development'
+{settings}   = require path.resolve 'build', 'lib', 'configs', 'settings'
 
 tasks4startUp = [
 

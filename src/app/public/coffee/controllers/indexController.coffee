@@ -74,10 +74,11 @@ angular.module "myApp.controllers"
   # Block, mute
   tasks = [
     TweetService.getMuteUserIdList(twitterIdStr: AuthService.user._json.id_str)
-    TweetService. getBlockUserIdList(twitterIdStr: AuthService.user._json.id_str)
+    TweetService.getBlockUserIdList(twitterIdStr: AuthService.user._json.id_str)
   ]
   Promise.all(tasks)
   .then (results) =>
+    console.log results
     console.log 'mutes = ', results[0].data.ids
     console.log 'blocks = ', results[1].data.ids
     BlackUserListService.mute.set results[0].data.ids

@@ -7,7 +7,7 @@
 
   cronTaskCollectPicts = require(path.resolve('build', 'lib', 'cronTaskCollectPicts')).cronTaskCollectPicts;
 
-  settings = process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'));
+  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 
   CRON_JOBS = [
     {

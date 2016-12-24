@@ -2,10 +2,7 @@ exports.serve = ->
 
   http       = require 'http'
   path       = require 'path'
-  {settings} = if process.env.NODE_ENV is 'production'
-    require('../lib/configs/production')
-  else
-    require('../lib/configs/development')
+  {settings} = require path.resolve 'build', 'lib', 'configs', 'settings'
 
   app = module.exports = do -> # application
 
