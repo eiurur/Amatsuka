@@ -22,7 +22,7 @@ exports.serve = ->
       saveUninitialized: true
       resave: false
       store: new MongoStore(
-        url: process.env.MONGOHQ_URL or 'mongodb://127.0.0.1/amatsuka'
+        url: settings.MONGODB_URL
         collection: 'sessions'
         clear_interval: 3600 * 12
         auto_reconnect: true

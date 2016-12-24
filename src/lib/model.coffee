@@ -1,9 +1,11 @@
-mongoose = require 'mongoose'
-_        = require 'lodash'
-uri      = process.env.MONGOHQ_URL || 'mongodb://127.0.0.1/amatsuka'
-db       = mongoose.connect uri
-Schema   = mongoose.Schema
-ObjectId = Schema.ObjectId
+mongoose   = require 'mongoose'
+_          = require 'lodash'
+path       = require 'path'
+{settings} = require path.resolve 'build', 'lib', 'configs', 'settings'
+uri        = settings.MONGODB_URL
+db         = mongoose.connect uri
+Schema     = mongoose.Schema
+ObjectId   = Schema.ObjectId
 
 
 ##
