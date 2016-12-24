@@ -2,13 +2,13 @@
 html(ng-app="myApp", ng-cloak, ng-csp)
 
   head
-    include parts/_meta
+    include parts/head/_meta
     title Amatsuka
     base(href='/')
-    include parts/_favicon
-    include parts/_style
+    include parts/head/_favicon
+    include parts/head/_style
 
   body
     block body
 
-  include parts/_script
+  include parts/head/_script
