@@ -1,16 +1,13 @@
-path                  = require 'path'
-EggSlicer             = require 'egg-slicer'
-_                     = require 'lodash'
-Promise               = require "bluebird"
-PictCollection        = require path.resolve 'build', 'lib', 'PictCollection'
-{IllustratorProvider} = require path.resolve 'build', 'lib', 'model'
-{settings}            = if process.env.NODE_ENV is 'production'
-  require path.resolve 'build', 'lib', 'configs', 'production'
-else
-  require path.resolve 'build', 'lib', 'configs', 'development'
+path           = require 'path'
+EggSlicer      = require 'egg-slicer'
+_              = require 'lodash'
+Promise        = require "bluebird"
+PictCollection = require path.resolve 'build', 'lib', 'PictCollection'
+{settings}     = require path.resolve 'build', 'lib', 'configs', 'settings'
+ModelFactory   = require path.resolve 'build', 'model', 'ModelFactory'
 
 exports.cronTaskCollectPicts = ->
-  IllustratorProvider.find()
+  ModelFactory.create('illustrator').find()
   .then (profileList) ->
     console.log profileList.length
     console.log settings.TWS

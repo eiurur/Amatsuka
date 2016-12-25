@@ -1,5 +1,5 @@
 (function() {
-  var EggSlicer, IllustratorProvider, PictCollection, Promise, _, path, settings;
+  var EggSlicer, ModelFactory, PictCollection, Promise, _, path, settings;
 
   path = require('path');
 
@@ -11,12 +11,12 @@
 
   PictCollection = require(path.resolve('build', 'lib', 'PictCollection'));
 
-  IllustratorProvider = require(path.resolve('build', 'lib', 'model')).IllustratorProvider;
+  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 
-  settings = (process.env.NODE_ENV === 'production' ? require(path.resolve('build', 'lib', 'configs', 'production')) : require(path.resolve('build', 'lib', 'configs', 'development'))).settings;
+  ModelFactory = require(path.resolve('build', 'model', 'ModelFactory'));
 
   exports.cronTaskCollectPicts = function() {
-    return IllustratorProvider.find().then(function(profileList) {
+    return ModelFactory.create('illustrator').find().then(function(profileList) {
       var slicedProfileList;
       console.log(profileList.length);
       console.log(settings.TWS);

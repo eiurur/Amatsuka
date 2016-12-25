@@ -1,11 +1,11 @@
-path = require 'path'
-_        = require 'lodash'
-chalk    = require 'chalk'
-moment   = require 'moment'
-mongoose = require 'mongoose'
-{settings}             = require path.resolve 'build', 'lib', 'configs', 'settings'
-uri      = process.env.MONGOLAB_URI || settings.MONGODB_URI
-db       = mongoose.connect uri
+path       = require 'path'
+_          = require 'lodash'
+chalk      = require 'chalk'
+moment     = require 'moment'
+mongoose   = require 'mongoose'
+{settings} = require path.resolve 'build', 'lib', 'configs', 'settings'
+uri        = settings.MONGODB_URL
+db         = mongoose.connect uri
 
 module.exports = class BaseProvider
 
@@ -56,6 +56,15 @@ module.exports = class BaseProvider
       console.time "#{@Model.modelName} findOneAndUpdate"
       @Model.findOneAndUpdate query, data, options, (err, doc) =>
         console.timeEnd "#{@Model.modelName} findOneAndUpdate"
+        if err then return reject err
+        return resolve doc
+
+  create: (data) ->
+    return new Promise (resolve, reject) =>
+      console.log chalk.green "DBBaseProvider #{@Model.modelName} create"
+      console.time "#{@Model.modelName} create"
+      @Model.create data, (err, doc) =>
+        console.timeEnd "#{@Model.modelName} create"
         if err then return reject err
         return resolve doc
 

@@ -1,9 +1,8 @@
-_                     = require 'lodash'
-path                  = require 'path'
-TwitterClient         = require path.resolve 'build', 'lib', 'TwitterClient'
-{my}                  = require path.resolve 'build', 'lib', 'my'
-{IllustratorProvider} = require path.resolve 'build', 'lib', 'model'
-{PictProvider}        = require path.resolve 'build', 'lib', 'model'
+_             = require 'lodash'
+path          = require 'path'
+{my}          = require path.resolve 'build', 'lib', 'my'
+TwitterClient = require path.resolve 'build', 'lib', 'TwitterClient'
+ModelFactory  = require path.resolve 'build', 'model', 'ModelFactory'
 
 # TODO: illustratorと分離させる
 module.exports = class PictCollection
@@ -127,9 +126,10 @@ module.exports = class PictCollection
     console.log '===> updatePictListData :: ', pickupedPictList
     console.log '===> @illustratorDBData._id :: ', @illustratorDBData._id
     return new Promise (resolve, reject) =>
-      PictProvider.findOneAndUpdate
+      opts =
         postedBy: @illustratorDBData._id
         pictTweetList: pickupedPictList
+      ModelFactory.create('pict').findOneAndUpdate opts
       .then (data) -> return resolve data
       .catch (err) -> return reject err
 
@@ -196,8 +196,7 @@ module.exports = class PictCollection
 
   updateIllustratorData: ->
     return new Promise (resolve, reject) =>
-      IllustratorProvider.findOneAndUpdate
-        illustrator: @illustrator
-      , (err, data) ->
-        return reject err  if err
-        return resolve data
+      opts = illustrator: @illustrator
+      ModelFactory.create('illustrator').findOneAndUpdate opts
+      .then (data) -> resolve data
+      .catch (err) -> reject err

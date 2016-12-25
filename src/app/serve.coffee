@@ -93,8 +93,8 @@ exports.serve = ->
 
     passport        = require 'passport'
     TwitterStrategy = require('passport-twitter').Strategy
-    {UserProvider}  = require '../lib/model'
-    {my}    = require path.resolve 'build', 'lib', 'my'
+    ModelFactory    = require path.resolve 'build', 'model', 'ModelFactory'
+    {my}            = require path.resolve 'build', 'lib', 'my'
 
     passport.serializeUser (user, done) ->
       done null, user
@@ -123,11 +123,11 @@ exports.serve = ->
         accessTokenSecret: tokenSecret
         maoToken: my.createHash(profile._json.id_str + settings.MAO_TOKEN_SALT)
 
-      UserProvider.findOneAndUpdate
-        user: user
-      , (err, data) ->
-        console.log err  if err
+      ModelFactory.create('user').findOneAndUpdate user: user
+      .then (data) ->
         done null, profile
+      .catch (err) ->
+        console.log err
       return
 
     app.get '/auth/twitter', passport.authenticate('twitter')

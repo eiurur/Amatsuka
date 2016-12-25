@@ -2,7 +2,7 @@ path             = require 'path'
 moment           = require 'moment'
 _                = require 'lodash'
 {my}             = require path.resolve 'build', 'lib', 'my'
-{UserProvider}   = require path.resolve 'build', 'lib', 'model'
+# {UserProvider}   = require path.resolve 'build', 'lib', 'model'
 {settings}       = require path.resolve 'build', 'lib', 'configs', 'settings'
 
 module.exports = (app) ->

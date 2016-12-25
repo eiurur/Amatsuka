@@ -1,5 +1,5 @@
 (function() {
-  var UserProvider, _, moment, my, path, settings;
+  var _, moment, my, path, settings;
 
   path = require('path');
 
@@ -8,8 +8,6 @@
   _ = require('lodash');
 
   my = require(path.resolve('build', 'lib', 'my')).my;
-
-  UserProvider = require(path.resolve('build', 'lib', 'model')).UserProvider;
 
   settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 

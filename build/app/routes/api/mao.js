@@ -1,5 +1,5 @@
 (function() {
-  var ConfigProvider, _, axios, my, path, settings, twitterUtils;
+  var ModelFactory, _, axios, my, path, settings, twitterUtils;
 
   _ = require('lodash');
 
@@ -9,19 +9,20 @@
 
   twitterUtils = require(path.resolve('build', 'lib', 'twitterUtils')).twitterUtils;
 
-  ConfigProvider = require(path.resolve('build', 'lib', 'model')).ConfigProvider;
-
   my = require(path.resolve('build', 'lib', 'my')).my;
 
   settings = require(path.resolve('build', 'lib', 'configs', 'settings'));
 
+  ModelFactory = require(path.resolve('build', 'model', 'ModelFactory'));
+
   module.exports = function(app) {
     app.get("/api/mao", function(req, res) {
-      var _config;
-      _config = null;
-      return ConfigProvider.findOneById({
+      var opts;
+      opts = {
         twitterIdStr: req.session.passport.user._json.id_str
-      }, function(err, data) {
+      };
+      return ModelFactory.create('config').findOneById(opts).then(function(data) {
+        var _config;
         _config = _.isNull(data) ? {} : JSON.parse(data.configStr);
         return axios.get(settings.MAO_HOST + "/api/tweets", {
           params: {

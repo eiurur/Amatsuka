@@ -1,5 +1,5 @@
 (function() {
-  var IllustratorProvider, PictCollection, PictProvider, _, path, ref, settings;
+  var ModelFactory, PictCollection, _, path, settings;
 
   _ = require('lodash');
 
@@ -7,13 +7,13 @@
 
   PictCollection = require(path.resolve('build', 'lib', 'PictCollection'));
 
-  ref = require(path.resolve('build', 'lib', 'model')), PictProvider = ref.PictProvider, IllustratorProvider = ref.IllustratorProvider;
-
   settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
+
+  ModelFactory = require(path.resolve('build', 'model', 'ModelFactory'));
 
   module.exports = function(app) {
     app.get('/api/collect/count', function(req, res) {
-      return PictProvider.count().then(function(count) {
+      return ModelFactory.create('pict').count().then(function(count) {
         return res.json({
           count: count
         });
@@ -22,10 +22,12 @@
       });
     });
     app.get('/api/collect/picts', function(req, res) {
+      var opts;
       console.log('/api/collect/picts/ req.query.twitterIdStr =', req.query.twitterIdStr);
-      return IllustratorProvider.findById({
+      opts = {
         twitterIdStr: req.query.twitterIdStr
-      }).then(function(illustrator) {
+      };
+      return ModelFactory.create('illustrator').findById(opts).then(function(illustrator) {
         console.log('IllustratorProvider.findById result = ', illustrator);
         if (illustrator == null) {
           res.status(400).send(null);
@@ -34,7 +36,7 @@
         console.log('PictProvider.findByIllustratorObjectId --->');
         console.log(illustrator != null);
         console.log(illustrator._id);
-        return PictProvider.findByIllustratorObjectId({
+        return ModelFactory.create('pict').findByIllustratorObjectId({
           postedBy: illustrator._id
         });
       }).then(function(data) {
@@ -48,10 +50,12 @@
       });
     });
     app.get('/api/collect/:skip?/:limit?', function(req, res) {
-      return PictProvider.find({
+      var opts;
+      opts = {
         skip: req.params.skip - 0,
         limit: req.params.limit - 0
-      }).then(function(data) {
+      };
+      return ModelFactory.create('pict').find(opts).then(function(data) {
         return res.send(data);
       });
     });

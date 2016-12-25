@@ -2,17 +2,16 @@ _                = require 'lodash'
 axios            = require 'axios'
 path             = require 'path'
 {twitterUtils}   = require path.resolve 'build', 'lib', 'twitterUtils'
-{ConfigProvider} = require path.resolve 'build', 'lib', 'model'
 {my}             = require path.resolve 'build', 'lib', 'my'
 settings         = require path.resolve 'build', 'lib', 'configs', 'settings'
+ModelFactory     = require path.resolve 'build', 'model', 'ModelFactory'
 
 module.exports = (app) ->
 
   app.get "/api/mao", (req, res) ->
-    _config = null
-    ConfigProvider.findOneById
-      twitterIdStr: req.session.passport.user._json.id_str
-    , (err, data) ->
+    opts = twitterIdStr: req.session.passport.user._json.id_str
+    ModelFactory.create('config').findOneById opts
+    .then (data) ->
 
       # 設定データが未登録
       _config = if _.isNull data then {} else JSON.parse(data.configStr)

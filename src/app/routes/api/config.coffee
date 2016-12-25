@@ -1,22 +1,20 @@
-_                = require 'lodash'
-path             = require 'path'
-{ConfigProvider} = require path.resolve 'build', 'lib', 'model'
-{settings}       = require path.resolve 'build', 'lib', 'configs', 'settings'
+_            = require 'lodash'
+path         = require 'path'
+ModelFactory = require path.resolve 'build', 'model', 'ModelFactory'
+{settings}   = require path.resolve 'build', 'lib', 'configs', 'settings'
 
 module.exports = (app) ->
 
   app.get '/api/config', (req, res) ->
-    ConfigProvider.findOneById
-      twitterIdStr: req.session.passport.user._json.id_str
-    , (err, data) ->
-      # console.log 'get config: ', data
+    opts = twitterIdStr: req.session.passport.user._json.id_str
+    ModelFactory.create('config').findOneById opts
+    .then (data) ->
       res.json data: data
 
   app.post '/api/config', (req, res) ->
-    # console.log req.body
-    ConfigProvider.upsert
+    opts =
       twitterIdStr: req.session.passport.user._json.id_str
       config: req.body.config
-    , (err, data) ->
-      # console.log 'post config: ', data
+    ModelFactory.create('config').upsert opts
+    .then (data) ->
       res.json data: data

@@ -6,9 +6,7 @@ cronJob                = require('cron').CronJob
 CRON_JOBS = [
   {
     time: '10 0 4,14 * *'
-    # time: '48 20 * * *'
-    # time: '*/1 * * * *'
-    # time: '30 * * * *'
+    # time: '34 08 * * *'
     job: cronTaskCollectPicts
   }
 ]

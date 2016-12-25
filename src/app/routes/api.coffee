@@ -1,7 +1,7 @@
 _                = require 'lodash'
 path             = require 'path'
 {my}             = require path.resolve 'build', 'lib', 'my'
-{UserProvider}   = require path.resolve 'build', 'lib', 'model'
+# {UserProvider}   = require path.resolve 'build', 'lib', 'model'
 
 module.exports = (app) ->
 
@@ -46,9 +46,9 @@ module.exports = (app) ->
       console.log 'base64toBlob', base64Data.length
       res.json base64Data: base64Data
 
-  app.post '/api/findUserById', (req, res) ->
-    console.log "\n============> findUserById in API\n"
-    UserProvider.findUserById
-      twitterIdStr: req.session.passport.user._json.id_str
-    , (err, data) ->
-      res.json data: data
+  # app.post '/api/findUserById', (req, res) ->
+  #   console.log "\n============> findUserById in API\n"
+  #   UserProvider.findUserById
+  #     twitterIdStr: req.session.passport.user._json.id_str
+  #   , (err, data) ->
+  #     res.json data: data

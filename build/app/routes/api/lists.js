@@ -1,5 +1,5 @@
 (function() {
-  var ConfigProvider, TweetFetcher, TwitterClient, _, chalk, my, path, settings;
+  var ModelFactory, TweetFetcher, TwitterClient, _, chalk, my, path, settings;
 
   _ = require('lodash');
 
@@ -13,9 +13,9 @@
 
   my = require(path.resolve('build', 'lib', 'my')).my;
 
-  ConfigProvider = require(path.resolve('build', 'lib', 'model')).ConfigProvider;
-
   settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
+
+  ModelFactory = require(path.resolve('build', 'model', 'ModelFactory'));
 
   module.exports = function(app) {
     app.get('/api/lists/list/:id?/:count?', function(req, res) {
@@ -71,9 +71,11 @@
       });
     });
     app.get('/api/lists/statuses/:id/:maxId?/:count?', function(req, res) {
-      return ConfigProvider.findOneById({
+      var opts;
+      opts = {
         twitterIdStr: req.session.passport.user._json.id_str
-      }, function(err, data) {
+      };
+      return ModelFactory.create('config').findOneById(opts).then(function(data) {
         var config;
         config = _.isNull(data) ? {} : JSON.parse(data.configStr);
         return new TweetFetcher(req, res, 'getListsStatuses', null, config).fetchTweet();

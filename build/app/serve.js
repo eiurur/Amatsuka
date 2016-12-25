@@ -83,10 +83,10 @@
       return app;
     })();
     (function() {
-      var TwitterStrategy, UserProvider, my, passport;
+      var ModelFactory, TwitterStrategy, my, passport;
       passport = require('passport');
       TwitterStrategy = require('passport-twitter').Strategy;
-      UserProvider = require('../lib/model').UserProvider;
+      ModelFactory = require(path.resolve('build', 'model', 'ModelFactory'));
       my = require(path.resolve('build', 'lib', 'my')).my;
       passport.serializeUser(function(user, done) {
         done(null, user);
@@ -113,13 +113,12 @@
           accessTokenSecret: tokenSecret,
           maoToken: my.createHash(profile._json.id_str + settings.MAO_TOKEN_SALT)
         };
-        UserProvider.findOneAndUpdate({
+        ModelFactory.create('user').findOneAndUpdate({
           user: user
-        }, function(err, data) {
-          if (err) {
-            console.log(err);
-          }
+        }).then(function(data) {
           return done(null, profile);
+        })["catch"](function(err) {
+          return console.log(err);
         });
       }));
       app.get('/auth/twitter', passport.authenticate('twitter'));

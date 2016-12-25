@@ -1,17 +1,15 @@
 (function() {
-  var IllustratorProvider, PictCollection, PictProvider, TwitterClient, _, my, path;
+  var ModelFactory, PictCollection, TwitterClient, _, my, path;
 
   _ = require('lodash');
 
   path = require('path');
 
-  TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
-
   my = require(path.resolve('build', 'lib', 'my')).my;
 
-  IllustratorProvider = require(path.resolve('build', 'lib', 'model')).IllustratorProvider;
+  TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
 
-  PictProvider = require(path.resolve('build', 'lib', 'model')).PictProvider;
+  ModelFactory = require(path.resolve('build', 'model', 'ModelFactory'));
 
   module.exports = PictCollection = (function() {
     function PictCollection(user, illustratorTwitterIdStr, idx) {
@@ -147,10 +145,12 @@
       console.log('===> @illustratorDBData._id :: ', this.illustratorDBData._id);
       return new Promise((function(_this) {
         return function(resolve, reject) {
-          return PictProvider.findOneAndUpdate({
+          var opts;
+          opts = {
             postedBy: _this.illustratorDBData._id,
             pictTweetList: pickupedPictList
-          }).then(function(data) {
+          };
+          return ModelFactory.create('pict').findOneAndUpdate(opts).then(function(data) {
             return resolve(data);
           })["catch"](function(err) {
             return reject(err);
@@ -246,13 +246,14 @@
     PictCollection.prototype.updateIllustratorData = function() {
       return new Promise((function(_this) {
         return function(resolve, reject) {
-          return IllustratorProvider.findOneAndUpdate({
+          var opts;
+          opts = {
             illustrator: _this.illustrator
-          }, function(err, data) {
-            if (err) {
-              return reject(err);
-            }
+          };
+          return ModelFactory.create('illustrator').findOneAndUpdate(opts).then(function(data) {
             return resolve(data);
+          })["catch"](function(err) {
+            return reject(err);
           });
         };
       })(this));
