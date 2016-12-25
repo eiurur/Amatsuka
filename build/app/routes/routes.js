@@ -1,7 +1,8 @@
 (function() {
   module.exports = function(app) {
     app.get('/logout', function(req, res) {
-      if (!_.has(req.session, 'id')) {
+      var ref;
+      if (((ref = req.session) != null ? ref.id : void 0) == null) {
         return;
       }
       req.logout();

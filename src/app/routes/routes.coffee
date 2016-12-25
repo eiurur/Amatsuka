@@ -1,7 +1,7 @@
 module.exports = (app) ->
 
   app.get '/logout', (req, res) ->
-    return  unless _.has(req.session, 'id')
+    return unless req.session?.id?
     req.logout()
     req.session.destroy()
     res.redirect "/"
