@@ -63,4 +63,4 @@ module.exports = class IllustratorProvider extends BaseProvider
       data = params.illustrator
       data.updatedAt = Date.now()
       options = 'new': true, upsert: true
-      return resolve @findOneAndUpdate(query, data, options)
+      return resolve super(query, data, options)

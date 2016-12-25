@@ -1,7 +1,5 @@
 (function() {
-  var ModelFactory, _, axios, my, path, settings, twitterUtils;
-
-  _ = require('lodash');
+  var axios, configMiddleware, my, path, settings, twitterUtils;
 
   axios = require('axios');
 
@@ -11,39 +9,31 @@
 
   my = require(path.resolve('build', 'lib', 'my')).my;
 
-  settings = require(path.resolve('build', 'lib', 'configs', 'settings'));
+  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 
-  ModelFactory = require(path.resolve('build', 'model', 'ModelFactory'));
+  configMiddleware = require(path.resolve('build', 'app', 'routes', 'middlewares', 'configMiddleware'));
 
   module.exports = function(app) {
-    app.get("/api/mao", function(req, res) {
-      var opts;
-      opts = {
-        twitterIdStr: req.session.passport.user._json.id_str
-      };
-      return ModelFactory.create('config').findOneById(opts).then(function(data) {
-        var _config;
-        _config = _.isNull(data) ? {} : JSON.parse(data.configStr);
-        return axios.get(settings.MAO_HOST + "/api/tweets", {
-          params: {
-            maoToken: my.createHash(req.session.passport.user._json.id_str + settings.MAO_TOKEN_SALT),
-            skip: req.query.skip - 0,
-            limit: req.query.limit - 0,
-            date: req.query.date
-          }
-        }).then(function(response) {
-          var tweets;
-          if (response.status !== 200) {
-            new ((function() {
-              throw Error('Not Authorized');
-            })());
-          }
-          tweets = twitterUtils.normalizeTweets(response.data, _config);
-          return res.send(tweets);
-        })["catch"](function(err) {
-          console.error(err);
-          return res.status(401).send(err);
-        });
+    app.get("/api/mao", configMiddleware.getConfig, function(req, res) {
+      return axios.get(settings.MAO_HOST + "/api/tweets", {
+        params: {
+          maoToken: my.createHash(req.session.passport.user._json.id_str + settings.MAO_TOKEN_SALT),
+          skip: req.query.skip - 0,
+          limit: req.query.limit - 0,
+          date: req.query.date
+        }
+      }).then(function(response) {
+        var tweets;
+        if (response.status !== 200) {
+          new ((function() {
+            throw Error('Not Authorized');
+          })());
+        }
+        tweets = twitterUtils.normalizeTweets(response.data, req.config);
+        return res.send(tweets);
+      })["catch"](function(err) {
+        console.error(err);
+        return res.status(401).send(err);
       });
     });
     app.get("/api/mao/tweets/count", function(req, res) {

@@ -42,11 +42,10 @@ module.exports = class UserProvider extends BaseProvider
 
   # maoToken: params.user.maoToken を変更条件にすると既に登録済みのユーザは重複エラーが発生するため、
   # Amatsuka側では今まで通りtwitterIdStrを主キー扱いとする
-  findOneAndUpdate: (params, callback) ->
+  findOneAndUpdate: (params) ->
     return new Promise (resolve, reject) =>
-      console.log params
       query = twitterIdStr: params.user.twitterIdStr
       data = params.user
       data.updatedAt = Date.now()
       options = 'new': true, upsert: true
-      return resolve @findOneAndUpdate(query, data, options)
+      return resolve super(query, data, options)

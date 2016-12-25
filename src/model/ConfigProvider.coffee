@@ -47,4 +47,4 @@ module.exports = class ConfigProvider extends BaseProvider
         twitterIdStr: params.twitterIdStr
         configStr: JSON.stringify(params.config)
       options = 'new': true, upsert: true
-      return resolve @findOneAndUpdate(query, data, options)
+      return resolve super(query, data, options)

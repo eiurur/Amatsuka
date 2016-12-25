@@ -45,11 +45,10 @@
       UserProvider.__super__.constructor.call(this, User);
     }
 
-    UserProvider.prototype.findOneAndUpdate = function(params, callback) {
+    UserProvider.prototype.findOneAndUpdate = function(params) {
       return new Promise((function(_this) {
         return function(resolve, reject) {
           var data, options, query;
-          console.log(params);
           query = {
             twitterIdStr: params.user.twitterIdStr
           };
@@ -59,7 +58,7 @@
             'new': true,
             upsert: true
           };
-          return resolve(_this.findOneAndUpdate(query, data, options));
+          return resolve(UserProvider.__super__.findOneAndUpdate.call(_this, query, data, options));
         };
       })(this));
     };

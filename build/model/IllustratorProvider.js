@@ -97,7 +97,7 @@
             'new': true,
             upsert: true
           };
-          return resolve(_this.findOneAndUpdate(query, data, options));
+          return resolve(IllustratorProvider.__super__.findOneAndUpdate.call(_this, query, data, options));
         };
       })(this));
     };
