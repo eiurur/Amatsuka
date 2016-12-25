@@ -1,7 +1,6 @@
 path                   = require('path')
 cronJob                = require('cron').CronJob
 {cronTaskCollectPicts} = require path.resolve 'build', 'lib', 'cronTaskCollectPicts'
-{settings}             = require path.resolve 'build', 'lib', 'configs', 'settings'
 
 CRON_JOBS = [
   {

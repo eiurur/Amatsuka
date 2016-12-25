@@ -1,13 +1,9 @@
 (function() {
-  var ModelFactory, PictCollection, _, path, settings;
-
-  _ = require('lodash');
+  var ModelFactory, PictCollection, path;
 
   path = require('path');
 
   PictCollection = require(path.resolve('build', 'lib', 'PictCollection'));
-
-  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 
   ModelFactory = require(path.resolve('build', 'model', 'ModelFactory'));
 
@@ -33,9 +29,6 @@
           res.status(400).send(null);
           return;
         }
-        console.log('PictProvider.findByIllustratorObjectId --->');
-        console.log(illustrator != null);
-        console.log(illustrator._id);
         return ModelFactory.create('pict').findByIllustratorObjectId({
           postedBy: illustrator._id
         });
@@ -75,7 +68,6 @@
       }).then(function(data) {
         return pictCollection.setIllustratorDBData(data);
       }).then(function(data) {
-        console.log('End PictProvider.findOneAndUpdate data = ', data);
         return res.send(data);
       })["catch"](function(err) {
         return console.log(err);

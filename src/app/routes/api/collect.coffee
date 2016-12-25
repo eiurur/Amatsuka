@@ -1,11 +1,7 @@
-_              = require 'lodash'
 path           = require 'path'
 PictCollection = require path.resolve 'build', 'lib', 'PictCollection'
-{settings}     = require path.resolve 'build', 'lib', 'configs', 'settings'
 ModelFactory   = require path.resolve 'build', 'model', 'ModelFactory'
 
-
-# JSON API
 module.exports = (app) ->
 
   app.get '/api/collect/count', (req, res) ->
@@ -24,10 +20,6 @@ module.exports = (app) ->
       unless illustrator?
         res.status(400).send(null)
         return
-      console.log 'PictProvider.findByIllustratorObjectId --->'
-      console.log illustrator?
-      console.log illustrator._id
-
       ModelFactory.create('pict').findByIllustratorObjectId postedBy: illustrator._id
     .then (data) ->
       console.log data
@@ -47,8 +39,6 @@ module.exports = (app) ->
 
   app.post '/api/collect/profile', (req, res) ->
     pictCollection = new PictCollection(req.session.passport.user, req.body.twitterIdStr)
-
-    # フォローしたユーザをデータベースに保存
     pictCollection.getIllustratorTwitterProfile()
     .then (data) -> pictCollection.setIllustratorRawData(data)
     .then -> pictCollection.getIllustratorRawData()
@@ -56,8 +46,5 @@ module.exports = (app) ->
     .then -> pictCollection.normalizeIllustratorData()
     .then -> pictCollection.updateIllustratorData()
     .then (data) -> pictCollection.setIllustratorDBData(data)
-    .then (data) ->
-      console.log 'End PictProvider.findOneAndUpdate data = ', data
-      res.send data
-    .catch (err) ->
-      console.log err
+    .then (data) -> res.send data
+    .catch (err) -> console.log err

@@ -1,8 +1,6 @@
-_             = require 'lodash'
 path          = require 'path'
 TwitterClient = require path.resolve 'build', 'lib', 'TwitterClient'
 TweetFetcher  = require path.resolve 'build', 'lib', 'TweetFetcher'
-{settings}    = require path.resolve 'build', 'lib', 'configs', 'settings'
 
 module.exports = (app) ->
 

@@ -1,13 +1,9 @@
 (function() {
-  var ModelFactory, _, path, settings;
-
-  _ = require('lodash');
+  var ModelFactory, path;
 
   path = require('path');
 
   ModelFactory = require(path.resolve('build', 'model', 'ModelFactory'));
-
-  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 
   module.exports = function(app) {
     app.get('/api/config', function(req, res) {

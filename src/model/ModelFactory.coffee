@@ -17,12 +17,3 @@ module.exports = class ModelFactory
       when 'pict' then return pp
       when 'user' then return up
       else return null
-
-# module.exports = class ModelFactory
-#   @create: (name) ->
-#     switch name.toLowerCase()
-#       when 'config' then return new ConfigProvider()
-#       when 'illustrator' then return new IllustratorProvider()
-#       when 'pict' then return new PictProvider()
-#       when 'user' then return new UserProvider()
-#       else return null

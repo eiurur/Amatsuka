@@ -1,13 +1,9 @@
 (function() {
-  var TweetFetcher, TwitterClient, _, chalk, moment, my, path, settings, twitterUtils;
-
-  moment = require('moment');
+  var TweetFetcher, TwitterClient, _, my, path, twitterUtils;
 
   _ = require('lodash');
 
   path = require('path');
-
-  chalk = require('chalk');
 
   TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
 
@@ -15,12 +11,10 @@
 
   twitterUtils = require(path.resolve('build', 'lib', 'twitterUtils')).twitterUtils;
 
-  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
-
   module.exports = TweetFetcher = (function() {
-    function TweetFetcher(req, res1, queryType, maxId1, config) {
+    function TweetFetcher(req, res, queryType, maxId1, config) {
       this.req = req;
-      this.res = res1;
+      this.res = res;
       this.queryType = queryType;
       this.maxId = maxId1;
       this.config = config;
@@ -63,7 +57,7 @@
       this.maxId = maxId || this.req.params.maxId;
       params = this.getRequestParams();
       if (_.isEmpty(params)) {
-        res.json({
+        this.res.json({
           data: {}
         });
       }

@@ -1,21 +1,19 @@
 (function() {
-  var TweetFetcher, TwitterClient, path;
+  var TwitterClient, path;
 
   path = require('path');
 
   TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
 
-  TweetFetcher = require(path.resolve('build', 'lib', 'TweetFetcher'));
-
   module.exports = function(app) {
-    app.get('/api/favorites/lists/:id/:maxId?/:count?', function(req, res) {
-      return new TweetFetcher(req, res, 'getFavLists', null, null).fetchTweet();
-    });
-    app.post('/api/favorites/create', function(req, res) {
+    app.get('/api/twitter', function(req, res) {
       var twitterClient;
+      console.log('GET /api/twitter', req.query);
       twitterClient = new TwitterClient(req.session.passport.user);
-      return twitterClient.createFav({
-        tweetIdStr: req.body.tweetIdStr
+      return twitterClient.getViaAPI({
+        method: req.query.method,
+        type: req.query.type,
+        params: req.query
       }).then(function(data) {
         return res.json({
           data: data
@@ -26,11 +24,14 @@
         });
       });
     });
-    return app.post('/api/favorites/destroy', function(req, res) {
+    return app.post('/api/twitter', function(req, res) {
       var twitterClient;
+      console.log('POST /api/twitter', req.body);
       twitterClient = new TwitterClient(req.session.passport.user);
-      return twitterClient.destroyFav({
-        tweetIdStr: req.body.tweetIdStr
+      return twitterClient.postViaAPI({
+        method: req.body.method,
+        type: req.body.type,
+        params: req.body
       }).then(function(data) {
         return res.json({
           data: data

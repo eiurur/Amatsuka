@@ -1,5 +1,5 @@
 (function() {
-  var TwitterClient, TwitterClientDefine, _, my, path, request, settings,
+  var TwitterClient, TwitterClientDefine, _, path, settings,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
@@ -7,10 +7,6 @@
   path = require('path');
 
   _ = require('lodash');
-
-  request = require('request');
-
-  my = require('./my').my;
 
   settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 

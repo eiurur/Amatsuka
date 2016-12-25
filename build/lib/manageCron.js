@@ -1,13 +1,11 @@
 (function() {
-  var CRON_JOBS, cronJob, cronTaskCollectPicts, path, settings;
+  var CRON_JOBS, cronJob, cronTaskCollectPicts, path;
 
   path = require('path');
 
   cronJob = require('cron').CronJob;
 
   cronTaskCollectPicts = require(path.resolve('build', 'lib', 'cronTaskCollectPicts')).cronTaskCollectPicts;
-
-  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
 
   CRON_JOBS = [
     {

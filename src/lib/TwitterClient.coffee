@@ -1,7 +1,5 @@
 path       = require 'path'
 _          = require 'lodash'
-request    = require 'request'
-{my}       = require './my'
 {settings} = require path.resolve 'build', 'lib', 'configs', 'settings'
 
 class TwitterClientDefine

@@ -1,7 +1,5 @@
-_            = require 'lodash'
 path         = require 'path'
 ModelFactory = require path.resolve 'build', 'model', 'ModelFactory'
-{settings}   = require path.resolve 'build', 'lib', 'configs', 'settings'
 
 module.exports = (app) ->
 

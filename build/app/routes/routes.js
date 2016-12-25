@@ -1,16 +1,4 @@
 (function() {
-  var _, moment, my, path, settings;
-
-  path = require('path');
-
-  moment = require('moment');
-
-  _ = require('lodash');
-
-  my = require(path.resolve('build', 'lib', 'my')).my;
-
-  settings = require(path.resolve('build', 'lib', 'configs', 'settings')).settings;
-
   module.exports = function(app) {
     app.get('/logout', function(req, res) {
       if (!_.has(req.session, 'id')) {
@@ -23,7 +11,7 @@
     app.get('/isAuthenticated', function(req, res) {
       var sessionUserData;
       sessionUserData = null;
-      if (!_.isUndefined(req.session.passport.user)) {
+      if (typeof req.session.passport.user !== "undefined") {
         sessionUserData = req.session.passport.user;
       }
       res.json({
