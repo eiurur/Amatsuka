@@ -65,19 +65,13 @@ module.exports = class PictProvider extends BaseProvider
         return resolve pictList
 
   findOneAndUpdate: (params) ->
-    return new Promise (resolve, reject) ->
-      pict = null
-      console.log "\n============> Pict upsert\n"
-      # console.log params
-      pict = params
-      pict.updatedAt = new Date()
-      Pict.findOneAndUpdate
-        postedBy: params.postedBy
-      , pict,
-        upsert: true
-      , (err, data) ->
-        if err then return reject err
-        return resolve data
+    return new Promise (resolve, reject) =>
+      console.log params
+      query = postedBy: params.postedBy
+      data = params
+      data.updateAt = new Date()
+      options = 'new': true, upsert: true
+      return resolve super(query, data, options)
 
   count: ->
     return new Promise (resolve, reject) ->

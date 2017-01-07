@@ -30,10 +30,18 @@
           ng-model='filter.isIncludeRetweet',
           ng-disabled="isLoading")
         | Include Retweet
-    button.btn.btn-default(
-      type='button',
-      ng-click='execFilteringPictWithKeyword()',
-      ng-disabled="isLoading || extractForm.screenName.$error.required") Start filtering
+
+  form.form-inline
+    .form-group
+      button.btn.btn-default(
+        type='button',
+        ng-click='execFilteringPictWithKeyword()',
+        ng-disabled="isLoading || extractForm.screenName.$error.required") Start filtering
+    .form-group
+      p.form-control-static.bookmarklet__link
+        a(href='https://github.com/eiurur/Amatsuka/tree/master/bookmarklet', target='_blank') Bookmarklet
+          i.fa.fa-external-link
+
     //- button.btn.btn-default(
     //-   type='button',
     //-   ng-click='dump()',) dump
