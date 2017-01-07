@@ -22,6 +22,12 @@ TweetDeckでツイートモーダル、ユーザモーダルが開かれてい�
 
 ![](https://dl.dropboxusercontent.com/u/31717228/ShareX/2016/08/chrome_2016-08-21_12-09-41.png)
 
+## Note
+
+Amatsukaを新しいタブで開かず、同じタブを使って遷移したいときは以下のスクリプトをコピペして保存してください。
+
+    javascript:(function(){var to=function(a){window.location.href="https://amatsuka.herokuapp.com/extract/"+a},check=function(){var a=location.hostname;if(["tweetdeck.twitter.com","twitter.com"].includes(a)){if("tweetdeck.twitter.com"===a){var b=$(".mdl .username").text(),c=$(".mdl .username").children().text(),b=b.replace(c,"");to(b)}"twitter.com"===a&&(a=$(".Gallery-content .username").text(),b=$(".ProfileHeaderCard-screennameLink").text(),"none"===$(".GalleryNav").css("display")?to(b):(a||b)&&to(a||b))}};check();})();
+
 # Tool
 
 ### compiler
