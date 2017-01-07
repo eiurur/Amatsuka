@@ -18,11 +18,15 @@ angular.module "myApp.controllers"
   $scope.extract        = {}
   $scope.extract.tweets = []
   $scope.isLoading      = false
+  $scope.isUserFound    = false
 
-  ConfigService.get().then (config) -> $scope.layoutType = if config.isTileLayout then 'tile' else 'grid'
+  ConfigService.get()
+  .then (config) ->
+    $scope.layoutType = if config.isTileLayout then 'tile' else 'grid'
 
   filterPic = (params = screenName: $scope.filter.screenName) ->
     $scope.isLoading = true
+    $scope.message = "Now fetching. This process will take a long time."
 
     # screenNameからuserDataを取得(id_strが必要)
     TweetService.showUsers(params)
@@ -55,16 +59,17 @@ angular.module "myApp.controllers"
       $scope.extract.tweets = tweets.sort (a, b) -> b.totalNum - a.totalNum
       console.log $scope.extract.tweets
       $scope.isLoading = false
+      $scope.isUserFound = true
+    .catch (err) ->
+      $scope.isLoading = false
+      $scope.isUserFound = false
+      $scope.message = "#{$scope.filter.screenName} is not found"
 
 
   # Extractページを直接開いたとき
   if $routeParams.id is undefined
-
-    # 何もしない
-    console.log 'undefined'
-
-  # 他のページからid_strまたはscreenNameをもらって遷移したとき
-  else
+    console.log 'undefined' # 何もしない
+  else # 他のページからid_strまたはscreenNameをもらって遷移したとき
     console.log $scope.filter.keyword
     if $routeParams.id.indexOf '@' is -1
       console.log '@ScreenName'
@@ -73,11 +78,6 @@ angular.module "myApp.controllers"
       console.log 'id_str'
       params = twitterIdStr: $routeParams.id
     filterPic(params)
-
-  # $scope.dump = ->
-  #   console.log $scope.extract.tweets.map (tweet) -> image: tweet.extended_entities.media[0].media_url_https + ":large", src: tweet.extended_entities.media[0].display_url
-
-
 
   $scope.execFilteringPictWithKeyword = ->
     console.log $scope.filter

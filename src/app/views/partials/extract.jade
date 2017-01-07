@@ -49,6 +49,7 @@
 .extract__form-profile-between-padding
 
 .col-md-6
+
   .media(ng-if='extract.user.name')
     .media
       a.pull-left
@@ -78,19 +79,18 @@
   .col-md-12
     .timeline__container
       .section--divider
+      div(ng-if='!isUserFound')
+        .timeline
+          .drawer__contents--infinitescroll-message.extract__loading__container
+            dot-loader(ng-if="isLoading")
+            p.extract__loading__message.drawer__contents--infinitescroll-message
+              {{message}}
 
-      .timeline.timeline--tile(ng-if='layoutType == "tile"')
-        .drawer__contents--infinitescroll-message.extract__loading__container(ng-if='isLoading')
-          dot-loader
-          p.extract__loading__message.drawer__contents--infinitescroll-message
-            | Now fetching. This process will take a long time.
-        .timeline__post.timeline__post--tile.col-lg-2.col-md-3.col-sm-4(ng-repeat='tweet in extract.tweets')
-          include ../parts/post/_tile
+      div(ng-if='isUserFound')
+        .timeline.timeline--tile(ng-if='layoutType == "tile"')
+          .timeline__post.timeline__post--tile.col-lg-2.col-md-3.col-sm-4(ng-repeat='tweet in extract.tweets')
+            include ../parts/post/_tile
 
-      .timeline.timeline--grid(ng-if='layoutType == "grid"', masonry='masonry', preserve-order)
-        .drawer__contents--infinitescroll-message.extract__loading__container(ng-if='isLoading')
-          dot-loader
-          p.extract__loading__message.drawer__contents--infinitescroll-message
-            | Now fetching. This process will take a long time.
-        .masonry-brick.timeline__post.timeline__post--grid(ng-repeat='tweet in extract.tweets')
-          include ../parts/post/_grid
+        .timeline.timeline--grid(ng-if='layoutType == "grid"', masonry='masonry', preserve-order)
+          .masonry-brick.timeline__post.timeline__post--grid(ng-repeat='tweet in extract.tweets')
+            include ../parts/post/_grid
