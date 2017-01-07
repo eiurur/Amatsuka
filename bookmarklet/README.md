@@ -1,3 +1,7 @@
+# Demo
+
+![demo](https://github.com/eiurur/Amatsuka/raw/master/bookmarklet/redirect_to_extract_demo.gif)
+
 # Usage
 
 Chromeブラウザを開いて`Ctrl + d`でブックマークを登録
