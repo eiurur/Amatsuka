@@ -31,8 +31,9 @@
         return;
       }
 
-      if(usernameOnModalTweet || usernameInAccountPage) to(usernameOnModalTweet || usernameInAccountPage);
-
+      if(usernameOnModalTweet || usernameInAccountPage) {
+        to(usernameOnModalTweet || usernameInAccountPage);
+      }
     }
 
   }
