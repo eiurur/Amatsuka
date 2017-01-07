@@ -1786,6 +1786,13 @@ a.mao__link:active {
   }
 }
 
+.bookmarklet__link {
+  margin: 0 8px;
+}
+.bookmarklet__link i {
+  margin-left: 5px;
+}
+
 /**
  * [width description]
  * Under 480px

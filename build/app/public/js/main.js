@@ -383,6 +383,7 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
   $scope.extract = {};
   $scope.extract.tweets = [];
   $scope.isLoading = false;
+  $scope.isUserFound = false;
   ConfigService.get().then(function(config) {
     return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
   });
@@ -393,6 +394,7 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
       };
     }
     $scope.isLoading = true;
+    $scope.message = "Now fetching. This process will take a long time.";
     return TweetService.showUsers(params).then(function(data) {
       return $scope.extract.user = ListService.normalizeMember(data.data);
     }).then(function(user) {
@@ -413,7 +415,12 @@ angular.module("myApp.controllers").controller("ExtractCtrl", ["$scope", "$route
         return b.totalNum - a.totalNum;
       });
       console.log($scope.extract.tweets);
-      return $scope.isLoading = false;
+      $scope.isLoading = false;
+      return $scope.isUserFound = true;
+    })["catch"](function(err) {
+      $scope.isLoading = false;
+      $scope.isUserFound = false;
+      return $scope.message = $scope.filter.screenName + " is not found";
     });
   };
   if ($routeParams.id === void 0) {
@@ -1234,6 +1241,620 @@ angular.module("myApp.directives").directive("zoomImage", ["$compile", "$rootSco
       });
     }
   };
+}]);
+
+angular.module("myApp.factories").factory('AmatsukaList', ["TweetService", "ListService", function(TweetService, ListService) {
+  var AmatsukaList;
+  AmatsukaList = (function() {
+    function AmatsukaList(name) {
+      this.name = name;
+      this.isLast = false;
+      this.count = 20;
+      this.members = [];
+      this.memberIdx = 0;
+      this.idStr = (JSON.parse(localStorage.getItem('amatsukaList')) || {}).id_str;
+      this.amatsukaMemberList = ListService.normalizeMembers(JSON.parse(localStorage.getItem('amatsukaFollowList'))) || [];
+      this.amatsukaMemberLength = this.amatsukaMemberList.length;
+    }
+
+    AmatsukaList.prototype.updateAmatsukaList = function() {
+      return ListService.update().then((function(_this) {
+        return function(users) {
+          _this.idstr = ListService.amatsukaList.data.id_str;
+          _this.amatsukaMemberList = ListService.normalizeMembers(users);
+          _this.amatsukaMemberLength = _this.amatsukaMemberList.length;
+          _this.length = _this.amatsukaMemberLength;
+          _this.isLast = true;
+          _this.members = _this.amatsukaMemberList;
+          return console.log(_this.members);
+        };
+      })(this));
+    };
+
+    AmatsukaList.prototype.loadMoreMember = function() {
+      if (this.isLast) {
+        return;
+      }
+      this.members = this.members.concat(this.amatsukaMemberList.slice(this.memberIdx, this.memberIdx + this.count));
+      this.memberIdx += this.count;
+      if (this.memberIdx > this.amatsukaMemberLength) {
+        this.isLast = true;
+      }
+    };
+
+    AmatsukaList.prototype.reverse = function() {
+      this.amatsukaMemberList.reverse();
+      this.memberIdx = 0;
+      this.members = [];
+      return this.loadMoreMember();
+    };
+
+    return AmatsukaList;
+
+  })();
+  return AmatsukaList;
+}]);
+
+angular.module("myApp.factories").factory('BlackUserList', ["TweetService", "BlackUserListService", function(TweetService, BlackUserListService) {
+  var BlackUserList;
+  BlackUserList = (function() {
+    function BlackUserList() {
+      this.blockUserList = [];
+      this.blockOpts = {
+        method: 'blocks',
+        type: 'list',
+        cursor: -1
+      };
+    }
+
+    BlackUserList.prototype.setBlockUserList = function() {
+      return TweetService.getViaAPI(this.blockOpts).then((function(_this) {
+        return function(blocklist) {
+          if (data.error != null) {
+            reject(data.error);
+          }
+          console.log('blocklist', blocklist.data);
+          _this.blockUserList = _this.blockUserList.concat(blocklist.data.users);
+          if (blocklist.data.users.length === 0) {
+            console.log('blockliist 全部読み終えた！！！');
+            console.log(_this.blockUserList);
+            localStorage.setItem('amatsuka.blockUserList', JSON.stringify(_this.blockUserList));
+            BlackUserListService.block = _this.blockUserList;
+            return;
+          }
+          _this.blockOpts.cursor = blocklist.data.next_cursor_str;
+          return _this.setBlockUserList();
+        };
+      })(this))["catch"]((function(_this) {
+        return function(err) {};
+      })(this));
+    };
+
+    return BlackUserList;
+
+  })();
+  return BlackUserList;
+}]);
+
+var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
+angular.module("myApp.factories").factory('List', ["$q", "toaster", "TweetService", "ListService", "Member", function($q, toaster, TweetService, ListService, Member) {
+  var List;
+  List = (function(superClass) {
+    extend(List, superClass);
+
+    function List(name, idStr) {
+      List.__super__.constructor.call(this, name, idStr);
+    }
+
+    List.prototype.loadMember = function() {
+      return TweetService.getListsMembers({
+        listIdStr: this.idStr,
+        count: 1000
+      }).then((function(_this) {
+        return function(data) {
+          return _this.members = ListService.normalizeMembersForCopy(data.data.users);
+        };
+      })(this));
+    };
+
+    return List;
+
+  })(Member);
+  return List;
+}]);
+
+var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+angular.module("myApp.factories").factory('Mao', ["$q", "$httpParamSerializer", "ListService", "MaoService", "TweetService", function($q, $httpParamSerializer, ListService, MaoService, TweetService) {
+  var Mao;
+  Mao = (function() {
+    function Mao(date) {
+      this.date = date;
+      this.normalizeTweets = bind(this.normalizeTweets, this);
+      this.busy = false;
+      this.isLast = false;
+      this.limit = 30;
+      this.skip = 0;
+      this.items = [];
+      this.isAuthenticatedWithMao = true;
+    }
+
+    Mao.prototype.normalizeTweets = function(tweets) {
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          var result, tweetsNormalized;
+          tweets = tweets.map(function(item) {
+            return JSON.parse(item.tweetStr);
+          });
+          tweetsNormalized = TweetService.normalizeTweets(tweets, ListService.amatsukaList.member);
+          result = tweetsNormalized.map(function(tweet) {
+            return tweet.extended_entities.media.map(function(media) {
+              return {
+                tweet: tweet,
+                media: media
+              };
+            });
+          });
+          return resolve(_.flatten(result));
+        };
+      })(this));
+    };
+
+    Mao.prototype.load = function() {
+      var opts, qs;
+      if (this.busy || this.isLast) {
+        return;
+      }
+      this.busy = true;
+      opts = {
+        skip: this.skip,
+        limit: this.limit,
+        date: this.date
+      };
+      qs = $httpParamSerializer(opts);
+      return MaoService.findByMaoTokenAndDate(qs).then((function(_this) {
+        return function(data) {
+          return _this.normalizeTweets(data.data);
+        };
+      })(this)).then((function(_this) {
+        return function(normalizedTweets) {
+          if (normalizedTweets.length === 0) {
+            _this.busy = false;
+            _this.isLast = true;
+            return;
+          }
+          normalizedTweets.forEach(function(tweet) {
+            return _this.items.push(tweet);
+          });
+          _this.skip += _this.limit;
+          return _this.busy = false;
+        };
+      })(this))["catch"]((function(_this) {
+        return function(err) {
+          _this.isLast = true;
+          _this.busy = false;
+          return _this.isAuthenticatedWithMao = false;
+        };
+      })(this));
+    };
+
+    return Mao;
+
+  })();
+  return Mao;
+}]);
+
+angular.module("myApp.factories").factory('Member', ["$q", "toaster", "TweetService", "ListService", function($q, toaster, TweetService, ListService) {
+  var Member;
+  Member = (function() {
+    function Member(name, idStr) {
+      this.name = name;
+      this.idStr = idStr;
+      this.isLast = false;
+      this.count = 20;
+      this.nextCursor = -1;
+      this.members = [];
+      this.memberIdx = 0;
+      this.amatsukaListIdStr = ListService.amatsukaList.data.id_str;
+    }
+
+    Member.prototype.loadMember = function() {
+      return TweetService.getFollowingList({
+        twitterIdStr: this.idStr,
+        nextCursor: this.nextCursor,
+        count: 200
+      }).then((function(_this) {
+        return function(data) {
+          console.log(data);
+          if (_.isEmpty(data.data.users)) {
+            return;
+          }
+          console.log(data.data.next_cursor);
+          _this.members = _this.members.concat(ListService.normalizeMembersForCopy(data.data.users));
+          _this.nextCursor = data.data.next_cursor_str;
+          if (data.data.next_cursor === 0) {
+            return;
+          }
+          return _this.loadMember();
+        };
+      })(this));
+    };
+
+    Member.prototype.copyMember2AmatsukaList = function() {
+      return $q((function(_this) {
+        return function(resolve, reject) {
+          var twitterIdStr;
+          if (_this.members.length === 0) {
+            return reject('member is nothing');
+          }
+          twitterIdStr = '';
+          _.each(_this.members, function(user) {
+            return twitterIdStr += user.id_str + ",";
+          });
+          return TweetService.createAllListsMembers({
+            listIdStr: _this.amatsukaListIdStr,
+            twitterIdStr: twitterIdStr
+          }).then(function(data) {
+            console.log('copyMember2AmatsukaList ok', data);
+            return resolve(data);
+          })["catch"](function(e) {
+            return reject(e);
+          });
+        };
+      })(this));
+    };
+
+    return Member;
+
+  })();
+  return Member;
+}]);
+
+angular.module("myApp.factories").factory('Pict', ["$q", "toaster", "TweetService", function($q, toaster, TweetService) {
+  var Pict;
+  Pict = (function() {
+    function Pict(name, idStr) {
+      this.busy = false;
+      this.isLast = false;
+      this.limit = 10;
+      this.skip = 0;
+      this.items = [];
+      this.numIllustorator = 0;
+      this.numMaxSkip = 0;
+      this.doneSkip = [];
+    }
+
+    Pict.prototype.randomAccess = function() {
+      var skip;
+      while (true) {
+        skip = _.sample(_.range(this.numMaxSkip));
+        if (!this.doneSkip.includes(skip) || this.doneSkip.length >= this.numMaxSkip) {
+          break;
+        }
+      }
+      this.doneSkip.push(skip);
+      this.skip = skip * this.limit;
+      TweetService.getPict({
+        skip: this.skip,
+        limit: this.limit
+      }).then((function(_this) {
+        return function(data) {
+          _this.items = _this.items.concat(data);
+          _this.skip += _this.limit;
+          if (_this.doneSkip.length >= _this.numMaxSkip) {
+            _this.isLast = true;
+          }
+          return _this.busy = false;
+        };
+      })(this));
+    };
+
+    Pict.prototype.load = function() {
+      if (this.busy || this.isLast) {
+        return;
+      }
+      this.busy = true;
+      if (this.numIllustorator !== 0) {
+        this.randomAccess();
+        return;
+      }
+      return TweetService.getPictCount().then((function(_this) {
+        return function(count) {
+          _this.numIllustorator = count;
+          _this.numMaxSkip = (_this.numIllustorator - 1) / _this.limit;
+          return _this.randomAccess();
+        };
+      })(this));
+    };
+
+    return Pict;
+
+  })();
+  return Pict;
+}]);
+
+angular.module("myApp.factories").factory('TweetCountList', ["$q", "$httpParamSerializer", "MaoService", function($q, $httpParamSerializer, MaoService) {
+  var TweetCountList;
+  TweetCountList = (function() {
+    function TweetCountList(date) {
+      this.date = date;
+      this.busy = false;
+      this.isLast = false;
+      this.limit = 20;
+      this.skip = 0;
+      this.maxCount = 1000;
+      this.items = [];
+      this.isAuthenticatedWithMao = true;
+    }
+
+    TweetCountList.prototype.load = function() {
+      var opts, qs;
+      if (this.busy || this.isLast) {
+        return;
+      }
+      this.busy = true;
+      opts = {
+        skip: this.skip,
+        limit: this.limit
+      };
+      qs = $httpParamSerializer(opts);
+      return MaoService.aggregateTweetCount(qs).then((function(_this) {
+        return function(tweetCountist) {
+          console.log('aggregateTweetCount ==> ', tweetCountist);
+          if (tweetCountist.data.length === 0) {
+            _this.busy = false;
+            _this.isLast = true;
+            return;
+          }
+          if (_this.items.length === 0) {
+            console.log('tweetCountist = ', tweetCountist);
+            _this.maxCount = tweetCountist.data[0].postCount;
+          }
+          tweetCountist.data.map(function(tweet) {
+            return _this.items.push(tweet);
+          });
+          _this.skip += _this.limit;
+          return _this.busy = false;
+        };
+      })(this))["catch"]((function(_this) {
+        return function(err) {
+          _this.isLast = true;
+          _this.busy = false;
+          return _this.isAuthenticatedWithMao = false;
+        };
+      })(this));
+    };
+
+    return TweetCountList;
+
+  })();
+  return TweetCountList;
+}]);
+
+var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
+angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigService", "ToasterService", "TweetService", "ListService", function($http, $q, ConfigService, ToasterService, TweetService, ListService) {
+  var Tweets;
+  Tweets = (function() {
+    function Tweets(items, maxId, type, twitterIdStr) {
+      this.items = items;
+      this.maxId = maxId != null ? maxId : void 0;
+      this.type = type;
+      this.twitterIdStr = twitterIdStr != null ? twitterIdStr : null;
+      this.checkError = bind(this.checkError, this);
+      this.assignTweet = bind(this.assignTweet, this);
+      this.normalizeTweet = bind(this.normalizeTweet, this);
+      this.busy = false;
+      this.isLast = false;
+      this.method = null;
+      ConfigService.get().then((function(_this) {
+        return function(data) {
+          return _this.count = data.tweetNumberAtOnce || 40;
+        };
+      })(this));
+    }
+
+    Tweets.prototype.normalizeTweet = function(data) {
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          var itemsNormalized;
+          if (data.error != null) {
+            reject(data.error);
+          }
+          if (_.isEmpty(data.data)) {
+            reject({
+              statusCode: 10100
+            });
+          }
+          console.time('normalize_tweets');
+          _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
+          itemsNormalized = TweetService.normalizeTweets(data.data, ListService.amatsukaList.member);
+          console.timeEnd('normalize_tweets');
+          return resolve(itemsNormalized);
+        };
+      })(this));
+    };
+
+    Tweets.prototype.assignTweet = function(tweets) {
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          if (_.isEmpty(tweets)) {
+            reject({
+              statusCode: 100110
+            });
+          }
+          (function() {
+            $q.all(tweets.map(function(tweet) {
+              return [_this.items][0].push(tweet);
+            })).then(function(result) {
+              return _this.busy = false;
+            });
+          })();
+        };
+      })(this));
+    };
+
+    Tweets.prototype.checkError = function(statusCode) {
+      console.log(statusCode);
+      switch (statusCode) {
+        case 429:
+          ToasterService.warning({
+            title: 'ツイート取得API制限',
+            text: '15分お待ちください'
+          });
+          break;
+        case 10100:
+          this.isLast = true;
+          this.busy = false;
+          ToasterService.success({
+            title: '全ツイート取得完了',
+            text: '全て読み込みました'
+          });
+          break;
+        case 10110:
+          this.busy = false;
+      }
+    };
+
+    Tweets.prototype.nextPage = function() {
+      console.log(this.busy);
+      console.log(this.isLast);
+      if (this.busy || this.isLast) {
+        return;
+      }
+      if (this.type === 'user_timeline') {
+        this.method = TweetService.getUserTimeline({
+          twitterIdStr: this.twitterIdStr,
+          maxId: this.maxId,
+          count: this.count
+        });
+      } else if (this.type === 'like') {
+        this.method = TweetService.getFavLists({
+          twitterIdStr: this.twitterIdStr,
+          maxId: this.maxId,
+          count: this.count
+        });
+      } else {
+        this.method = TweetService.getListsStatuses({
+          listIdStr: ListService.amatsukaList.data.id_str,
+          maxId: this.maxId,
+          count: this.count
+        });
+      }
+      this.busy = true;
+      return (function(_this) {
+        return function() {
+          _this.method.then(function(data) {
+            return _this.normalizeTweet(data);
+          }).then(function(itemsNormalized) {
+            return _this.assignTweet(itemsNormalized);
+          })["catch"](function(error) {
+            return _this.checkError(error.statusCode);
+          });
+        };
+      })(this)();
+    };
+
+    return Tweets;
+
+  })();
+  return Tweets;
+}]);
+
+angular.module("myApp.factories").factory('URLParameterChecker', ["URLParameterService", function(URLParameterService) {
+  var URLParameterChecker;
+  return URLParameterChecker = (function() {
+    function URLParameterChecker() {
+      this.urlResources = URLParameterService.parse();
+      this.queryParams = URLParameterService.getQueryParams();
+    }
+
+    URLParameterChecker.prototype.checkURLResourceLength = function(allowableLength) {
+      return URLParameterService.checkURLResourceLength(this.urlResources.length, allowableLength);
+    };
+
+    return URLParameterChecker;
+
+  })();
+}]);
+
+angular.module("myApp.factories").factory('WindowScrollableSwitcher', function() {
+  var WindowScrollableSwitcher;
+  WindowScrollableSwitcher = (function() {
+    function WindowScrollableSwitcher() {}
+
+    WindowScrollableSwitcher.enableScrolling = function() {
+      window.onscroll = function() {};
+    };
+
+    WindowScrollableSwitcher.disableScrolling = function() {
+      var x, y;
+      x = window.scrollX;
+      y = window.scrollY;
+      return window.onscroll = function() {
+        return window.scrollTo(x, y);
+      };
+    };
+
+    return WindowScrollableSwitcher;
+
+  })();
+  return WindowScrollableSwitcher;
+});
+
+angular.module("myApp.factories").factory('ZoomImageViewer', ["GetterImageInfomation", function(GetterImageInfomation) {
+  var ZoomImageViewer;
+  ZoomImageViewer = (function() {
+    function ZoomImageViewer() {
+      var containerHTML;
+      this.imageLayer = angular.element(document).find('.image-layer');
+      containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n  <div class=\"image-layer__loading\">\n    <img src=\"./images/loaders/tail-spin.svg\" />\n  </div>\n</div>\n";
+      this.imageLayer.html(containerHTML);
+      this.imageLayer.addClass('image-layer__overlay');
+      this.imageLayerImg = angular.element(document).find('.image-layer__img');
+      this.imageLayerLoading = angular.element(document).find('.image-layer__loading');
+    }
+
+    ZoomImageViewer.prototype.getImageLayerImg = function() {
+      return this.imageLayerImg;
+    };
+
+    ZoomImageViewer.prototype.setImageAndStyle = function(imgElement) {
+      var direction;
+      direction = GetterImageInfomation.getWideDirection(imgElement);
+      return imgElement.addClass("image-layer__img-" + direction + "-wide");
+    };
+
+    ZoomImageViewer.prototype.pipeLowToHighImage = function(from, to) {
+      this.imageLayerLoading.show();
+      this.imageLayerImg.hide();
+      this.imageLayerImg.removeClass();
+      return this.imageLayerImg.attr('src', from).load((function(_this) {
+        return function() {
+          console.log('-> Middle');
+          _this.imageLayerLoading.hide();
+          _this.setImageAndStyle(_this.imageLayerImg);
+          _this.imageLayerImg.fadeIn(1);
+          _this.imageLayerImg.off('load');
+          return _this.imageLayerImg.attr('src', to).load(function() {
+            console.log('-> High');
+            return _this.imageLayerImg.fadeIn(1);
+          });
+        };
+      })(this));
+    };
+
+    ZoomImageViewer.prototype.cleanup = function() {
+      this.imageLayerLoading.remove();
+      return this.imageLayer.removeClass('image-layer__overlay');
+    };
+
+    return ZoomImageViewer;
+
+  })();
+  return ZoomImageViewer;
 }]);
 
 angular.module("myApp.services").service("AuthService", ["$http", function($http) {
@@ -2177,620 +2798,6 @@ angular.module("myApp.services").service("URLParameterService", ["$location", fu
   };
 }]);
 
-angular.module("myApp.factories").factory('AmatsukaList', ["TweetService", "ListService", function(TweetService, ListService) {
-  var AmatsukaList;
-  AmatsukaList = (function() {
-    function AmatsukaList(name) {
-      this.name = name;
-      this.isLast = false;
-      this.count = 20;
-      this.members = [];
-      this.memberIdx = 0;
-      this.idStr = (JSON.parse(localStorage.getItem('amatsukaList')) || {}).id_str;
-      this.amatsukaMemberList = ListService.normalizeMembers(JSON.parse(localStorage.getItem('amatsukaFollowList'))) || [];
-      this.amatsukaMemberLength = this.amatsukaMemberList.length;
-    }
-
-    AmatsukaList.prototype.updateAmatsukaList = function() {
-      return ListService.update().then((function(_this) {
-        return function(users) {
-          _this.idstr = ListService.amatsukaList.data.id_str;
-          _this.amatsukaMemberList = ListService.normalizeMembers(users);
-          _this.amatsukaMemberLength = _this.amatsukaMemberList.length;
-          _this.length = _this.amatsukaMemberLength;
-          _this.isLast = true;
-          _this.members = _this.amatsukaMemberList;
-          return console.log(_this.members);
-        };
-      })(this));
-    };
-
-    AmatsukaList.prototype.loadMoreMember = function() {
-      if (this.isLast) {
-        return;
-      }
-      this.members = this.members.concat(this.amatsukaMemberList.slice(this.memberIdx, this.memberIdx + this.count));
-      this.memberIdx += this.count;
-      if (this.memberIdx > this.amatsukaMemberLength) {
-        this.isLast = true;
-      }
-    };
-
-    AmatsukaList.prototype.reverse = function() {
-      this.amatsukaMemberList.reverse();
-      this.memberIdx = 0;
-      this.members = [];
-      return this.loadMoreMember();
-    };
-
-    return AmatsukaList;
-
-  })();
-  return AmatsukaList;
-}]);
-
-angular.module("myApp.factories").factory('BlackUserList', ["TweetService", "BlackUserListService", function(TweetService, BlackUserListService) {
-  var BlackUserList;
-  BlackUserList = (function() {
-    function BlackUserList() {
-      this.blockUserList = [];
-      this.blockOpts = {
-        method: 'blocks',
-        type: 'list',
-        cursor: -1
-      };
-    }
-
-    BlackUserList.prototype.setBlockUserList = function() {
-      return TweetService.getViaAPI(this.blockOpts).then((function(_this) {
-        return function(blocklist) {
-          if (data.error != null) {
-            reject(data.error);
-          }
-          console.log('blocklist', blocklist.data);
-          _this.blockUserList = _this.blockUserList.concat(blocklist.data.users);
-          if (blocklist.data.users.length === 0) {
-            console.log('blockliist 全部読み終えた！！！');
-            console.log(_this.blockUserList);
-            localStorage.setItem('amatsuka.blockUserList', JSON.stringify(_this.blockUserList));
-            BlackUserListService.block = _this.blockUserList;
-            return;
-          }
-          _this.blockOpts.cursor = blocklist.data.next_cursor_str;
-          return _this.setBlockUserList();
-        };
-      })(this))["catch"]((function(_this) {
-        return function(err) {};
-      })(this));
-    };
-
-    return BlackUserList;
-
-  })();
-  return BlackUserList;
-}]);
-
-var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  hasProp = {}.hasOwnProperty;
-
-angular.module("myApp.factories").factory('List', ["$q", "toaster", "TweetService", "ListService", "Member", function($q, toaster, TweetService, ListService, Member) {
-  var List;
-  List = (function(superClass) {
-    extend(List, superClass);
-
-    function List(name, idStr) {
-      List.__super__.constructor.call(this, name, idStr);
-    }
-
-    List.prototype.loadMember = function() {
-      return TweetService.getListsMembers({
-        listIdStr: this.idStr,
-        count: 1000
-      }).then((function(_this) {
-        return function(data) {
-          return _this.members = ListService.normalizeMembersForCopy(data.data.users);
-        };
-      })(this));
-    };
-
-    return List;
-
-  })(Member);
-  return List;
-}]);
-
-var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-angular.module("myApp.factories").factory('Mao', ["$q", "$httpParamSerializer", "ListService", "MaoService", "TweetService", function($q, $httpParamSerializer, ListService, MaoService, TweetService) {
-  var Mao;
-  Mao = (function() {
-    function Mao(date) {
-      this.date = date;
-      this.normalizeTweets = bind(this.normalizeTweets, this);
-      this.busy = false;
-      this.isLast = false;
-      this.limit = 30;
-      this.skip = 0;
-      this.items = [];
-      this.isAuthenticatedWithMao = true;
-    }
-
-    Mao.prototype.normalizeTweets = function(tweets) {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          var result, tweetsNormalized;
-          tweets = tweets.map(function(item) {
-            return JSON.parse(item.tweetStr);
-          });
-          tweetsNormalized = TweetService.normalizeTweets(tweets, ListService.amatsukaList.member);
-          result = tweetsNormalized.map(function(tweet) {
-            return tweet.extended_entities.media.map(function(media) {
-              return {
-                tweet: tweet,
-                media: media
-              };
-            });
-          });
-          return resolve(_.flatten(result));
-        };
-      })(this));
-    };
-
-    Mao.prototype.load = function() {
-      var opts, qs;
-      if (this.busy || this.isLast) {
-        return;
-      }
-      this.busy = true;
-      opts = {
-        skip: this.skip,
-        limit: this.limit,
-        date: this.date
-      };
-      qs = $httpParamSerializer(opts);
-      return MaoService.findByMaoTokenAndDate(qs).then((function(_this) {
-        return function(data) {
-          return _this.normalizeTweets(data.data);
-        };
-      })(this)).then((function(_this) {
-        return function(normalizedTweets) {
-          if (normalizedTweets.length === 0) {
-            _this.busy = false;
-            _this.isLast = true;
-            return;
-          }
-          normalizedTweets.forEach(function(tweet) {
-            return _this.items.push(tweet);
-          });
-          _this.skip += _this.limit;
-          return _this.busy = false;
-        };
-      })(this))["catch"]((function(_this) {
-        return function(err) {
-          _this.isLast = true;
-          _this.busy = false;
-          return _this.isAuthenticatedWithMao = false;
-        };
-      })(this));
-    };
-
-    return Mao;
-
-  })();
-  return Mao;
-}]);
-
-angular.module("myApp.factories").factory('Member', ["$q", "toaster", "TweetService", "ListService", function($q, toaster, TweetService, ListService) {
-  var Member;
-  Member = (function() {
-    function Member(name, idStr) {
-      this.name = name;
-      this.idStr = idStr;
-      this.isLast = false;
-      this.count = 20;
-      this.nextCursor = -1;
-      this.members = [];
-      this.memberIdx = 0;
-      this.amatsukaListIdStr = ListService.amatsukaList.data.id_str;
-    }
-
-    Member.prototype.loadMember = function() {
-      return TweetService.getFollowingList({
-        twitterIdStr: this.idStr,
-        nextCursor: this.nextCursor,
-        count: 200
-      }).then((function(_this) {
-        return function(data) {
-          console.log(data);
-          if (_.isEmpty(data.data.users)) {
-            return;
-          }
-          console.log(data.data.next_cursor);
-          _this.members = _this.members.concat(ListService.normalizeMembersForCopy(data.data.users));
-          _this.nextCursor = data.data.next_cursor_str;
-          if (data.data.next_cursor === 0) {
-            return;
-          }
-          return _this.loadMember();
-        };
-      })(this));
-    };
-
-    Member.prototype.copyMember2AmatsukaList = function() {
-      return $q((function(_this) {
-        return function(resolve, reject) {
-          var twitterIdStr;
-          if (_this.members.length === 0) {
-            return reject('member is nothing');
-          }
-          twitterIdStr = '';
-          _.each(_this.members, function(user) {
-            return twitterIdStr += user.id_str + ",";
-          });
-          return TweetService.createAllListsMembers({
-            listIdStr: _this.amatsukaListIdStr,
-            twitterIdStr: twitterIdStr
-          }).then(function(data) {
-            console.log('copyMember2AmatsukaList ok', data);
-            return resolve(data);
-          })["catch"](function(e) {
-            return reject(e);
-          });
-        };
-      })(this));
-    };
-
-    return Member;
-
-  })();
-  return Member;
-}]);
-
-angular.module("myApp.factories").factory('Pict', ["$q", "toaster", "TweetService", function($q, toaster, TweetService) {
-  var Pict;
-  Pict = (function() {
-    function Pict(name, idStr) {
-      this.busy = false;
-      this.isLast = false;
-      this.limit = 10;
-      this.skip = 0;
-      this.items = [];
-      this.numIllustorator = 0;
-      this.numMaxSkip = 0;
-      this.doneSkip = [];
-    }
-
-    Pict.prototype.randomAccess = function() {
-      var skip;
-      while (true) {
-        skip = _.sample(_.range(this.numMaxSkip));
-        if (!this.doneSkip.includes(skip) || this.doneSkip.length >= this.numMaxSkip) {
-          break;
-        }
-      }
-      this.doneSkip.push(skip);
-      this.skip = skip * this.limit;
-      TweetService.getPict({
-        skip: this.skip,
-        limit: this.limit
-      }).then((function(_this) {
-        return function(data) {
-          _this.items = _this.items.concat(data);
-          _this.skip += _this.limit;
-          if (_this.doneSkip.length >= _this.numMaxSkip) {
-            _this.isLast = true;
-          }
-          return _this.busy = false;
-        };
-      })(this));
-    };
-
-    Pict.prototype.load = function() {
-      if (this.busy || this.isLast) {
-        return;
-      }
-      this.busy = true;
-      if (this.numIllustorator !== 0) {
-        this.randomAccess();
-        return;
-      }
-      return TweetService.getPictCount().then((function(_this) {
-        return function(count) {
-          _this.numIllustorator = count;
-          _this.numMaxSkip = (_this.numIllustorator - 1) / _this.limit;
-          return _this.randomAccess();
-        };
-      })(this));
-    };
-
-    return Pict;
-
-  })();
-  return Pict;
-}]);
-
-angular.module("myApp.factories").factory('TweetCountList', ["$q", "$httpParamSerializer", "MaoService", function($q, $httpParamSerializer, MaoService) {
-  var TweetCountList;
-  TweetCountList = (function() {
-    function TweetCountList(date) {
-      this.date = date;
-      this.busy = false;
-      this.isLast = false;
-      this.limit = 20;
-      this.skip = 0;
-      this.maxCount = 1000;
-      this.items = [];
-      this.isAuthenticatedWithMao = true;
-    }
-
-    TweetCountList.prototype.load = function() {
-      var opts, qs;
-      if (this.busy || this.isLast) {
-        return;
-      }
-      this.busy = true;
-      opts = {
-        skip: this.skip,
-        limit: this.limit
-      };
-      qs = $httpParamSerializer(opts);
-      return MaoService.aggregateTweetCount(qs).then((function(_this) {
-        return function(tweetCountist) {
-          console.log('aggregateTweetCount ==> ', tweetCountist);
-          if (tweetCountist.data.length === 0) {
-            _this.busy = false;
-            _this.isLast = true;
-            return;
-          }
-          if (_this.items.length === 0) {
-            console.log('tweetCountist = ', tweetCountist);
-            _this.maxCount = tweetCountist.data[0].postCount;
-          }
-          tweetCountist.data.map(function(tweet) {
-            return _this.items.push(tweet);
-          });
-          _this.skip += _this.limit;
-          return _this.busy = false;
-        };
-      })(this))["catch"]((function(_this) {
-        return function(err) {
-          _this.isLast = true;
-          _this.busy = false;
-          return _this.isAuthenticatedWithMao = false;
-        };
-      })(this));
-    };
-
-    return TweetCountList;
-
-  })();
-  return TweetCountList;
-}]);
-
-var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigService", "ToasterService", "TweetService", "ListService", function($http, $q, ConfigService, ToasterService, TweetService, ListService) {
-  var Tweets;
-  Tweets = (function() {
-    function Tweets(items, maxId, type, twitterIdStr) {
-      this.items = items;
-      this.maxId = maxId != null ? maxId : void 0;
-      this.type = type;
-      this.twitterIdStr = twitterIdStr != null ? twitterIdStr : null;
-      this.checkError = bind(this.checkError, this);
-      this.assignTweet = bind(this.assignTweet, this);
-      this.normalizeTweet = bind(this.normalizeTweet, this);
-      this.busy = false;
-      this.isLast = false;
-      this.method = null;
-      ConfigService.get().then((function(_this) {
-        return function(data) {
-          return _this.count = data.tweetNumberAtOnce || 40;
-        };
-      })(this));
-    }
-
-    Tweets.prototype.normalizeTweet = function(data) {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          var itemsNormalized;
-          if (data.error != null) {
-            reject(data.error);
-          }
-          if (_.isEmpty(data.data)) {
-            reject({
-              statusCode: 10100
-            });
-          }
-          console.time('normalize_tweets');
-          _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
-          itemsNormalized = TweetService.normalizeTweets(data.data, ListService.amatsukaList.member);
-          console.timeEnd('normalize_tweets');
-          return resolve(itemsNormalized);
-        };
-      })(this));
-    };
-
-    Tweets.prototype.assignTweet = function(tweets) {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          if (_.isEmpty(tweets)) {
-            reject({
-              statusCode: 100110
-            });
-          }
-          (function() {
-            $q.all(tweets.map(function(tweet) {
-              return [_this.items][0].push(tweet);
-            })).then(function(result) {
-              return _this.busy = false;
-            });
-          })();
-        };
-      })(this));
-    };
-
-    Tweets.prototype.checkError = function(statusCode) {
-      console.log(statusCode);
-      switch (statusCode) {
-        case 429:
-          ToasterService.warning({
-            title: 'ツイート取得API制限',
-            text: '15分お待ちください'
-          });
-          break;
-        case 10100:
-          this.isLast = true;
-          this.busy = false;
-          ToasterService.success({
-            title: '全ツイート取得完了',
-            text: '全て読み込みました'
-          });
-          break;
-        case 10110:
-          this.busy = false;
-      }
-    };
-
-    Tweets.prototype.nextPage = function() {
-      console.log(this.busy);
-      console.log(this.isLast);
-      if (this.busy || this.isLast) {
-        return;
-      }
-      if (this.type === 'user_timeline') {
-        this.method = TweetService.getUserTimeline({
-          twitterIdStr: this.twitterIdStr,
-          maxId: this.maxId,
-          count: this.count
-        });
-      } else if (this.type === 'like') {
-        this.method = TweetService.getFavLists({
-          twitterIdStr: this.twitterIdStr,
-          maxId: this.maxId,
-          count: this.count
-        });
-      } else {
-        this.method = TweetService.getListsStatuses({
-          listIdStr: ListService.amatsukaList.data.id_str,
-          maxId: this.maxId,
-          count: this.count
-        });
-      }
-      this.busy = true;
-      return (function(_this) {
-        return function() {
-          _this.method.then(function(data) {
-            return _this.normalizeTweet(data);
-          }).then(function(itemsNormalized) {
-            return _this.assignTweet(itemsNormalized);
-          })["catch"](function(error) {
-            return _this.checkError(error.statusCode);
-          });
-        };
-      })(this)();
-    };
-
-    return Tweets;
-
-  })();
-  return Tweets;
-}]);
-
-angular.module("myApp.factories").factory('URLParameterChecker', ["URLParameterService", function(URLParameterService) {
-  var URLParameterChecker;
-  return URLParameterChecker = (function() {
-    function URLParameterChecker() {
-      this.urlResources = URLParameterService.parse();
-      this.queryParams = URLParameterService.getQueryParams();
-    }
-
-    URLParameterChecker.prototype.checkURLResourceLength = function(allowableLength) {
-      return URLParameterService.checkURLResourceLength(this.urlResources.length, allowableLength);
-    };
-
-    return URLParameterChecker;
-
-  })();
-}]);
-
-angular.module("myApp.factories").factory('WindowScrollableSwitcher', function() {
-  var WindowScrollableSwitcher;
-  WindowScrollableSwitcher = (function() {
-    function WindowScrollableSwitcher() {}
-
-    WindowScrollableSwitcher.enableScrolling = function() {
-      window.onscroll = function() {};
-    };
-
-    WindowScrollableSwitcher.disableScrolling = function() {
-      var x, y;
-      x = window.scrollX;
-      y = window.scrollY;
-      return window.onscroll = function() {
-        return window.scrollTo(x, y);
-      };
-    };
-
-    return WindowScrollableSwitcher;
-
-  })();
-  return WindowScrollableSwitcher;
-});
-
-angular.module("myApp.factories").factory('ZoomImageViewer', ["GetterImageInfomation", function(GetterImageInfomation) {
-  var ZoomImageViewer;
-  ZoomImageViewer = (function() {
-    function ZoomImageViewer() {
-      var containerHTML;
-      this.imageLayer = angular.element(document).find('.image-layer');
-      containerHTML = "<div class=\"image-layer__container\">\n  <img class=\"image-layer__img\"/>\n  <div class=\"image-layer__loading\">\n    <img src=\"./images/loaders/tail-spin.svg\" />\n  </div>\n</div>\n";
-      this.imageLayer.html(containerHTML);
-      this.imageLayer.addClass('image-layer__overlay');
-      this.imageLayerImg = angular.element(document).find('.image-layer__img');
-      this.imageLayerLoading = angular.element(document).find('.image-layer__loading');
-    }
-
-    ZoomImageViewer.prototype.getImageLayerImg = function() {
-      return this.imageLayerImg;
-    };
-
-    ZoomImageViewer.prototype.setImageAndStyle = function(imgElement) {
-      var direction;
-      direction = GetterImageInfomation.getWideDirection(imgElement);
-      return imgElement.addClass("image-layer__img-" + direction + "-wide");
-    };
-
-    ZoomImageViewer.prototype.pipeLowToHighImage = function(from, to) {
-      this.imageLayerLoading.show();
-      this.imageLayerImg.hide();
-      this.imageLayerImg.removeClass();
-      return this.imageLayerImg.attr('src', from).load((function(_this) {
-        return function() {
-          console.log('-> Middle');
-          _this.imageLayerLoading.hide();
-          _this.setImageAndStyle(_this.imageLayerImg);
-          _this.imageLayerImg.fadeIn(1);
-          _this.imageLayerImg.off('load');
-          return _this.imageLayerImg.attr('src', to).load(function() {
-            console.log('-> High');
-            return _this.imageLayerImg.fadeIn(1);
-          });
-        };
-      })(this));
-    };
-
-    ZoomImageViewer.prototype.cleanup = function() {
-      this.imageLayerLoading.remove();
-      return this.imageLayer.removeClass('image-layer__overlay');
-    };
-
-    return ZoomImageViewer;
-
-  })();
-  return ZoomImageViewer;
-}]);
-
 var MaoContainerController;
 
 angular.module("myApp.directives").directive('maoContainer', function() {
@@ -2971,6 +2978,8 @@ MaoListContoller = (function() {
 
 MaoListContoller.$inject = ['$location', '$httpParamSerializer', '$scope', 'Mao', 'MaoService', 'URLParameterChecker', 'TimeService'];
 
+
+
 var MaoTweetArticleController;
 
 angular.module("myApp.directives").directive('maoTweetArticle', function() {
@@ -3032,8 +3041,6 @@ PopularImageListContainerController = (function() {
 })();
 
 PopularImageListContainerController.$inject = ['TweetService'];
-
-
 
 var GridLayoutTweet;
 

@@ -84,23 +84,22 @@
     };
 
     PictProvider.prototype.findOneAndUpdate = function(params) {
-      return new Promise(function(resolve, reject) {
-        var pict;
-        pict = null;
-        console.log("\n============> Pict upsert\n");
-        pict = params;
-        pict.updatedAt = new Date();
-        return Pict.findOneAndUpdate({
-          postedBy: params.postedBy
-        }, pict, {
-          upsert: true
-        }, function(err, data) {
-          if (err) {
-            return reject(err);
-          }
-          return resolve(data);
-        });
-      });
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          var data, options, query;
+          console.log(params);
+          query = {
+            postedBy: params.postedBy
+          };
+          data = params;
+          data.updateAt = new Date();
+          options = {
+            'new': true,
+            upsert: true
+          };
+          return resolve(PictProvider.__super__.findOneAndUpdate.call(_this, query, data, options));
+        };
+      })(this));
     };
 
     PictProvider.prototype.count = function() {
