@@ -13,9 +13,7 @@
         twitterIdStr: req.params.id,
         screenName: req.params.screenName
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       })["catch"](function(error) {
         return res.json({
           error: error

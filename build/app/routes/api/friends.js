@@ -14,9 +14,7 @@
         cursor: req.params.cursor - 0,
         count: req.params.count - 0
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       })["catch"](function(error) {
         return res.json({
           error: error

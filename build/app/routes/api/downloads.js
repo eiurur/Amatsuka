@@ -10,9 +10,7 @@
       console.log("\n========> download, " + req.body.url + "\n");
       return my.loadBase64Data(req.body.url).then(function(base64Data) {
         console.log('base64toBlob', base64Data.length);
-        return res.json({
-          base64Data: base64Data
-        });
+        return res.send(base64Data);
       });
     });
   };

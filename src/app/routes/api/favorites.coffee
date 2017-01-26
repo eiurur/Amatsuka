@@ -12,7 +12,7 @@ module.exports = (app) ->
     twitterClient.createFav
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error
 
@@ -21,6 +21,6 @@ module.exports = (app) ->
     twitterClient.destroyFav
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error

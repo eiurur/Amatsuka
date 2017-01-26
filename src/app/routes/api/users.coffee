@@ -10,6 +10,6 @@ module.exports = (app) ->
       twitterIdStr: req.params.id
       screenName: req.params.screenName
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error

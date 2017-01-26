@@ -11,7 +11,7 @@ module.exports = (app) ->
     twitterClient.showStatuses
       tweetIdStr: req.params.id
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error
 
@@ -21,7 +21,7 @@ module.exports = (app) ->
     twitterClient.retweetStatus
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error
 
@@ -31,6 +31,6 @@ module.exports = (app) ->
     twitterClient.destroyStatus
       tweetIdStr: req.body.tweetIdStr
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error

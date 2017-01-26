@@ -11,6 +11,6 @@ module.exports = (app) ->
       cursor: req.params.cursor - 0
       count: req.params.count - 0
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error

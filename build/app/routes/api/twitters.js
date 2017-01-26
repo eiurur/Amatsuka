@@ -15,9 +15,7 @@
         type: req.query.type,
         params: req.query
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       })["catch"](function(error) {
         return res.json({
           error: error
@@ -33,9 +31,7 @@
         type: req.body.type,
         params: req.body
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       })["catch"](function(error) {
         return res.json({
           error: error

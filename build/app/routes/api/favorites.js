@@ -17,9 +17,7 @@
       return twitterClient.createFav({
         tweetIdStr: req.body.tweetIdStr
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       })["catch"](function(error) {
         return res.json({
           error: error
@@ -32,9 +30,7 @@
       return twitterClient.destroyFav({
         tweetIdStr: req.body.tweetIdStr
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       })["catch"](function(error) {
         return res.json({
           error: error

@@ -16,9 +16,7 @@
       return twitterClient.showStatuses({
         tweetIdStr: req.params.id
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       })["catch"](function(error) {
         return res.json({
           error: error
@@ -31,9 +29,7 @@
       return twitterClient.retweetStatus({
         tweetIdStr: req.body.tweetIdStr
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       })["catch"](function(error) {
         return res.json({
           error: error
@@ -46,9 +42,7 @@
       return twitterClient.destroyStatus({
         tweetIdStr: req.body.tweetIdStr
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       })["catch"](function(error) {
         return res.json({
           error: error

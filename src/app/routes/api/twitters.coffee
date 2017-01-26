@@ -9,7 +9,7 @@ module.exports = (app) ->
     twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.getViaAPI method: req.query.method, type: req.query.type, params: req.query
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error
 
@@ -18,6 +18,6 @@ module.exports = (app) ->
     twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.postViaAPI method: req.body.method, type: req.body.type, params: req.body
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error

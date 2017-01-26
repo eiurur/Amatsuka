@@ -17,7 +17,7 @@ module.exports = (app) ->
       count: req.params.count
     .then (data) ->
       console.log '/api/lists/list/:id/:count data.length = ', data.length
-      res.json data: data
+      res.send data
     .catch (error) ->
       console.log '/api/lists/list/:id/:count error = ', error
       res.json error: error
@@ -30,7 +30,7 @@ module.exports = (app) ->
       mode: req.body.mode
     .then (data) ->
       console.log '/api/lists/create', data.length
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error
 
@@ -42,7 +42,7 @@ module.exports = (app) ->
       count: req.params.count
     .then (data) ->
       console.log '/api/lists/members/:id/:count data.length = ', data.length
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error
 
@@ -64,7 +64,7 @@ module.exports = (app) ->
       listIdStr: req.body.listIdStr
       twitterIdStr: req.body.twitterIdStr
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error
 
@@ -74,7 +74,7 @@ module.exports = (app) ->
       listIdStr: req.body.listIdStr
       twitterIdStr: req.body.twitterIdStr
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error
 
@@ -84,7 +84,7 @@ module.exports = (app) ->
       listIdStr: req.body.listIdStr
       twitterIdStr: req.body.twitterIdStr
     .then (data) ->
-      res.json data: data
+      res.send data
     .catch (error) ->
       res.json error: error
 
