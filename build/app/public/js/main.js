@@ -261,7 +261,7 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$loc
     $scope.isLoaded = true;
     return;
   }
-  return AuthService.isAuthenticated().success(function(data) {
+  return AuthService.isAuthenticated().then(function(data) {
     if (_.isNull(data.data)) {
       $scope.isLoaded = true;
       $location.path('/');
@@ -272,7 +272,7 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$loc
     AuthService.user = data.data;
     $scope.user = data.data;
     return $scope.isLoaded = true;
-  }).error(function(status, data) {
+  })["catch"](function(status, data) {
     console.log(status);
     return console.log(data);
   });
@@ -1708,7 +1708,7 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
         case 10100:
           this.isLast = true;
           this.busy = false;
-          ToasterService.success({
+          ToasterService.then({
             title: '全ツイート取得完了',
             text: '全て読み込みました'
           });
@@ -1924,14 +1924,14 @@ angular.module("myApp.services").service("ConfigService", ["$http", "$q", functi
     },
     getFromDB: function() {
       return $q(function(resolve, reject) {
-        return $http.get('/api/config').success(function(data) {
+        return $http.get('/api/config').then(function(data) {
           console.log(data);
           console.log(_.isNull(data.data));
           if (_.isNull(data.data)) {
             return reject('Not found data');
           }
           return resolve(JSON.parse(data.data.configStr));
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data || 'getFromDB Request failed');
         });
       });
@@ -1941,9 +1941,9 @@ angular.module("myApp.services").service("ConfigService", ["$http", "$q", functi
         return function(resolve, reject) {
           return $http.post('/api/config', {
             config: _this.config
-          }).success(function(data) {
+          }).then(function(data) {
             return resolve(data);
-          }).error(function(data) {
+          })["catch"](function(data) {
             return reject(data || 'save2DB Request failed');
           });
         };
@@ -1979,7 +1979,7 @@ angular.module("myApp.services").service('DownloadService', ["$http", "ConvertSe
     exec: function(url, filename, idx) {
       return $http.post('/api/download', {
         url: url
-      }).success((function(_this) {
+      }).then((function(_this) {
         return function(data) {
           var blob, ext;
           blob = ConvertService.base64toBlob(data.base64Data);
@@ -2468,18 +2468,18 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     },
     collectProfile: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/collect/profile', params).success(function(data) {
+        return $http.post('/api/collect/profile', params).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     getPict: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/collect/" + params.skip + "/" + params.limit).success(function(data) {
+        return $http.get("/api/collect/" + params.skip + "/" + params.limit).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
@@ -2488,18 +2488,18 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
       var qs;
       qs = $httpParamSerializer(params);
       return $q(function(resolve, reject) {
-        return $http.get("/api/collect/picts?" + qs).success(function(data) {
+        return $http.get("/api/collect/picts?" + qs).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     getPictCount: function() {
       return $q(function(resolve, reject) {
-        return $http.get("/api/collect/count").success(function(data) {
+        return $http.get("/api/collect/count").then(function(data) {
           return resolve(data.count);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
@@ -2562,18 +2562,18 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
       }
       qs = $httpParamSerializer(params);
       return $q(function(resolve, reject) {
-        return $http.get("/api/twitter?" + qs).success(function(data) {
+        return $http.get("/api/twitter?" + qs).then(function(data) {
           return resolve(data);
-        }).error(function(err) {
+        })["catch"](function(err) {
           return reject(err);
         });
       });
     },
     postViaAPI: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/twitter", params).success(function(data) {
+        return $http.post("/api/twitter", params).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
@@ -2585,14 +2585,14 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     getListsList: function(params) {
       return $q((function(_this) {
         return function(resolve, reject) {
-          return $http.get("/api/lists/list/" + params.twitterIdStr).success(function(data) {
+          return $http.get("/api/lists/list/" + params.twitterIdStr).then(function(data) {
             console.log(data);
             if (_.has(data, 'error')) {
               _this.checkError(data.error.statusCode);
               return reject(data);
             }
             return resolve(data);
-          }).error(function(data) {
+          })["catch"](function(data) {
             return reject(data);
           });
         };
@@ -2600,52 +2600,52 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     },
     createLists: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/lists/create', params).success(function(data) {
+        return $http.post('/api/lists/create', params).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     getListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/lists/members/" + params.listIdStr + "/" + params.count).success(function(data) {
+        return $http.get("/api/lists/members/" + params.listIdStr + "/" + params.count).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     getListsStatuses: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+        return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId + "/" + params.count).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     createListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/create", params).success(function(data) {
+        return $http.post("/api/lists/members/create", params).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     createAllListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/create_all", params).success(function(data) {
+        return $http.post("/api/lists/members/create_all", params).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     destroyListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/destroy", params).success(function(data) {
+        return $http.post("/api/lists/members/destroy", params).then(function(data) {
           return resolve(data);
         });
       });
@@ -2656,9 +2656,9 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     getUserTimeline: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count + "?isIncludeRetweet=" + params.isIncludeRetweet).success(function(data) {
+        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count + "?isIncludeRetweet=" + params.isIncludeRetweet).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
@@ -2669,7 +2669,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     getFollowingList: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/friends/list/" + params.twitterIdStr + "/" + params.count).success(function(data) {
+        return $http.get("/api/friends/list/" + params.twitterIdStr + "/" + params.count).then(function(data) {
           return resolve(data);
         });
       });
@@ -2720,7 +2720,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     showStatuses: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/statuses/show/" + params.tweetIdStr).success(function(data) {
+        return $http.get("/api/statuses/show/" + params.tweetIdStr).then(function(data) {
           return resolve(data);
         });
       });
@@ -2731,7 +2731,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     showUsers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/users/show/" + params.twitterIdStr + "/" + params.screenName).success(function(data) {
+        return $http.get("/api/users/show/" + params.twitterIdStr + "/" + params.screenName).then(function(data) {
           return resolve(data);
         });
       });
@@ -2742,21 +2742,21 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     getFavLists: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/favorites/lists/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+        return $http.get("/api/favorites/lists/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).then(function(data) {
           return resolve(data);
         });
       });
     },
     createFav: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/favorites/create', params).success(function(data) {
+        return $http.post('/api/favorites/create', params).then(function(data) {
           return resolve(data);
         });
       });
     },
     destroyFav: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/favorites/destroy', params).success(function(data) {
+        return $http.post('/api/favorites/destroy', params).then(function(data) {
           return resolve(data);
         });
       });
@@ -2767,14 +2767,14 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     retweetStatus: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/statuses/retweet', params).success(function(data) {
+        return $http.post('/api/statuses/retweet', params).then(function(data) {
           return resolve(data);
         });
       });
     },
     destroyStatus: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/statuses/destroy', params).success(function(data) {
+        return $http.post('/api/statuses/destroy', params).then(function(data) {
           return resolve(data);
         });
       });

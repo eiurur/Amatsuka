@@ -180,34 +180,34 @@ angular.module "myApp.services"
     collectProfile: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/collect/profile', params)
-          .success (data) ->
+          .then (data) ->
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     getPict: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/collect/#{params.skip}/#{params.limit}")
-          .success (data) ->
+          .then (data) ->
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     getPopularTweet: (params) ->
       qs = $httpParamSerializer(params)
       return $q (resolve, reject) ->
         $http.get("/api/collect/picts?#{qs}")
-          .success (data) ->
+          .then (data) ->
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     getPictCount: ->
       return $q (resolve, reject) ->
         $http.get("/api/collect/count")
-          .success (data) ->
+          .then (data) ->
             return resolve data.count
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     # For extract. 対象ユーザの画像ツイートを限界まで種痘
@@ -261,18 +261,18 @@ angular.module "myApp.services"
       qs = $httpParamSerializer(params)
       return $q (resolve, reject) ->
         $http.get("/api/twitter?#{qs}")
-        .success (data) ->
+        .then (data) ->
           return resolve data
-        .error (err) ->
+        .catch (err) ->
           return reject err
 
 
     postViaAPI: (params) ->
       return $q (resolve, reject) ->
         $http.post("/api/twitter", params)
-        .success (data) ->
+        .then (data) ->
           return resolve data
-        .error (data) ->
+        .catch (data) ->
           return reject data
 
 
@@ -282,59 +282,59 @@ angular.module "myApp.services"
     getListsList: (params) ->
       return $q (resolve, reject) =>
         $http.get("/api/lists/list/#{params.twitterIdStr}")
-          .success (data) =>
+          .then (data) =>
             console.log data
             if _.has data, 'error'
               @checkError data.error.statusCode
               return reject data
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     createLists: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/lists/create', params)
-          .success (data) ->
+          .then (data) ->
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     getListsMembers: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/lists/members/#{params.listIdStr}/#{params.count}")
-          .success (data) ->
+          .then (data) ->
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     getListsStatuses: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/lists/statuses/#{params.listIdStr}/#{params.maxId}/#{params.count}")
-          .success (data) ->
+          .then (data) ->
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     createListsMembers: (params) ->
       return $q (resolve, reject) ->
         $http.post("/api/lists/members/create", params)
-          .success (data) ->
+          .then (data) ->
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     createAllListsMembers: (params) ->
       return $q (resolve, reject) ->
         $http.post("/api/lists/members/create_all", params)
-          .success (data) ->
+          .then (data) ->
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     destroyListsMembers: (params) ->
       return $q (resolve, reject) ->
         $http.post("/api/lists/members/destroy", params)
-          .success (data) ->
+          .then (data) ->
             return resolve data
 
     ###
@@ -343,9 +343,9 @@ angular.module "myApp.services"
     getUserTimeline: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/timeline/#{params.twitterIdStr}/#{params.maxId}/#{params.count}?isIncludeRetweet=#{params.isIncludeRetweet}")
-          .success (data) ->
+          .then (data) ->
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data
 
     ###
@@ -354,7 +354,7 @@ angular.module "myApp.services"
     getFollowingList: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/friends/list/#{params.twitterIdStr}/#{params.count}")
-          .success (data) ->
+          .then (data) ->
             return resolve data
 
     ###
@@ -396,7 +396,7 @@ angular.module "myApp.services"
     showStatuses: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/statuses/show/#{params.tweetIdStr}")
-          .success (data) ->
+          .then (data) ->
             return resolve data
     ###
     User
@@ -406,7 +406,7 @@ angular.module "myApp.services"
       # id = params.twitterIdStr || params.screenName
       return $q (resolve, reject) ->
         $http.get("/api/users/show/#{params.twitterIdStr}/#{params.screenName}")
-          .success (data) ->
+          .then (data) ->
             return resolve data
 
     ###
@@ -415,19 +415,19 @@ angular.module "myApp.services"
     getFavLists: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/favorites/lists/#{params.twitterIdStr}/#{params.maxId}/#{params.count}")
-          .success (data) ->
+          .then (data) ->
             return resolve data
 
     createFav: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/favorites/create', params)
-          .success (data) ->
+          .then (data) ->
             return resolve data
 
     destroyFav: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/favorites/destroy', params)
-          .success (data) ->
+          .then (data) ->
             return resolve data
 
     ###
@@ -436,11 +436,11 @@ angular.module "myApp.services"
     retweetStatus: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/statuses/retweet', params)
-          .success (data) ->
+          .then (data) ->
             return resolve data
 
     destroyStatus: (params) ->
       return $q (resolve, reject) ->
         $http.post('/api/statuses/destroy', params)
-          .success (data) ->
+          .then (data) ->
             return resolve data

@@ -13,7 +13,7 @@ angular.module "myApp.controllers"
     return
 
   AuthService.isAuthenticated()
-  .success (data) ->
+  .then (data) ->
 
     # 未ログインならログインページを表示
     if _.isNull data.data
@@ -30,6 +30,6 @@ angular.module "myApp.controllers"
     # 準備OK
     $scope.isLoaded = true
 
-  .error (status, data) ->
+  .catch (status, data) ->
     console.log status
     console.log data
