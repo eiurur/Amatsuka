@@ -15,7 +15,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(error) {
-        return res.status(420).send(error);
+        return res.status(429).send(error);
       });
     });
   };

@@ -14,9 +14,10 @@ angular.module "myApp.controllers"
 
   AuthService.isAuthenticated()
   .then (data) ->
+    console.log data
 
     # 未ログインならログインページを表示
-    if _.isNull data.data
+    if !data.data
       $scope.isLoaded = true
       $location.path '/'
       return

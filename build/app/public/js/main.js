@@ -200,6 +200,7 @@ UserActionButtonDropdownsController = (function() {
     this.$httpParamSerializer = $httpParamSerializer;
     this.BlackUserListService = BlackUserListService;
     this.TweetService = TweetService;
+    console.log('UserProfileController user = ', this);
     this.muteIdList = this.BlackUserListService.mute.get();
     this.blockIdList = this.BlackUserListService.block.get();
     this.setMute();
@@ -262,7 +263,8 @@ angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$loc
     return;
   }
   return AuthService.isAuthenticated().then(function(data) {
-    if (_.isNull(data.data)) {
+    console.log(data);
+    if (!data.data) {
       $scope.isLoaded = true;
       $location.path('/');
       return;
@@ -332,20 +334,21 @@ angular.module("myApp.controllers").controller("DrawerCtrl", ["$scope", "$locati
     if (!$scope.isOpened) {
       return;
     }
+    console.log(args);
     $scope.user = ListService.normalizeMember(args);
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
   });
   $scope.$on('showDrawer::tweetData', function(event, args) {
-    var maxId, tweetsNormalized;
     if (!$scope.isOpened) {
       return;
     }
     ConfigService.getFromDB().then(function(data) {
-      return $scope.config = data;
+      var maxId, tweetsNormalized;
+      $scope.config = data;
+      maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
+      tweetsNormalized = TweetService.normalizeTweets(args);
+      return $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
     });
-    maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
-    tweetsNormalized = TweetService.normalizeTweets(args);
-    $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
   });
   $scope.$on('showDrawer::isOpened', function(event, args) {
     $scope.isOpened = true;
@@ -763,15 +766,15 @@ angular.module("myApp.directives").directive('showDrawer', ["$rootScope", "Tweet
       showDrawer = function() {
         return TweetService.showUsers({
           twitterIdStr: scope.twitterIdStr
-        }).then(function(data) {
-          console.log(data);
-          $rootScope.$broadcast('showDrawer::userData', data.data);
+        }).then(function(user) {
+          console.log(user);
+          $rootScope.$broadcast('showDrawer::userData', user.data);
           return TweetService.getUserTimeline({
             twitterIdStr: scope.twitterIdStr
           });
-        }).then(function(data) {
-          console.log(data.data);
-          return $rootScope.$broadcast('showDrawer::tweetData', data.data);
+        }).then(function(timeline) {
+          console.log(timeline.data);
+          return $rootScope.$broadcast('showDrawer::tweetData', timeline.data);
         });
       };
       return element.on('click', function() {
@@ -1753,8 +1756,8 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
             return _this.normalizeTweet(data);
           }).then(function(itemsNormalized) {
             return _this.assignTweet(itemsNormalized);
-          })["catch"](function(error) {
-            return _this.checkError(error.statusCode);
+          })["catch"](function(response) {
+            return _this.checkError(response.error.statusCode);
           });
         };
       })(this)();
@@ -3102,7 +3105,7 @@ angular.module("myApp.directives").directive('userProfile', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"drawer__header\">\n  <div ng-if=\"$ctrl.user.screen_name\" class=\"media drawer__controll\">\n    <a href=\"https://www.twitter.com/{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"pull-left\">\n      <img ng-src=\"{{::$ctrl.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"drawer__profile__icon fade\"/>\n    </a>\n    <div class=\"media-body drawer__profile__body\">\n      <h4 class=\"media-heading drawer__profile__names\">\n        <span class=\"drawer__profile__names--name\">{{::$ctrl.user.name}}</span>\n        <span class=\"screen-name\">@{{::$ctrl.user.screen_name}}</span>\n      </h4>\n      <span class=\"btn-wrapper\"></span>\n      <a followable=\"followable\" follow-status=\"$ctrl.user.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" twitter-id-str=\"{{::$ctrl.user.id_str}}\" ng-disabled=\"isProcessing\" class=\"btn btn-sm drawer__btn-follow\"></a>\n      <a href=\"/extract/@{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"btn btn-sm drawer__icon-all-view\">\n        <i class=\"fa fa-external-link-square i__center-padding\"></i>\n      </a>\n      <user-action-button-dropdowns user=\"$ctrl.user\"></user-action-button-dropdowns>\n    </div>\n  </div>\n</div>",
+    template: "<div class=\"drawer__header\">\n  <div ng-if=\"$ctrl.user.screen_name\" class=\"media drawer__controll\">\n    <a href=\"https://www.twitter.com/{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"pull-left\">\n      <img ng-src=\"{{::$ctrl.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"drawer__profile__icon fade\"/>\n    </a>\n    <div class=\"media-body drawer__profile__body\">\n      <h4 class=\"media-heading drawer__profile__names\">\n        <span class=\"drawer__profile__names--name\">{{::$ctrl.user.name}}</span>\n        <span class=\"screen-name\">@{{::$ctrl.user.screen_name}}</span>\n      </h4>\n      <span class=\"btn-wrapper\"></span>\n      <a followable=\"followable\" follow-status=\"$ctrl.user.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" twitter-id-str=\"{{::$ctrl.user.id_str}}\" ng-disabled=\"isProcessing\" class=\"btn btn-sm drawer__btn-follow\"></a>\n      <a href=\"/extract/@{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"btn btn-sm drawer__icon-all-view\">\n        <i class=\"fa fa-external-link-square i__center-padding\"></i>\n      </a>\n      <!-- 1.6にアップグレードしたら動かなくなった。バケツリレーできない、\n        <user-action-button-dropdowns id_str=\"$ctrl.user\"></user-action-button-dropdowns>\n      -->\n    </div>\n  </div>\n</div>",
     bindToController: {
       user: "=",
       listIdStr: "="

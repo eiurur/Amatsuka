@@ -79,7 +79,7 @@
         };
       })(this))["catch"]((function(_this) {
         return function(error) {
-          return _this.res.status(420).send(error);
+          return _this.res.status(429).send(error);
         };
       })(this));
     };

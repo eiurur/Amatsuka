@@ -66,7 +66,7 @@ angular.module "myApp.factories"
           @method
           .then (data) => @normalizeTweet data
           .then (itemsNormalized) => @assignTweet itemsNormalized
-          .catch (error) => @checkError error.statusCode
+          .catch (response) => @checkError response.error.statusCode
           return
 
     Tweets
