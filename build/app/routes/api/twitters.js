@@ -17,9 +17,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.status(420).send(error);
       });
     });
     return app.post('/api/twitter', function(req, res) {
@@ -33,9 +31,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.status(420).send(error);
       });
     });
   };

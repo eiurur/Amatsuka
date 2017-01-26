@@ -13,7 +13,7 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (error) ->
-      res.json error: error
+      res.status(420).send error
 
   # リツイート
   app.post '/api/statuses/retweet', (req, res) ->
@@ -23,7 +23,7 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (error) ->
-      res.json error: error
+      res.status(420).send error
 
   # リツイート解除
   app.post '/api/statuses/destroy', (req, res) ->
@@ -33,4 +33,4 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (error) ->
-      res.json error: error
+      res.status(420).send error

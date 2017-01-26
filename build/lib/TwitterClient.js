@@ -24,6 +24,7 @@
               console.log("getViaAPI " + params.method + "." + params.type + " e = ", error);
               return reject(error);
             }
+            console.log(data);
             return resolve(data);
           });
         };
@@ -187,8 +188,6 @@
       var opts;
       opts = {
         list_id: params.listIdStr,
-        user_id: params.twitterIdStr || '',
-        scren_name: params.screenName || '',
         count: ~~params.count || settings.MAX_NUM_GET_LIST_MEMBERS,
         skip_status: true
       };

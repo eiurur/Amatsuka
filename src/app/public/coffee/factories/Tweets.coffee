@@ -6,8 +6,10 @@ angular.module "myApp.factories"
         @busy   = false
         @isLast = false
         @method = null
-        ConfigService.get().then (data) => @count = data.tweetNumberAtOnce or 40
-
+        @count = 40
+        ConfigService.get()
+        .then (data) => @count = data.tweetNumberAtOnce or 40
+        .catch (error) => console.log 'EEEEEEEEEERORO ', error
       normalizeTweet: (data) =>
         return new Promise (resolve, reject) =>
           if data.error? then reject data.error
@@ -40,7 +42,7 @@ angular.module "myApp.factories"
           when 10100 # 最後まで読み込み終了
             @isLast = true
             @busy = false
-            ToasterService.then title: '全ツイート取得完了', text: '全て読み込みました'
+            ToasterService.success title: '全ツイート取得完了', text: '全て読み込みました'
           when 10110 # 取得するツイートが0
             @busy = false
         return

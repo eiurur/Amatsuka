@@ -29,9 +29,7 @@
         return res.send(data);
       })["catch"](function(error) {
         console.log('/api/lists/list/:id/:count error = ', error);
-        return res.json({
-          error: error
-        });
+        return res.status(420).send(error);
       });
     });
     app.post('/api/lists/create', function(req, res) {
@@ -44,9 +42,7 @@
         console.log('/api/lists/create', data.length);
         return res.send(data);
       })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.status(420).send(error);
       });
     });
     app.get('/api/lists/members/:id?/:count?', function(req, res) {
@@ -59,9 +55,7 @@
         console.log('/api/lists/members/:id/:count data.length = ', data.length);
         return res.send(data);
       })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.status(420).send(error);
       });
     });
     app.get('/api/lists/statuses/:id/:maxId?/:count?', function(req, res) {
@@ -84,9 +78,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.status(420).send(error);
       });
     });
     app.post('/api/lists/members/create_all', function(req, res) {
@@ -98,9 +90,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.status(420).send(error);
       });
     });
     return app.post('/api/lists/members/destroy', function(req, res) {
@@ -112,9 +102,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.status(420).send(error);
       });
     });
   };

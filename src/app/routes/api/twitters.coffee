@@ -11,7 +11,7 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (error) ->
-      res.json error: error
+      res.status(420).send error
 
   app.post '/api/twitter', (req, res) ->
     console.log 'POST /api/twitter', req.body
@@ -20,4 +20,4 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (error) ->
-      res.json error: error
+      res.status(420).send error

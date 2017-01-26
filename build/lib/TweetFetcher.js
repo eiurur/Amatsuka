@@ -57,39 +57,29 @@
       this.maxId = maxId || this.req.params.maxId;
       params = this.getRequestParams();
       if (_.isEmpty(params)) {
-        this.res.json({
-          data: {}
-        });
+        this.res.send({});
       }
       twitterClient = new TwitterClient(this.req.session.passport.user);
       return twitterClient[this.queryType](params).then((function(_this) {
         return function(tweets) {
           var nextMaxId, nextMaxIdDeced, tweetsNormalized;
           if (tweets.length === 0) {
-            _this.res.json({
-              data: []
-            });
+            _this.res.send([]);
           }
           nextMaxId = _.last(tweets).id_str;
           tweetsNormalized = twitterUtils.normalizeTweets(tweets, _this.config);
           if (!_.isEmpty(tweetsNormalized)) {
-            _this.res.json({
-              data: tweetsNormalized
-            });
+            _this.res.send(tweetsNormalized);
           }
           if (_this.maxId === nextMaxId) {
-            _this.res.json({
-              data: []
-            });
+            _this.res.send([]);
           }
           nextMaxIdDeced = my.decStrNum(nextMaxId);
           return _this.fetchTweet(nextMaxIdDeced);
         };
       })(this))["catch"]((function(_this) {
         return function(error) {
-          return _this.res.json({
-            error: error
-          });
+          return _this.res.status(420).send(error);
         };
       })(this));
     };

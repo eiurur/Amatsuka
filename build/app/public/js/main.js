@@ -1649,9 +1649,14 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
       this.busy = false;
       this.isLast = false;
       this.method = null;
+      this.count = 40;
       ConfigService.get().then((function(_this) {
         return function(data) {
           return _this.count = data.tweetNumberAtOnce || 40;
+        };
+      })(this))["catch"]((function(_this) {
+        return function(error) {
+          return console.log('EEEEEEEEEERORO ', error);
         };
       })(this));
     }
@@ -1708,7 +1713,7 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
         case 10100:
           this.isLast = true;
           this.busy = false;
-          ToasterService.then({
+          ToasterService.success({
             title: '全ツイート取得完了',
             text: '全て読み込みました'
           });

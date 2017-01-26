@@ -12,4 +12,4 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (error) ->
-      res.json error: error
+      res.status(420).send error
