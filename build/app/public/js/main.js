@@ -574,6 +574,7 @@ angular.module("myApp.controllers").controller("LikeCtrl", ["$scope", "$location
   }
   $scope.isLoaded = false;
   ConfigService.get().then(function(config) {
+    console.log('concc', config);
     $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
     $scope.tweets = new Tweets([], void 0, 'like', AuthService.user._json.id_str);
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
@@ -2809,7 +2810,7 @@ angular.module("myApp.directives").directive('maoContainer', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"col-md-12\">\n  <div ng-if=\"$ctrl.loaded\">\n    <dot-loader class=\"infinitescroll-content\">\n  </div>\n  <div ng-show=\"$ctrl.tabs.length > 0\">\n    <ul class=\"mao__calender-list stylish-scrollbar--vertical\">\n      <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n        <a data-toggle=\"tab\" ng-click=\"$ctrl.onSelected(tab)\" >{{tab.name}}</a>\n      </li>\n    </ul>\n  </div>\n</div>\n<div class=\"tab-content col-md-12\">\n  <div id=\"tweets\" class=\"row tab-pane active\">\n    <mao-list-container></mao-list-container>\n  </div>\n</div>",
+    template: "<!-- 重いので非表示\n<div class=\"col-md-12\">\n  <div ng-if=\"$ctrl.loaded\">\n    <dot-loader class=\"infinitescroll-content\">\n  </div>\n  <div ng-show=\"$ctrl.tabs.length > 0\">\n    <ul class=\"mao__calender-list stylish-scrollbar--vertical\">\n      <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n        <a data-toggle=\"tab\" ng-click=\"$ctrl.onSelected(tab)\" >{{tab.name}}</a>\n      </li>\n    </ul>\n  </div>\n</div>\n-->\n<div class=\"tab-content col-md-12\">\n  <div id=\"tweets\" class=\"row tab-pane active\">\n    <mao-list-container></mao-list-container>\n  </div>\n</div>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoContainerController
@@ -2827,10 +2828,6 @@ MaoContainerController = (function() {
     this.loaded = true;
     this.tabs = [];
     this.tabType = "";
-    this.$timeout((function() {
-      return this.fetchTabData();
-    }).bind(this), 3000);
-    this.subscribe();
   }
 
   MaoContainerController.prototype.fetchTabData = function() {

@@ -12,8 +12,8 @@ angular.module "myApp.controllers"
   unless ListService.hasListData() then $location.path '/'
 
   $scope.isLoaded = false
-  ConfigService.get()
-  .then (config) ->
+  ConfigService.get().then (config) ->
+    console.log 'concc', config
     $scope.layoutType = if config.isTileLayout then 'tile' else 'grid'
 
     $scope.tweets    = new Tweets([], undefined, 'like', AuthService.user._json.id_str)
