@@ -571,11 +571,11 @@ angular.module("myApp.controllers").controller("LikeCtrl", ["$scope", "$location
   }
   $scope.isLoaded = false;
   ConfigService.get().then(function(config) {
-    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+    $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+    $scope.tweets = new Tweets([], void 0, 'like', AuthService.user._json.id_str);
+    $scope.listIdStr = ListService.amatsukaList.data.id_str;
+    return $scope.isLoaded = true;
   });
-  $scope.tweets = new Tweets([], void 0, 'like', AuthService.user._json.id_str);
-  $scope.listIdStr = ListService.amatsukaList.data.id_str;
-  $scope.isLoaded = true;
   $scope.$on('addMember', function(event, args) {
     console.log('like addMember on ', args);
     TweetService.applyFollowStatusChange($scope.tweets.items, args);
@@ -1528,6 +1528,7 @@ angular.module("myApp.factories").factory('Pict', ["$q", "toaster", "TweetServic
 
     Pict.prototype.randomAccess = function() {
       var skip;
+      console.log(this.items);
       while (true) {
         skip = _.sample(_.range(this.numMaxSkip));
         if (!this.doneSkip.includes(skip) || this.doneSkip.length >= this.numMaxSkip) {
@@ -1562,6 +1563,7 @@ angular.module("myApp.factories").factory('Pict', ["$q", "toaster", "TweetServic
       }
       return TweetService.getPictCount().then((function(_this) {
         return function(count) {
+          console.log('count', count);
           _this.numIllustorator = count;
           _this.numMaxSkip = (_this.numIllustorator - 1) / _this.limit;
           return _this.randomAccess();
@@ -1653,10 +1655,6 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
       ConfigService.get().then((function(_this) {
         return function(data) {
           return _this.count = data.tweetNumberAtOnce || 40;
-        };
-      })(this))["catch"]((function(_this) {
-        return function(error) {
-          return console.log('EEEEEEEEEERORO ', error);
         };
       })(this));
     }
@@ -2482,8 +2480,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     },
     getPict: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/collect/" + params.skip + "/" + params.limit).then(function(data) {
-          return resolve(data);
+        return $http.get("/api/collect/" + params.skip + "/" + params.limit).then(function(response) {
+          return resolve(response.data);
         })["catch"](function(data) {
           return reject(data);
         });
@@ -2502,8 +2500,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     },
     getPictCount: function() {
       return $q(function(resolve, reject) {
-        return $http.get("/api/collect/count").then(function(data) {
-          return resolve(data.count);
+        return $http.get("/api/collect/count").then(function(response) {
+          return resolve(response.data.count);
         })["catch"](function(data) {
           return reject(data);
         });
@@ -2591,7 +2589,6 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
       return $q((function(_this) {
         return function(resolve, reject) {
           return $http.get("/api/lists/list/" + params.twitterIdStr).then(function(data) {
-            console.log(data);
             if (_.has(data, 'error')) {
               _this.checkError(data.error.statusCode);
               return reject(data);

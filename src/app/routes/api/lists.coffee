@@ -16,10 +16,8 @@ module.exports = (app) ->
       twitterIdStr: req.params.id
       count: req.params.count
     .then (data) ->
-      console.log '/api/lists/list/:id/:count data.length = ', data.length
       res.send data
     .catch (error) ->
-      console.log '/api/lists/list/:id/:count error = ', error
       res.status(420).send error
 
   # POST リストの作成
@@ -29,7 +27,6 @@ module.exports = (app) ->
       name: req.body.name
       mode: req.body.mode
     .then (data) ->
-      console.log '/api/lists/create', data.length
       res.send data
     .catch (error) ->
       res.status(420).send error
@@ -41,7 +38,6 @@ module.exports = (app) ->
       listIdStr: req.params.id
       count: req.params.count
     .then (data) ->
-      console.log '/api/lists/members/:id/:count data.length = ', data.length
       res.send data
     .catch (error) ->
       res.status(420).send error

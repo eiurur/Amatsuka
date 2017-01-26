@@ -16,7 +16,6 @@ class TwitterClientDefine
         if error
           console.log "getViaAPI #{params.method}.#{params.type} e = ", error
           return reject error
-        console.log data
         return resolve data
 
   postViaAPI: (params) ->

@@ -9,7 +9,7 @@ angular.module "myApp.factories"
         @count = 40
         ConfigService.get()
         .then (data) => @count = data.tweetNumberAtOnce or 40
-        .catch (error) => console.log 'EEEEEEEEEERORO ', error
+
       normalizeTweet: (data) =>
         return new Promise (resolve, reject) =>
           if data.error? then reject data.error

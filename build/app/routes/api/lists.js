@@ -25,10 +25,8 @@
         twitterIdStr: req.params.id,
         count: req.params.count
       }).then(function(data) {
-        console.log('/api/lists/list/:id/:count data.length = ', data.length);
         return res.send(data);
       })["catch"](function(error) {
-        console.log('/api/lists/list/:id/:count error = ', error);
         return res.status(420).send(error);
       });
     });
@@ -39,7 +37,6 @@
         name: req.body.name,
         mode: req.body.mode
       }).then(function(data) {
-        console.log('/api/lists/create', data.length);
         return res.send(data);
       })["catch"](function(error) {
         return res.status(420).send(error);
@@ -52,7 +49,6 @@
         listIdStr: req.params.id,
         count: req.params.count
       }).then(function(data) {
-        console.log('/api/lists/members/:id/:count data.length = ', data.length);
         return res.send(data);
       })["catch"](function(error) {
         return res.status(420).send(error);

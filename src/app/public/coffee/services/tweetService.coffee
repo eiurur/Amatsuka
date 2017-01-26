@@ -188,8 +188,8 @@ angular.module "myApp.services"
     getPict: (params) ->
       return $q (resolve, reject) ->
         $http.get("/api/collect/#{params.skip}/#{params.limit}")
-          .then (data) ->
-            return resolve data
+          .then (response) ->
+            return resolve response.data
           .catch (data) ->
             return reject data
 
@@ -205,8 +205,8 @@ angular.module "myApp.services"
     getPictCount: ->
       return $q (resolve, reject) ->
         $http.get("/api/collect/count")
-          .then (data) ->
-            return resolve data.count
+          .then (response) ->
+            return resolve response.data.count
           .catch (data) ->
             return reject data
 
@@ -283,7 +283,6 @@ angular.module "myApp.services"
       return $q (resolve, reject) =>
         $http.get("/api/lists/list/#{params.twitterIdStr}")
           .then (data) =>
-            console.log data
             if _.has data, 'error'
               @checkError data.error.statusCode
               return reject data
