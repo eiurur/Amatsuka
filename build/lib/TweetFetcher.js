@@ -79,7 +79,9 @@
         };
       })(this))["catch"]((function(_this) {
         return function(error) {
-          return _this.res.status(429).send(error);
+          return _this.res.status(429).json({
+            error: error
+          });
         };
       })(this));
     };

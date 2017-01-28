@@ -255,31 +255,6 @@ UserActionButtonDropdownsController = (function() {
 
 UserActionButtonDropdownsController.$inject = ['$httpParamSerializer', 'BlackUserListService', 'TweetService'];
 
-angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
-  $scope.isLoaded = false;
-  $scope.isAuthenticated = AuthService.status.isAuthenticated;
-  if (AuthService.status.isAuthenticated) {
-    $scope.isLoaded = true;
-    return;
-  }
-  return AuthService.isAuthenticated().then(function(data) {
-    console.log(data);
-    if (!data.data) {
-      $scope.isLoaded = true;
-      $location.path('/');
-      return;
-    }
-    AuthService.status.isAuthenticated = true;
-    $scope.isAuthenticated = AuthService.status.isAuthenticated;
-    AuthService.user = data.data;
-    $scope.user = data.data;
-    return $scope.isLoaded = true;
-  })["catch"](function(status, data) {
-    console.log(status);
-    return console.log(data);
-  });
-}]);
-
 angular.module("myApp.controllers").controller("AmatsukaListCtrl", ["AuthService", "ListService", function(AuthService, ListService) {
   var amatsukaFollowList, amatsukaList;
   if (_.isEmpty(AuthService.user)) {
@@ -578,7 +553,8 @@ angular.module("myApp.controllers").controller("LikeCtrl", ["$scope", "$location
     $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
     $scope.tweets = new Tweets([], void 0, 'like', AuthService.user._json.id_str);
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
-    return $scope.isLoaded = true;
+    $scope.isLoaded = true;
+    return $scope.tweets.nextPage();
   });
   $scope.$on('addMember', function(event, args) {
     console.log('like addMember on ', args);
@@ -683,6 +659,31 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$locati
     return $scope.list.members = $scope.list.amatsukaMemberList.filter(function(element, index, array) {
       return element.screen_name.toLowerCase().indexOf(screenNameTolowerCased) !== -1;
     });
+  });
+}]);
+
+angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
+  $scope.isLoaded = false;
+  $scope.isAuthenticated = AuthService.status.isAuthenticated;
+  if (AuthService.status.isAuthenticated) {
+    $scope.isLoaded = true;
+    return;
+  }
+  return AuthService.isAuthenticated().then(function(data) {
+    console.log(data);
+    if (!data.data) {
+      $scope.isLoaded = true;
+      $location.path('/');
+      return;
+    }
+    AuthService.status.isAuthenticated = true;
+    $scope.isAuthenticated = AuthService.status.isAuthenticated;
+    AuthService.user = data.data;
+    $scope.user = data.data;
+    return $scope.isLoaded = true;
+  })["catch"](function(status, data) {
+    console.log(status);
+    return console.log(data);
   });
 }]);
 
@@ -837,7 +838,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
           tweetIdStr: attrs.tweetIdStr
         }).then(function(data) {
           tweet = data.data;
-          bindEvents();
+          bindEvents(tweet);
           tweet.user = TweetService.get(tweet, 'user');
           imgIdx = getImgIdxBySrc(tweet, attrs.imgSrc.replace(':small', ''));
           showTweetInfomation(tweet, imgIdx);
@@ -898,7 +899,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
           upsertPictCounterElement(tweet, imgIdx);
           return zoomImageViewer.pipeLowToHighImage(src + ":small", src + ":orig");
         };
-        bindEvents = function() {
+        bindEvents = function(tweet) {
           var startCoords;
           Mousetrap.bind('d', function() {
             return angular.element(document).find('.image-layer__caption .fa-download').click();
@@ -987,8 +988,6 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
     }
   };
 }]);
-
-
 
 var TermPaginationController;
 
@@ -1758,7 +1757,7 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
           }).then(function(itemsNormalized) {
             return _this.assignTweet(itemsNormalized);
           })["catch"](function(response) {
-            return _this.checkError(response.error.statusCode);
+            return _this.checkError(response.statusCode);
           });
         };
       })(this)();
@@ -1897,6 +1896,131 @@ angular.module("myApp.services").service("BlackUserListService", function() {
   };
 });
 
+angular.module("myApp.services").service('ConvertService', function() {
+  return {
+    base64toBlob: function(_base64) {
+      var arr, blob, data, i, mime, tmp;
+      i = void 0;
+      tmp = _base64.split(',');
+      data = atob(tmp[1]);
+      mime = tmp[0].split(':')[1].split(';')[0];
+      arr = new Uint8Array(data.length);
+      i = 0;
+      while (i < data.length) {
+        arr[i] = data.charCodeAt(i);
+        i++;
+      }
+      blob = new Blob([arr], {
+        type: mime
+      });
+      return blob;
+    }
+  };
+});
+
+angular.module('myApp.services').service('GetterImageInfomation', function() {
+  return {
+    getWideDirection: function(imgElement) {
+      var cH, cH_cW_percent, cW, direction, h, h_w_percent, html, w;
+      html = angular.element(document).find('html');
+      h = imgElement[0].naturalHeight;
+      w = imgElement[0].naturalWidth;
+      h_w_percent = h / w * 100;
+      cH = html[0].clientHeight;
+      cW = html[0].clientWidth;
+      cH_cW_percent = cH / cW * 100;
+      return direction = h_w_percent - cH_cW_percent >= 0 ? 'h' : 'w';
+    }
+  };
+});
+
+angular.module("myApp.services").service("MaoService", ["$http", function($http) {
+  return {
+    findByMaoTokenAndDate: function(qs) {
+      return $http.get("/api/mao?" + qs);
+    },
+    countTweetByMaoTokenAndDate: function(qs) {
+      return $http.get("/api/mao/tweets/count?" + qs);
+    },
+    aggregateTweetCount: function(qs) {
+      return $http.get("/api/mao/stats/tweet/count?" + qs);
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("StatService", ["$http", "$q", function($http, $q) {}]);
+
+angular.module("myApp.services").service("TermPeginateDataServicve", ["$rootScope", function($rootScope) {
+  return {
+    publish: function(params) {
+      return $rootScope.$broadcast('TermPeginateDataServicve::publish', params);
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("TimeService", function() {
+  return {
+    normalizeDate: function(term, date) {
+      switch (term) {
+        case 'days':
+          return moment(date).format('YYYY-MM-DD');
+        case 'weeks':
+          return moment(date).format('YYYY-MM-DD');
+        case 'month':
+          return moment(date).date('1').format('YYYY-MM-DD');
+        default:
+          return moment(date).format('YYYY-MM-DD');
+      }
+    },
+    changeDate: function(term, date, amount) {
+      switch (term) {
+        case 'days':
+          return moment(date).add(amount, 'days').format('YYYY-MM-DD');
+        case 'weeks':
+          return moment(date).add(amount, 'weeks').format('YYYY-MM-DD');
+        case 'month':
+          return moment(date).add(amount, 'months').date('1').format('YYYY-MM-DD');
+        default:
+          return moment().format('YYYY-MM-DD');
+      }
+    },
+    getDatesPerMonth: function() {
+      return Array.from(Array(30).keys()).map(function(day) {
+        return moment().subtract(day + 1, 'days').format('YYYY-MM-DD');
+      });
+    }
+  };
+});
+
+angular.module("myApp.services").service('ToasterService', ["toaster", function(toaster) {
+  return {
+    success: function(notify) {
+      console.log(notify.title);
+      return toaster.pop('success', notify.title, notify.text, 2000, 'trustedHtml');
+    },
+    warning: function(notify) {
+      console.log(notify.title);
+      return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("URLParameterService", ["$location", function($location) {
+  return {
+    checkURLResourceLength: function(urlResourcesLength, allowableLength) {
+      if (urlResourcesLength > allowableLength) {
+        return $location.path('/');
+      }
+    },
+    getQueryParams: function() {
+      return $location.search();
+    },
+    parse: function() {
+      return $location.path().split('/');
+    }
+  };
+}]);
+
 angular.module("myApp.services").service("ConfigService", ["$http", "$q", function($http, $q) {
   return {
     config: {},
@@ -1959,37 +2083,15 @@ angular.module("myApp.services").service("ConfigService", ["$http", "$q", functi
   };
 }]);
 
-angular.module("myApp.services").service('ConvertService', function() {
-  return {
-    base64toBlob: function(_base64) {
-      var arr, blob, data, i, mime, tmp;
-      i = void 0;
-      tmp = _base64.split(',');
-      data = atob(tmp[1]);
-      mime = tmp[0].split(':')[1].split(';')[0];
-      arr = new Uint8Array(data.length);
-      i = 0;
-      while (i < data.length) {
-        arr[i] = data.charCodeAt(i);
-        i++;
-      }
-      blob = new Blob([arr], {
-        type: mime
-      });
-      return blob;
-    }
-  };
-});
-
 angular.module("myApp.services").service('DownloadService', ["$http", "ConvertService", function($http, ConvertService) {
   return {
     exec: function(url, filename, idx) {
       return $http.post('/api/download', {
         url: url
       }).then((function(_this) {
-        return function(data) {
+        return function(response) {
           var blob, ext;
-          blob = ConvertService.base64toBlob(data.base64Data);
+          blob = ConvertService.base64toBlob(response.data);
           ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1];
           filename = filename + "_" + idx + "." + ext;
           return _this.saveAs(blob, filename);
@@ -2011,22 +2113,6 @@ angular.module("myApp.services").service('DownloadService', ["$http", "ConvertSe
     }
   };
 }]);
-
-angular.module('myApp.services').service('GetterImageInfomation', function() {
-  return {
-    getWideDirection: function(imgElement) {
-      var cH, cH_cW_percent, cW, direction, h, h_w_percent, html, w;
-      html = angular.element(document).find('html');
-      h = imgElement[0].naturalHeight;
-      w = imgElement[0].naturalWidth;
-      h_w_percent = h / w * 100;
-      cH = html[0].clientHeight;
-      cW = html[0].clientWidth;
-      cH_cW_percent = cH / cW * 100;
-      return direction = h_w_percent - cH_cW_percent >= 0 ? 'h' : 'w';
-    }
-  };
-});
 
 angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthService", "TweetService", function($http, $q, AuthService, TweetService) {
   return {
@@ -2200,77 +2286,6 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
     },
     hasListData: function() {
       return !(_.isEmpty(this.amatsukaList.data) && _.isEmpty(this.amatsukaList.member));
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("MaoService", ["$http", function($http) {
-  return {
-    findByMaoTokenAndDate: function(qs) {
-      return $http.get("/api/mao?" + qs);
-    },
-    countTweetByMaoTokenAndDate: function(qs) {
-      return $http.get("/api/mao/tweets/count?" + qs);
-    },
-    aggregateTweetCount: function(qs) {
-      return $http.get("/api/mao/stats/tweet/count?" + qs);
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("StatService", ["$http", "$q", function($http, $q) {}]);
-
-angular.module("myApp.services").service("TermPeginateDataServicve", ["$rootScope", function($rootScope) {
-  return {
-    publish: function(params) {
-      return $rootScope.$broadcast('TermPeginateDataServicve::publish', params);
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("TimeService", function() {
-  return {
-    normalizeDate: function(term, date) {
-      switch (term) {
-        case 'days':
-          return moment(date).format('YYYY-MM-DD');
-        case 'weeks':
-          return moment(date).format('YYYY-MM-DD');
-        case 'month':
-          return moment(date).date('1').format('YYYY-MM-DD');
-        default:
-          return moment(date).format('YYYY-MM-DD');
-      }
-    },
-    changeDate: function(term, date, amount) {
-      switch (term) {
-        case 'days':
-          return moment(date).add(amount, 'days').format('YYYY-MM-DD');
-        case 'weeks':
-          return moment(date).add(amount, 'weeks').format('YYYY-MM-DD');
-        case 'month':
-          return moment(date).add(amount, 'months').date('1').format('YYYY-MM-DD');
-        default:
-          return moment().format('YYYY-MM-DD');
-      }
-    },
-    getDatesPerMonth: function() {
-      return Array.from(Array(30).keys()).map(function(day) {
-        return moment().subtract(day + 1, 'days').format('YYYY-MM-DD');
-      });
-    }
-  };
-});
-
-angular.module("myApp.services").service('ToasterService', ["toaster", function(toaster) {
-  return {
-    success: function(notify) {
-      console.log(notify.title);
-      return toaster.pop('success', notify.title, notify.text, 2000, 'trustedHtml');
-    },
-    warning: function(notify) {
-      console.log(notify.title);
-      return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
     }
   };
 }]);
@@ -2788,22 +2803,6 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
   };
 }]);
 
-angular.module("myApp.services").service("URLParameterService", ["$location", function($location) {
-  return {
-    checkURLResourceLength: function(urlResourcesLength, allowableLength) {
-      if (urlResourcesLength > allowableLength) {
-        return $location.path('/');
-      }
-    },
-    getQueryParams: function() {
-      return $location.search();
-    },
-    parse: function() {
-      return $location.path().split('/');
-    }
-  };
-}]);
-
 var MaoContainerController;
 
 angular.module("myApp.directives").directive('maoContainer', function() {
@@ -2980,8 +2979,6 @@ MaoListContoller = (function() {
 
 MaoListContoller.$inject = ['$location', '$httpParamSerializer', '$scope', 'Mao', 'MaoService', 'URLParameterChecker', 'TimeService'];
 
-
-
 var MaoTweetArticleController;
 
 angular.module("myApp.directives").directive('maoTweetArticle', function() {
@@ -3043,6 +3040,8 @@ PopularImageListContainerController = (function() {
 })();
 
 PopularImageListContainerController.$inject = ['TweetService'];
+
+
 
 var GridLayoutTweet;
 

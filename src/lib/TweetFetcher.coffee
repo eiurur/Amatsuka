@@ -59,4 +59,4 @@ module.exports = class TweetFetcher
 
         @fetchTweet(nextMaxIdDeced)
       .catch (error) =>
-        @res.status(429).send error
+        @res.status(429).json error: error
