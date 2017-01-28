@@ -4,7 +4,7 @@ TwitterClient    = require path.resolve 'build', 'lib', 'TwitterClient'
 module.exports = (app) ->
 
   # GET フォローイングの取得
-  app.get '/api/friends/list/:id?/:cursor?/:count?', (req, res) ->
+  app.get '/api/friends/list/:id?/:cursor?/:count?', (req, res, next) ->
     twitterClient = new TwitterClient(req.session.passport.user)
     twitterClient.getFollowingList
       twitterIdStr: req.params.id
@@ -13,4 +13,5 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (error) ->
-      res.status(429).send error
+      next err
+      # res.status(429).send error

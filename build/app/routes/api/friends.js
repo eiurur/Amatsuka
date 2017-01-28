@@ -6,7 +6,7 @@
   TwitterClient = require(path.resolve('build', 'lib', 'TwitterClient'));
 
   module.exports = function(app) {
-    return app.get('/api/friends/list/:id?/:cursor?/:count?', function(req, res) {
+    return app.get('/api/friends/list/:id?/:cursor?/:count?', function(req, res, next) {
       var twitterClient;
       twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.getFollowingList({
@@ -16,7 +16,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(error) {
-        return res.status(429).send(error);
+        return next(err);
       });
     });
   };

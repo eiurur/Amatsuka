@@ -11,7 +11,8 @@
     (require('./api/timeline'))(app);
     (require('./api/config'))(app);
     (require('./api/mao'))(app);
-    return (require('./api/downloads'))(app);
+    (require('./api/downloads'))(app);
+    return (require('./middlewares/errorMiddleware'))(app);
   };
 
 }).call(this);

@@ -26,8 +26,8 @@
         count: req.params.count
       }).then(function(data) {
         return res.send(data);
-      })["catch"](function(error) {
-        return res.status(429).send(error);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
     app.post('/api/lists/create', function(req, res) {
@@ -38,8 +38,8 @@
         mode: req.body.mode
       }).then(function(data) {
         return res.send(data);
-      })["catch"](function(error) {
-        return res.status(429).send(error);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
     app.get('/api/lists/members/:id?/:count?', function(req, res) {
@@ -50,8 +50,8 @@
         count: req.params.count
       }).then(function(data) {
         return res.send(data);
-      })["catch"](function(error) {
-        return res.status(429).send(error);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
     app.get('/api/lists/statuses/:id/:maxId?/:count?', function(req, res) {
@@ -73,8 +73,8 @@
         twitterIdStr: req.body.twitterIdStr
       }).then(function(data) {
         return res.send(data);
-      })["catch"](function(error) {
-        return res.status(429).send(error);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
     app.post('/api/lists/members/create_all', function(req, res) {
@@ -85,8 +85,8 @@
         twitterIdStr: req.body.twitterIdStr
       }).then(function(data) {
         return res.send(data);
-      })["catch"](function(error) {
-        return res.status(429).send(error);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
     return app.post('/api/lists/members/destroy', function(req, res) {
@@ -97,8 +97,8 @@
         twitterIdStr: req.body.twitterIdStr
       }).then(function(data) {
         return res.send(data);
-      })["catch"](function(error) {
-        return res.status(429).send(error);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
   };

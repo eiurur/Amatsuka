@@ -8,7 +8,7 @@
   TweetFetcher = require(path.resolve('build', 'lib', 'TweetFetcher'));
 
   module.exports = function(app) {
-    app.get('/api/favorites/lists/:id/:maxId?/:count?', function(req, res) {
+    app.get('/api/favorites/lists/:id/:maxId?/:count?', function(req, res, next) {
       return new TweetFetcher(req, res, 'getFavLists', null, null).fetchTweet();
     });
     app.post('/api/favorites/create', function(req, res) {
@@ -19,10 +19,10 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(error) {
-        return res.status(429).send(error);
+        return next(err);
       });
     });
-    return app.post('/api/favorites/destroy', function(req, res) {
+    return app.post('/api/favorites/destroy', function(req, res, next) {
       var twitterClient;
       twitterClient = new TwitterClient(req.session.passport.user);
       return twitterClient.destroyFav({
@@ -30,7 +30,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(error) {
-        return res.status(429).send(error);
+        return next(err);
       });
     });
   };

@@ -17,16 +17,14 @@
         return console.log(err);
       });
     });
-    app.get('/api/collect/picts', function(req, res) {
+    app.get('/api/collect/picts', function(req, res, next) {
       var opts;
-      console.log('/api/collect/picts/ req.query.twitterIdStr =', req.query.twitterIdStr);
       opts = {
         twitterIdStr: req.query.twitterIdStr
       };
       return ModelFactory.create('illustrator').findById(opts).then(function(illustrator) {
-        console.log('IllustratorProvider.findById result = ', illustrator);
         if (illustrator == null) {
-          res.status(400).send(null);
+          next(err);
           return;
         }
         return ModelFactory.create('pict').findByIllustratorObjectId({
@@ -38,11 +36,10 @@
         console.log(data.pictTweetList.length);
         return res.send(data);
       })["catch"](function(err) {
-        console.error('app.get /api/collect/picts/ error ', err);
-        return res.status(400).send(err);
+        return next(err);
       });
     });
-    app.get('/api/collect/:skip?/:limit?', function(req, res) {
+    app.get('/api/collect/:skip?/:limit?', function(req, res, next) {
       var opts;
       opts = {
         skip: req.params.skip - 0,
@@ -70,7 +67,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(err) {
-        return console.log(err);
+        return next(err);
       });
     });
   };
