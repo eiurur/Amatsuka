@@ -200,6 +200,7 @@ UserActionButtonDropdownsController = (function() {
     this.$httpParamSerializer = $httpParamSerializer;
     this.BlackUserListService = BlackUserListService;
     this.TweetService = TweetService;
+    console.log('UserProfileController user = ', this);
     this.muteIdList = this.BlackUserListService.mute.get();
     this.blockIdList = this.BlackUserListService.block.get();
     this.setMute();
@@ -253,30 +254,6 @@ UserActionButtonDropdownsController = (function() {
 })();
 
 UserActionButtonDropdownsController.$inject = ['$httpParamSerializer', 'BlackUserListService', 'TweetService'];
-
-angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
-  $scope.isLoaded = false;
-  $scope.isAuthenticated = AuthService.status.isAuthenticated;
-  if (AuthService.status.isAuthenticated) {
-    $scope.isLoaded = true;
-    return;
-  }
-  return AuthService.isAuthenticated().success(function(data) {
-    if (_.isNull(data.data)) {
-      $scope.isLoaded = true;
-      $location.path('/');
-      return;
-    }
-    AuthService.status.isAuthenticated = true;
-    $scope.isAuthenticated = AuthService.status.isAuthenticated;
-    AuthService.user = data.data;
-    $scope.user = data.data;
-    return $scope.isLoaded = true;
-  }).error(function(status, data) {
-    console.log(status);
-    return console.log(data);
-  });
-}]);
 
 angular.module("myApp.controllers").controller("AmatsukaListCtrl", ["AuthService", "ListService", function(AuthService, ListService) {
   var amatsukaFollowList, amatsukaList;
@@ -332,20 +309,21 @@ angular.module("myApp.controllers").controller("DrawerCtrl", ["$scope", "$locati
     if (!$scope.isOpened) {
       return;
     }
+    console.log(args);
     $scope.user = ListService.normalizeMember(args);
     $scope.listIdStr = ListService.amatsukaList.data.id_str;
   });
   $scope.$on('showDrawer::tweetData', function(event, args) {
-    var maxId, tweetsNormalized;
     if (!$scope.isOpened) {
       return;
     }
     ConfigService.getFromDB().then(function(data) {
-      return $scope.config = data;
+      var maxId, tweetsNormalized;
+      $scope.config = data;
+      maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
+      tweetsNormalized = TweetService.normalizeTweets(args);
+      return $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
     });
-    maxId = _.last(args) != null ? TweetService.decStrNum(_.last(args).id_str) : 0;
-    tweetsNormalized = TweetService.normalizeTweets(args);
-    $scope.tweets = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str);
   });
   $scope.$on('showDrawer::isOpened', function(event, args) {
     $scope.isOpened = true;
@@ -571,11 +549,13 @@ angular.module("myApp.controllers").controller("LikeCtrl", ["$scope", "$location
   }
   $scope.isLoaded = false;
   ConfigService.get().then(function(config) {
-    return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+    console.log('concc', config);
+    $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
+    $scope.tweets = new Tweets([], void 0, 'like', AuthService.user._json.id_str);
+    $scope.listIdStr = ListService.amatsukaList.data.id_str;
+    $scope.isLoaded = true;
+    return $scope.tweets.nextPage();
   });
-  $scope.tweets = new Tweets([], void 0, 'like', AuthService.user._json.id_str);
-  $scope.listIdStr = ListService.amatsukaList.data.id_str;
-  $scope.isLoaded = true;
   $scope.$on('addMember', function(event, args) {
     console.log('like addMember on ', args);
     TweetService.applyFollowStatusChange($scope.tweets.items, args);
@@ -682,6 +662,31 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$locati
   });
 }]);
 
+angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
+  $scope.isLoaded = false;
+  $scope.isAuthenticated = AuthService.status.isAuthenticated;
+  if (AuthService.status.isAuthenticated) {
+    $scope.isLoaded = true;
+    return;
+  }
+  return AuthService.isAuthenticated().then(function(data) {
+    console.log(data);
+    if (!data.data) {
+      $scope.isLoaded = true;
+      $location.path('/');
+      return;
+    }
+    AuthService.status.isAuthenticated = true;
+    $scope.isAuthenticated = AuthService.status.isAuthenticated;
+    AuthService.user = data.data;
+    $scope.user = data.data;
+    return $scope.isLoaded = true;
+  })["catch"](function(status, data) {
+    console.log(status);
+    return console.log(data);
+  });
+}]);
+
 angular.module("myApp.directives").directive('isActiveNav', ["$location", function($location) {
   return {
     restrict: 'A',
@@ -763,15 +768,15 @@ angular.module("myApp.directives").directive('showDrawer', ["$rootScope", "Tweet
       showDrawer = function() {
         return TweetService.showUsers({
           twitterIdStr: scope.twitterIdStr
-        }).then(function(data) {
-          console.log(data);
-          $rootScope.$broadcast('showDrawer::userData', data.data);
+        }).then(function(user) {
+          console.log(user);
+          $rootScope.$broadcast('showDrawer::userData', user.data);
           return TweetService.getUserTimeline({
             twitterIdStr: scope.twitterIdStr
           });
-        }).then(function(data) {
-          console.log(data.data);
-          return $rootScope.$broadcast('showDrawer::tweetData', data.data);
+        }).then(function(timeline) {
+          console.log(timeline.data);
+          return $rootScope.$broadcast('showDrawer::tweetData', timeline.data);
         });
       };
       return element.on('click', function() {
@@ -833,7 +838,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
           tweetIdStr: attrs.tweetIdStr
         }).then(function(data) {
           tweet = data.data;
-          bindEvents();
+          bindEvents(tweet);
           tweet.user = TweetService.get(tweet, 'user');
           imgIdx = getImgIdxBySrc(tweet, attrs.imgSrc.replace(':small', ''));
           showTweetInfomation(tweet, imgIdx);
@@ -894,7 +899,7 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
           upsertPictCounterElement(tweet, imgIdx);
           return zoomImageViewer.pipeLowToHighImage(src + ":small", src + ":orig");
         };
-        bindEvents = function() {
+        bindEvents = function(tweet) {
           var startCoords;
           Mousetrap.bind('d', function() {
             return angular.element(document).find('.image-layer__caption .fa-download').click();
@@ -983,8 +988,6 @@ angular.module('myApp.directives').directive('showStatuses', ["$compile", "$swip
     }
   };
 }]);
-
-
 
 var TermPaginationController;
 
@@ -1528,6 +1531,7 @@ angular.module("myApp.factories").factory('Pict', ["$q", "toaster", "TweetServic
 
     Pict.prototype.randomAccess = function() {
       var skip;
+      console.log(this.items);
       while (true) {
         skip = _.sample(_.range(this.numMaxSkip));
         if (!this.doneSkip.includes(skip) || this.doneSkip.length >= this.numMaxSkip) {
@@ -1562,6 +1566,7 @@ angular.module("myApp.factories").factory('Pict', ["$q", "toaster", "TweetServic
       }
       return TweetService.getPictCount().then((function(_this) {
         return function(count) {
+          console.log('count', count);
           _this.numIllustorator = count;
           _this.numMaxSkip = (_this.numIllustorator - 1) / _this.limit;
           return _this.randomAccess();
@@ -1649,6 +1654,7 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
       this.busy = false;
       this.isLast = false;
       this.method = null;
+      this.count = 40;
       ConfigService.get().then((function(_this) {
         return function(data) {
           return _this.count = data.tweetNumberAtOnce || 40;
@@ -1750,8 +1756,8 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
             return _this.normalizeTweet(data);
           }).then(function(itemsNormalized) {
             return _this.assignTweet(itemsNormalized);
-          })["catch"](function(error) {
-            return _this.checkError(error.statusCode);
+          })["catch"](function(response) {
+            return _this.checkError(response.statusCode);
           });
         };
       })(this)();
@@ -1890,6 +1896,131 @@ angular.module("myApp.services").service("BlackUserListService", function() {
   };
 });
 
+angular.module("myApp.services").service('ConvertService', function() {
+  return {
+    base64toBlob: function(_base64) {
+      var arr, blob, data, i, mime, tmp;
+      i = void 0;
+      tmp = _base64.split(',');
+      data = atob(tmp[1]);
+      mime = tmp[0].split(':')[1].split(';')[0];
+      arr = new Uint8Array(data.length);
+      i = 0;
+      while (i < data.length) {
+        arr[i] = data.charCodeAt(i);
+        i++;
+      }
+      blob = new Blob([arr], {
+        type: mime
+      });
+      return blob;
+    }
+  };
+});
+
+angular.module('myApp.services').service('GetterImageInfomation', function() {
+  return {
+    getWideDirection: function(imgElement) {
+      var cH, cH_cW_percent, cW, direction, h, h_w_percent, html, w;
+      html = angular.element(document).find('html');
+      h = imgElement[0].naturalHeight;
+      w = imgElement[0].naturalWidth;
+      h_w_percent = h / w * 100;
+      cH = html[0].clientHeight;
+      cW = html[0].clientWidth;
+      cH_cW_percent = cH / cW * 100;
+      return direction = h_w_percent - cH_cW_percent >= 0 ? 'h' : 'w';
+    }
+  };
+});
+
+angular.module("myApp.services").service("MaoService", ["$http", function($http) {
+  return {
+    findByMaoTokenAndDate: function(qs) {
+      return $http.get("/api/mao?" + qs);
+    },
+    countTweetByMaoTokenAndDate: function(qs) {
+      return $http.get("/api/mao/tweets/count?" + qs);
+    },
+    aggregateTweetCount: function(qs) {
+      return $http.get("/api/mao/stats/tweet/count?" + qs);
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("StatService", ["$http", "$q", function($http, $q) {}]);
+
+angular.module("myApp.services").service("TermPeginateDataServicve", ["$rootScope", function($rootScope) {
+  return {
+    publish: function(params) {
+      return $rootScope.$broadcast('TermPeginateDataServicve::publish', params);
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("TimeService", function() {
+  return {
+    normalizeDate: function(term, date) {
+      switch (term) {
+        case 'days':
+          return moment(date).format('YYYY-MM-DD');
+        case 'weeks':
+          return moment(date).format('YYYY-MM-DD');
+        case 'month':
+          return moment(date).date('1').format('YYYY-MM-DD');
+        default:
+          return moment(date).format('YYYY-MM-DD');
+      }
+    },
+    changeDate: function(term, date, amount) {
+      switch (term) {
+        case 'days':
+          return moment(date).add(amount, 'days').format('YYYY-MM-DD');
+        case 'weeks':
+          return moment(date).add(amount, 'weeks').format('YYYY-MM-DD');
+        case 'month':
+          return moment(date).add(amount, 'months').date('1').format('YYYY-MM-DD');
+        default:
+          return moment().format('YYYY-MM-DD');
+      }
+    },
+    getDatesPerMonth: function() {
+      return Array.from(Array(30).keys()).map(function(day) {
+        return moment().subtract(day + 1, 'days').format('YYYY-MM-DD');
+      });
+    }
+  };
+});
+
+angular.module("myApp.services").service('ToasterService', ["toaster", function(toaster) {
+  return {
+    success: function(notify) {
+      console.log(notify.title);
+      return toaster.pop('success', notify.title, notify.text, 2000, 'trustedHtml');
+    },
+    warning: function(notify) {
+      console.log(notify.title);
+      return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("URLParameterService", ["$location", function($location) {
+  return {
+    checkURLResourceLength: function(urlResourcesLength, allowableLength) {
+      if (urlResourcesLength > allowableLength) {
+        return $location.path('/');
+      }
+    },
+    getQueryParams: function() {
+      return $location.search();
+    },
+    parse: function() {
+      return $location.path().split('/');
+    }
+  };
+}]);
+
 angular.module("myApp.services").service("ConfigService", ["$http", "$q", function($http, $q) {
   return {
     config: {},
@@ -1924,14 +2055,14 @@ angular.module("myApp.services").service("ConfigService", ["$http", "$q", functi
     },
     getFromDB: function() {
       return $q(function(resolve, reject) {
-        return $http.get('/api/config').success(function(data) {
+        return $http.get('/api/config').then(function(data) {
           console.log(data);
           console.log(_.isNull(data.data));
           if (_.isNull(data.data)) {
             return reject('Not found data');
           }
           return resolve(JSON.parse(data.data.configStr));
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data || 'getFromDB Request failed');
         });
       });
@@ -1941,9 +2072,9 @@ angular.module("myApp.services").service("ConfigService", ["$http", "$q", functi
         return function(resolve, reject) {
           return $http.post('/api/config', {
             config: _this.config
-          }).success(function(data) {
+          }).then(function(data) {
             return resolve(data);
-          }).error(function(data) {
+          })["catch"](function(data) {
             return reject(data || 'save2DB Request failed');
           });
         };
@@ -1952,37 +2083,15 @@ angular.module("myApp.services").service("ConfigService", ["$http", "$q", functi
   };
 }]);
 
-angular.module("myApp.services").service('ConvertService', function() {
-  return {
-    base64toBlob: function(_base64) {
-      var arr, blob, data, i, mime, tmp;
-      i = void 0;
-      tmp = _base64.split(',');
-      data = atob(tmp[1]);
-      mime = tmp[0].split(':')[1].split(';')[0];
-      arr = new Uint8Array(data.length);
-      i = 0;
-      while (i < data.length) {
-        arr[i] = data.charCodeAt(i);
-        i++;
-      }
-      blob = new Blob([arr], {
-        type: mime
-      });
-      return blob;
-    }
-  };
-});
-
 angular.module("myApp.services").service('DownloadService', ["$http", "ConvertService", function($http, ConvertService) {
   return {
     exec: function(url, filename, idx) {
       return $http.post('/api/download', {
         url: url
-      }).success((function(_this) {
-        return function(data) {
+      }).then((function(_this) {
+        return function(response) {
           var blob, ext;
-          blob = ConvertService.base64toBlob(data.base64Data);
+          blob = ConvertService.base64toBlob(response.data);
           ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1];
           filename = filename + "_" + idx + "." + ext;
           return _this.saveAs(blob, filename);
@@ -2004,22 +2113,6 @@ angular.module("myApp.services").service('DownloadService', ["$http", "ConvertSe
     }
   };
 }]);
-
-angular.module('myApp.services').service('GetterImageInfomation', function() {
-  return {
-    getWideDirection: function(imgElement) {
-      var cH, cH_cW_percent, cW, direction, h, h_w_percent, html, w;
-      html = angular.element(document).find('html');
-      h = imgElement[0].naturalHeight;
-      w = imgElement[0].naturalWidth;
-      h_w_percent = h / w * 100;
-      cH = html[0].clientHeight;
-      cW = html[0].clientWidth;
-      cH_cW_percent = cH / cW * 100;
-      return direction = h_w_percent - cH_cW_percent >= 0 ? 'h' : 'w';
-    }
-  };
-});
 
 angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthService", "TweetService", function($http, $q, AuthService, TweetService) {
   return {
@@ -2193,77 +2286,6 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
     },
     hasListData: function() {
       return !(_.isEmpty(this.amatsukaList.data) && _.isEmpty(this.amatsukaList.member));
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("MaoService", ["$http", function($http) {
-  return {
-    findByMaoTokenAndDate: function(qs) {
-      return $http.get("/api/mao?" + qs);
-    },
-    countTweetByMaoTokenAndDate: function(qs) {
-      return $http.get("/api/mao/tweets/count?" + qs);
-    },
-    aggregateTweetCount: function(qs) {
-      return $http.get("/api/mao/stats/tweet/count?" + qs);
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("StatService", ["$http", "$q", function($http, $q) {}]);
-
-angular.module("myApp.services").service("TermPeginateDataServicve", ["$rootScope", function($rootScope) {
-  return {
-    publish: function(params) {
-      return $rootScope.$broadcast('TermPeginateDataServicve::publish', params);
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("TimeService", function() {
-  return {
-    normalizeDate: function(term, date) {
-      switch (term) {
-        case 'days':
-          return moment(date).format('YYYY-MM-DD');
-        case 'weeks':
-          return moment(date).format('YYYY-MM-DD');
-        case 'month':
-          return moment(date).date('1').format('YYYY-MM-DD');
-        default:
-          return moment(date).format('YYYY-MM-DD');
-      }
-    },
-    changeDate: function(term, date, amount) {
-      switch (term) {
-        case 'days':
-          return moment(date).add(amount, 'days').format('YYYY-MM-DD');
-        case 'weeks':
-          return moment(date).add(amount, 'weeks').format('YYYY-MM-DD');
-        case 'month':
-          return moment(date).add(amount, 'months').date('1').format('YYYY-MM-DD');
-        default:
-          return moment().format('YYYY-MM-DD');
-      }
-    },
-    getDatesPerMonth: function() {
-      return Array.from(Array(30).keys()).map(function(day) {
-        return moment().subtract(day + 1, 'days').format('YYYY-MM-DD');
-      });
-    }
-  };
-});
-
-angular.module("myApp.services").service('ToasterService', ["toaster", function(toaster) {
-  return {
-    success: function(notify) {
-      console.log(notify.title);
-      return toaster.pop('success', notify.title, notify.text, 2000, 'trustedHtml');
-    },
-    warning: function(notify) {
-      console.log(notify.title);
-      return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
     }
   };
 }]);
@@ -2468,18 +2490,18 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     },
     collectProfile: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/collect/profile', params).success(function(data) {
+        return $http.post('/api/collect/profile', params).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     getPict: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/collect/" + params.skip + "/" + params.limit).success(function(data) {
-          return resolve(data);
-        }).error(function(data) {
+        return $http.get("/api/collect/" + params.skip + "/" + params.limit).then(function(response) {
+          return resolve(response.data);
+        })["catch"](function(data) {
           return reject(data);
         });
       });
@@ -2488,18 +2510,18 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
       var qs;
       qs = $httpParamSerializer(params);
       return $q(function(resolve, reject) {
-        return $http.get("/api/collect/picts?" + qs).success(function(data) {
+        return $http.get("/api/collect/picts?" + qs).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     getPictCount: function() {
       return $q(function(resolve, reject) {
-        return $http.get("/api/collect/count").success(function(data) {
-          return resolve(data.count);
-        }).error(function(data) {
+        return $http.get("/api/collect/count").then(function(response) {
+          return resolve(response.data.count);
+        })["catch"](function(data) {
           return reject(data);
         });
       });
@@ -2562,18 +2584,18 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
       }
       qs = $httpParamSerializer(params);
       return $q(function(resolve, reject) {
-        return $http.get("/api/twitter?" + qs).success(function(data) {
+        return $http.get("/api/twitter?" + qs).then(function(data) {
           return resolve(data);
-        }).error(function(err) {
+        })["catch"](function(err) {
           return reject(err);
         });
       });
     },
     postViaAPI: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/twitter", params).success(function(data) {
+        return $http.post("/api/twitter", params).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
@@ -2585,14 +2607,13 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     getListsList: function(params) {
       return $q((function(_this) {
         return function(resolve, reject) {
-          return $http.get("/api/lists/list/" + params.twitterIdStr).success(function(data) {
-            console.log(data);
+          return $http.get("/api/lists/list/" + params.twitterIdStr).then(function(data) {
             if (_.has(data, 'error')) {
               _this.checkError(data.error.statusCode);
               return reject(data);
             }
             return resolve(data);
-          }).error(function(data) {
+          })["catch"](function(data) {
             return reject(data);
           });
         };
@@ -2600,52 +2621,52 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     },
     createLists: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/lists/create', params).success(function(data) {
+        return $http.post('/api/lists/create', params).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     getListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/lists/members/" + params.listIdStr + "/" + params.count).success(function(data) {
+        return $http.get("/api/lists/members/" + params.listIdStr + "/" + params.count).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     getListsStatuses: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+        return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId + "/" + params.count).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     createListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/create", params).success(function(data) {
+        return $http.post("/api/lists/members/create", params).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     createAllListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/create_all", params).success(function(data) {
+        return $http.post("/api/lists/members/create_all", params).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
     },
     destroyListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/destroy", params).success(function(data) {
+        return $http.post("/api/lists/members/destroy", params).then(function(data) {
           return resolve(data);
         });
       });
@@ -2656,9 +2677,9 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     getUserTimeline: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count + "?isIncludeRetweet=" + params.isIncludeRetweet).success(function(data) {
+        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count + "?isIncludeRetweet=" + params.isIncludeRetweet).then(function(data) {
           return resolve(data);
-        }).error(function(data) {
+        })["catch"](function(data) {
           return reject(data);
         });
       });
@@ -2669,7 +2690,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     getFollowingList: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/friends/list/" + params.twitterIdStr + "/" + params.count).success(function(data) {
+        return $http.get("/api/friends/list/" + params.twitterIdStr + "/" + params.count).then(function(data) {
           return resolve(data);
         });
       });
@@ -2720,7 +2741,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     showStatuses: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/statuses/show/" + params.tweetIdStr).success(function(data) {
+        return $http.get("/api/statuses/show/" + params.tweetIdStr).then(function(data) {
           return resolve(data);
         });
       });
@@ -2731,7 +2752,7 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     showUsers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/users/show/" + params.twitterIdStr + "/" + params.screenName).success(function(data) {
+        return $http.get("/api/users/show/" + params.twitterIdStr + "/" + params.screenName).then(function(data) {
           return resolve(data);
         });
       });
@@ -2742,21 +2763,21 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     getFavLists: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/favorites/lists/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).success(function(data) {
+        return $http.get("/api/favorites/lists/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).then(function(data) {
           return resolve(data);
         });
       });
     },
     createFav: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/favorites/create', params).success(function(data) {
+        return $http.post('/api/favorites/create', params).then(function(data) {
           return resolve(data);
         });
       });
     },
     destroyFav: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/favorites/destroy', params).success(function(data) {
+        return $http.post('/api/favorites/destroy', params).then(function(data) {
           return resolve(data);
         });
       });
@@ -2767,33 +2788,17 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     retweetStatus: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/statuses/retweet', params).success(function(data) {
+        return $http.post('/api/statuses/retweet', params).then(function(data) {
           return resolve(data);
         });
       });
     },
     destroyStatus: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/statuses/destroy', params).success(function(data) {
+        return $http.post('/api/statuses/destroy', params).then(function(data) {
           return resolve(data);
         });
       });
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("URLParameterService", ["$location", function($location) {
-  return {
-    checkURLResourceLength: function(urlResourcesLength, allowableLength) {
-      if (urlResourcesLength > allowableLength) {
-        return $location.path('/');
-      }
-    },
-    getQueryParams: function() {
-      return $location.search();
-    },
-    parse: function() {
-      return $location.path().split('/');
     }
   };
 }]);
@@ -2804,7 +2809,7 @@ angular.module("myApp.directives").directive('maoContainer', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"col-md-12\">\n  <div ng-if=\"$ctrl.loaded\">\n    <dot-loader class=\"infinitescroll-content\">\n  </div>\n  <div ng-show=\"$ctrl.tabs.length > 0\">\n    <ul class=\"mao__calender-list stylish-scrollbar--vertical\">\n      <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n        <a data-toggle=\"tab\" ng-click=\"$ctrl.onSelected(tab)\" >{{tab.name}}</a>\n      </li>\n    </ul>\n  </div>\n</div>\n<div class=\"tab-content col-md-12\">\n  <div id=\"tweets\" class=\"row tab-pane active\">\n    <mao-list-container></mao-list-container>\n  </div>\n</div>",
+    template: "<!-- 重いので非表示\n<div class=\"col-md-12\">\n  <div ng-if=\"$ctrl.loaded\">\n    <dot-loader class=\"infinitescroll-content\">\n  </div>\n  <div ng-show=\"$ctrl.tabs.length > 0\">\n    <ul class=\"mao__calender-list stylish-scrollbar--vertical\">\n      <li ng-repeat=\"tab in $ctrl.tabs\" ng-class=\"{active: tab.active}\">\n        <a data-toggle=\"tab\" ng-click=\"$ctrl.onSelected(tab)\" >{{tab.name}}</a>\n      </li>\n    </ul>\n  </div>\n</div>\n-->\n<div class=\"tab-content col-md-12\">\n  <div id=\"tweets\" class=\"row tab-pane active\">\n    <mao-list-container></mao-list-container>\n  </div>\n</div>",
     bindToController: {},
     controllerAs: "$ctrl",
     controller: MaoContainerController
@@ -2822,10 +2827,6 @@ MaoContainerController = (function() {
     this.loaded = true;
     this.tabs = [];
     this.tabType = "";
-    this.$timeout((function() {
-      return this.fetchTabData();
-    }).bind(this), 3000);
-    this.subscribe();
   }
 
   MaoContainerController.prototype.fetchTabData = function() {
@@ -2978,8 +2979,6 @@ MaoListContoller = (function() {
 
 MaoListContoller.$inject = ['$location', '$httpParamSerializer', '$scope', 'Mao', 'MaoService', 'URLParameterChecker', 'TimeService'];
 
-
-
 var MaoTweetArticleController;
 
 angular.module("myApp.directives").directive('maoTweetArticle', function() {
@@ -3042,6 +3041,8 @@ PopularImageListContainerController = (function() {
 
 PopularImageListContainerController.$inject = ['TweetService'];
 
+
+
 var GridLayoutTweet;
 
 angular.module("myApp.directives").directive('gridLayoutTweet', function() {
@@ -3100,7 +3101,7 @@ angular.module("myApp.directives").directive('userProfile', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<div class=\"drawer__header\">\n  <div ng-if=\"$ctrl.user.screen_name\" class=\"media drawer__controll\">\n    <a href=\"https://www.twitter.com/{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"pull-left\">\n      <img ng-src=\"{{::$ctrl.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"drawer__profile__icon fade\"/>\n    </a>\n    <div class=\"media-body drawer__profile__body\">\n      <h4 class=\"media-heading drawer__profile__names\">\n        <span class=\"drawer__profile__names--name\">{{::$ctrl.user.name}}</span>\n        <span class=\"screen-name\">@{{::$ctrl.user.screen_name}}</span>\n      </h4>\n      <span class=\"btn-wrapper\"></span>\n      <a followable=\"followable\" follow-status=\"$ctrl.user.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" twitter-id-str=\"{{::$ctrl.user.id_str}}\" ng-disabled=\"isProcessing\" class=\"btn btn-sm drawer__btn-follow\"></a>\n      <a href=\"/extract/@{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"btn btn-sm drawer__icon-all-view\">\n        <i class=\"fa fa-external-link-square i__center-padding\"></i>\n      </a>\n      <user-action-button-dropdowns user=\"$ctrl.user\"></user-action-button-dropdowns>\n    </div>\n  </div>\n</div>",
+    template: "<div class=\"drawer__header\">\n  <div ng-if=\"$ctrl.user.screen_name\" class=\"media drawer__controll\">\n    <a href=\"https://www.twitter.com/{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"pull-left\">\n      <img ng-src=\"{{::$ctrl.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"drawer__profile__icon fade\"/>\n    </a>\n    <div class=\"media-body drawer__profile__body\">\n      <h4 class=\"media-heading drawer__profile__names\">\n        <span class=\"drawer__profile__names--name\">{{::$ctrl.user.name}}</span>\n        <span class=\"screen-name\">@{{::$ctrl.user.screen_name}}</span>\n      </h4>\n      <span class=\"btn-wrapper\"></span>\n      <a followable=\"followable\" follow-status=\"$ctrl.user.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" twitter-id-str=\"{{::$ctrl.user.id_str}}\" ng-disabled=\"isProcessing\" class=\"btn btn-sm drawer__btn-follow\"></a>\n      <a href=\"/extract/@{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"btn btn-sm drawer__icon-all-view\">\n        <i class=\"fa fa-external-link-square i__center-padding\"></i>\n      </a>\n      <!-- 1.6にアップグレードしたら動かなくなった。バケツリレーできない、\n        <user-action-button-dropdowns id_str=\"$ctrl.user\"></user-action-button-dropdowns>\n      -->\n    </div>\n  </div>\n</div>",
     bindToController: {
       user: "=",
       listIdStr: "="

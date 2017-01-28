@@ -8,4 +8,4 @@ module.exports = (app) ->
     my.loadBase64Data req.body.url
     .then (base64Data) ->
       console.log 'base64toBlob', base64Data.length
-      res.json base64Data: base64Data
+      res.send base64Data

@@ -15,9 +15,7 @@
       if (typeof req.session.passport.user !== "undefined") {
         sessionUserData = req.session.passport.user;
       }
-      res.json({
-        data: sessionUserData
-      });
+      res.send(sessionUserData);
     });
     app.get('/', function(req, res) {
       res.render("index");

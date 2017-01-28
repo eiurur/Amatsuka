@@ -8,13 +8,13 @@ angular.module "myApp.directives"
 
       showDrawer = ->
         TweetService.showUsers(twitterIdStr: scope.twitterIdStr)
-        .then (data) ->
-          console.log data
-          $rootScope.$broadcast 'showDrawer::userData', data.data
+        .then (user) ->
+          console.log user
+          $rootScope.$broadcast 'showDrawer::userData', user.data
           TweetService.getUserTimeline(twitterIdStr: scope.twitterIdStr)
-        .then (data) ->
-          console.log data.data
-          $rootScope.$broadcast 'showDrawer::tweetData', data.data
+        .then (timeline) ->
+          console.log timeline.data
+          $rootScope.$broadcast 'showDrawer::tweetData', timeline.data
 
       element.on 'click', ->
         $rootScope.$broadcast 'showDrawer::isOpened', true

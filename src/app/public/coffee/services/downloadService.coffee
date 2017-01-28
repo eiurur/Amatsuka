@@ -2,8 +2,8 @@ angular.module "myApp.services"
   .service 'DownloadService', ($http, ConvertService) ->
     exec: (url, filename, idx) ->
       $http.post '/api/download', url: url
-      .success (data) =>
-        blob = ConvertService.base64toBlob data.base64Data
+      .then (response) =>
+        blob = ConvertService.base64toBlob response.data
         ext = /media\/.*\.(png|jpg|jpeg):orig/.exec(url)[1]
         filename = "#{filename}_#{idx}.#{ext}"
         this.saveAs blob, filename

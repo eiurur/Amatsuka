@@ -25,15 +25,9 @@
         twitterIdStr: req.params.id,
         count: req.params.count
       }).then(function(data) {
-        console.log('/api/lists/list/:id/:count data.length = ', data.length);
-        return res.json({
-          data: data
-        });
-      })["catch"](function(error) {
-        console.log('/api/lists/list/:id/:count error = ', error);
-        return res.json({
-          error: error
-        });
+        return res.send(data);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
     app.post('/api/lists/create', function(req, res) {
@@ -43,14 +37,9 @@
         name: req.body.name,
         mode: req.body.mode
       }).then(function(data) {
-        console.log('/api/lists/create', data.length);
-        return res.json({
-          data: data
-        });
-      })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.send(data);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
     app.get('/api/lists/members/:id?/:count?', function(req, res) {
@@ -60,14 +49,9 @@
         listIdStr: req.params.id,
         count: req.params.count
       }).then(function(data) {
-        console.log('/api/lists/members/:id/:count data.length = ', data.length);
-        return res.json({
-          data: data
-        });
-      })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.send(data);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
     app.get('/api/lists/statuses/:id/:maxId?/:count?', function(req, res) {
@@ -88,13 +72,9 @@
         listIdStr: req.body.listIdStr,
         twitterIdStr: req.body.twitterIdStr
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
-      })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.send(data);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
     app.post('/api/lists/members/create_all', function(req, res) {
@@ -104,13 +84,9 @@
         listIdStr: req.body.listIdStr,
         twitterIdStr: req.body.twitterIdStr
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
-      })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.send(data);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
     return app.post('/api/lists/members/destroy', function(req, res) {
@@ -120,13 +96,9 @@
         listIdStr: req.body.listIdStr,
         twitterIdStr: req.body.twitterIdStr
       }).then(function(data) {
-        return res.json({
-          data: data
-        });
-      })["catch"](function(error) {
-        return res.json({
-          error: error
-        });
+        return res.send(data);
+      })["catch"](function(err) {
+        return next(err);
       });
     });
   };

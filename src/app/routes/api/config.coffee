@@ -7,7 +7,7 @@ module.exports = (app) ->
     opts = twitterIdStr: req.session.passport.user._json.id_str
     ModelFactory.create('config').findOneById opts
     .then (data) ->
-      res.json data: data
+      res.send data
 
   app.post '/api/config', (req, res) ->
     opts =
@@ -15,4 +15,4 @@ module.exports = (app) ->
       config: req.body.config
     ModelFactory.create('config').upsert opts
     .then (data) ->
-      res.json data: data
+      res.send data

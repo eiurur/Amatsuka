@@ -12,9 +12,7 @@
         twitterIdStr: req.session.passport.user._json.id_str
       };
       return ModelFactory.create('config').findOneById(opts).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       });
     });
     return app.post('/api/config', function(req, res) {
@@ -24,9 +22,7 @@
         config: req.body.config
       };
       return ModelFactory.create('config').upsert(opts).then(function(data) {
-        return res.json({
-          data: data
-        });
+        return res.send(data);
       });
     });
   };
