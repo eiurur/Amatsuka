@@ -671,7 +671,7 @@ label {
   /* 背景画像が読み込まれる前に表示される背景のカラー */
   background-color: #292929;
   /* 画像ファイルの指定 */
-  background-image: url(https://dl.dropboxusercontent.com/u/31717228/Amatsuka_ver2.gif);
+  background-image: url(../images/desktop.gif);
   /* 画像をタイル状に繰り返し表示しない */
   background-repeat: no-repeat;
   /* コンテンツの高さが画像の高さより大きい時、動かないように固定 */

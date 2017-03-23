@@ -69,7 +69,7 @@
         app.locals.pretty = true;
         app.use(function(err, req, res, next) {
           res.status(err.status || 500);
-          return res.render("error", {
+          return res.json({
             message: err.message,
             error: err
           });

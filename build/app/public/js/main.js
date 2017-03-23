@@ -2798,6 +2798,49 @@ angular.module("myApp.services").service("URLParameterService", ["$location", fu
   };
 }]);
 
+var UserProfileController;
+
+angular.module("myApp.directives").directive('userProfile', function() {
+  return {
+    restrict: 'E',
+    scope: {},
+    template: "<div class=\"drawer__header\">\n  <div ng-if=\"$ctrl.user.screen_name\" class=\"media drawer__controll\">\n    <a href=\"https://www.twitter.com/{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"pull-left\">\n      <img ng-src=\"{{::$ctrl.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"drawer__profile__icon fade\"/>\n    </a>\n    <div class=\"media-body drawer__profile__body\">\n      <h4 class=\"media-heading drawer__profile__names\">\n        <span class=\"drawer__profile__names--name\">{{::$ctrl.user.name}}</span>\n        <span class=\"screen-name\">@{{::$ctrl.user.screen_name}}</span>\n      </h4>\n      <span class=\"btn-wrapper\"></span>\n      <a followable=\"followable\" follow-status=\"$ctrl.user.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" twitter-id-str=\"{{::$ctrl.user.id_str}}\" ng-disabled=\"isProcessing\" class=\"btn btn-sm drawer__btn-follow\"></a>\n      <a href=\"/extract/@{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"btn btn-sm drawer__icon-all-view\">\n        <i class=\"fa fa-external-link-square i__center-padding\"></i>\n      </a>\n      <user-action-button-dropdowns user=\"$ctrl.user\"></user-action-button-dropdowns>\n    </div>\n  </div>\n</div>",
+    bindToController: {
+      user: "=",
+      listIdStr: "="
+    },
+    controllerAs: "$ctrl",
+    controller: UserProfileController
+  };
+});
+
+UserProfileController = (function() {
+  function UserProfileController() {
+    var scrollableElement;
+    this.isScrolledToBottom = false;
+    this.prevTop = 0;
+    scrollableElement = angular.element(document).find('#scroll');
+    scrollableElement.on('scroll', _.throttle(this.onScroll, 500));
+  }
+
+  UserProfileController.prototype.onScroll = function(e) {
+    var controlElem, currentTop;
+    currentTop = angular.element(document).find('#scroll').scrollTop();
+    controlElem = angular.element(document).find('.drawer__controll');
+    if (currentTop < this.prevTop) {
+      controlElem.removeClass('drawer__controll--hide');
+    } else {
+      controlElem.addClass('drawer__controll--hide');
+    }
+    return this.prevTop = currentTop;
+  };
+
+  return UserProfileController;
+
+})();
+
+UserProfileController.$inject = [];
+
 var MaoContainerController;
 
 angular.module("myApp.directives").directive('maoContainer', function() {
@@ -3093,48 +3136,5 @@ ListLayoutTweet = (function() {
 })();
 
 
-
-var UserProfileController;
-
-angular.module("myApp.directives").directive('userProfile', function() {
-  return {
-    restrict: 'E',
-    scope: {},
-    template: "<div class=\"drawer__header\">\n  <div ng-if=\"$ctrl.user.screen_name\" class=\"media drawer__controll\">\n    <a href=\"https://www.twitter.com/{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"pull-left\">\n      <img ng-src=\"{{::$ctrl.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"drawer__profile__icon fade\"/>\n    </a>\n    <div class=\"media-body drawer__profile__body\">\n      <h4 class=\"media-heading drawer__profile__names\">\n        <span class=\"drawer__profile__names--name\">{{::$ctrl.user.name}}</span>\n        <span class=\"screen-name\">@{{::$ctrl.user.screen_name}}</span>\n      </h4>\n      <span class=\"btn-wrapper\"></span>\n      <a followable=\"followable\" follow-status=\"$ctrl.user.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" twitter-id-str=\"{{::$ctrl.user.id_str}}\" ng-disabled=\"isProcessing\" class=\"btn btn-sm drawer__btn-follow\"></a>\n      <a href=\"/extract/@{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"btn btn-sm drawer__icon-all-view\">\n        <i class=\"fa fa-external-link-square i__center-padding\"></i>\n      </a>\n      <user-action-button-dropdowns user=\"$ctrl.user\"></user-action-button-dropdowns>\n    </div>\n  </div>\n</div>",
-    bindToController: {
-      user: "=",
-      listIdStr: "="
-    },
-    controllerAs: "$ctrl",
-    controller: UserProfileController
-  };
-});
-
-UserProfileController = (function() {
-  function UserProfileController() {
-    var scrollableElement;
-    this.isScrolledToBottom = false;
-    this.prevTop = 0;
-    scrollableElement = angular.element(document).find('#scroll');
-    scrollableElement.on('scroll', _.throttle(this.onScroll, 500));
-  }
-
-  UserProfileController.prototype.onScroll = function(e) {
-    var controlElem, currentTop;
-    currentTop = angular.element(document).find('#scroll').scrollTop();
-    controlElem = angular.element(document).find('.drawer__controll');
-    if (currentTop < this.prevTop) {
-      controlElem.removeClass('drawer__controll--hide');
-    } else {
-      controlElem.addClass('drawer__controll--hide');
-    }
-    return this.prevTop = currentTop;
-  };
-
-  return UserProfileController;
-
-})();
-
-UserProfileController.$inject = [];
 
 

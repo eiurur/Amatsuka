@@ -75,7 +75,7 @@ exports.serve = ->
       app.locals.pretty = true
       app.use (err, req, res, next) ->
         res.status err.status or 500
-        res.render "error",
+        res.json
           message: err.message
           error: err
 
