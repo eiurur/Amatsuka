@@ -1,1 +1,36 @@
-javascript:(function(){var to=function(a){window.location.href="https://amatsuka.herokuapp.com/extract/"+a},check=function(){var a=location.hostname;if(["tweetdeck.twitter.com","twitter.com"].includes(a)){if("tweetdeck.twitter.com"===a){var b=$(".mdl .username").text(),c=$(".mdl .username").children().text(),b=b.replace(c,"");to(b)}"twitter.com"===a&&(a=$(".Gallery-content .username").text(),b=$(".ProfileHeaderCard-screennameLink").text(),"none"===$(".GalleryNav").css("display")?to(b):(a||b)&&to(a||b))}};check();})();
+javascript: (function() {
+  {
+    var to = function(username) {
+      var url = 'https://amatsuka.herokuapp.com/extract/' + username;
+      window.location.href = url;
+    };
+    var check = function() {
+      var targets = ['tweetdeck.twitter.com', 'twitter.com'];
+      var hostname = location.hostname;
+      if (!targets.includes(hostname)) return;
+      if (hostname === 'tweetdeck.twitter.com') {
+        var username = $('.prf-header .username').text();
+        var superfluousText = $('.prf-header .username')
+          .children()
+          .text();
+        var usernameNormed = username.replace(superfluousText, '');
+        to(usernameNormed);
+      }
+      if (hostname === 'twitter.com') {
+        modalExists = !!$('.permalink-tweet-container').css('display');
+        if (modalExists) {
+          var usernameOnModalTweet = /(@\w+)/
+            .exec($('.permalink-tweet .content .username').text())[0]
+            .trim();
+          to(usernameOnModalTweet);
+          return;
+        }
+        var usernameInAccountPage = $('.ProfileHeaderCard-screennameLink')
+          .text()
+          .trim();
+        if (usernameInAccountPage) to(usernameInAccountPage);
+      }
+    };
+    check();
+  }
+})();

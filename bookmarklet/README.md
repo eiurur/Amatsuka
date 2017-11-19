@@ -1,22 +1,22 @@
 # Demo
 
-![demo](https://github.com/eiurur/Amatsuka/raw/master/bookmarklet/redirect_to_extract_demo.gif)
+![demo](https://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/redirect_to_extract_demo.gif)
 
 # Usage
 
 Chromeブラウザを開いて`Ctrl + d`でブックマークを登録
 
-![](https://dl.dropboxusercontent.com/u/31717228/ShareX/2016/08/chrome_2016-08-21_12-00-59.png)
+![](hhttps://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-00-59.png)
 
 ブックマーク上で右クリック -> 編集
 
-![](https://dl.dropboxusercontent.com/u/31717228/ShareX/2016/08/chrome_2016-08-21_12-01-33.png)
+![](hhttps://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-01-33.png)
 
 URLに以下のスクリプトをコピペ -> 保存
 
-    javascript:(function(){var to=function(a){window.open("https://amatsuka.herokuapp.com/extract/"+a)},check=function(){var a=location.hostname;if(["tweetdeck.twitter.com","twitter.com"].includes(a)){if("tweetdeck.twitter.com"===a){var b=$(".mdl .username").text(),c=$(".mdl .username").children().text(),b=b.replace(c,"");to(b)}"twitter.com"===a&&(a=$(".Gallery-content .username").text(),b=$(".ProfileHeaderCard-screennameLink").text(),"none"===$(".GalleryNav").css("display")?to(b):(a||b)&&to(a||b))}};check();})();
+    javascript:(function(){{var to=function(username){var url="https://amatsuka.herokuapp.com/extract/"+username;window.open(url)};var check=function(){var targets=["tweetdeck.twitter.com","twitter.com"];var hostname=location.hostname;if(!targets.includes(hostname))return;if(hostname==="tweetdeck.twitter.com"){var username=$(".prf-header .username").text();var superfluousText=$(".prf-header .username").children().text();var usernameNormed=username.replace(superfluousText,"");to(usernameNormed)}if(hostname==="twitter.com"){modalExists=!!$(".permalink-tweet-container").css("display");if(modalExists){var usernameOnModalTweet=/(@\w+)/.exec($(".permalink-tweet .content .username").text())[0].trim();to(usernameOnModalTweet);return}var usernameInAccountPage=$(".ProfileHeaderCard-screennameLink").text().trim();if(usernameInAccountPage)to(usernameInAccountPage)}};check()};})();
 
-![](https://dl.dropboxusercontent.com/u/31717228/ShareX/2016/08/chrome_2016-08-21_12-02-31.png)
+![](hhttps://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-02-31.png)
 
 Twitterのユーザページ、またはツイートモーダルが開かれている状態でブックマークをクリック。
 
@@ -24,13 +24,13 @@ or
 
 TweetDeckでツイートモーダル、ユーザモーダルが開かれている状態でブックマークをクリック。
 
-![](https://dl.dropboxusercontent.com/u/31717228/ShareX/2016/08/chrome_2016-08-21_12-09-41.png)
+![](hhttps://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-09-41.png)
 
 ## Note
 
 Amatsukaを新しいタブで開かず、同じタブを使って遷移したいときは以下のスクリプトをコピペして保存してください。
 
-    javascript:(function(){var to=function(a){window.location.href="https://amatsuka.herokuapp.com/extract/"+a},check=function(){var a=location.hostname;if(["tweetdeck.twitter.com","twitter.com"].includes(a)){if("tweetdeck.twitter.com"===a){var b=$(".mdl .username").text(),c=$(".mdl .username").children().text(),b=b.replace(c,"");to(b)}"twitter.com"===a&&(a=$(".Gallery-content .username").text(),b=$(".ProfileHeaderCard-screennameLink").text(),"none"===$(".GalleryNav").css("display")?to(b):(a||b)&&to(a||b))}};check();})();
+    javascript:(function(){{var to=function(username){var url="https://amatsuka.herokuapp.com/extract/"+username;window.location.href=url};var check=function(){var targets=["tweetdeck.twitter.com","twitter.com"];var hostname=location.hostname;if(!targets.includes(hostname))return;if(hostname==="tweetdeck.twitter.com"){var username=$(".prf-header .username").text();var superfluousText=$(".prf-header .username").children().text();var usernameNormed=username.replace(superfluousText,"");to(usernameNormed)}if(hostname==="twitter.com"){modalExists=!!$(".permalink-tweet-container").css("display");if(modalExists){var usernameOnModalTweet=/(@\w+)/.exec($(".permalink-tweet .content .username").text())[0].trim();to(usernameOnModalTweet);return}var usernameInAccountPage=$(".ProfileHeaderCard-screennameLink").text().trim();if(usernameInAccountPage)to(usernameInAccountPage)}};check()};})();
 
 # Tool
 

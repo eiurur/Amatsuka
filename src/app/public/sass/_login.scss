@@ -31,8 +31,15 @@
     color: $amatsuka-color;
   }
 
-  img {
+  &__descrption-img {
     width: 100%;
+  }
+
+  &__description-text {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 

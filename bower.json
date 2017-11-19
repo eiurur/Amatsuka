@@ -1,8 +1,8 @@
 {
-  "name": "Amatsuka",
-  "version": "0.7.0",
+  "name": "amatsuka",
+  "version": "0.8.0",
   "homepage": "https://github.com/eiurur/Amatsuka",
-  "authors": ["eiurur <sigsig_kbeatodenmania@yahoo.co.jp>"],
+  "authors": ["eiurur <eiurur789@gmail.com>"],
   "license": "MIT",
   "private": true,
   "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"],
