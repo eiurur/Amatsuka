@@ -1,19 +1,16 @@
 @charset "utf-8";
 
-
 // リセット
 .timeline__container {
   margin-right: 0;
   margin-left: 0;
 }
 
-.timeline
-{
+.timeline {
   width: 100%;
 
   color: $link-color;
-  i
-  {
+  i {
     color: $link-color;
   }
 
@@ -26,7 +23,6 @@
   &--list {
     padding: 0 0 30px 85px; // icon 64px +  ixonとpostとのpadding 21 = 85px
   }
-
 
   /**
      * timeline__post
@@ -61,8 +57,7 @@
     &__image {
       max-width: 100%;
       padding: 16px 0;
-      img
-      {
+      img {
         width: $timeline__img--width;
       }
       &--tile {
@@ -76,7 +71,6 @@
         padding: 10px 0;
       }
     }
-
 
     &__video {
       &--tile {
@@ -98,12 +92,11 @@
 
     &__blockquote {
       @include tweet-text;
-      blockquote
-      {
+      blockquote {
         margin: 0;
         padding: 0;
 
-        border-left: solid 2px rgba(0,0,0,.12);
+        border-left: solid 2px rgba(0, 0, 0, 0.12);
       }
 
       &--grid {
@@ -111,7 +104,6 @@
       }
     }
   }
-
 
   /**
      * timeline__icon
@@ -146,8 +138,7 @@
 
       width: $timeline__post--icon--width-smartphone;
       height: $timeline__post--icon--width-smartphone;
-      img
-      {
+      img {
         max-width: $timeline__post--icon--width-smartphone;
       }
     }
@@ -156,7 +147,6 @@
       border-radius: 3px;
     }
   }
-
 
   /**
      * timelne__header
@@ -188,7 +178,8 @@
     }
 
     &__link {
-      margin-left: $timeline__post--padding-horizontal-smartphone + $timeline__post--icon--width-smartphone + 4px;
+      margin-left: $timeline__post--padding-horizontal-smartphone +
+        $timeline__post--icon--width-smartphone + 4px;
     }
 
     &__info {
@@ -222,7 +213,7 @@
       bottom: 2px;
 
       margin-left: 5px;
-      padding: .1em .3em .3em;
+      padding: 0.1em 0.3em 0.3em;
 
       cursor: pointer;
       background-color: $label__follow-color;
@@ -238,7 +229,6 @@
       color: $link-color;
     }
   }
-
 
   /**
      * timeline__footer
@@ -265,31 +255,30 @@
     &__controls {
       font-size: 120%;
       font-weight: 600;
-      @include display-flex;
-      @include flex-direction(row);
-      @include align-items(baseline);
-      @include justify-content(space-between);
+      display: flex;
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
     }
   }
 }
-
 
 /* ⑦⑧⑨⑩triangle */
 .point-triangle {
   position: relative;
   &:after {
     position: absolute;
-    content: " ";
+    content: ' ';
     height: 0;
     width: 0;
   }
   & span {
     position: absolute;
-    content: " ";
+    content: ' ';
     font-size: 12px;
     font-weight: bold;
     color: #fff;
-    z-index:100;
+    z-index: 100;
   }
 }
 
@@ -298,80 +287,70 @@
   &:after {
     top: 0;
     right: 0;
-    border-bottom:3em solid transparent;
-    border-right:3em solid $amatsuka-color;
+    border-bottom: 3em solid transparent;
+    border-right: 3em solid $amatsuka-color;
   }
   & span {
-    top: .4em;
-    right: .6em;
+    top: 0.4em;
+    right: 0.6em;
     transform: rotate(45deg);
   }
 }
-
-
 
 /**
  * [width description]
  * Under 480px
  * For iPhone6, etc.
  */
-@media(max-width:480px)
-{
+@media (max-width: 480px) {
   .timeline__container {
     margin-right: -15px;
     margin-left: -15px;
   }
 
-  .timeline
-  {
+  .timeline {
     // アイコン表示するならこっち
     // padding: 0 0 30px $timeline__post--icon--left - $timeline__post--icon--width-smartphone;
     padding: 0 0 30px 0;
   }
 
-  .timeline__post
-  {
+  .timeline__post {
     padding-top: $timeline__post--padding-vertical;
     border-radius: 0; // reset用
   }
 
   // スマホ用のtumblrっぽいレイアウトにするならこれ
-  .timeline__header
-  {
+  .timeline__header {
     line-height: 32px;
 
     padding: 0 8px 0 52px;
   }
 
-  .timeline__header__info
-  {
+  .timeline__header__info {
     line-height: 30px;
   }
 
-  .timeline__header__link
-  {
+  .timeline__header__link {
     // 8 + 32 + 4 = 44px
-    margin-left: $timeline__post--padding-horizontal-smartphone + $timeline__post--icon--width-smartphone + 4px;
+    margin-left: $timeline__post--padding-horizontal-smartphone +
+      $timeline__post--icon--width-smartphone + 4px;
   }
 
   .timeline__header__rt-source {
     line-height: 12px;
   }
 
-  .timeline__header__user
-  {
+  .timeline__header__user {
     line-height: 12px;
 
     display: block;
   }
 
-  .timeline__header__rt-icon
-  {
+  .timeline__header__rt-icon {
     padding: 0;
   }
 
-  .timeline__icon
-  {
+  .timeline__icon {
     top: $timeline__post--padding-vertical;
     // 横にアイコン表示するならこっち
     // left: -$timeline__post--icon--left + $timeline__post--icon--width-smartphone;
@@ -379,30 +358,25 @@
 
     width: $timeline__post--icon--width-smartphone;
     height: $timeline__post--icon--width-smartphone;
-    img
-    {
+    img {
       max-width: $timeline__post--icon--width-smartphone;
     }
   }
 
-  .timeline__post__text
-  {
+  .timeline__post__text {
     padding: 0 $timeline__post--padding-horizontal-smartphone;
   }
 
-  .timeline__post__blockquote
-  {
+  .timeline__post__blockquote {
     padding: 0 $timeline__post--padding-horizontal-smartphone;
   }
 
-  .timeline__footer
-  {
+  .timeline__footer {
     padding: 0 $timeline__post--padding-horizontal-smartphone;
   }
 
   // これ謎
-  .col-xs-12
-  {
+  .col-xs-12 {
     padding: 0;
   }
 }

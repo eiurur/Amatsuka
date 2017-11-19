@@ -11,7 +11,7 @@ module.exports = (app) ->
       screenName: req.params.screenName
     .then (data) ->
       res.send data
-    .catch (eerr) ->
+    .catch (err) ->
       next err
     # .catch (error) ->
     #   res.status(429).send error

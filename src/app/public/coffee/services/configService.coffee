@@ -13,9 +13,12 @@ angular.module "myApp.services"
         unless _.isEmpty(@config) then return resolve @config
         @getFromDB()
         .then (config) =>
-          console.log 'get @getFromDB() config = ', config
+          console.log '[then] get @getFromDB() config = ', config
           @set config
           return resolve config
+        .catch (err) =>
+          console.log '[catch] get @getFromDB() config = ',err
+          return resolve @config
 
     update: ->
       localStorage.setItem 'amatsuka.config', JSON.stringify(@config)
@@ -31,11 +34,9 @@ angular.module "myApp.services"
     getFromDB: ->
       return $q (resolve, reject) ->
         $http.get '/api/config'
-          .then (data) ->
-            console.log  data
-            console.log  _.isNull(data.data)
-            if _.isNull(data.data) then return reject 'Not found data'
-            return resolve JSON.parse(data.data.configStr)
+          .then (response) ->
+            if !response.data then resolve {}
+            return resolve JSON.parse(response.data.configStr)
           .catch (data) ->
             return reject data || 'getFromDB Request failed'
 

@@ -2,18 +2,10 @@
   "name": "Amatsuka",
   "version": "0.7.0",
   "homepage": "https://github.com/eiurur/Amatsuka",
-  "authors": [
-    "eiurur <sigsig_kbeatodenmania@yahoo.co.jp>"
-  ],
+  "authors": ["eiurur <sigsig_kbeatodenmania@yahoo.co.jp>"],
   "license": "MIT",
   "private": true,
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
+  "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"],
   "dependencies": {
     "lodash": "~2.4.1",
     "moment": "~2.8.3",
@@ -32,8 +24,5 @@
     "angular-route": "^1.6.1",
     "angular-sanitize": "^1.6.1",
     "angular-touch": "^1.6.1"
-  },
-  "resolutions": {
-    "angular": "1.4.14"
   }
 }

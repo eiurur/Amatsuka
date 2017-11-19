@@ -15,7 +15,7 @@
 .feeding-arrow {
   position: absolute;
   top: 50%;
-  @include transition(transform, 0.25s, ease);
+  transition: transform, 0.25s, ease;
 }
 
 // text-align:centerを当てるとinline要素は真ん中にくるのだが、

@@ -37,14 +37,14 @@ module.exports = class RankingProvider extends BaseProvider
     return new Promise (resolve, reject) ->
       console.log "\n============> Ranking find\n"
       console.log params
-      console.time 'Ranking find'
+      # console.time 'Ranking find'
       Ranking.find {}
       .limit params.limit or 100
       .skip params.skip or 0
       # .populate 'postedBy'
       .sort updatedAt: -1
       .exec (err, tweets) ->
-        console.timeEnd 'Ranking find'
+        # console.timeEnd 'Ranking find'
         if err then return reject err
         return resolve tweets
 

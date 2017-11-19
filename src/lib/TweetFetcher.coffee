@@ -35,28 +35,33 @@ module.exports = class TweetFetcher
 
     fetchTweet: (maxId) ->
       @maxId = maxId or @req.params.maxId
-
       params = @getRequestParams()
+      if _.isEmpty params 
+        @res.send {}
+      else
+        twitterClient = new TwitterClient(@req.session.passport.user)
+        twitterClient[@queryType](params)
+        .then (tweets) =>
+          # API限界まで読み終えたとき
+          if tweets.length is 0 
+            @res.send []
+            return
 
-      if _.isEmpty params then @res.send {}
+          nextMaxId = _.last(tweets).id_str
 
-      twitterClient = new TwitterClient(@req.session.passport.user)
-      twitterClient[@queryType](params)
-      .then (tweets) =>
-        # API限界まで読み終えたとき
-        if tweets.length is 0 then @res.send []
+          # 最後まで読み終えたとき
+          if @maxId is nextMaxId 
+            @res.send []
+            return
 
-        nextMaxId = _.last(tweets).id_str
+          tweetsNormalized = twitterUtils.normalizeTweets tweets, @config
 
-        tweetsNormalized = twitterUtils.normalizeTweets tweets, @config
+          if !_.isEmpty tweetsNormalized 
+            @res.send tweetsNormalized
+            return
 
-        if !_.isEmpty tweetsNormalized then @res.send tweetsNormalized
+          nextMaxIdDeced = my.decStrNum nextMaxId
 
-        # 最後まで読み終えたとき
-        if @maxId is nextMaxId then @res.send []
-
-        nextMaxIdDeced = my.decStrNum nextMaxId
-
-        @fetchTweet(nextMaxIdDeced)
-      .catch (error) =>
-        @res.status(429).json error: error
+          @fetchTweet(nextMaxIdDeced)
+        .catch (error) =>
+          @res.status(429).json error: error

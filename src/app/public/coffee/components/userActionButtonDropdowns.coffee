@@ -20,9 +20,6 @@ angular.module "myApp.directives"
 
 class UserActionButtonDropdownsController
   constructor: (@$httpParamSerializer, @BlackUserListService, @TweetService) ->
-    # console.log 'userActionButtonDropdowns', @user
-    # console.log 'BlackUserListService.mutes = ', @BlackUserListService.mute.get()
-    # console.log 'BlackUserListService.blocks = ', @BlackUserListService.block.get()
     console.log 'UserProfileController user = ', @
 
     @muteIdList = @BlackUserListService.mute.get()

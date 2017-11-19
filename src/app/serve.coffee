@@ -68,6 +68,8 @@ exports.serve = ->
 
     # development only
     if env is 'development'
+      process.on('unhandledRejection', console.dir)
+
       fs = require('fs')
       stream = fs.createWriteStream(__dirname + '/log.txt', flags: 'a')
       # app.use morgan(stream: stream)
@@ -75,7 +77,7 @@ exports.serve = ->
       app.locals.pretty = true
       app.use (err, req, res, next) ->
         res.status err.status or 500
-        res.render "error",
+        res.json
           message: err.message
           error: err
 

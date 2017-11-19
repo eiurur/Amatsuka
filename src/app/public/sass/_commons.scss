@@ -3,45 +3,36 @@
 .icon-twitter {
   color: #a1a1a1;
   cursor: pointer;
-  &:hover
-  {
+  &:hover {
     color: $twitter-color !important;
   }
 }
 
-.icon-retweet
-{
+.icon-retweet {
   cursor: pointer;
-  &:hover
-  {
+  &:hover {
     color: $retweet-color !important;
   }
 }
 
-.retweeted
-{
+.retweeted {
   color: $retweet-color !important;
 }
 
-.icon-heart
-{
+.icon-heart {
   cursor: pointer;
-  &:hover
-  {
+  &:hover {
     color: $favorite-color !important;
   }
 }
 
-.favorited
-{
+.favorited {
   color: $favorite-color !important;
 }
 
-.fa-download
-{
+.fa-download {
   color: $link-color;
-  &:hover
-  {
+  &:hover {
     color: $download-color !important;
   }
 }
@@ -60,17 +51,19 @@
 }
 
 .fa {
-  font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka', 'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
+  font-family: YuGothic, 'Yu Gothic', '游ゴシック体', '游ゴシック', 'ヒラギノ角ゴ Pro W3',
+    'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MSPゴシック', 'Osaka',
+    'MS PGothic', 'Arial', 'Helvetica', 'Verdana', 'sans-serif';
 }
-
 
 /**
  * seaerch box
  */
 // フォームも角ばったほうがいいかなって思ったけど
 // なんか微妙。消すかも
-.input-group-sm > .form-control, .input-group-sm > .input-group-addon, .input-group-sm > .input-group-btn > .btn
-{
+.input-group-sm > .form-control,
+.input-group-sm > .input-group-addon,
+.input-group-sm > .input-group-btn > .btn {
   @include round(0px);
 }
 
@@ -79,35 +72,29 @@
   max-width: $member__divider--width;
   border-color: $link-color;
   border-radius: 0;
-
 }
 
-.search-form
-{
+.search-form {
   margin: 70px 0 35px 0;
 }
 
-.search-input
-{
+.search-input {
   color: white;
   border-color: $link-color;
   background: $transparent-color;
 }
 
-.input-group-addon
-{
+.input-group-addon {
   color: white;
   border-color: $link-color;
   background: $transparent-color;
   border-radius: 0;
 }
 
-
 /**
  * Aside slider
  */
-.fullscreen-overlay
-{
+.fullscreen-overlay {
   position: fixed;
   z-index: 3000;
   top: 0;
@@ -122,25 +109,21 @@
   height: 100%;
   // background: black;
 
-  background: rgba(0, 0, 0, .6);
+  background: rgba(0, 0, 0, 0.6);
 }
 
-.scrollbar-y-hidden
-{
+.scrollbar-y-hidden {
   overflow-y: hidden;
 }
-
 
 /**
  * image zoom
  */
-.image-layer
-{
+.image-layer {
   display: inline-block;
 }
 
-.image-layer__overlay
-{
+.image-layer__overlay {
   position: fixed;
   z-index: 13000;
   top: 0;
@@ -154,11 +137,10 @@
   width: 100%;
   height: 100%;
 
-  background: rgba(0, 0, 0, .8);
+  background: rgba(0, 0, 0, 0.8);
 }
 
-.image-layer__img
-{
+.image-layer__img {
   display: none;
 
   z-index: 13001;
@@ -169,9 +151,9 @@
 
   box-shadow: rgb(0, 0, 0) 0px 4px 30px;
 
-  @include align-items(center);
-  @include display-flex();
-  @include justify-content(center);
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
 .image-layer__loading {
@@ -190,22 +172,19 @@
   }
 }
 
-.image-layer__img-h-wide
-{
+.image-layer__img-h-wide {
   width: auto;
   height: 100%;
   margin: 0 auto;
 }
 
-.image-layer__img-w-wide
-{
+.image-layer__img-w-wide {
   width: 100%;
   height: auto;
 }
 
 // 画像プリロード用
-.image-layer__img--hidden
-{
+.image-layer__img--hidden {
   display: inline-block;
 
   width: 0;
@@ -272,8 +251,7 @@
 /**
  * Go to top
  */
-.arrow-top
-{
+.arrow-top {
   position: fixed;
   right: 50px;
   bottom: 15px;
@@ -281,46 +259,39 @@
   padding: 25px;
 
   cursor: pointer;
-  transition: .24s;
+  transition: 0.24s;
 
   border: solid transparent;
   // box-shadow: 1px -1px 0 0 $link-color inset;
-  @include box-shadow($link-color 1px -1px 0 0 inset);
+  box-shadow: $link-color 1px -1px 0 0 inset;
 
-  @include rotate(135deg);
+  transform: rotate(135deg);
 }
 
-.arrow-top:hover
-{
+.arrow-top:hover {
   box-shadow: 1px -1px 0 0 lighten($link-color, 10%) inset;
 }
-
 
 /**
  * Load画面
  */
-@include keyframes(spinner1)
-{
-  from
-  {
-    @include transform(rotate(0deg));
-  } to
-  {
-    @include transform(rotate(360deg));
+@keyframes spinner1 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
-@include keyframes(spinner2)
-{
-  from
-  {
-    @include transform(rotate(0deg));
-  } to
-  {
-    @include transform(rotate(-360deg));
+@keyframes spinner2 {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
   }
 }
-.spinner
-{
+.spinner {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -329,54 +300,48 @@
   height: 34px;
   margin-top: -17px;
   margin-left: -17px;
-  &:after, &:before
-  {
+  &:after,
+  &:before {
     position: fixed;
 
     width: 32px;
     height: 32px;
 
-    content: "";
+    content: '';
 
     border: 2px solid $amatsuka-color;
   }
-  &:after
-  {
-    @include animation(spinner1 2.5s linear infinite);
+  &:after {
+    animation: spinner1 2.5s linear infinite;
   }
-  &:before
-  {
+  &:before {
     width: 44px;
     height: 44px;
     margin-top: -6.5px;
     margin-left: -6.5px;
 
-    @include animation(spinner2 2.5s linear infinite);
+    animation: spinner2 2.5s linear infinite;
   }
 }
 
-.cover-until-authenticated
-{
+.cover-until-authenticated {
   height: 100%;
 
-  background: url("../images/login-background.jpg") no-repeat center center;
+  background: url('../images/login-background.jpg') no-repeat center center;
   background-size: cover;
 }
-
 
 /**
  * Box-loader
  */
-.box-loader
-{
+.box-loader {
   font-size: 0;
 
   position: relative;
 
   width: 27px;
   margin: 0 auto;
-  b
-  {
+  b {
     display: inline-block;
 
     width: 5px;
@@ -387,13 +352,11 @@
   }
 }
 
-.box-loading-padding-vertical
-{
+.box-loading-padding-vertical {
   padding: 30px 0;
 }
 
-.loading-bar
-{
+.loading-bar {
   width: 100%;
   max-width: $timeline__post--width;
   padding: 30px 0;
@@ -401,8 +364,7 @@
   color: $link-color;
 }
 
-.loading-bar--grid
-{
+.loading-bar--grid {
   bottom: 0;
 
   margin: 0 auto;
@@ -411,67 +373,47 @@
 /**
  * Dot-loader
  */
-.wrapper
-{
+.wrapper {
   width: 3em;
-  margin: 1em auto;
+  margin: 3em auto 1em;
   // 中心に移動するために追加。
   padding-right: 100px;
 
   height: 60px;
 }
 
-.dot:nth-child(1)
-{
+.dot:nth-child(1) {
   @include dot();
 }
-.dot:nth-child(2)
-{
+.dot:nth-child(2) {
   @include dot(2em);
 }
-.dot:nth-child(3)
-{
+.dot:nth-child(3) {
   @include dot(3.7em);
 }
-.dot:nth-child(1)
-{
-  @include animation(load 1.8s linear infinite);
-  @include animation-delay(.4s);
+.dot:nth-child(1) {
+  animation: load 1.8s linear 0.4s infinite;
 }
-
-.dot:nth-child(2)
-{
-  @include animation(load 1.8s linear infinite);
-  @include animation-delay(.8s);
+.dot:nth-child(2) {
+  animation: load 1.8s linear 0.8s infinite;
 }
-
-.dot:nth-child(3)
-{
-  @include animation(load 1.8s linear infinite);
-  @include animation-delay(1.2s);
+.dot:nth-child(3) {
+  animation: load 1.8s linear 1.2s infinite;
 }
-
-@include keyframes(load)
-{
-  5%
-  {
+@keyframes load {
+  5% {
     position: absolute;
-
     margin-top: -2em;
   }
-  100%
-  {
+  100% {
     margin-top: 0;
   }
 }
 
-
-
 /**
  * Scroll
  */
-.scrollable
-{
+.scrollable {
   overflow-y: scroll;
   // max-height: 740px;
 
@@ -482,29 +424,25 @@
   border-left: 1px solid $amatsuka-color;
 }
 
-.stylish-scrollbar::-webkit-scrollbar
-{
+.stylish-scrollbar::-webkit-scrollbar {
   // width: 4px;
   width: 1px;
 
   background-color: transparant;
 }
 
-.stylish-scrollbar::-webkit-scrollbar-thumb
-{
+.stylish-scrollbar::-webkit-scrollbar-thumb {
   background-color: $amatsuka-color;
 }
 
-.stylish-scrollbar--vertical::-webkit-scrollbar
-{
+.stylish-scrollbar--vertical::-webkit-scrollbar {
   // width: 4px;
   height: 1px;
 
   background-color: transparant;
 }
 
-.stylish-scrollbar--vertical::-webkit-scrollbar-thumb
-{
+.stylish-scrollbar--vertical::-webkit-scrollbar-thumb {
   background-color: $amatsuka-color;
 }
 
@@ -518,10 +456,8 @@
 /**
  * For Smartphone
  */
-@media(max-width:480px)
-{
-  .btn-stretch
-  {
+@media (max-width: 480px) {
+  .btn-stretch {
     width: 100%;
   }
 
@@ -532,14 +468,18 @@
   }
 }
 
-
 /**
  * divider
  */
 .section--divider {
   border: 0;
   height: 1px;
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(122, 122, 122, 0.75), rgba(0, 0, 0, 0));
+  background-image: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0),
+    rgba(122, 122, 122, 0.75),
+    rgba(0, 0, 0, 0)
+  );
   width: 33.3%;
   margin: 48px auto;
 }

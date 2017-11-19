@@ -132,7 +132,9 @@ angular.module "myApp.services"
           # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
           # newList = _.findWhere(ownLists, 'name': 'Amatsuka') || id_str: null
           return resolve _.findWhere(ownLists, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
-
+        .catch (err) ->
+          reject err
+          
     isSameAmatsukaList: ->
       return $q (resolve, reject) =>
         @getAmatsukaList()
