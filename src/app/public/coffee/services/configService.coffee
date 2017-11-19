@@ -31,11 +31,9 @@ angular.module "myApp.services"
     getFromDB: ->
       return $q (resolve, reject) ->
         $http.get '/api/config'
-          .then (data) ->
-            console.log  data
-            console.log  _.isNull(data.data)
-            if _.isNull(data.data) then return reject 'Not found data'
-            return resolve JSON.parse(data.data.configStr)
+          .then (response) ->
+            if !response.data then return reject 'Not found data'
+            return resolve JSON.parse(response.data.configStr)
           .catch (data) ->
             return reject data || 'getFromDB Request failed'
 

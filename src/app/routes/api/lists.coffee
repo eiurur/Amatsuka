@@ -50,6 +50,7 @@ module.exports = (app) ->
   # memo: ConfigProvider.findOneByIdの実行「時間を計測したところ2msとかでした
   app.get '/api/lists/statuses/:id/:maxId?/:count?', (req, res) ->
     opts = twitterIdStr: req.session.passport.user._json.id_str
+    console.log opts
     ModelFactory.create('config').findOneById opts
     .then (data) ->
       # 設定データが未登録

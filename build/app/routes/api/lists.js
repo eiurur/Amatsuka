@@ -59,6 +59,7 @@
       opts = {
         twitterIdStr: req.session.passport.user._json.id_str
       };
+      console.log(opts);
       return ModelFactory.create('config').findOneById(opts).then(function(data) {
         var config;
         config = _.isNull(data) ? {} : JSON.parse(data.configStr);
