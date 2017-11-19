@@ -7,6 +7,7 @@ angular.module "myApp.controllers"
     ListService
     ConfigService
     BlackUserListService
+    ToasterService
     Tweets
     ) ->
   return if _.isEmpty AuthService.user
@@ -14,7 +15,7 @@ angular.module "myApp.controllers"
 
   $scope.listIdStr  = ''
   $scope.isLoaded   = false
-  $scope.layoutType = 'grid'
+  # $scope.layoutType = 'grid'
   ConfigService.get().then (config) -> $scope.layoutType = if config.isTileLayout then 'tile' else 'grid'
   $scope.message    = 'リストデータの確認中'
 
@@ -61,28 +62,30 @@ angular.module "myApp.controllers"
       return
     console.log '=> false _isSameAmatsukaList'
     upsertAmatsukaList()
-  .catch (error) -> console.log '=> catch isSameAmatsukaList error = ', error
+  .catch (error) -> 
+    console.log '=> catch isSameAmatsukaList error = ', error
+    ToasterService.warning title: 'リストAPI取得制限', text: '15分お待ちください'
   .finally ->
     console.log '=> isSameAmatsukaList() finally'
-    ConfigService.getFromDB().then (data) -> $scope.config = data
-    $scope.listIdStr = ListService.amatsukaList.data.id_str
-    $scope.isLoaded  = true
-    $scope.message   = ''
-    console.log '=> 終わり'
-    return
+    ConfigService.getFromDB().then (data) -> 
+      $scope.config = data
+      $scope.listIdStr = ListService.amatsukaList.data.id_str
+      $scope.isLoaded  = true
+      $scope.message   = ''
+      console.log '=> 終わり', data
 
-  # Block, mute
-  tasks = [
-    TweetService.getMuteUserIdList(twitterIdStr: AuthService.user._json.id_str)
-    TweetService.getBlockUserIdList(twitterIdStr: AuthService.user._json.id_str)
-  ]
-  Promise.all(tasks)
-  .then (results) =>
-    console.log results
-    console.log 'mutes = ', results[0].data.ids
-    console.log 'blocks = ', results[1].data.ids
-    BlackUserListService.mute.set results[0].data.ids
-    BlackUserListService.block.set results[1].data.ids
+      # Block, mute
+      tasks = [
+        TweetService.getMuteUserIdList(twitterIdStr: AuthService.user._json.id_str)
+        TweetService.getBlockUserIdList(twitterIdStr: AuthService.user._json.id_str)
+      ]
+      Promise.all(tasks)
+      .then (results) =>
+        console.log results
+        console.log 'mutes = ', results[0].data.ids
+        console.log 'blocks = ', results[1].data.ids
+        BlackUserListService.mute.set results[0].data.ids
+        BlackUserListService.block.set results[1].data.ids
 
   $scope.$on 'addMember', (event, args) ->
     console.log 'index addMember on ', args
