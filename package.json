@@ -8,7 +8,7 @@
   "scripts": {
     "clean": "gulp clean",
     "init": "npm i && bower i && gulp build",
-    "build": "gulp build",
+    "build": "bower i && gulp build",
     "dev": "gulp",
     "start": "node build/app.js",
     "test": "mocha --require espower-coffee/guess test/*.coffee",
