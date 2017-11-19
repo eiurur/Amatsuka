@@ -13,7 +13,7 @@
     "start": "node build/app.js",
     "test": "mocha --require espower-coffee/guess test/*.coffee",
     "preinstall": "npm cache clean -f",
-    "preinstall": "npm run build"
+    "postinstall": "npm run build"
   },
   "dependencies": {
     "async": "^2.6.0",
