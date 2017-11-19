@@ -16,11 +16,10 @@ module.exports = (app) ->
       twitterIdStr: req.params.id
       count: req.params.count
     .then (data) ->
-      console.log '/api/lists/list/:id/:count data.length = ', data.length
-      res.json data: data
-    .catch (error) ->
-      console.log '/api/lists/list/:id/:count error = ', error
-      res.json error: error
+      res.send data
+    .catch (err) ->
+      next err
+      # res.status(429).send error
 
   # POST リストの作成
   app.post '/api/lists/create', (req, res) ->
@@ -29,10 +28,10 @@ module.exports = (app) ->
       name: req.body.name
       mode: req.body.mode
     .then (data) ->
-      console.log '/api/lists/create', data.length
-      res.json data: data
-    .catch (error) ->
-      res.json error: error
+      res.send data
+    .catch (err) ->
+      next err
+      # res.status(429).send error
 
   # GET リストのメンバー(statusとentitesは除外する)
   app.get '/api/lists/members/:id?/:count?', (req, res) ->
@@ -41,21 +40,23 @@ module.exports = (app) ->
       listIdStr: req.params.id
       count: req.params.count
     .then (data) ->
-      console.log '/api/lists/members/:id/:count data.length = ', data.length
-      res.json data: data
-    .catch (error) ->
-      res.json error: error
+      res.send data
+    .catch (err) ->
+      next err
+      # res.status(429).send error
 
 
   # GET リストのタイムラインを取得
   # memo: ConfigProvider.findOneByIdの実行「時間を計測したところ2msとかでした
   app.get '/api/lists/statuses/:id/:maxId?/:count?', (req, res) ->
     opts = twitterIdStr: req.session.passport.user._json.id_str
+    console.log opts
     ModelFactory.create('config').findOneById opts
     .then (data) ->
       # 設定データが未登録
       config = if _.isNull data then {} else JSON.parse(data.configStr)
       new TweetFetcher(req, res, 'getListsStatuses', null, config).fetchTweet()
+
 
   # POST 仮想フォロー、仮想アンフォロー機能( = Amatsukaリストへの追加、削除)
   app.post '/api/lists/members/create', (req, res) ->
@@ -64,9 +65,11 @@ module.exports = (app) ->
       listIdStr: req.body.listIdStr
       twitterIdStr: req.body.twitterIdStr
     .then (data) ->
-      res.json data: data
-    .catch (error) ->
-      res.json error: error
+      res.send data
+    .catch (err) ->
+      next err
+    # .catch (error) ->
+    #   res.status(429).send error
 
   app.post '/api/lists/members/create_all', (req, res) ->
     twitterClient = new TwitterClient(req.session.passport.user)
@@ -74,9 +77,11 @@ module.exports = (app) ->
       listIdStr: req.body.listIdStr
       twitterIdStr: req.body.twitterIdStr
     .then (data) ->
-      res.json data: data
-    .catch (error) ->
-      res.json error: error
+      res.send data
+    .catch (err) ->
+      next err
+    # .catch (error) ->
+    #   res.status(429).send error
 
   app.post '/api/lists/members/destroy', (req, res) ->
     twitterClient = new TwitterClient(req.session.passport.user)
@@ -84,9 +89,11 @@ module.exports = (app) ->
       listIdStr: req.body.listIdStr
       twitterIdStr: req.body.twitterIdStr
     .then (data) ->
-      res.json data: data
-    .catch (error) ->
-      res.json error: error
+      res.send data
+    .catch (err) ->
+      next err
+    # .catch (error) ->
+    #   res.status(429).send error
 
 
 

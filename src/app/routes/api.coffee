@@ -23,3 +23,5 @@ module.exports = (app) ->
   (require './api/mao')(app)
 
   (require './api/downloads')(app)
+
+  (require './middlewares/errorMiddleware')(app)

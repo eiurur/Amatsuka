@@ -18,7 +18,9 @@ angular.module "myApp.directives"
             <a href="/extract/@{{::$ctrl.user.screen_name}}" target="_blank" class="btn btn-sm drawer__icon-all-view">
               <i class="fa fa-external-link-square i__center-padding"></i>
             </a>
-            <user-action-button-dropdowns user="$ctrl.user"></user-action-button-dropdowns>
+            <!-- 1.6にアップグレードしたら動かなくなった。バケツリレーできない、
+              <user-action-button-dropdowns id_str="$ctrl.user"></user-action-button-dropdowns>
+            -->
           </div>
         </div>
       </div>

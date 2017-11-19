@@ -12,11 +12,14 @@ angular.module "myApp.controllers"
   unless ListService.hasListData() then $location.path '/'
 
   $scope.isLoaded = false
-  ConfigService.get().then (config) -> $scope.layoutType = if config.isTileLayout then 'tile' else 'grid'
+  ConfigService.get().then (config) ->
+    console.log 'concc', config
+    $scope.layoutType = if config.isTileLayout then 'tile' else 'grid'
 
-  $scope.tweets    = new Tweets([], undefined, 'like', AuthService.user._json.id_str)
-  $scope.listIdStr = ListService.amatsukaList.data.id_str
-  $scope.isLoaded  = true
+    $scope.tweets    = new Tweets([], undefined, 'like', AuthService.user._json.id_str)
+    $scope.listIdStr = ListService.amatsukaList.data.id_str
+    $scope.isLoaded  = true
+    $scope.tweets.nextPage() # AngularJS 1.6にアップグレードしたところ必要になった。
 
   $scope.$on 'addMember', (event, args) ->
     console.log 'like addMember on ', args

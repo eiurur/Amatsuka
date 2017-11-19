@@ -23,6 +23,8 @@ class UserActionButtonDropdownsController
     # console.log 'userActionButtonDropdowns', @user
     # console.log 'BlackUserListService.mutes = ', @BlackUserListService.mute.get()
     # console.log 'BlackUserListService.blocks = ', @BlackUserListService.block.get()
+    console.log 'UserProfileController user = ', @
+
     @muteIdList = @BlackUserListService.mute.get()
     @blockIdList = @BlackUserListService.block.get()
 

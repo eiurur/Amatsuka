@@ -68,6 +68,8 @@ exports.serve = ->
 
     # development only
     if env is 'development'
+      process.on('unhandledRejection', console.dir)
+
       fs = require('fs')
       stream = fs.createWriteStream(__dirname + '/log.txt', flags: 'a')
       # app.use morgan(stream: stream)
