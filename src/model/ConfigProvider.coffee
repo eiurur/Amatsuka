@@ -21,11 +21,11 @@ module.exports = class ConfigProvider extends BaseProvider
 
   findOneById: (params, callback) ->
     return new Promise (resolve, reject) =>
-      console.time 'Config findOneById'
+      # console.time 'Config findOneById'
       opts = twitterIdStr: params.twitterIdStr
       Config.findOne opts
       .exec (err, config) ->
-        console.timeEnd 'Config findOneById'
+        # console.timeEnd 'Config findOneById'
         if err then return reject err
         return resolve config
 

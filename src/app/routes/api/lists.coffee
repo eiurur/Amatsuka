@@ -18,8 +18,8 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (err) ->
-      next err
-      # res.status(429).send error
+      # next err
+      res.status(429).send err
 
   # POST リストの作成
   app.post '/api/lists/create', (req, res) ->
@@ -30,8 +30,8 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (err) ->
-      next err
-      # res.status(429).send error
+      # next err
+      res.status(429).send err
 
   # GET リストのメンバー(statusとentitesは除外する)
   app.get '/api/lists/members/:id?/:count?', (req, res) ->
@@ -42,8 +42,8 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (err) ->
-      next err
-      # res.status(429).send error
+      # next err
+      res.status(429).send err
 
 
   # GET リストのタイムラインを取得
@@ -67,9 +67,8 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (err) ->
-      next err
-    # .catch (error) ->
-    #   res.status(429).send error
+      # next err
+      res.status(429).send err
 
   app.post '/api/lists/members/create_all', (req, res) ->
     twitterClient = new TwitterClient(req.session.passport.user)
@@ -79,9 +78,8 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (err) ->
-      next err
-    # .catch (error) ->
-    #   res.status(429).send error
+      # next err
+      res.status(429).send err
 
   app.post '/api/lists/members/destroy', (req, res) ->
     twitterClient = new TwitterClient(req.session.passport.user)
@@ -91,9 +89,8 @@ module.exports = (app) ->
     .then (data) ->
       res.send data
     .catch (err) ->
-      next err
-    # .catch (error) ->
-    #   res.status(429).send error
+      # next err
+      res.status(429).send err
 
 
 

@@ -283,6 +283,7 @@ angular.module "myApp.services"
       return $q (resolve, reject) =>
         $http.get("/api/lists/list/#{params.twitterIdStr}")
           .then (data) =>
+            console.log "/api/lists/list/#{params.twitterIdStr}", data
             if _.has data, 'error'
               @checkError data.error.statusCode
               return reject data

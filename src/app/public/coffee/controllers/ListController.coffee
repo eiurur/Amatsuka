@@ -8,6 +8,7 @@ angular.module "myApp.controllers"
     List
     Member
     AmatsukaList
+    ToasterService
     ) ->
   if _.isEmpty AuthService.user then $location.path '/'
   unless ListService.hasListData() then $location.path '/'
@@ -38,6 +39,7 @@ angular.module "myApp.controllers"
     $scope.ownList.push myFriendParams
   .catch (error) ->
     console.log 'listController = ', error
+    ToasterService.warning title: 'リストAPI取得制限', text: '15分お待ちください'
 
 
   $scope.$watch 'sourceListData', (list) ->

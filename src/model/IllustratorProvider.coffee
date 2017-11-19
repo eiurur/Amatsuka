@@ -37,12 +37,12 @@ module.exports = class IllustratorProvider extends BaseProvider
   find: (params) ->
     return new Promise (resolve, reject) ->
       console.log "\n============> Illustrator find\n"
-      console.time 'Illustrator find'
+      # console.time 'Illustrator find'
       # Illustrator.find  {twitterIdStr: 906372890}
       Illustrator.find {}
       .sort updatedAt: -1
       .exec (err, illustratorList) ->
-        console.timeEnd 'Illustrator find'
+        # console.timeEnd 'Illustrator find'
         if err then return reject err
         return resolve illustratorList
 

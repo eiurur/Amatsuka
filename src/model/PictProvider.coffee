@@ -40,27 +40,28 @@ module.exports = class PictProvider extends BaseProvider
     return new Promise (resolve, reject) ->
       console.log "\n============> Pict find\n"
       # console.log params
-      console.time 'Pict find'
+      # console.time 'Pict find'
       Pict.find {}
       .limit params.limit or 20
       .skip params.skip or 0
       .populate 'postedBy'
       .sort updatedAt: -1
       .exec (err, pictList) ->
-        console.timeEnd 'Pict find'
+        # console.timeEnd 'Pict find'
         if err then return reject err
         return resolve pictList
 
   findByIllustratorObjectId: (params) ->
     return new Promise (resolve, reject) ->
       console.log "\n============> Pict findByIllustratorObjectId\n"
-      # console.log params
-      console.time 'Pict findByIllustratorObjectId'
+      console.log params
+      # console.time 'Pict findByIllustratorObjectId'
       Pict.findOne(postedBy: params.postedBy)
       .populate 'postedBy'
       .sort updatedAt: -1
       .exec (err, pictList) ->
-        console.timeEnd 'Pict findByIllustratorObjectId'
+        console.log pictList
+        # console.timeEnd 'Pict findByIllustratorObjectId'
         if err then return reject err
         return resolve pictList
 
@@ -76,9 +77,9 @@ module.exports = class PictProvider extends BaseProvider
   count: ->
     return new Promise (resolve, reject) ->
       console.log "\n============> Pict count\n"
-      console.time 'Pict count'
+      # console.time 'Pict count'
       Pict.count {}, (err, count) ->
         console.log count
-        console.timeEnd 'Pict count'
+        # console.timeEnd 'Pict count'
         if err then return reject err
         return resolve count

@@ -1,7 +1,18 @@
+MyCmpController = (TweetService) ->
+  @$onInit = () =>
+    opts =
+      twitterIdStr: @twitterIdStr
+      limit: 3
+    TweetService.getPopularTweet opts
+    .then (data) =>
+      console.log data
+      @tweets = data.pictTweetList[0..2]
+  return # これが絶対必要
+
 angular.module "myApp.directives"
-  .directive 'popularImageListContainer', ->
-    restrict: 'E'
-    scope: {}
+  .component('popularImageListContainer', {
+    bindings: 
+      twitterIdStr: "<"
     template: """
       <section class="popular-tweets row">
         <div class="col-md-4 col-sm-4 col-xs-4" ng-repeat="tweet in $ctrl.tweets">
@@ -11,22 +22,6 @@ angular.module "myApp.directives"
         </div>
       </section>
     """
-    bindToController:
-      twitterIdStr: '='
-    controllerAs: "$ctrl"
-    controller: PopularImageListContainerController
+    controller: MyCmpController
+  })
 
-class PopularImageListContainerController
-  LIMIT: 3
-  constructor: (@TweetService) ->
-    console.log @twitterIdStr
-    opts =
-      twitterIdStr: @twitterIdStr
-      limit: @LIMIT
-    @TweetService.getPopularTweet opts
-    .then (data) =>
-      console.log data
-      @tweets = data.pictTweetList[0..2]
-
-
-PopularImageListContainerController.$inject = ['TweetService']
