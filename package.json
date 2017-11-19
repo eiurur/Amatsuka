@@ -1,5 +1,5 @@
 {
-  "name": "Amatsuka",
+  "name": "amatsuka",
   "version": "0.8.0",
   "author": "eiurur",
   "description": "",
@@ -39,6 +39,7 @@
     "express": "~4.16.2",
     "express-error-handler": "^1.1.0",
     "express-session": "^1.15.6",
+    "handlebars": "~> 4.0.0",
     "jade": "^0.31.2",
     "konfig": "^0.2.1",
     "lodash": "^4.17.4",
