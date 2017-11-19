@@ -1,6 +1,11 @@
 /**
+<<<<<<< HEAD
  * @license AngularJS v1.6.1
  * (c) 2010-2016 Google, Inc. http://angularjs.org
+=======
+ * @license AngularJS v1.4.14
+ * (c) 2010-2015 Google, Inc. http://angularjs.org
+>>>>>>> stash@{0}
  * License: MIT
  */
 (function(window) {'use strict';
@@ -57,7 +62,11 @@ function minErr(module, ErrorConstructor) {
       return match;
     });
 
+<<<<<<< HEAD
     message += '\nhttp://errors.angularjs.org/1.6.1/' +
+=======
+    message += '\nhttp://errors.angularjs.org/1.4.14/' +
+>>>>>>> stash@{0}
       (module ? module + '/' : '') + code;
 
     for (i = SKIP_INDEXES, paramPrefix = '?'; i < templateArgs.length; i++, paramPrefix = '&') {
@@ -2621,6 +2630,7 @@ function toDebugString(obj) {
  * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
+<<<<<<< HEAD
   // These placeholder strings will be replaced by grunt's `build` task.
   // They need to be double- or single-quoted.
   full: '1.6.1',
@@ -2628,6 +2638,13 @@ var version = {
   minor: 6,
   dot: 1,
   codeName: 'promise-rectification'
+=======
+  full: '1.4.14',    // all of these placeholder strings will be replaced by grunt's
+  major: 1,    // package task
+  minor: 4,
+  dot: 14,
+  codeName: 'material-distinction'
+>>>>>>> stash@{0}
 };
 
 
@@ -32981,8 +32998,13 @@ $provide.value("$locale", {
 
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 /**
+<<<<<<< HEAD
  * @license AngularJS v1.6.1
  * (c) 2010-2016 Google, Inc. http://angularjs.org
+=======
+ * @license AngularJS v1.3.20
+ * (c) 2010-2014 Google, Inc. http://angularjs.org
+>>>>>>> stash@{0}
  * License: MIT
  */
 (function(window, angular) {'use strict';
@@ -37920,8 +37942,13 @@ angular.module('ngAnimate', [])
 })(window, window.angular);
 
 /**
+<<<<<<< HEAD
  * @license AngularJS v1.6.1
  * (c) 2010-2016 Google, Inc. http://angularjs.org
+=======
+ * @license AngularJS v1.3.20
+ * (c) 2010-2014 Google, Inc. http://angularjs.org
+>>>>>>> stash@{0}
  * License: MIT
  */
 (function(window, angular) {'use strict';
@@ -38660,8 +38687,13 @@ angular.module('ngSanitize').filter('linky', ['$sanitize', function($sanitize) {
 })(window, window.angular);
 
 /**
+<<<<<<< HEAD
  * @license AngularJS v1.6.1
  * (c) 2010-2016 Google, Inc. http://angularjs.org
+=======
+ * @license AngularJS v1.5.11
+ * (c) 2010-2017 Google, Inc. http://angularjs.org
+>>>>>>> stash@{0}
  * License: MIT
  */
 (function(window, angular) {'use strict';
