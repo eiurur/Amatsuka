@@ -9,11 +9,11 @@
 }
 
 @mixin zurui-box($shadow: 0.15) {
-  @include box-shadow(rgba(0, 0, 0, $shadow) 0 0 2px);
+  box-shadow: rgba(0, 0, 0, $shadow) 0 0 2px;
 }
 
 @mixin vertical-middle($deg: -50%) {
-  @include translateY($deg);
+  transform: translateY($deg);
   position: relative;
   top: 50%;
 }
@@ -46,9 +46,8 @@
   a {
     color: $color-normal !important;
     text-decoration: none;
-    transition: .2s ease;
-    &:hover
-    {
+    transition: 0.2s ease;
+    &:hover {
       color: $color-hover !important;
     }
   }
@@ -65,7 +64,6 @@
   display: inline-block;
 }
 
-
 // ページ送り
 @mixin page-arrow($arrow-translateX-px: 10px) {
   cursor: pointer;
@@ -76,10 +74,10 @@
   position: fixed;
   text-align: center;
   color: rgba(255, 255, 255, 0.3);
-  @include transition(all, 0.25s, ease);
+  transition: all, 0.25s, ease;
   &:hover {
     background: rgba(33, 33, 33, 0.3);
-    color: rgba(255, 255, 255, 1.0);
+    color: rgba(255, 255, 255, 1);
   }
   &:hover i {
     transform: translateX($arrow-translateX-px);
