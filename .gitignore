@@ -9,3 +9,4 @@ stylesheets/*
 blueprint.md
 build/app/log*
 amatsuka_*
+build/*
