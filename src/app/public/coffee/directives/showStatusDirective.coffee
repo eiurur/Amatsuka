@@ -31,7 +31,7 @@ angular.module 'myApp.directives'
         TweetService.showStatuses(tweetIdStr: attrs.tweetIdStr)
         .then (data) ->
           tweet = data.data
-          bindEvents()
+          bindEvents(tweet)
           tweet.user = TweetService.get(tweet, 'user')
           imgIdx = getImgIdxBySrc(tweet, attrs.imgSrc.replace(':small', ''))
           showTweetInfomation(tweet, imgIdx)
@@ -114,7 +114,7 @@ angular.module 'myApp.directives'
           zoomImageViewer.pipeLowToHighImage("#{src}:small", "#{src}:orig")
 
 
-        bindEvents = ->
+        bindEvents = (tweet) ->
           ## For 単数枚
           # ClickEvent
 
@@ -149,17 +149,8 @@ angular.module 'myApp.directives'
               startCoords = coords
             'move': (coords, event) ->
               console.log 'move'
-              # x = coords.x - startCoords.x
-              # x = Math.max(0, Math.min(html.clientWidth / 2, x))
-              # console.log x
-              # props = {}
-              # props.transform = 'translate3d(' + x + 'px, 0, 0)'
-              # zoomImageViewer.getImageLayerImg().css props
             'end': (coords, event) ->
               console.log 'Math.abs(startCoords.y - coords.y) = ', Math.abs(startCoords.y - coords.y)
-              # if Math.abs(startCoords.y - coords.y) > 300
-              #   cleanup()
-              #   return
               return if Math.abs(startCoords.y - coords.y) is 0
               if startCoords.x > coords.x # left-swipe
                 switchImage('next')

@@ -3,6 +3,7 @@ angular.module "myApp.directives"
     restrict: 'E'
     scope: {}
     template: """
+      <!-- 重いので非表示
       <div class="col-md-12">
         <div ng-if="$ctrl.loaded">
           <dot-loader class="infinitescroll-content">
@@ -15,6 +16,7 @@ angular.module "myApp.directives"
           </ul>
         </div>
       </div>
+      -->
       <div class="tab-content col-md-12">
         <div id="tweets" class="row tab-pane active">
           <mao-list-container></mao-list-container>
@@ -30,8 +32,8 @@ class MaoContainerController
     @loaded = true
     @tabs = []
     @tabType = ""
-    @$timeout (-> @fetchTabData()).bind(@), 3000 # (=> @fetchTabData())だと表示されない
-    @subscribe()
+    # @$timeout (-> @fetchTabData()).bind(@), 3000 # (=> @fetchTabData())だと表示されない
+    # @subscribe()
 
   fetchTabData: ->
     targetDates = @TimeService.getDatesPerMonth()

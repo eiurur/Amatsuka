@@ -6,7 +6,9 @@ angular.module "myApp.factories"
         @busy   = false
         @isLast = false
         @method = null
-        ConfigService.get().then (data) => @count = data.tweetNumberAtOnce or 40
+        @count = 40
+        ConfigService.get()
+        .then (data) => @count = data.tweetNumberAtOnce or 40
 
       normalizeTweet: (data) =>
         return new Promise (resolve, reject) =>
@@ -64,7 +66,7 @@ angular.module "myApp.factories"
           @method
           .then (data) => @normalizeTweet data
           .then (itemsNormalized) => @assignTweet itemsNormalized
-          .catch (error) => @checkError error.statusCode
+          .catch (response) => @checkError response.statusCode
           return
 
     Tweets

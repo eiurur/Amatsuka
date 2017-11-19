@@ -11,7 +11,7 @@ module.exports = (app) ->
     sessionUserData = null
     unless typeof req.session.passport.user is "undefined"
       sessionUserData = req.session.passport.user
-    res.json data: sessionUserData
+    res.send sessionUserData
     return
 
   # serve index and view partials

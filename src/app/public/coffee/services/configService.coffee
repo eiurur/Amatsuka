@@ -31,18 +31,18 @@ angular.module "myApp.services"
     getFromDB: ->
       return $q (resolve, reject) ->
         $http.get '/api/config'
-          .success (data) ->
+          .then (data) ->
             console.log  data
             console.log  _.isNull(data.data)
             if _.isNull(data.data) then return reject 'Not found data'
             return resolve JSON.parse(data.data.configStr)
-          .error (data) ->
+          .catch (data) ->
             return reject data || 'getFromDB Request failed'
 
     save2DB: ->
       return $q (resolve, reject) =>
         $http.post '/api/config', config: @config
-          .success (data) ->
+          .then (data) ->
             return resolve data
-          .error (data) ->
+          .catch (data) ->
             return reject data || 'save2DB Request failed'

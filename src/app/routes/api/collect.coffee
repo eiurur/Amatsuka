@@ -11,14 +11,12 @@ module.exports = (app) ->
     .catch (err) ->
       console.log err
 
-  app.get '/api/collect/picts', (req, res) ->
-    console.log '/api/collect/picts/ req.query.twitterIdStr =', req.query.twitterIdStr
+  app.get '/api/collect/picts', (req, res, next) ->
     opts = twitterIdStr: req.query.twitterIdStr
     ModelFactory.create('illustrator').findById opts
     .then (illustrator) ->
-      console.log 'IllustratorProvider.findById result = ', illustrator
       unless illustrator?
-        res.status(400).send(null)
+        next err
         return
       ModelFactory.create('pict').findByIllustratorObjectId postedBy: illustrator._id
     .then (data) ->
@@ -26,11 +24,9 @@ module.exports = (app) ->
       console.log data.postedBy
       console.log data.pictTweetList.length
       res.send data
-    .catch (err) ->
-      console.error 'app.get /api/collect/picts/ error ', err
-      res.status(400).send(err)
+    .catch (err) -> next err
 
-  app.get '/api/collect/:skip?/:limit?', (req, res) ->
+  app.get '/api/collect/:skip?/:limit?', (req, res, next) ->
     opts =
       skip: req.params.skip - 0
       limit: req.params.limit - 0
@@ -47,4 +43,4 @@ module.exports = (app) ->
     .then -> pictCollection.updateIllustratorData()
     .then (data) -> pictCollection.setIllustratorDBData(data)
     .then (data) -> res.send data
-    .catch (err) -> console.log err
+    .catch (err) -> next err

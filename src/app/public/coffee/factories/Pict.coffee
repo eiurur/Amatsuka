@@ -14,6 +14,7 @@ angular.module "myApp.factories"
 
 
       randomAccess: ->
+        console.log @items
         loop
           skip = _.sample _.range(@numMaxSkip)
           break if !@doneSkip.includes(skip) or @doneSkip.length >= @numMaxSkip
@@ -42,6 +43,7 @@ angular.module "myApp.factories"
         # 最初はデータベースに保存済みのイラストレータの件数を求めてループ回数を決める。
         TweetService.getPictCount()
         .then (count) =>
+          console.log  'count', count
           @numIllustorator = count
           @numMaxSkip = (@numIllustorator - 1) / @limit
           do @randomAccess
