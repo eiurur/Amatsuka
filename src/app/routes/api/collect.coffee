@@ -15,11 +15,11 @@ module.exports = (app) ->
     opts = twitterIdStr: req.query.twitterIdStr
     ModelFactory.create('illustrator').findById opts
     .then (illustrator) ->
-      console.log illustrator
       console.log illustrator?
       unless illustrator?
         next err
         return
+      console.log illustrator._id
       ModelFactory.create('pict').findByIllustratorObjectId postedBy: illustrator._id
     .then (data) ->
       console.log data

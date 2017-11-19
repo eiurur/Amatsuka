@@ -4,9 +4,9 @@ MyCmpController = (TweetService) ->
       twitterIdStr: @twitterIdStr
       limit: 3
     TweetService.getPopularTweet opts
-    .then (data) =>
-      console.log data
-      @tweets = data.pictTweetList[0..2]
+    .then (response) =>
+      console.log response
+      @tweets = response.data.pictTweetList[0..2]
   return # これが絶対必要
 
 angular.module "myApp.directives"
