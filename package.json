@@ -12,7 +12,7 @@
     "dev": "gulp",
     "start": "node build/app.js",
     "test": "mocha --require espower-coffee/guess test/*.coffee",
-    "postinstall": "npm cache clean -f && npm run build"
+    "postinstall": "npm cache clean -f && npm run init"
   },
   "dependencies": {
     "async": "^2.6.0",
