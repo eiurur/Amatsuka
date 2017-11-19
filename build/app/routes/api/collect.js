@@ -23,10 +23,12 @@
         twitterIdStr: req.query.twitterIdStr
       };
       return ModelFactory.create('illustrator').findById(opts).then(function(illustrator) {
+        console.log(illustrator != null);
         if (illustrator == null) {
           next(err);
           return;
         }
+        console.log(illustrator._id);
         return ModelFactory.create('pict').findByIllustratorObjectId({
           postedBy: illustrator._id
         });

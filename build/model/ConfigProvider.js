@@ -35,12 +35,10 @@
       return new Promise((function(_this) {
         return function(resolve, reject) {
           var opts;
-          console.time('Config findOneById');
           opts = {
             twitterIdStr: params.twitterIdStr
           };
           return Config.findOne(opts).exec(function(err, config) {
-            console.timeEnd('Config findOneById');
             if (err) {
               return reject(err);
             }

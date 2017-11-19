@@ -52,11 +52,9 @@
     PictProvider.prototype.find = function(params) {
       return new Promise(function(resolve, reject) {
         console.log("\n============> Pict find\n");
-        console.time('Pict find');
         return Pict.find({}).limit(params.limit || 20).skip(params.skip || 0).populate('postedBy').sort({
           updatedAt: -1
         }).exec(function(err, pictList) {
-          console.timeEnd('Pict find');
           if (err) {
             return reject(err);
           }
@@ -68,13 +66,13 @@
     PictProvider.prototype.findByIllustratorObjectId = function(params) {
       return new Promise(function(resolve, reject) {
         console.log("\n============> Pict findByIllustratorObjectId\n");
-        console.time('Pict findByIllustratorObjectId');
+        console.log(params);
         return Pict.findOne({
           postedBy: params.postedBy
         }).populate('postedBy').sort({
           updatedAt: -1
         }).exec(function(err, pictList) {
-          console.timeEnd('Pict findByIllustratorObjectId');
+          console.log(pictList);
           if (err) {
             return reject(err);
           }
@@ -105,10 +103,8 @@
     PictProvider.prototype.count = function() {
       return new Promise(function(resolve, reject) {
         console.log("\n============> Pict count\n");
-        console.time('Pict count');
         return Pict.count({}, function(err, count) {
           console.log(count);
-          console.timeEnd('Pict count');
           if (err) {
             return reject(err);
           }

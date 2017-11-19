@@ -54,11 +54,9 @@
       return new Promise(function(resolve, reject) {
         console.log("\n============> Ranking find\n");
         console.log(params);
-        console.time('Ranking find');
         return Ranking.find({}).limit(params.limit || 100).skip(params.skip || 0).sort({
           updatedAt: -1
         }).exec(function(err, tweets) {
-          console.timeEnd('Ranking find');
           if (err) {
             return reject(err);
           }

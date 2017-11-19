@@ -255,6 +255,31 @@ UserActionButtonDropdownsController = (function() {
 
 UserActionButtonDropdownsController.$inject = ['$httpParamSerializer', 'BlackUserListService', 'TweetService'];
 
+angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
+  $scope.isLoaded = false;
+  $scope.isAuthenticated = AuthService.status.isAuthenticated;
+  if (AuthService.status.isAuthenticated) {
+    $scope.isLoaded = true;
+    return;
+  }
+  return AuthService.isAuthenticated().then(function(data) {
+    console.log(data);
+    if (!data.data) {
+      $scope.isLoaded = true;
+      $location.path('/');
+      return;
+    }
+    AuthService.status.isAuthenticated = true;
+    $scope.isAuthenticated = AuthService.status.isAuthenticated;
+    AuthService.user = data.data;
+    $scope.user = data.data;
+    return $scope.isLoaded = true;
+  })["catch"](function(status, data) {
+    console.log(status);
+    return console.log(data);
+  });
+}]);
+
 angular.module("myApp.controllers").controller("AmatsukaListCtrl", ["AuthService", "ListService", function(AuthService, ListService) {
   var amatsukaFollowList, amatsukaList;
   if (_.isEmpty(AuthService.user)) {
@@ -451,8 +476,8 @@ angular.module("myApp.controllers").controller("HelpCtrl", ["$scope", "$location
   }
 }]);
 
-angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "ConfigService", "BlackUserListService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, ConfigService, BlackUserListService, Tweets) {
-  var tasks, upsertAmatsukaList;
+angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "ConfigService", "BlackUserListService", "ToasterService", "Tweets", function($scope, $location, AuthService, TweetService, ListService, ConfigService, BlackUserListService, ToasterService, Tweets) {
+  var upsertAmatsukaList;
   if (_.isEmpty(AuthService.user)) {
     return;
   }
@@ -461,7 +486,6 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$locatio
   }
   $scope.listIdStr = '';
   $scope.isLoaded = false;
-  $scope.layoutType = 'grid';
   ConfigService.get().then(function(config) {
     return $scope.layoutType = config.isTileLayout ? 'tile' : 'grid';
   });
@@ -501,33 +525,38 @@ angular.module("myApp.controllers").controller("IndexCtrl", ["$scope", "$locatio
     console.log('=> false _isSameAmatsukaList');
     return upsertAmatsukaList();
   })["catch"](function(error) {
-    return console.log('=> catch isSameAmatsukaList error = ', error);
+    console.log('=> catch isSameAmatsukaList error = ', error);
+    return ToasterService.warning({
+      title: 'リストAPI取得制限',
+      text: '15分お待ちください'
+    });
   })["finally"](function() {
     console.log('=> isSameAmatsukaList() finally');
-    ConfigService.getFromDB().then(function(data) {
-      return $scope.config = data;
+    return ConfigService.getFromDB().then(function(data) {
+      var tasks;
+      $scope.config = data;
+      $scope.listIdStr = ListService.amatsukaList.data.id_str;
+      $scope.isLoaded = true;
+      $scope.message = '';
+      console.log('=> 終わり', data);
+      tasks = [
+        TweetService.getMuteUserIdList({
+          twitterIdStr: AuthService.user._json.id_str
+        }), TweetService.getBlockUserIdList({
+          twitterIdStr: AuthService.user._json.id_str
+        })
+      ];
+      return Promise.all(tasks).then((function(_this) {
+        return function(results) {
+          console.log(results);
+          console.log('mutes = ', results[0].data.ids);
+          console.log('blocks = ', results[1].data.ids);
+          BlackUserListService.mute.set(results[0].data.ids);
+          return BlackUserListService.block.set(results[1].data.ids);
+        };
+      })(this));
     });
-    $scope.listIdStr = ListService.amatsukaList.data.id_str;
-    $scope.isLoaded = true;
-    $scope.message = '';
-    console.log('=> 終わり');
   });
-  tasks = [
-    TweetService.getMuteUserIdList({
-      twitterIdStr: AuthService.user._json.id_str
-    }), TweetService.getBlockUserIdList({
-      twitterIdStr: AuthService.user._json.id_str
-    })
-  ];
-  Promise.all(tasks).then((function(_this) {
-    return function(results) {
-      console.log(results);
-      console.log('mutes = ', results[0].data.ids);
-      console.log('blocks = ', results[1].data.ids);
-      BlackUserListService.mute.set(results[0].data.ids);
-      return BlackUserListService.block.set(results[1].data.ids);
-    };
-  })(this));
   $scope.$on('addMember', function(event, args) {
     console.log('index addMember on ', args);
     TweetService.applyFollowStatusChange($scope.tweets.items, args);
@@ -568,7 +597,7 @@ angular.module("myApp.controllers").controller("LikeCtrl", ["$scope", "$location
   });
 }]);
 
-angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "List", "Member", "AmatsukaList", function($scope, $location, AuthService, TweetService, ListService, List, Member, AmatsukaList) {
+angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location", "AuthService", "TweetService", "ListService", "List", "Member", "AmatsukaList", "ToasterService", function($scope, $location, AuthService, TweetService, ListService, List, Member, AmatsukaList, ToasterService) {
   if (_.isEmpty(AuthService.user)) {
     $location.path('/');
   }
@@ -590,7 +619,11 @@ angular.module("myApp.controllers").controller("ListCtrl", ["$scope", "$location
     };
     return $scope.ownList.push(myFriendParams);
   })["catch"](function(error) {
-    return console.log('listController = ', error);
+    console.log('listController = ', error);
+    return ToasterService.warning({
+      title: 'リストAPI取得制限',
+      text: '15分お待ちください'
+    });
   });
   $scope.$watch('sourceListData', function(list) {
     if ((list != null ? list.name : void 0) == null) {
@@ -659,31 +692,6 @@ angular.module("myApp.controllers").controller("MemberCtrl", ["$scope", "$locati
     return $scope.list.members = $scope.list.amatsukaMemberList.filter(function(element, index, array) {
       return element.screen_name.toLowerCase().indexOf(screenNameTolowerCased) !== -1;
     });
-  });
-}]);
-
-angular.module("myApp.controllers").controller("AdminUserCtrl", ["$scope", "$location", "AuthService", function($scope, $location, AuthService) {
-  $scope.isLoaded = false;
-  $scope.isAuthenticated = AuthService.status.isAuthenticated;
-  if (AuthService.status.isAuthenticated) {
-    $scope.isLoaded = true;
-    return;
-  }
-  return AuthService.isAuthenticated().then(function(data) {
-    console.log(data);
-    if (!data.data) {
-      $scope.isLoaded = true;
-      $location.path('/');
-      return;
-    }
-    AuthService.status.isAuthenticated = true;
-    $scope.isAuthenticated = AuthService.status.isAuthenticated;
-    AuthService.user = data.data;
-    $scope.user = data.data;
-    return $scope.isLoaded = true;
-  })["catch"](function(status, data) {
-    console.log(status);
-    return console.log(data);
   });
 }]);
 
@@ -1670,14 +1678,12 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
             reject(data.error);
           }
           if (_.isEmpty(data.data)) {
-            reject({
+            return reject({
               statusCode: 10100
             });
           }
-          console.time('normalize_tweets');
           _this.maxId = TweetService.decStrNum(_.last(data.data).id_str);
           itemsNormalized = TweetService.normalizeTweets(data.data, ListService.amatsukaList.member);
-          console.timeEnd('normalize_tweets');
           return resolve(itemsNormalized);
         };
       })(this));
@@ -1687,7 +1693,7 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
       return new Promise((function(_this) {
         return function(resolve, reject) {
           if (_.isEmpty(tweets)) {
-            reject({
+            return reject({
               statusCode: 100110
             });
           }
@@ -1725,6 +1731,7 @@ angular.module("myApp.factories").factory('Tweets', ["$http", "$q", "ConfigServi
     };
 
     Tweets.prototype.nextPage = function() {
+      console.log(new Date());
       console.log(this.busy);
       console.log(this.isLast);
       if (this.busy || this.isLast) {
@@ -1896,6 +1903,69 @@ angular.module("myApp.services").service("BlackUserListService", function() {
   };
 });
 
+angular.module("myApp.services").service("ConfigService", ["$http", "$q", function($http, $q) {
+  return {
+    config: {},
+    set: function(config) {
+      return this.config = config;
+    },
+    get: function() {
+      return new Promise((function(_this) {
+        return function(resolve, reject) {
+          console.log('get @pconfig = ', _this.config);
+          if (!_.isEmpty(_this.config)) {
+            return resolve(_this.config);
+          }
+          return _this.getFromDB().then(function(config) {
+            console.log('[then] get @getFromDB() config = ', config);
+            _this.set(config);
+            return resolve(config);
+          })["catch"](function(err) {
+            console.log('[catch] get @getFromDB() config = ', err);
+            return resolve(_this.config);
+          });
+        };
+      })(this));
+    },
+    update: function() {
+      localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
+    },
+    init: function() {
+      this.config = {
+        includeRetweet: true,
+        ngUsername: [],
+        ngWord: []
+      };
+      return localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
+    },
+    getFromDB: function() {
+      return $q(function(resolve, reject) {
+        return $http.get('/api/config').then(function(response) {
+          if (!response.data) {
+            resolve({});
+          }
+          return resolve(JSON.parse(response.data.configStr));
+        })["catch"](function(data) {
+          return reject(data || 'getFromDB Request failed');
+        });
+      });
+    },
+    save2DB: function() {
+      return $q((function(_this) {
+        return function(resolve, reject) {
+          return $http.post('/api/config', {
+            config: _this.config
+          }).then(function(data) {
+            return resolve(data);
+          })["catch"](function(data) {
+            return reject(data || 'save2DB Request failed');
+          });
+        };
+      })(this));
+    }
+  };
+}]);
+
 angular.module("myApp.services").service('ConvertService', function() {
   return {
     base64toBlob: function(_base64) {
@@ -1917,171 +1987,6 @@ angular.module("myApp.services").service('ConvertService', function() {
     }
   };
 });
-
-angular.module('myApp.services').service('GetterImageInfomation', function() {
-  return {
-    getWideDirection: function(imgElement) {
-      var cH, cH_cW_percent, cW, direction, h, h_w_percent, html, w;
-      html = angular.element(document).find('html');
-      h = imgElement[0].naturalHeight;
-      w = imgElement[0].naturalWidth;
-      h_w_percent = h / w * 100;
-      cH = html[0].clientHeight;
-      cW = html[0].clientWidth;
-      cH_cW_percent = cH / cW * 100;
-      return direction = h_w_percent - cH_cW_percent >= 0 ? 'h' : 'w';
-    }
-  };
-});
-
-angular.module("myApp.services").service("MaoService", ["$http", function($http) {
-  return {
-    findByMaoTokenAndDate: function(qs) {
-      return $http.get("/api/mao?" + qs);
-    },
-    countTweetByMaoTokenAndDate: function(qs) {
-      return $http.get("/api/mao/tweets/count?" + qs);
-    },
-    aggregateTweetCount: function(qs) {
-      return $http.get("/api/mao/stats/tweet/count?" + qs);
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("StatService", ["$http", "$q", function($http, $q) {}]);
-
-angular.module("myApp.services").service("TermPeginateDataServicve", ["$rootScope", function($rootScope) {
-  return {
-    publish: function(params) {
-      return $rootScope.$broadcast('TermPeginateDataServicve::publish', params);
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("TimeService", function() {
-  return {
-    normalizeDate: function(term, date) {
-      switch (term) {
-        case 'days':
-          return moment(date).format('YYYY-MM-DD');
-        case 'weeks':
-          return moment(date).format('YYYY-MM-DD');
-        case 'month':
-          return moment(date).date('1').format('YYYY-MM-DD');
-        default:
-          return moment(date).format('YYYY-MM-DD');
-      }
-    },
-    changeDate: function(term, date, amount) {
-      switch (term) {
-        case 'days':
-          return moment(date).add(amount, 'days').format('YYYY-MM-DD');
-        case 'weeks':
-          return moment(date).add(amount, 'weeks').format('YYYY-MM-DD');
-        case 'month':
-          return moment(date).add(amount, 'months').date('1').format('YYYY-MM-DD');
-        default:
-          return moment().format('YYYY-MM-DD');
-      }
-    },
-    getDatesPerMonth: function() {
-      return Array.from(Array(30).keys()).map(function(day) {
-        return moment().subtract(day + 1, 'days').format('YYYY-MM-DD');
-      });
-    }
-  };
-});
-
-angular.module("myApp.services").service('ToasterService', ["toaster", function(toaster) {
-  return {
-    success: function(notify) {
-      console.log(notify.title);
-      return toaster.pop('success', notify.title, notify.text, 2000, 'trustedHtml');
-    },
-    warning: function(notify) {
-      console.log(notify.title);
-      return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("URLParameterService", ["$location", function($location) {
-  return {
-    checkURLResourceLength: function(urlResourcesLength, allowableLength) {
-      if (urlResourcesLength > allowableLength) {
-        return $location.path('/');
-      }
-    },
-    getQueryParams: function() {
-      return $location.search();
-    },
-    parse: function() {
-      return $location.path().split('/');
-    }
-  };
-}]);
-
-angular.module("myApp.services").service("ConfigService", ["$http", "$q", function($http, $q) {
-  return {
-    config: {},
-    set: function(config) {
-      return this.config = config;
-    },
-    get: function() {
-      return new Promise((function(_this) {
-        return function(resolve, reject) {
-          console.log('get @pconfig = ', _this.config);
-          if (!_.isEmpty(_this.config)) {
-            return resolve(_this.config);
-          }
-          return _this.getFromDB().then(function(config) {
-            console.log('get @getFromDB() config = ', config);
-            _this.set(config);
-            return resolve(config);
-          });
-        };
-      })(this));
-    },
-    update: function() {
-      localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
-    },
-    init: function() {
-      this.config = {
-        includeRetweet: true,
-        ngUsername: [],
-        ngWord: []
-      };
-      return localStorage.setItem('amatsuka.config', JSON.stringify(this.config));
-    },
-    getFromDB: function() {
-      return $q(function(resolve, reject) {
-        return $http.get('/api/config').then(function(data) {
-          console.log(data);
-          console.log(_.isNull(data.data));
-          if (_.isNull(data.data)) {
-            return reject('Not found data');
-          }
-          return resolve(JSON.parse(data.data.configStr));
-        })["catch"](function(data) {
-          return reject(data || 'getFromDB Request failed');
-        });
-      });
-    },
-    save2DB: function() {
-      return $q((function(_this) {
-        return function(resolve, reject) {
-          return $http.post('/api/config', {
-            config: _this.config
-          }).then(function(data) {
-            return resolve(data);
-          })["catch"](function(data) {
-            return reject(data || 'save2DB Request failed');
-          });
-        };
-      })(this));
-    }
-  };
-}]);
 
 angular.module("myApp.services").service('DownloadService', ["$http", "ConvertService", function($http, ConvertService) {
   return {
@@ -2113,6 +2018,22 @@ angular.module("myApp.services").service('DownloadService', ["$http", "ConvertSe
     }
   };
 }]);
+
+angular.module('myApp.services').service('GetterImageInfomation', function() {
+  return {
+    getWideDirection: function(imgElement) {
+      var cH, cH_cW_percent, cW, direction, h, h_w_percent, html, w;
+      html = angular.element(document).find('html');
+      h = imgElement[0].naturalHeight;
+      w = imgElement[0].naturalWidth;
+      h_w_percent = h / w * 100;
+      cH = html[0].clientHeight;
+      cW = html[0].clientWidth;
+      cH_cW_percent = cH / cW * 100;
+      return direction = h_w_percent - cH_cW_percent >= 0 ? 'h' : 'w';
+    }
+  };
+});
 
 angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthService", "TweetService", function($http, $q, AuthService, TweetService) {
   return {
@@ -2266,6 +2187,8 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
             }) || {
               id_str: null
             });
+          })["catch"](function(err) {
+            return reject(err);
           });
         };
       })(this));
@@ -2286,6 +2209,159 @@ angular.module("myApp.services").service("ListService", ["$http", "$q", "AuthSer
     },
     hasListData: function() {
       return !(_.isEmpty(this.amatsukaList.data) && _.isEmpty(this.amatsukaList.member));
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("MaoService", ["$http", function($http) {
+  return {
+    findByMaoTokenAndDate: function(qs) {
+      return $http.get("/api/mao?" + qs);
+    },
+    countTweetByMaoTokenAndDate: function(qs) {
+      return $http.get("/api/mao/tweets/count?" + qs);
+    },
+    aggregateTweetCount: function(qs) {
+      return $http.get("/api/mao/stats/tweet/count?" + qs);
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("PromiseService", ["$q", "RequestService", function($q, RequestService) {
+  return {
+    post: function(url, payload, opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      return $q(function(resolve, reject) {
+        return RequestService.post(url, payload, opts).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
+        });
+      });
+    },
+    get: function(url, opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      return $q(function(resolve, reject) {
+        return RequestService.get(url, opts).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
+        });
+      });
+    },
+    put: function(url, payload, opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      return $q(function(resolve, reject) {
+        return RequestService.put(url, payload, opts).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
+        });
+      });
+    },
+    "delete": function(url) {
+      return $q(function(resolve, reject) {
+        return RequestService["delete"](url).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
+        });
+      });
+    },
+    all: function(tasks) {
+      return $q.all(tasks);
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("RequestService", ["$http", function($http) {
+  return {
+    post: function(url, payload, opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      return $http.post(url, payload, opts);
+    },
+    get: function(url, opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      return $http.get(url, opts);
+    },
+    put: function(url, payload, opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      return $http.put(url, payload, opts);
+    },
+    "delete": function(url) {
+      return $http({
+        url: url,
+        method: "DELETE"
+      });
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("StatService", ["$http", "$q", function($http, $q) {}]);
+
+angular.module("myApp.services").service("TermPeginateDataServicve", ["$rootScope", function($rootScope) {
+  return {
+    publish: function(params) {
+      return $rootScope.$broadcast('TermPeginateDataServicve::publish', params);
+    }
+  };
+}]);
+
+angular.module("myApp.services").service("TimeService", function() {
+  return {
+    normalizeDate: function(term, date) {
+      switch (term) {
+        case 'days':
+          return moment(date).format('YYYY-MM-DD');
+        case 'weeks':
+          return moment(date).format('YYYY-MM-DD');
+        case 'month':
+          return moment(date).date('1').format('YYYY-MM-DD');
+        default:
+          return moment(date).format('YYYY-MM-DD');
+      }
+    },
+    changeDate: function(term, date, amount) {
+      switch (term) {
+        case 'days':
+          return moment(date).add(amount, 'days').format('YYYY-MM-DD');
+        case 'weeks':
+          return moment(date).add(amount, 'weeks').format('YYYY-MM-DD');
+        case 'month':
+          return moment(date).add(amount, 'months').date('1').format('YYYY-MM-DD');
+        default:
+          return moment().format('YYYY-MM-DD');
+      }
+    },
+    getDatesPerMonth: function() {
+      return Array.from(Array(30).keys()).map(function(day) {
+        return moment().subtract(day + 1, 'days').format('YYYY-MM-DD');
+      });
+    }
+  };
+});
+
+angular.module("myApp.services").service('ToasterService', ["toaster", function(toaster) {
+  return {
+    success: function(notify) {
+      console.log(notify.title);
+      return toaster.pop('success', notify.title, notify.text, 2000, 'trustedHtml');
+    },
+    warning: function(notify) {
+      console.log(notify.title);
+      return toaster.pop('warning', notify.title, notify.text, 2000, 'trustedHtml');
     }
   };
 }]);
@@ -2490,10 +2566,10 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     },
     collectProfile: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/collect/profile', params).then(function(data) {
-          return resolve(data);
-        })["catch"](function(data) {
-          return reject(data);
+        return $http.post('/api/collect/profile', params).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
         });
       });
     },
@@ -2510,10 +2586,10 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
       var qs;
       qs = $httpParamSerializer(params);
       return $q(function(resolve, reject) {
-        return $http.get("/api/collect/picts?" + qs).then(function(data) {
-          return resolve(data);
-        })["catch"](function(data) {
-          return reject(data);
+        return $http.get("/api/collect/picts?" + qs).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
         });
       });
     },
@@ -2584,8 +2660,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
       }
       qs = $httpParamSerializer(params);
       return $q(function(resolve, reject) {
-        return $http.get("/api/twitter?" + qs).then(function(data) {
-          return resolve(data);
+        return $http.get("/api/twitter?" + qs).then(function(response) {
+          return resolve(response);
         })["catch"](function(err) {
           return reject(err);
         });
@@ -2593,10 +2669,10 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     },
     postViaAPI: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/twitter", params).then(function(data) {
-          return resolve(data);
-        })["catch"](function(data) {
-          return reject(data);
+        return $http.post("/api/twitter", params).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
         });
       });
     },
@@ -2607,67 +2683,68 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
     getListsList: function(params) {
       return $q((function(_this) {
         return function(resolve, reject) {
-          return $http.get("/api/lists/list/" + params.twitterIdStr).then(function(data) {
-            if (_.has(data, 'error')) {
-              _this.checkError(data.error.statusCode);
-              return reject(data);
+          return $http.get("/api/lists/list/" + params.twitterIdStr).then(function(response) {
+            console.log("/api/lists/list/" + params.twitterIdStr, response);
+            if (_.has(response, 'error')) {
+              _this.checkError(response.error.statusCode);
+              return reject(response);
             }
-            return resolve(data);
-          })["catch"](function(data) {
-            return reject(data);
+            return resolve(response);
+          })["catch"](function(err) {
+            return reject(err);
           });
         };
       })(this));
     },
     createLists: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/lists/create', params).then(function(data) {
-          return resolve(data);
-        })["catch"](function(data) {
-          return reject(data);
+        return $http.post('/api/lists/create', params).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
         });
       });
     },
     getListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/lists/members/" + params.listIdStr + "/" + params.count).then(function(data) {
-          return resolve(data);
-        })["catch"](function(data) {
-          return reject(data);
+        return $http.get("/api/lists/members/" + params.listIdStr + "/" + params.count).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
         });
       });
     },
     getListsStatuses: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId + "/" + params.count).then(function(data) {
-          return resolve(data);
-        })["catch"](function(data) {
-          return reject(data);
+        return $http.get("/api/lists/statuses/" + params.listIdStr + "/" + params.maxId + "/" + params.count).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
         });
       });
     },
     createListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/create", params).then(function(data) {
-          return resolve(data);
-        })["catch"](function(data) {
-          return reject(data);
+        return $http.post("/api/lists/members/create", params).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
         });
       });
     },
     createAllListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/create_all", params).then(function(data) {
-          return resolve(data);
-        })["catch"](function(data) {
-          return reject(data);
+        return $http.post("/api/lists/members/create_all", params).then(function(response) {
+          return resolve(response);
+        })["catch"](function(err) {
+          return reject(err);
         });
       });
     },
     destroyListsMembers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post("/api/lists/members/destroy", params).then(function(data) {
-          return resolve(data);
+        return $http.post("/api/lists/members/destroy", params).then(function(response) {
+          return resolve(response);
         });
       });
     },
@@ -2677,8 +2754,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     getUserTimeline: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count + "?isIncludeRetweet=" + params.isIncludeRetweet).then(function(data) {
-          return resolve(data);
+        return $http.get("/api/timeline/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count + "?isIncludeRetweet=" + params.isIncludeRetweet).then(function(response) {
+          return resolve(response);
         })["catch"](function(data) {
           return reject(data);
         });
@@ -2690,8 +2767,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     getFollowingList: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/friends/list/" + params.twitterIdStr + "/" + params.count).then(function(data) {
-          return resolve(data);
+        return $http.get("/api/friends/list/" + params.twitterIdStr + "/" + params.count).then(function(response) {
+          return resolve(response);
         });
       });
     },
@@ -2741,8 +2818,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     showStatuses: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/statuses/show/" + params.tweetIdStr).then(function(data) {
-          return resolve(data);
+        return $http.get("/api/statuses/show/" + params.tweetIdStr).then(function(response) {
+          return resolve(response);
         });
       });
     },
@@ -2752,8 +2829,8 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     showUsers: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/users/show/" + params.twitterIdStr + "/" + params.screenName).then(function(data) {
-          return resolve(data);
+        return $http.get("/api/users/show/" + params.twitterIdStr + "/" + params.screenName).then(function(response) {
+          return resolve(response);
         });
       });
     },
@@ -2763,22 +2840,22 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     getFavLists: function(params) {
       return $q(function(resolve, reject) {
-        return $http.get("/api/favorites/lists/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).then(function(data) {
-          return resolve(data);
+        return $http.get("/api/favorites/lists/" + params.twitterIdStr + "/" + params.maxId + "/" + params.count).then(function(response) {
+          return resolve(response);
         });
       });
     },
     createFav: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/favorites/create', params).then(function(data) {
-          return resolve(data);
+        return $http.post('/api/favorites/create', params).then(function(response) {
+          return resolve(response);
         });
       });
     },
     destroyFav: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/favorites/destroy', params).then(function(data) {
-          return resolve(data);
+        return $http.post('/api/favorites/destroy', params).then(function(response) {
+          return resolve(response);
         });
       });
     },
@@ -2788,23 +2865,21 @@ angular.module("myApp.services").service("TweetService", ["$http", "$httpParamSe
      */
     retweetStatus: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/statuses/retweet', params).then(function(data) {
-          return resolve(data);
+        return $http.post('/api/statuses/retweet', params).then(function(response) {
+          return resolve(response);
         });
       });
     },
     destroyStatus: function(params) {
       return $q(function(resolve, reject) {
-        return $http.post('/api/statuses/destroy', params).then(function(data) {
-          return resolve(data);
+        return $http.post('/api/statuses/destroy', params).then(function(response) {
+          return resolve(response);
         });
       });
     }
   };
 }]);
 
-<<<<<<< HEAD
-=======
 angular.module("myApp.services").service("URLParameterService", ["$location", function($location) {
   return {
     checkURLResourceLength: function(urlResourcesLength, allowableLength) {
@@ -2821,50 +2896,6 @@ angular.module("myApp.services").service("URLParameterService", ["$location", fu
   };
 }]);
 
-var UserProfileController;
-
-angular.module("myApp.directives").directive('userProfile', function() {
-  return {
-    restrict: 'E',
-    scope: {},
-    template: "<div class=\"drawer__header\">\n  <div ng-if=\"$ctrl.user.screen_name\" class=\"media drawer__controll\">\n    <a href=\"https://www.twitter.com/{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"pull-left\">\n      <img ng-src=\"{{::$ctrl.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"drawer__profile__icon fade\"/>\n    </a>\n    <div class=\"media-body drawer__profile__body\">\n      <h4 class=\"media-heading drawer__profile__names\">\n        <span class=\"drawer__profile__names--name\">{{::$ctrl.user.name}}</span>\n        <span class=\"screen-name\">@{{::$ctrl.user.screen_name}}</span>\n      </h4>\n      <span class=\"btn-wrapper\"></span>\n      <a followable=\"followable\" follow-status=\"$ctrl.user.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" twitter-id-str=\"{{::$ctrl.user.id_str}}\" ng-disabled=\"isProcessing\" class=\"btn btn-sm drawer__btn-follow\"></a>\n      <a href=\"/extract/@{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"btn btn-sm drawer__icon-all-view\">\n        <i class=\"fa fa-external-link-square i__center-padding\"></i>\n      </a>\n      <user-action-button-dropdowns user=\"$ctrl.user\"></user-action-button-dropdowns>\n    </div>\n  </div>\n</div>",
-    bindToController: {
-      user: "=",
-      listIdStr: "="
-    },
-    controllerAs: "$ctrl",
-    controller: UserProfileController
-  };
-});
-
-UserProfileController = (function() {
-  function UserProfileController() {
-    var scrollableElement;
-    this.isScrolledToBottom = false;
-    this.prevTop = 0;
-    scrollableElement = angular.element(document).find('#scroll');
-    scrollableElement.on('scroll', _.throttle(this.onScroll, 500));
-  }
-
-  UserProfileController.prototype.onScroll = function(e) {
-    var controlElem, currentTop;
-    currentTop = angular.element(document).find('#scroll').scrollTop();
-    controlElem = angular.element(document).find('.drawer__controll');
-    if (currentTop < this.prevTop) {
-      controlElem.removeClass('drawer__controll--hide');
-    } else {
-      controlElem.addClass('drawer__controll--hide');
-    }
-    return this.prevTop = currentTop;
-  };
-
-  return UserProfileController;
-
-})();
-
-UserProfileController.$inject = [];
-
->>>>>>> stash@{0}
 var MaoContainerController;
 
 angular.module("myApp.directives").directive('maoContainer', function() {
@@ -3041,6 +3072,8 @@ MaoListContoller = (function() {
 
 MaoListContoller.$inject = ['$location', '$httpParamSerializer', '$scope', 'Mao', 'MaoService', 'URLParameterChecker', 'TimeService'];
 
+
+
 var MaoTweetArticleController;
 
 angular.module("myApp.directives").directive('maoTweetArticle', function() {
@@ -3063,47 +3096,74 @@ MaoTweetArticleController = (function() {
 
 })();
 
-var PopularImageListContainerController;
+var MyCmpController;
 
-angular.module("myApp.directives").directive('popularImageListContainer', function() {
+MyCmpController = function(TweetService) {
+  this.$onInit = (function(_this) {
+    return function() {
+      var opts;
+      opts = {
+        twitterIdStr: _this.twitterIdStr,
+        limit: 3
+      };
+      return TweetService.getPopularTweet(opts).then(function(response) {
+        console.log(response);
+        return _this.tweets = response.data.pictTweetList.slice(0, 3);
+      });
+    };
+  })(this);
+};
+
+angular.module("myApp.directives").component('popularImageListContainer', {
+  bindings: {
+    twitterIdStr: "<"
+  },
+  template: "<section class=\"popular-tweets row\">\n  <div class=\"col-md-4 col-sm-4 col-xs-4\" ng-repeat=\"tweet in $ctrl.tweets\">\n    <div class=\"popular-tweet\">\n      <img ng-src=\"{{::tweet.mediaUrl}}:small\" data-img-src=\"{{::tweet.mediaUrl}}:small\" tweet-id-str=\"{{::tweet.tweetIdStr}}\" show-statuses=\"show-statuses\" img-preload class=\"fade popular-tweets__img\">\n    </div>\n  </div>\n</section>",
+  controller: MyCmpController
+});
+
+var UserProfileController;
+
+angular.module("myApp.directives").directive('userProfile', function() {
   return {
     restrict: 'E',
     scope: {},
-    template: "<section class=\"popular-tweets row\">\n  <div class=\"col-md-4 col-sm-4 col-xs-4\" ng-repeat=\"tweet in $ctrl.tweets\">\n    <div class=\"popular-tweet\">\n      <img ng-src=\"{{::tweet.mediaUrl}}:small\" data-img-src=\"{{::tweet.mediaUrl}}:small\" tweet-id-str=\"{{::tweet.tweetIdStr}}\" show-statuses=\"show-statuses\" img-preload class=\"fade popular-tweets__img\">\n    </div>\n  </div>\n</section>",
+    template: "<div class=\"drawer__header\">\n  <div ng-if=\"$ctrl.user.screen_name\" class=\"media drawer__controll\">\n    <a href=\"https://www.twitter.com/{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"pull-left\">\n      <img ng-src=\"{{::$ctrl.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"drawer__profile__icon fade\"/>\n    </a>\n    <div class=\"media-body drawer__profile__body\">\n      <h4 class=\"media-heading drawer__profile__names\">\n        <span class=\"drawer__profile__names--name\">{{::$ctrl.user.name}}</span>\n        <span class=\"screen-name\">@{{::$ctrl.user.screen_name}}</span>\n      </h4>\n      <span class=\"btn-wrapper\"></span>\n      <a followable=\"followable\" follow-status=\"$ctrl.user.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" twitter-id-str=\"{{::$ctrl.user.id_str}}\" ng-disabled=\"isProcessing\" class=\"btn btn-sm drawer__btn-follow\"></a>\n      <a href=\"/extract/@{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"btn btn-sm drawer__icon-all-view\">\n        <i class=\"fa fa-external-link-square i__center-padding\"></i>\n      </a>\n      <!-- 1.6にアップグレードしたら動かなくなった。バケツリレーできない、\n        <user-action-button-dropdowns id_str=\"$ctrl.user\"></user-action-button-dropdowns>\n      -->\n    </div>\n  </div>\n</div>",
     bindToController: {
-      twitterIdStr: '='
+      user: "=",
+      listIdStr: "="
     },
     controllerAs: "$ctrl",
-    controller: PopularImageListContainerController
+    controller: UserProfileController
   };
 });
 
-PopularImageListContainerController = (function() {
-  PopularImageListContainerController.prototype.LIMIT = 3;
-
-  function PopularImageListContainerController(TweetService) {
-    var opts;
-    this.TweetService = TweetService;
-    console.log(this.twitterIdStr);
-    opts = {
-      twitterIdStr: this.twitterIdStr,
-      limit: this.LIMIT
-    };
-    this.TweetService.getPopularTweet(opts).then((function(_this) {
-      return function(data) {
-        console.log(data);
-        return _this.tweets = data.pictTweetList.slice(0, 3);
-      };
-    })(this));
+UserProfileController = (function() {
+  function UserProfileController() {
+    var scrollableElement;
+    this.isScrolledToBottom = false;
+    this.prevTop = 0;
+    scrollableElement = angular.element(document).find('#scroll');
+    scrollableElement.on('scroll', _.throttle(this.onScroll, 500));
   }
 
-  return PopularImageListContainerController;
+  UserProfileController.prototype.onScroll = function(e) {
+    var controlElem, currentTop;
+    currentTop = angular.element(document).find('#scroll').scrollTop();
+    controlElem = angular.element(document).find('.drawer__controll');
+    if (currentTop < this.prevTop) {
+      controlElem.removeClass('drawer__controll--hide');
+    } else {
+      controlElem.addClass('drawer__controll--hide');
+    }
+    return this.prevTop = currentTop;
+  };
+
+  return UserProfileController;
 
 })();
 
-PopularImageListContainerController.$inject = ['TweetService'];
-
-
+UserProfileController.$inject = [];
 
 var GridLayoutTweet;
 
@@ -3157,50 +3217,4 @@ ListLayoutTweet = (function() {
 
 
 
-<<<<<<< HEAD
-var UserProfileController;
-
-angular.module("myApp.directives").directive('userProfile', function() {
-  return {
-    restrict: 'E',
-    scope: {},
-    template: "<div class=\"drawer__header\">\n  <div ng-if=\"$ctrl.user.screen_name\" class=\"media drawer__controll\">\n    <a href=\"https://www.twitter.com/{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"pull-left\">\n      <img ng-src=\"{{::$ctrl.user.profile_image_url_https}}\" img-preload=\"img-preload\" class=\"drawer__profile__icon fade\"/>\n    </a>\n    <div class=\"media-body drawer__profile__body\">\n      <h4 class=\"media-heading drawer__profile__names\">\n        <span class=\"drawer__profile__names--name\">{{::$ctrl.user.name}}</span>\n        <span class=\"screen-name\">@{{::$ctrl.user.screen_name}}</span>\n      </h4>\n      <span class=\"btn-wrapper\"></span>\n      <a followable=\"followable\" follow-status=\"$ctrl.user.followStatus\" list-id-str=\"{{$ctrl.listIdStr}}\" twitter-id-str=\"{{::$ctrl.user.id_str}}\" ng-disabled=\"isProcessing\" class=\"btn btn-sm drawer__btn-follow\"></a>\n      <a href=\"/extract/@{{::$ctrl.user.screen_name}}\" target=\"_blank\" class=\"btn btn-sm drawer__icon-all-view\">\n        <i class=\"fa fa-external-link-square i__center-padding\"></i>\n      </a>\n      <!-- 1.6にアップグレードしたら動かなくなった。バケツリレーできない、\n        <user-action-button-dropdowns id_str=\"$ctrl.user\"></user-action-button-dropdowns>\n      -->\n    </div>\n  </div>\n</div>",
-    bindToController: {
-      user: "=",
-      listIdStr: "="
-    },
-    controllerAs: "$ctrl",
-    controller: UserProfileController
-  };
-});
-
-UserProfileController = (function() {
-  function UserProfileController() {
-    var scrollableElement;
-    this.isScrolledToBottom = false;
-    this.prevTop = 0;
-    scrollableElement = angular.element(document).find('#scroll');
-    scrollableElement.on('scroll', _.throttle(this.onScroll, 500));
-  }
-
-  UserProfileController.prototype.onScroll = function(e) {
-    var controlElem, currentTop;
-    currentTop = angular.element(document).find('#scroll').scrollTop();
-    controlElem = angular.element(document).find('.drawer__controll');
-    if (currentTop < this.prevTop) {
-      controlElem.removeClass('drawer__controll--hide');
-    } else {
-      controlElem.addClass('drawer__controll--hide');
-    }
-    return this.prevTop = currentTop;
-  };
-
-  return UserProfileController;
-
-})();
-
-UserProfileController.$inject = [];
-
-=======
->>>>>>> stash@{0}
 

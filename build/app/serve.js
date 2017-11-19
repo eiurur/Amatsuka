@@ -62,6 +62,7 @@
       app.use(express["static"](path.join(__dirname, 'public'), cacheOptions));
       env = process.env.NODE_ENV || 'development';
       if (env === 'development') {
+        process.on('unhandledRejection', console.dir);
         fs = require('fs');
         stream = fs.createWriteStream(__dirname + '/log.txt', {
           flags: 'a'

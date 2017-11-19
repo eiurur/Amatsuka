@@ -14,7 +14,7 @@
         screenName: req.params.screenName
       }).then(function(data) {
         return res.send(data);
-      })["catch"](function(eerr) {
+      })["catch"](function(err) {
         return next(err);
       });
     });

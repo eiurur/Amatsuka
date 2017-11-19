@@ -53,11 +53,9 @@
     IllustratorProvider.prototype.find = function(params) {
       return new Promise(function(resolve, reject) {
         console.log("\n============> Illustrator find\n");
-        console.time('Illustrator find');
         return Illustrator.find({}).sort({
           updatedAt: -1
         }).exec(function(err, illustratorList) {
-          console.timeEnd('Illustrator find');
           if (err) {
             return reject(err);
           }

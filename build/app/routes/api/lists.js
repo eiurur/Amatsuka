@@ -27,7 +27,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(err) {
-        return next(err);
+        return res.status(429).send(err);
       });
     });
     app.post('/api/lists/create', function(req, res) {
@@ -39,7 +39,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(err) {
-        return next(err);
+        return res.status(429).send(err);
       });
     });
     app.get('/api/lists/members/:id?/:count?', function(req, res) {
@@ -51,7 +51,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(err) {
-        return next(err);
+        return res.status(429).send(err);
       });
     });
     app.get('/api/lists/statuses/:id/:maxId?/:count?', function(req, res) {
@@ -75,7 +75,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(err) {
-        return next(err);
+        return res.status(429).send(err);
       });
     });
     app.post('/api/lists/members/create_all', function(req, res) {
@@ -87,7 +87,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(err) {
-        return next(err);
+        return res.status(429).send(err);
       });
     });
     return app.post('/api/lists/members/destroy', function(req, res) {
@@ -99,7 +99,7 @@
       }).then(function(data) {
         return res.send(data);
       })["catch"](function(err) {
-        return next(err);
+        return res.status(429).send(err);
       });
     });
   };
