@@ -8,10 +8,11 @@ module.exports = (app) ->
     return
 
   app.get '/isAuthenticated', (req, res) ->
-    sessionUserData = null
-    unless typeof req.session.passport.user is "undefined"
-      sessionUserData = req.session.passport.user
-    res.send sessionUserData
+    session = req.session.passport
+    if !req.session.passport && typeof req.session.passport.user is "undefined"
+      res.status(401).send("have not session")
+      return
+    res.send session.user
     return
 
   # serve index and view partials
