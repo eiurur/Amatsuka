@@ -6,17 +6,17 @@
 
 Chromeブラウザを開いて`Ctrl + d`でブックマークを登録
 
-![](hhttps://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-00-59.png)
+![](https://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-00-59.png)
 
 ブックマーク上で右クリック -> 編集
 
-![](hhttps://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-01-33.png)
+![](https://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-01-33.png)
 
 URLに以下のスクリプトをコピペ -> 保存
 
     javascript:(function(){{var to=function(username){var url="https://amatsuka.herokuapp.com/extract/"+username;window.open(url)};var check=function(){var targets=["tweetdeck.twitter.com","twitter.com"];var hostname=location.hostname;if(!targets.includes(hostname))return;if(hostname==="tweetdeck.twitter.com"){var username=$(".prf-header .username").text();var superfluousText=$(".prf-header .username").children().text();var usernameNormed=username.replace(superfluousText,"");to(usernameNormed)}if(hostname==="twitter.com"){modalExists=!!$(".permalink-tweet-container").css("display");if(modalExists){var usernameOnModalTweet=/(@\w+)/.exec($(".permalink-tweet .content .username").text())[0].trim();to(usernameOnModalTweet);return}var usernameInAccountPage=$(".ProfileHeaderCard-screennameLink").text().trim();if(usernameInAccountPage)to(usernameInAccountPage)}};check()};})();
 
-![](hhttps://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-02-31.png)
+![](https://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-02-31.png)
 
 Twitterのユーザページ、またはツイートモーダルが開かれている状態でブックマークをクリック。
 
@@ -24,7 +24,7 @@ or
 
 TweetDeckでツイートモーダル、ユーザモーダルが開かれている状態でブックマークをクリック。
 
-![](hhttps://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-09-41.png)
+![](https://github.com/eiurur/Amatsuka/raw/master/bookmarklet/img/chrome_2016-08-21_12-09-41.png)
 
 ## Note
 
