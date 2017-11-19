@@ -1,4 +1,4 @@
-MyCmpController = (TweetService) ->
+popularImageListContainerController = (TweetService) ->
   @$onInit = () =>
     opts =
       twitterIdStr: @twitterIdStr
@@ -8,6 +8,8 @@ MyCmpController = (TweetService) ->
       console.log response
       @tweets = response.data.pictTweetList[0..2]
   return # これが絶対必要
+
+popularImageListContainerController.$inject = ['TweetService']
 
 angular.module "myApp.directives"
   .component('popularImageListContainer', {
@@ -22,6 +24,6 @@ angular.module "myApp.directives"
         </div>
       </section>
     """
-    controller: MyCmpController
+    controller: popularImageListContainerController
   })
 
