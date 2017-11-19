@@ -24,5 +24,8 @@
     "angular-route": "^1.6.1",
     "angular-sanitize": "^1.6.1",
     "angular-touch": "^1.6.1"
+  },
+  "resolutions": {
+    "angular": "~1.6.x"
   }
 }
