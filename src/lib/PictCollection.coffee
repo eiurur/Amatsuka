@@ -11,7 +11,8 @@ module.exports = class PictCollection
     @illustrator = twitterIdStr: illustratorTwitterIdStr
     @illustratorRawData = null
     @illustratorDBData = null
-    @pictList = []
+    @userPicts = []
+    @rankingTweets = []
     @userTimelineMaxId = null
     @isContinue = true
     @PROFILE_REQUEST_INTERVAL = 70 * 1000 * idx
@@ -36,7 +37,8 @@ module.exports = class PictCollection
 
       # イラストをAPI限界まで収集して人気順にソートし、上位12件分をDBに保存
       .then => @aggregatePict()
-      .then (pickupedPictList) => @updatePictListData(pickupedPictList)
+      .then => @updatePictListData(@pickupPictListTop12(@userPicts))
+      .then => @updateRankingData(@rankingTweets)
       .then (data) -> return resolve 'Fin'
       .catch (err) -> return reject err
 
@@ -72,58 +74,63 @@ module.exports = class PictCollection
           if _.isNull(data[data.length - 1]) or _.isUndefined(data[data.length - 1])
             @isContinue = false
             console.log '_.isNull(data[data.length - 1]) or _.isUndefined(data[data.length - 1])'
-            console.log ' _.isEmpty @pictList = ',  _.isEmpty @pictList
-            reject() if _.isEmpty @pictList
+            console.log ' _.isEmpty @userPicts = ',  _.isEmpty @userPicts
+            reject() if _.isEmpty @userPicts
             resolve()
             return
 
           @setUserTimelineMaxId my.decStrNum data[data.length - 1].id_str
 
-          # pictList = pictList.concat(tweetListIncludePict)
-          tweetListIncludePict = _.chain(data)
-          .filter (tweet) -> _.has(tweet, 'extended_entities') and !_.isEmpty(tweet.extended_entities.media) # has pict
-          .map (tweet) ->
-            o = {}
-            o.tweetIdStr = tweet.id_str
-            # o.twitterIdStr = tweet.user.id_str
-            # o.favNum = tweet.favorite_count
-            # o.retweetNum = tweet.retweet_count
-            # o.fileName = "#{tweet.user.screen_name}_#{tweet.id_str}"
-            o.totalNum = tweet.retweet_count + tweet.favorite_count
-            o.mediaUrl = tweet.extended_entities.media[0].media_url_https
-            o.mediaOrigUrl = tweet.extended_entities.media[0].media_url_https+':orig'
-            o.displayUrl = tweet.extended_entities.media[0].display_url
-            o.expandedUrl = tweet.extended_entities.media[0].expanded_url
-            return o
-          .value()
+          originalTweetsWithImage = data.filter (tweet) -> _.has(tweet, 'extended_entities') and !_.isEmpty(tweet.extended_entities.media)
 
-          # console.log "\n\n=============>"
-          # console.log tweetListIncludePict
-          # console.log tweetListIncludePict.length
+          # ユーザ別
+          userTWeets = originalTweetsWithImage.map (tweet) ->
+            tweetIdStr: tweet.id_str
+            # twitterIdStr: tweet.user.id_str
+            # favNum: tweet.favorite_count
+            # retweetNum: tweet.retweet_count
+            # fileName: "#{tweet.user.screen_name}_#{tweet.id_str}"
+            totalNum: tweet.retweet_count + tweet.favorite_count
+            mediaUrl: tweet.extended_entities.media[0].media_url_https
+            mediaOrigUrl: tweet.extended_entities.media[0].media_url_https+':orig'
+            displayUrl: tweet.extended_entities.media[0].display_url
+            expandedUrl: tweet.extended_entities.media[0].expanded_url
+          @userPicts = @userPicts.concat(userTWeets)
 
-          @pictList = @pictList.concat(tweetListIncludePict)
+          # ランキング
+          rankingTweets = originalTweetsWithImage.map (tweet) ->
+            delete tweet.user
+            tweetIdStr: tweet.id_str
+            tweetStr: JSON.stringify(tweet)
+            retweetNum: tweet.retweet_count
+            favNum: tweet.favorite_count
+            totalNum: tweet.retweet_count + tweet.favorite_count
+            createdAt: new Date(tweet.created_at) # CAUTION: RankingのcreatedAtはtweetのcreated_at
+          @rankingTweets = @rankingTweets.concat(rankingTweets)
           resolve()
         return
-
     ).then (data) =>
-
       console.log "\n\nAll =============>"
-      console.log @pictList.length
-
-      @pickupPictListTop12(@pictList)
+      console.log @userPicts.length
+      {
+        userPicts: @userPicts
+        rankingTweets: @rankingTweets
+      }
     .catch (err) =>
       console.log 'Reject aggregatePict'
-      @pickupPictListTop12(@pictList)
+      {
+        userPicts: @userPicts
+        rankingTweets: @rankingTweets
+      }
 
   pickupPictListTop12: (pictList) ->
-    pictListTop12 = _.chain(pictList)
-    .sortBy('totalNum')
-    .reverse()
-    .slice(0, 12)
-    .value()
+    _.chain(pictList)
+      .sortBy('totalNum')
+      .reverse()
+      .slice(0, 12)
+      .value()
 
   updatePictListData: (pickupedPictList) ->
-    console.log '===> updatePictListData :: ', pickupedPictList
     console.log '===> @illustratorDBData._id :: ', @illustratorDBData._id
     return new Promise (resolve, reject) =>
       opts =
@@ -132,6 +139,17 @@ module.exports = class PictCollection
       ModelFactory.create('pict').findOneAndUpdate opts
       .then (data) -> return resolve data
       .catch (err) -> return reject err
+
+  updateRankingData: (tweets) ->
+    upsert = (tweet) =>
+      return new Promise (resolve, reject) =>
+        opts = Object.assign({}, postedBy: @illustratorDBData._id, tweet)
+        ModelFactory.create('ranking').findOneAndUpdate opts
+        .then (data) -> return resolve data
+        .catch (err) -> return reject err
+    tasks = tweets.map (tweet) => upsert(tweet)
+    Promise.all tasks
+
 
   setUserTimelineMaxId: (maxId) ->
     @userTimelineMaxId = maxId

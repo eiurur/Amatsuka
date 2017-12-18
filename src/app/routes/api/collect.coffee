@@ -1,4 +1,5 @@
 path           = require 'path'
+moment         = require 'moment'
 PictCollection = require path.resolve 'build', 'lib', 'PictCollection'
 ModelFactory   = require path.resolve 'build', 'model', 'ModelFactory'
 

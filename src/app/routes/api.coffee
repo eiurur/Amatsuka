@@ -1,5 +1,9 @@
 module.exports = (app) ->
 
+  (require './middlewares/corsMiddleware')(app)
+
+  (require './api/ranking')(app)
+
   (require './middlewares/authMiddleware')(app)
 
   (require './api/collect')(app)

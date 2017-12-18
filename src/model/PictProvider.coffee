@@ -24,6 +24,9 @@ PictSchema = new Schema
   updatedAt:
     type: Date
     default: Date.now()
+  createdAt:
+    type: Date
+    default: Date.now()
 
 mongoose.model 'Pict', PictSchema
 
@@ -51,6 +54,31 @@ module.exports = class PictProvider extends BaseProvider
         if err then return reject err
         return resolve pictList
 
+  # findPopular: (params) ->
+  #   return new Promise (resolve, reject) =>
+  #     console.log "\n============> Pict Popular\n", params
+
+  #     @aggregate([
+  #       {$match: params.condition}
+  #       {$unwind: { path: '$PictTweetSchema', preserveNullAndEmptyArrays: true } }
+  #       {$sort: 'PictTweetSchema.totalNum': -1}
+  #       {$limit: params.limit or 20}
+  #       # { $project : { _id: 0, postedBy : 1 , pictTweetList : 1, updatedAt: 1 } }
+  #     ]).then (posts) =>
+  #       console.log posts
+  #     .catch (err) ->
+  #       console.log err
+              
+      # Pict.find $and: params.condition
+      # .limit params.limit
+      # .skip params.skip
+      # .populate 'postedBy'
+      # .sort totalNum: -1
+      # .exec (err, pictList) ->
+      #   console.log pictList
+      #   if err then return reject err
+      #   return resolve pictList
+
   findByIllustratorObjectId: (params) ->
     return new Promise (resolve, reject) ->
       console.log "\n============> Pict findByIllustratorObjectId\n"
@@ -70,7 +98,7 @@ module.exports = class PictProvider extends BaseProvider
       console.log params
       query = postedBy: params.postedBy
       data = params
-      data.updateAt = new Date()
+      data.updatedAt = new Date()
       options = 'new': true, upsert: true
       return resolve super(query, data, options)
 

@@ -1,6 +1,5 @@
 path           = require 'path'
 EggSlicer      = require 'egg-slicer'
-_              = require 'lodash'
 Promise        = require "bluebird"
 PictCollection = require path.resolve 'build', 'lib', 'PictCollection'
 {settings}     = require path.resolve 'build', 'lib', 'configs', 'settings'

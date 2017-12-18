@@ -3,21 +3,26 @@ BaseProvider = require './BaseProvider'
 Schema     = mongoose.Schema
 ObjectId   = Schema.ObjectId
 
-TweetSchema = new Schema
+RankingSchema = new Schema
+  tweetIdStr:
+   type: String
+   index: true
+  tweetStr:
+   type: String
+  retweetNum: 
+    type: Number
+  favNum: 
+    type: Number
+  totalNum: 
+    type: Number
   postedBy:
     type: ObjectId
     ref: 'Illustrator'
     index: true
-  tweet:
-    type: ObjectId
-    ref: 'PictTweet'
-
-RankingSchema = new Schema
-  year:
+  updatedAt:
     type: Date
     default: Date.now()
-  tweets: [TweetSchema]
-  updatedAt:
+  createdAt:
     type: Date
     default: Date.now()
 
@@ -33,49 +38,35 @@ module.exports = class RankingProvider extends BaseProvider
   constructor: ->
     super(Ranking)
 
+  findAll: (params) ->
+    return new Promise (resolve, reject) ->
+      console.log "\n============> Ranking findAll\n"
+      console.log params
+      Ranking.find {}
+      .limit params.limit or 100
+      .skip params.skip or 0
+      .sort updatedAt: -1
+      .exec (err, tweets) ->
+        if err then return reject err
+        return resolve tweets
+
   find: (params) ->
     return new Promise (resolve, reject) ->
       console.log "\n============> Ranking find\n"
       console.log params
-      # console.time 'Ranking find'
-      Ranking.find {}
-      .limit params.limit or 100
-      .skip params.skip or 0
-      # .populate 'postedBy'
-      .sort updatedAt: -1
-      .exec (err, tweets) ->
-        # console.timeEnd 'Ranking find'
+      Ranking.find $and: params.condition
+      .limit params.limit
+      .skip params.skip
+      .populate 'postedBy'
+      .sort params.sort
+      .exec (err, pictList) ->
         if err then return reject err
-        return resolve tweets
-
-  # findByIllustratorObjectId: (params) ->
-  #   return new Promise (resolve, reject) ->
-  #     console.log "\n============> Pict findByIllustratorObjectId\n"
-  #     # console.log params
-  #     console.time 'Pict findByIllustratorObjectId'
-  #     Pict.findOne(postedBy: params.postedBy)
-  #     .populate 'postedBy'
-  #     .sort updatedAt: -1
-  #     .exec (err, pictList) ->
-  #       console.timeEnd 'Pict findByIllustratorObjectId'
-  #       if err then return reject err
-  #       return resolve pictList
+        return resolve pictList
 
   findOneAndUpdate: (params) ->
     return new Promise (resolve, reject) =>
-      console.log params
-      query = year: params.year
+      query = tweetIdStr: params.tweetIdStr
       data = params
-      data.updateAt = new Date()
+      data.updatedAt = new Date()
       options = 'new': true, upsert: true
       return resolve super(query, data, options)
-
-  # count: ->
-  #   return new Promise (resolve, reject) ->
-  #     console.log "\n============> Pict count\n"
-  #     console.time 'Pict count'
-  #     Pict.count {}, (err, count) ->
-  #       console.log count
-  #       console.timeEnd 'Pict count'
-  #       if err then return reject err
-  #       return resolve count
