@@ -63,6 +63,52 @@ module.exports = class RankingProvider extends BaseProvider
         if err then return reject err
         return resolve pictList
 
+  find: (params) ->
+    return new Promise (resolve, reject) =>
+      console.log "\n============> Ranking find\n"
+      console.log params
+      Ranking.find $and: params.condition
+      .limit params.limit
+      .skip params.skip
+      .populate 'postedBy'
+      .sort params.sort
+      .exec (err, pictList) ->
+        if err then return reject err
+        return resolve pictList
+
+  findLustfully: (params) ->
+    return new Promise (resolve, reject) =>
+      console.log "\n============> Ranking find\n"
+      console.log params
+      @aggregate([
+        {
+          $match: params.condition[0]
+        }
+        {
+          $project: {
+            tweetStr: 1
+            postedBy: 1
+            # favNum: 1
+            # retweetNum: 1
+            # totalNum: 1
+            lustfulRate: {$subtract: [ "$favNum", "$retweetNum" ]}
+          }
+        }
+        # {$unwind: { path: '$PictTweetSchema', preserveNullAndEmptyArrays: true } }
+        {
+          $sort: 'lustfulRate': -1
+        }
+        {
+          $limit: params.limit or 20
+        }
+      ]).then (posts) =>
+        Ranking.populate posts, {path: 'postedBy'}, (err, result) =>
+          if err then return reject err
+          return resolve result
+      .catch (err) ->
+        console.log err
+        return reject err
+
   findOneAndUpdate: (params) ->
     return new Promise (resolve, reject) =>
       query = tweetIdStr: params.tweetIdStr
