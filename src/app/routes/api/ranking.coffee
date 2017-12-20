@@ -7,11 +7,11 @@ module.exports = (app) ->
 
   # /api/ranking/total/week
   app.get '/api/ranking/:sort/:term', (req, res) ->
-    unless ['retweet', 'like', 'fav', 'total'].includes(req.params.sort)
-      res.status(401).send("ソートは'retweet', 'like', 'fav', 'total'のいずれかを渡してください")
+    unless ['retweet', 'like', 'fav', 'total', 'lustful'].includes(req.params.sort)
+      res.status(401).send("ソートは 'retweet', 'like', 'fav', 'total', 'lustful' のいずれかを渡してください")
       return
     unless ['day', 'week', 'month'].includes(req.params.term)
-      res.status(401).send("期間は'day', 'week', 'month'のいずれかを渡してください")
+      res.status(401).send("期間は 'day', 'week', 'month' のいずれかを渡してください")
       return
     skip = if isNaN(req.query.skip) then 0 else req.query.skip - 0
     limit = if isNaN(req.query.limit) or (req.query.limit - 0) > 100 then 20 else req.query.limit - 0
@@ -29,6 +29,7 @@ module.exports = (app) ->
       condition: [
         createdAt: $gte: $gte, $lt: $lt
       ]
-    ModelFactory.create('ranking').find opts
+    method = if req.params.sort is 'lustful' then 'findLustfully' else 'find' # HACK: 苦しい
+    ModelFactory.create('ranking')[method] opts
     .then (data) -> res.send data
     
