@@ -10,8 +10,8 @@ module.exports = (app) ->
     unless ['retweet', 'like', 'fav', 'total', 'lustful'].includes(req.params.sort)
       res.status(401).send("ソートは 'retweet', 'like', 'fav', 'total', 'lustful' のいずれかを渡してください")
       return
-    unless ['day', 'week', 'month'].includes(req.params.term)
-      res.status(401).send("期間は 'day', 'week', 'month' のいずれかを渡してください")
+    unless ['days', 'weeks', 'months'].includes(req.params.term)
+      res.status(401).send("期間は 'days', 'weeks', 'months' のいずれかを渡してください")
       return
     skip = if isNaN(req.query.skip) then 0 else req.query.skip - 0
     limit = if isNaN(req.query.limit) or (req.query.limit - 0) > 100 then 20 else req.query.limit - 0
@@ -19,7 +19,7 @@ module.exports = (app) ->
     sortType = {}
     sortType["#{normalizedSort}Num"] = -1
     sort = sortType
-    term = req.params.term
+    term = req.params.term.slice(0, -1) # days -> day, weeks -> week, months -> month
     $gte = moment(req.query.date).startOf(term).toDate()
     $lt = moment(req.query.date).endOf(term).toDate()
     opts =
