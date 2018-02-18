@@ -1,1 +1,1 @@
-angular.module "myApp.factories", []
+# angular.module "myApp.factories", []

@@ -1,5 +1,5 @@
 # Directives
-angular.module "myApp.directives", []
+angular.module "myApp.directives"
   .directive 'dotLoader', () ->
       restrict: 'E'
       template: '''

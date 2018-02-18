@@ -1,2 +1,1 @@
-# Services
-angular.module "myApp.services", []
+# angular.module "myApp.services", []

@@ -52,3 +52,10 @@ angular.module('myApp', [
     .otherwise
       redirectTo: '/'
   $locationProvider.html5Mode true
+
+# FIXME: concatの結合順序バグの対策のためcommonから移動 → [$injector:nomod] Module 'myApp.directives' is not available! You either misspelled the module name or forgot to load it. If registering a module ensure that you specify the dependencies as the second argument.
+angular.module "myApp.controllers", []
+angular.module "myApp.factories", []
+angular.module "myApp.directives", []
+angular.module "myApp.filters", []
+angular.module "myApp.services", []
