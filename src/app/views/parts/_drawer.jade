@@ -47,7 +47,7 @@ div(ng-controller="DrawerCtrl")
             show-statuses="show-statuses",
             tweet-id-str='{{::tweet.id_str}}',
             data-img-src="{{::picUrl}}")
-          video(ng-if="tweet.video_url", poster="{{::picUrl}}", autoplay, loop, controls, muted)
+          video(ng-if="tweet.video_url", poster="{{::picUrl}}", controls, muted)
             source(ng-src="{{::tweet.video_url | trusted}}", type="video/mp4")
         .timeline__post__text__container(ng-if="!config.isShowOnlyImage")
           .timeline__post__text(ng-if="!tweet.retweeted_status", ng-bind-html='tweet.text | newlines')

@@ -18,7 +18,7 @@
   video.timeline__post__video--tile(
     ng-if="tweet.video_url",
     poster="{{::tweet.picUrlList[0]}}",
-    autoplay, loop, controls, muted)
+    controls, muted)
     source(ng-src="{{::tweet.video_url | trusted}}", type="video/mp4")
 .timeline__header.timeline__header--tile
   .timeline__icon.timeline__icon--tile

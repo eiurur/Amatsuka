@@ -26,7 +26,7 @@ angular.module "myApp.directives"
     </div>
     <div ng-repeat="picUrl in $ctrl.tweet.picUrlList" class="timeline__post--image">
       <img ng-if="!$ctrl.tweet.video_url" ng-src="{{::picUrl}}" img-preload="img-preload" zoom-image="zoom-image" data-img-src="{{::picUrl}}" class="fade"/>
-      <video ng-if="$ctrl.tweet.video_url" poster="{{::picUrl}}" autoplay="autoplay" loop="loop" controls="controls" muted="muted">
+      <video ng-if="$ctrl.tweet.video_url" poster="{{::picUrl}}" controls="controls" muted="muted">
         <source ng-src="{{::$ctrl.tweet.video_url | trusted}}" type="video/mp4">
         </source>
       </video>
