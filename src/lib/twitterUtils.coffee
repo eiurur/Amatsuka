@@ -58,7 +58,9 @@ twitterUtils = ->
     config.ngWord or= []
     config.retweetLowerLimit or= 0
     config.likeLowerLimit or= 0
-    # console.log(config)
+    config.useRelativelyFilter or= false
+    console.log('configconfig \n', config)
+    now = moment()
 
     _.reject tweets, (tweet) =>
 
@@ -73,6 +75,19 @@ twitterUtils = ->
       isLikeLowerLimit     = tweet.favorite_count < config.likeLowerLimit
       isOnlyTextTweet     = (!_.has(tweet, 'extended_entities') or _.isEmpty(tweet.extended_entities.media))
 
-      includeNgUser or includeNgWord or isRetweetLowerLimit or isLikeLowerLimit or isOnlyTextTweet
+      # 独自フィルタリング(50,00フォロワーなら250以下はイラストではないと家庭)
+      isLifeTweet = do ->
+        if config.useRelativelyFilter
+          diff = moment(tweet.created_at).diff(now)
+          diffDuration = moment.duration(diff)
+          agoMinutes = Math.abs(diffDuration.minutes())
+          border = Math.max(250, 250 * 60 / Math.max(30, agoMinutes))
+          # console.log(diffDuration.minutes(), aa, bb)
+          # console.log(tweet.favorite_count > tweet.user.followers_count / border)
+          return (tweet.favorite_count <= tweet.user.followers_count / border)
+        else 
+          return false
+
+      includeNgUser or includeNgWord or isRetweetLowerLimit or isLikeLowerLimit or isOnlyTextTweet or isLifeTweet
 
 exports.twitterUtils = twitterUtils()

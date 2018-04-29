@@ -1,32 +1,36 @@
 .col-md-12.col-sm-12.col-xs-12
   form(name='configForm')
     .form-group
-      label.text(for='inputNGUsername') NG username
+      label.text(for='inputNGUsername') NGユーザ名を設定する。
       tags-input.bootstrap(ng-model='config.ngUsername', placeholder='Add a ng-username (ex) twitter, TwitterDevJP', replace-spaces-with-dashes='false', min-length="1")
     .form-group
-      label.text(for='inputNGWord') NG word
+      label.text(for='inputNGWord') NGワードを設定する。
       tags-input.bootstrap(ng-model='config.ngWord', placeholder='Add a ng-word (ex) #ハッシュタグ, 名前, 禁止ワード', replace-spaces-with-dashes='false', min-length="1")
     .form-group
-      label.text(for='inputRetweetLowerLimit') Lower limit of retweet
+      label.text(for='inputRetweetLowerLimit') 表示するツイートの最小Retweet数を設定する
       .input-group.form
         input.form-control.search-input.form__input--fav-lower-limit(type='number', ng-model='config.retweetLowerLimit', min='0')
     .form-group
-      label.text(for='inputLikeLowerLimit') Lower limit of like
+      label.text(for='inputLikeLowerLimit') 表示するツイートの最小Like数を設定する
       .input-group.form
         input.form-control.search-input.form__input--fav-lower-limit(type='number', ng-model='config.likeLowerLimit', min='0')
     .form-group
-      label.text(for='inputTweetNumberAtOnce') Tweets number to get at once
+      label.text(for='inputTweetNumberAtOnce') 一度に取得するツイートの数を指定する(少ないとローディング時間が減ります)
       .input-group.form
         input.form-control.search-input.form__input--fav-lower-limit(type='number', ng-model='config.tweetNumberAtOnce', min='20', max='200')
     .checkbox
       label.text
         input(type='checkbox', ng-model='config.isIncludeRetweet')
-        | Include Retweet
+        | リツイートも含めて表示する
+    .checkbox
+      label.text
+        input(type='checkbox', ng-model='config.useRelativelyFilter')
+        | 日常ツイートをなるべく除外する
     .checkbox
       label.text
         input(type='checkbox', ng-model='config.isShowOnlyImage')
-        | Show only Image
+        | ツイートのテキストを表示しない
     .checkbox
       label.text
         input(type='checkbox', ng-model='config.isTileLayout')
-        | Chenge Layout to Tile Style.
+        | タイルレイアウトに変更する

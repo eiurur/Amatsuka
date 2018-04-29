@@ -32,7 +32,7 @@ angular.module "myApp.factories"
           return
 
       checkError: (statusCode) =>
-        console.log statusCode
+        console.log 'Tweetes', statusCode
         switch statusCode
           when 429 # Rate limit exceeded
             ToasterService.warning title: 'ツイート取得API制限', text: '15分お待ちください'
