@@ -5,7 +5,7 @@ moment     = require 'moment'
 mongoose   = require 'mongoose'
 {settings} = require path.resolve 'build', 'lib', 'configs', 'settings'
 uri        = settings.MONGODB_URL
-db         = mongoose.connect uri, useMongoClient: true
+db         = mongoose.connect uri
 
 module.exports = class BaseProvider
 
