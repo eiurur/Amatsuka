@@ -28,21 +28,18 @@ exports.serve = ->
         auto_reconnect: true
       )
 
-    cacheOptions =
+    cacheOptions = 
       dotfiles: 'ignore'
-      etag: false
+      etag: true
       extensions: [
-        'htm'
-        'html'
-        'css'
-        'js'
+        # 'css'
+        # 'js'
         'jpg'
         'png'
         'gif'
-        'mp4'
       ]
       index: false
-      maxAge: 0
+      maxAge: 86400000 * 7
       redirect: false
       setHeaders: (res, path, stat) ->
         res.set 'x-timestamp': Date.now()
