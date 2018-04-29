@@ -34,7 +34,8 @@ exports.settings =
     consumerSecret: TW_CS
     callback: CALLBACK_URL
 
-  defaultUserIds: '87658369,123720322,124814283,437523928,2228681658'
+  # Clearite, tuduraorizaka, pummeluff39, _cinkai, exit_kureaki, tatami10jyo, nosongang, SALT_000, fujiyamatozan
+  defaultUserIds: '87658369,123720322,437523928,2228681658,393998063,111029339,2318825143, 1057416337, 2737731127'
 
   TWS: [
     {
@@ -64,7 +65,5 @@ exports.settings =
     'kamikannda'
     'loliconder'
     'nosongang'
-    'sandworks'
     'exit_kureaki'
-    'yamayo'
   ]
