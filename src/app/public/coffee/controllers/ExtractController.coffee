@@ -1,7 +1,9 @@
 angular.module "myApp.controllers"
   .controller "ExtractCtrl", (
     $scope
+    $rootScope
     $routeParams
+    $timeout
     $location
     Tweets
     AuthService
@@ -57,9 +59,11 @@ angular.module "myApp.controllers"
       console.log data
       tweets = TweetService.normalizeTweets data, ListService.amatsukaList.member
       $scope.extract.tweets = tweets.sort (a, b) -> b.totalNum - a.totalNum
-      console.log $scope.extract.tweets
       $scope.isLoading = false
       $scope.isUserFound = true
+      $timeout => 
+        $rootScope.$broadcast('masonry.reload')
+      , 1000
     .catch (err) ->
       $scope.isLoading = false
       $scope.isUserFound = false

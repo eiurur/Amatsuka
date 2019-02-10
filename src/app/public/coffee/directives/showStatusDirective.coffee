@@ -30,10 +30,9 @@ angular.module 'myApp.directives'
 
         TweetService.showStatuses(tweetIdStr: attrs.tweetIdStr)
         .then (data) ->
-          tweet = data.data
-          bindEvents(tweet)
-          tweet.user = TweetService.get(tweet, 'user')
+          tweet = TweetService.get(data.data, '', TweetService.isRT(tweet))
           imgIdx = getImgIdxBySrc(tweet, attrs.imgSrc.replace(':small', ''))
+          bindEvents(tweet)
           showTweetInfomation(tweet, imgIdx)
           upsertPictCounterElement(tweet, imgIdx)
 
@@ -71,7 +70,14 @@ angular.module 'myApp.directives'
             <div class="image-layer__caption">
               <div class="timeline__footer">
                 <div class="timeline__footer__contents">
-                  <div class="timeline__footer__controls">
+                  <div class="timeline__footer__controls"
+                    data-url="#{tweet.extended_entities.media[imgIdx].media_url_https}:orig"
+                    data-description="#{tweet.text}"
+                    data-screen_name="#{tweet.user.screen_name}"
+                    data-name="#{tweet.user.name}"
+                    data-siteImage="#{tweet.extended_entities.media[imgIdx].media_url_https}:large"
+                    data-siteUrl="#{tweet.extended_entities.media[imgIdx].expanded_url}"
+                    data-srcUrl="#{tweet.extended_entities.media[imgIdx].media_url_https}:orig">
                     <a href="#{tweet.extended_entities.media[imgIdx].expanded_url}" target="_blank">
                       <i class="fa fa-twitter icon-twitter"></i>
                     </a>
@@ -108,7 +114,9 @@ angular.module 'myApp.directives'
           console.log 'switchImage'
           console.log imgIdx
           console.log src
-          tweet.user = TweetService.get(tweet, 'user', TweetService.isRT(tweet))
+          tweet = TweetService.get(tweet, '', TweetService.isRT(tweet))
+          console.log(tweet)
+          # tweet.user = TweetService.get(tweet, 'user', TweetService.isRT(tweet))
           showTweetInfomation(tweet, imgIdx)
           upsertPictCounterElement(tweet, imgIdx)
           zoomImageViewer.pipeLowToHighImage("#{src}:small", "#{src}:orig")

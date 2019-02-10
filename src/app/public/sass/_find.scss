@@ -3,6 +3,13 @@
 .find {
   &__media {
     min-height: 80px;
+    a.icon {
+      background-color: $theme-color;
+      border-radius: 8px;
+      img {
+        min-height: 64px;
+      }
+    }
   }
 
   // &_pict-tweet--container {

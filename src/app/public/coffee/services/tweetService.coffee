@@ -110,7 +110,7 @@ angular.module "myApp.services"
         when 'user.lang' then t.user.lang
         when 'user.url' then t.user.url
         when 'user' then t.user
-        else null
+        else t
 
     expandTweetUrl: (tweet, isRT) ->
       tweet.text = @get(tweet, 'text', isRT)

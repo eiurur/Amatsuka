@@ -1,5 +1,5 @@
 angular.module "myApp.factories"
-  .factory 'Tweets', ($http, $q, ConfigService, ToasterService, TweetService, ListService) ->
+  .factory 'Tweets', ($http, $q, $rootScope, ConfigService, ToasterService, TweetService, ListService) ->
 
     class Tweets
       constructor: (@items, @maxId = undefined, @type, @twitterIdStr = null) ->
@@ -49,8 +49,10 @@ angular.module "myApp.factories"
         console.log new Date()
         console.log @busy
         console.log @isLast
-        return if @busy or @isLast
-
+        if @busy or @isLast
+          $rootScope.$broadcast('masonry.reload')
+          return 
+          
         if @type is 'user_timeline'
           @method = TweetService.getUserTimeline(twitterIdStr: @twitterIdStr, maxId: @maxId, count: @count)
         else if @type is 'like'
