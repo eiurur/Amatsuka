@@ -5,7 +5,6 @@ span(ng-if='layoutType == "grid"')
     infinite-scroll-disabled='tweets.busy',
     masonry='masonry',
     preserve-order,
-    load-images="true"
     )
     .masonry-brick.timeline__post.timeline__post--grid(ng-repeat='tweet in tweets.items')
       include ../post/_grid

@@ -19,6 +19,15 @@ angular.module "myApp.directives"
       ).on "error", ->
       return
 
+  .directive "masonryReload", ($rootScope) ->
+    restrict: "A"
+    link: (scope, element, attrs) ->
+      element.on("load", ->
+        $rootScope.$broadcast('masonry.reload')
+        return
+      ).on "error", ->
+      return
+
   .directive "scrollOnClick", ->
     restrict: "A"
     scope:
