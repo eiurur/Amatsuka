@@ -61,10 +61,11 @@ angular.module "myApp.controllers"
       $scope.extract.tweets = tweets.sort (a, b) -> b.totalNum - a.totalNum
       $scope.isLoading = false
       $scope.isUserFound = true
-      $timeout => 
+      $timeout ->
         $rootScope.$broadcast('masonry.reload')
-      , 1000
+      , 4000
     .catch (err) ->
+      console.log(err)
       $scope.isLoading = false
       $scope.isUserFound = false
       $scope.message = "#{$scope.filter.screenName} is not found"
