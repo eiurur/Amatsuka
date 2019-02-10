@@ -1,6 +1,6 @@
 {
   "name": "amatsuka",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "homepage": "https://github.com/eiurur/Amatsuka",
   "authors": ["eiurur <eiurur789@gmail.com>"],
   "license": "MIT",
@@ -26,6 +26,6 @@
     "angular-touch": "^1.6.1"
   },
   "resolutions": {
-    "angular": "~1.6.x"
+    "angular": "1.6.1"
   }
 }
