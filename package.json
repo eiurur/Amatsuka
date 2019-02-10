@@ -11,7 +11,7 @@
     "build": "bower i && gulp build",
     "dev": "gulp",
     "start": "node build/app.js",
-    "preinstall": "npm cache clean -f",
+    "preinstall": "npm cache clean -f && bower cache clean",
     "postinstall": "npm run build"
   },
   "dependencies": {
@@ -42,7 +42,7 @@
     "konfig": "^0.2.1",
     "lodash": "^4.17.4",
     "method-override": "^3.0.0",
-    "moment": "^2.19.2",
+    "moment": "^2.24.0",
     "mongoose": "^5.0.16",
     "morgan": "^1.9.0",
     "mousetrap": "^1.6.1",
@@ -60,7 +60,7 @@
     "yakaa": "^1.0.1"
   },
   "devDependencies": {
-    "bower": "^1.8.2",
+    "bower": "^1.8.8",
     "coffee-script": "^1.12.7",
     "connect-livereload": "^0.6.0",
     "debug": "^4.1.1",

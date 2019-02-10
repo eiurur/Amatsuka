@@ -20,12 +20,12 @@
     "nginfinitescroll": "~1.2.1",
     "mousetrap": "~1.5.3",
     "angulartics-google-analytics": "~0.2.0",
-    "angular": "^1.6.1",
-    "angular-route": "^1.6.1",
-    "angular-sanitize": "^1.6.1",
-    "angular-touch": "^1.6.1"
+    "angular": "^1.7.7",
+    "angular-route": "^1.7.7",
+    "angular-sanitize": "^1.7.7",
+    "angular-touch": "^1.7.7"
   },
   "resolutions": {
-    "angular": "1.6.1"
+    "angular": "1.7.7"
   }
 }
