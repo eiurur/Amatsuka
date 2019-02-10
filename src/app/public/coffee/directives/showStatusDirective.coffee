@@ -30,9 +30,9 @@ angular.module 'myApp.directives'
 
         TweetService.showStatuses(tweetIdStr: attrs.tweetIdStr)
         .then (data) ->
-          tweet = TweetService.get(data.data, '', TweetService.isRT(tweet))
+          bindEvents(data.data)
+          tweet = TweetService.get(data.data, '', TweetService.isRT(data.data))
           imgIdx = getImgIdxBySrc(tweet, attrs.imgSrc.replace(':small', ''))
-          bindEvents(tweet)
           showTweetInfomation(tweet, imgIdx)
           upsertPictCounterElement(tweet, imgIdx)
 
