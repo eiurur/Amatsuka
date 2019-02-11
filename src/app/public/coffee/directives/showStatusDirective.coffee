@@ -66,6 +66,9 @@ angular.module 'myApp.directives'
           imageLayerContainer.after html
 
         showTweetInfomation = (tweet, imgIdx) ->
+          tweetUrl = /(.*)\/photo\/.*/.exec(tweet.extended_entities.media[imgIdx].expanded_url)
+          siteUrl = if tweetUrl then tweetUrl[1] else tweet.extended_entities.media[imgIdx].expanded_url
+          
           imageLayerCaptionHtml = """
             <div class="image-layer__caption">
               <div class="timeline__footer">
@@ -76,7 +79,7 @@ angular.module 'myApp.directives'
                     data-screen_name="#{tweet.user.screen_name}"
                     data-name="#{tweet.user.name}"
                     data-siteImage="#{tweet.extended_entities.media[imgIdx].media_url_https}:large"
-                    data-siteUrl="#{tweet.extended_entities.media[imgIdx].expanded_url}"
+                    data-siteUrl="#{siteUrl}"
                     data-srcUrl="#{tweet.extended_entities.media[imgIdx].media_url_https}:orig">
                     <a href="#{tweet.extended_entities.media[imgIdx].expanded_url}" target="_blank">
                       <i class="fa fa-twitter icon-twitter"></i>
