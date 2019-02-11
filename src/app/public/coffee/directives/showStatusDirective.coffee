@@ -72,7 +72,7 @@ angular.module 'myApp.directives'
                 <div class="timeline__footer__contents">
                   <div class="timeline__footer__controls"
                     data-url="#{tweet.extended_entities.media[imgIdx].media_url_https}:orig"
-                    data-description="#{tweet.text}"
+                    data-description="#{tweet.text} #{tweet.extended_entities.media[imgIdx].display_url}"
                     data-screen_name="#{tweet.user.screen_name}"
                     data-name="#{tweet.user.name}"
                     data-siteImage="#{tweet.extended_entities.media[imgIdx].media_url_https}:large"

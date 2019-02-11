@@ -48,7 +48,7 @@ angular.module "myApp.services"
         # @hasOrigParameter tweet
         tweet.isRT                         = isRT
         tweet.followStatus                 = ListService.isFollow(tweet, isRT)
-        tweet.text                         = @expandTweetUrl(tweet, isRT)
+        tweet.text                         = @expandTweetUrl(@get(tweet, 'text', isRT), tweet)
         # tweet.text                         = @activateLink(@get(tweet, 'text', isRT))
         tweet.time                         = @fromNow(@get(tweet, 'tweet.created_at', false))
         tweet.retweetNum                   = @get(tweet, 'tweet.retweet_count', isRT)
@@ -112,14 +112,14 @@ angular.module "myApp.services"
         when 'user' then t.user
         else t
 
-    expandTweetUrl: (tweet, isRT) ->
-      tweet.text = @get(tweet, 'text', isRT)
+    expandTweetUrl: (text, tweet) ->
+      if !tweet then return text
       expandedUrlListInTweet = @getExpandedURLFromTweet(tweet.entities)
       _.each expandedUrlListInTweet, (urls) =>
-        tweet.text = tweet.text.replace(urls.url, urls.expanded_url)
+        text = text.replace(urls.url, urls.expanded_url)
         return
-      tweet.text = @activateLink tweet.text
-      tweet.text
+      text = @activateLink text
+      text
 
     getExpandedURLFromTweet: (entities) ->
       if !_.has(entities, 'urls') then return ''
