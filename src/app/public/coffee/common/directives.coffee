@@ -19,13 +19,17 @@ angular.module "myApp.directives"
       ).on "error", ->
       return
 
-  .directive "masonryReload", ($rootScope) ->
+  .directive "masonryReload", ($rootScope, MutexService) ->
     restrict: "A"
     link: (scope, element, attrs) ->
       element.on("load", ->
+        return if MutexService.isLock('masonry.reload') 
+        MutexService.lock('masonry.reload')
         $rootScope.$broadcast('masonry.reload')
+        MutexService.unlock('masonry.reload')
         return
       ).on "error", ->
+        MutexService.unlock('masonry.reload')
       return
 
   .directive "scrollOnClick", ->

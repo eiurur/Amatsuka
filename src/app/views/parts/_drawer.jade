@@ -65,5 +65,6 @@ div(ng-controller="DrawerCtrl")
               a
                 i.fa.fa-download(data-url="{{::tweet.picOrigUrlList}}", filename="{{::tweet.fileName}}", download-from-url='download-from-url')
 
-      dot-loader.infinitescroll-content.drawer__contents--infinitescroll-message(ng-if='tweets.busy')
-      .text-center.infinitescroll-content.drawer__contents--infinitescroll-message(ng-show='tweets.isLast') 終わりです
+      .infinitescroll-content.drawer__contents--infinitescroll-message
+        dot-loader(ng-show='tweets.busy')
+        .text-center(ng-show='tweets.isLast') 終わりです

@@ -50,7 +50,6 @@ angular.module "myApp.factories"
         console.log @busy
         console.log @isLast
         if @busy or @isLast
-          $rootScope.$broadcast('masonry.reload')
           return 
           
         if @type is 'user_timeline'

@@ -231,7 +231,7 @@
  *
  */
 .infinitescroll-content {
-  padding: 60px;
+  min-height: 120px;
 }
 
 .infinitescroll-message {
@@ -376,11 +376,14 @@
  */
 .wrapper {
   width: 3em;
-  margin: 3em auto 1em;
+  margin: 0 auto;
   // 中心に移動するために追加。
   padding-right: 100px;
 
-  height: 60px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .dot:nth-child(1) {
