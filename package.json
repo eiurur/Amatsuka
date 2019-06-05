@@ -11,7 +11,7 @@
     "build": "bower i && gulp build",
     "dev": "gulp",
     "start": "node build/app.js",
-    "preinstall": "npm cache clean -f",
+    "preinstall": "npm cache clean -f && npm run rebuild node-sass",
     "postinstall": "npm run build"
   },
   "dependencies": {
