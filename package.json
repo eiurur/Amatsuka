@@ -7,8 +7,8 @@
   "main": "app.js",
   "scripts": {
     "clean": "gulp clean",
-    "init": "npm i && bower cache clean -f && bower i && gulp build",
-    "build": "bower i && gulp build",
+    "init": "npm i && bower i --force-latest && gulp build",
+    "build": "bower i --force-latest && gulp build",
     "dev": "gulp",
     "start": "node build/app.js",
     "preinstall": "npm cache clean -f",
