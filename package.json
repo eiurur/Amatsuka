@@ -65,7 +65,7 @@
     "connect-livereload": "^0.6.0",
     "debug": "^4.1.1",
     "gulp": "^3.9.1",
-    "gulp-bower": "0.0.14",
+    "gulp-bower": "0.0.15",
     "gulp-cached": "^1.1.1",
     "gulp-changed": "^3.1.1",
     "gulp-coffee": "^2.3.4",
