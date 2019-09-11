@@ -39,7 +39,7 @@ angular.module "myApp.factories"
         @members = @members.concat @amatsukaMemberList[@memberIdx...@memberIdx+@count]
         @memberIdx += @count
         if @memberIdx > @amatsukaMemberLength then @isLast = true
-        setTimeout((-> lozad().observe()), 100)
+        setTimeout((-> lozad().observe()), 1000)
         return
 
       reverse: ->
