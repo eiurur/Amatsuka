@@ -29,7 +29,7 @@ angular.module "myApp.factories"
               [@items][0].push tweet
             .then (result) =>
               @busy = false
-              setTimeout(() => lozad().observe(), 100)
+              setTimeout((-> lozad().observe()), 100)
             return
           return
 
