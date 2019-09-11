@@ -10,6 +10,7 @@ angular.module "myApp.factories"
         ConfigService.get()
         .then (data) => @count = data.tweetNumberAtOnce or 40
 
+
       normalizeTweet: (data) =>
         return new Promise (resolve, reject) =>
           if data.error? then reject data.error
@@ -28,6 +29,7 @@ angular.module "myApp.factories"
               [@items][0].push tweet
             .then (result) =>
               @busy = false
+              lozad().observe()
             return
           return
 

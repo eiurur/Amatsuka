@@ -28,9 +28,9 @@
     show-drawer="show-drawer",
     twitter-id-str="{{::tweet.user.id_str}}")
 .timeline__post__image.timeline__post__image--grid(ng-repeat='picUrl in tweet.picUrlList')
-  img.fade(
+  img.fade.lozad(
     ng-if="!tweet.video_url",
-    ng-src="{{::picUrl}}",
+    data-src="{{::picUrl}}",
     img-preload="img-preload",
     masonry-reload="masonry-reload",
     tweet-id-str='{{::tweet.id_str}}',

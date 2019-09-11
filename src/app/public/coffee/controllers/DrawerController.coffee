@@ -29,6 +29,7 @@ angular.module "myApp.controllers"
       maxId            = if _.last(args)? then TweetService.decStrNum(_.last(args).id_str) else 0
       tweetsNormalized = TweetService.normalizeTweets(args)
       $scope.tweets    = new Tweets(tweetsNormalized, maxId, 'user_timeline', $scope.user.id_str)
+      $scope.tweets.nextPage()
     return
 
 

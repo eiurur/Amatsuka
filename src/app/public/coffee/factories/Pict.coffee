@@ -30,6 +30,7 @@ angular.module "myApp.factories"
           @skip += @limit
           if @doneSkip.length >= @numMaxSkip then @isLast = true
           @busy = false
+          lozad().observe()
         return
 
       load: ->

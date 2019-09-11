@@ -19,7 +19,7 @@ angular.module "myApp.directives"
       <section class="popular-tweets row">
         <div class="col-md-4 col-sm-4 col-xs-4" ng-repeat="tweet in $ctrl.tweets">
           <div class="popular-tweet">
-            <img ng-src="{{::tweet.mediaUrl}}:small" data-img-src="{{::tweet.mediaUrl}}:small" tweet-id-str="{{::tweet.tweetIdStr}}" show-statuses="show-statuses" img-preload class="fade popular-tweets__img">
+            <img class="lozad" data-src="{{::tweet.mediaUrl}}:small" data-img-src="{{::tweet.mediaUrl}}:small" tweet-id-str="{{::tweet.tweetIdStr}}" show-statuses="show-statuses" img-preload class="fade popular-tweets__img">
           </div>
         </div>
       </section>

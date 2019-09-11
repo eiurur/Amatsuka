@@ -27,6 +27,7 @@ angular.module "myApp.controllers"
 
       # 別のユーザで再ログインしたとき
       $scope.tweets = new Tweets([])
+      lozad().observe()
       return
     .catch (error) ->
       console.log '==> update() catch error = ', error
@@ -45,6 +46,7 @@ angular.module "myApp.controllers"
       .then (data) ->
         console.log '===> ConfigService then data = ', data
         $scope.tweets = new Tweets([])
+        lozad().observe()
     .finally ->
       console.log '==> update() finally'
       $scope.message = ''
@@ -55,6 +57,7 @@ angular.module "myApp.controllers"
     console.log '=> _isSameAmatsukaList = ', _isSameAmatsukaList
     if _isSameAmatsukaList
       $scope.tweets = new Tweets([])
+      lozad().observe()
       do ->
         ListService.update()
         .then (data) -> console.log 'ok'

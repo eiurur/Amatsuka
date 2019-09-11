@@ -40,9 +40,9 @@ div(ng-controller="DrawerCtrl")
             a(href="https://{{::tweet.sourceUrl}}", target="_blank")
               {{tweet.time}}
         .timeline__post__image(ng-repeat='picUrl in tweet.picUrlList')
-          img.fade(
+          img.fade.lozad(
             ng-if="!tweet.video_url",
-            ng-src="{{::picUrl}}",
+            data-src="{{::picUrl}}",
             img-preload="img-preload",
             show-statuses="show-statuses",
             tweet-id-str='{{::tweet.id_str}}',
