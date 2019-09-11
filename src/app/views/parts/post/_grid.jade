@@ -35,6 +35,9 @@
     masonry-reload="masonry-reload",
     tweet-id-str='{{::tweet.id_str}}',
     show-statuses="show-statuses"
+    image-size-preset="image-size-preset"
+    width="{{::tweet.sizes[$index].w}}"
+    height="{{::tweet.sizes[$index].h}}"
     data-img-src="{{::picUrl}}")
   video.timeline__post__video(
     ng-if="tweet.video_url",

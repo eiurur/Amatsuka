@@ -46,6 +46,9 @@ div(ng-controller="DrawerCtrl")
             img-preload="img-preload",
             show-statuses="show-statuses",
             tweet-id-str='{{::tweet.id_str}}',
+            image-size-preset="image-size-preset"
+            width="{{::tweet.sizes[$index].w}}"
+            height="{{::tweet.sizes[$index].h}}"
             data-img-src="{{::picUrl}}")
           video(ng-if="tweet.video_url", poster="{{::picUrl}}", controls, muted)
             source(ng-src="{{::tweet.video_url | trusted}}", type="video/mp4")

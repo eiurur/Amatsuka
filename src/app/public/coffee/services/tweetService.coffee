@@ -54,6 +54,7 @@ angular.module "myApp.services"
         tweet.retweetNum                   = @get(tweet, 'tweet.retweet_count', isRT)
         tweet.favNum                       = @get(tweet, 'tweet.favorite_count', isRT)
         tweet.tweetIdStr                   = @get(tweet, 'tweet.id_str', isRT)
+        tweet.sizes                        = @get(tweet, 'sizes', isRT)
         tweet.sourceUrl                    = @get(tweet, 'display_url', isRT)
         tweet.picUrlList                   = @get(tweet, 'media_url_https:small', isRT)
         tweet.picOrigUrlList               = @get(tweet, 'media_url_https:orig', isRT)
@@ -76,6 +77,8 @@ angular.module "myApp.services"
         when 'friends_count' then t.user.friends_count
         when 'hashtags'
           t.entities?.hashtags # TODO: 一個しか取れない
+        when 'sizes'
+          _.map t.extended_entities.media, (media) -> media.sizes.large
         when 'media_url'
           _.map t.extended_entities.media, (media) -> media.media_url
         when 'media_url_https'

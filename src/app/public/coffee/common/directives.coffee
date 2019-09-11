@@ -19,6 +19,20 @@ angular.module "myApp.directives"
       ).on "error", ->
       return
 
+  .directive "imageSizePreset", ->
+    restrict: "A"
+    link: (scope, element, attrs) ->
+      per = 300 / Number(attrs.width) 
+      element.css({
+        height: (Number(attrs.height) * per)  + "px"
+      })
+      element.on("load", ->
+        element.addClass "in"
+        element.css({height: 'auto'})
+        return
+      ).on "error", ->
+      return
+
   .directive "masonryReload", ($rootScope, MutexService) ->
     restrict: "A"
     link: (scope, element, attrs) ->
