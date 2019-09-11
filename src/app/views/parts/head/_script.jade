@@ -10,7 +10,7 @@ if process.env.NODE_ENV == 'production'
     ga('create', 'UA-42893827-18', 'auto');
     ga('send', 'pageview');
 else
+  script(src='https://cdn.jsdelivr.net/npm/lozad/dist/lozad.min.js')
   script(src='./js/vendors/lib.js')
   script(src='./js/vendors/angular-lib.js')
   script(src='./js/main.js')
-  script(src='https://cdn.jsdelivr.net/npm/lozad/dist/lozad.min.js')
