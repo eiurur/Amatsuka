@@ -58,6 +58,7 @@ module.exports =
 
   bower_js:
     src: [
+      'bower_components/lozad/dist/lozad.js'
       'bower_components/moment/moment.js'
       'bower_components/lodash/dist/lodash.js'
       'bower_components/jquery/dist/jquery.js'
