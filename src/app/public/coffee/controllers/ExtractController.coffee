@@ -61,6 +61,7 @@ angular.module "myApp.controllers"
       $scope.extract.tweets = tweets.sort (a, b) -> b.totalNum - a.totalNum
       $scope.isLoading = false
       $scope.isUserFound = true
+      setTimeout((-> lozad().observe()), 100)
     .catch (err) ->
       console.log(err)
       $scope.isLoading = false
