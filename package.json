@@ -20,7 +20,7 @@
     "axios": "^0.18.1",
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
-    "bunyan": "^1.8.12",
+    "bunyan": "^1.8.13",
     "chalk": "^2.3.0",
     "cheerio": "^1.0.0-rc.2",
     "compression": "^1.7.1",
