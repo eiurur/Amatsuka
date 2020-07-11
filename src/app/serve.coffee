@@ -22,7 +22,7 @@ exports.serve = ->
       saveUninitialized: true
       resave: false
       store: new MongoStore(
-        url: settings.MONGODB_URL
+        url: settings.DB_URI
         collection: 'sessions'
         clear_interval: 3600 * 12
         auto_reconnect: true

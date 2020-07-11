@@ -4,7 +4,7 @@ chalk      = require 'chalk'
 moment     = require 'moment'
 mongoose   = require 'mongoose'
 {settings} = require path.resolve 'build', 'lib', 'configs', 'settings'
-uri        = settings.MONGODB_URL
+uri        = settings.DB_URI
 db         = mongoose.connect uri
 
 module.exports = class BaseProvider
