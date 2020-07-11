@@ -5,8 +5,11 @@ moment     = require 'moment'
 mongoose   = require 'mongoose'
 {settings} = require path.resolve 'build', 'lib', 'configs', 'settings'
 uri        = settings.DB_URI
-db         = mongoose.connect uri
-
+db = mongoose.connect(uri,
+  useUnifiedTopology: true
+  useNewUrlParser: true
+  useFindAndModify: false)
+  
 module.exports = class BaseProvider
 
   constructor: (@Model) ->
