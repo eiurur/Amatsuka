@@ -38,7 +38,7 @@ module.exports = class PictCollection
       # イラストをAPI限界まで収集して人気順にソートし、上位12件分をDBに保存
       .then => @aggregatePict()
       .then => @updatePictListData(@pickupPictListTop12(@userPicts))
-      .then => @updateRankingData(@rankingTweets)
+      # .then => @updateRankingData(@rankingTweets)
       .then (data) -> return resolve 'Fin'
       .catch (err) -> return reject err
 
