@@ -33,8 +33,8 @@ exports.settings =
     consumerSecret: TW_CS
     callback: CALLBACK_URL
 
-  #  pummeluff39, _cinkai, exit_kureaki, , SALT_000, fujiyamatozan, yasumo01, kr_saki, mamy6o6
-  defaultUserIds: '437523928,2228681658,111029339, 1057416337, 2737731127, 2817567554, 101068475, 820166689018912770'
+  #  pummeluff39, _cinkai, exit_kureaki, , SALT_000, fujiyamatozan, yasumo01, kr_saki, mamy6o6, sankuro396
+  defaultUserIds: '437523928,2228681658, 393998063, 1057416337, 2737731127, 2817567554, 101068475, 820166689018912770,115673821'
 
   TWS: [
     {
