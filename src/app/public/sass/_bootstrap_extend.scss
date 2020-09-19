@@ -5,21 +5,27 @@ a.dropdown-toggle {
 }
 
 .navbar-icon {
-  // border-radius: 4px;
+  width: 20px;
   border-radius: 100%;
   margin-right: 5px;
-  padding-bottom: 5px;
-  width: 20px;
+  vertical-align: middle;
+  position: relative;
+  top: -0.1em;
 }
 
-.navbar-default .nav li.dropdown.open .dropdown-toggle, .navbar-default .nav li.dropdown.active .dropdown-toggle, .navbar-default .nav li.dropdown.open.active .dropdown-toggle {
+.navbar-default .nav li.dropdown.open .dropdown-toggle,
+.navbar-default .nav li.dropdown.active .dropdown-toggle,
+.navbar-default .nav li.dropdown.open.active .dropdown-toggle {
   background-color: $amatsuka-color;
 }
 
-.dropdown-menu li a:hover, .dropdown-menu li a:focus, .dropdown-menu .active a, .dropdown-menu .active a:hover, .dropdown-menu .active a:focus {
+.dropdown-menu li a:hover,
+.dropdown-menu li a:focus,
+.dropdown-menu .active a,
+.dropdown-menu .active a:hover,
+.dropdown-menu .active a:focus {
   background-color: $amatsuka-color;
 }
-
 
 .progress {
   background: $link-color;
@@ -36,7 +42,6 @@ a.dropdown-toggle {
   text-align: right;
 }
 
-
 // 何も選ばれていないtab
 .nav-pills > li > a {
   color: $link-color;
@@ -44,19 +49,21 @@ a.dropdown-toggle {
   font-size: 1.3rem;
 }
 
-.nav > li > a:hover, .nav > li > a:focus {
-    color: $theme-color;
-    text-decoration: none;
-    background-color: transparent;
+.nav > li > a:hover,
+.nav > li > a:focus {
+  color: $theme-color;
+  text-decoration: none;
+  background-color: transparent;
 }
 
 // 選ばれたタブ
-.nav-pills > li.active > a, .nav-pills > li.active > a:hover, .nav-pills > li.active > a:focus {
-    color: $theme-color;
-    background-color: transparent;
-    border-left: 1px solid $theme-color;
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:hover,
+.nav-pills > li.active > a:focus {
+  color: $theme-color;
+  background-color: transparent;
+  border-left: 1px solid $theme-color;
 }
-
 
 // 突然ずれ始めた。原因不明。一時しのぎ
 .input-group {
@@ -64,6 +71,3 @@ a.dropdown-toggle {
     padding-bottom: 3px;
   }
 }
-
-
-
