@@ -50,7 +50,7 @@
     "node-sass": "^4.13.1",
     "node-twitter-api": "^1.8.0",
     "opbeat": "^4.16.0",
-    "passport": "^0.4.0",
+    "passport": "^0.6.0",
     "passport-twitter": "^1.0.4",
     "redis": "^2.8.0",
     "request": "^2.83.0",
