@@ -90,9 +90,9 @@ angular.module "myApp.services"
       .then (data) =>
         console.log 'UPDATE!! ', data.data
 
-        # @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
+        @amatsukaList.data = _.findWhere data.data, 'name': 'Amatsuka'
         # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
-        @amatsukaList.data = _.findWhere data.data, 'full_name': "@#{AuthService.user.username}/amatsuka"
+        # @amatsukaList.data = _.findWhere data.data, 'full_name': "@#{AuthService.user.username}/amatsuka"
         console.log 'update: @amatsukaList.data = ', @amatsukaList.data
         localStorage.setItem 'amatsukaList', JSON.stringify(@amatsukaList.data)
         TweetService.getListsMembers(listIdStr: @amatsukaList.data.id_str)
@@ -129,9 +129,9 @@ angular.module "myApp.services"
           ownLists = data.data
           console.log 'lists = ', ownLists
 
-          # return resolve _.findWhere(ownLists, 'name': 'Amatsuka') || id_str: null
+          return resolve _.findWhere(ownLists, 'name': 'Amatsuka') || id_str: null
           # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
-          return resolve _.findWhere(ownLists, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
+          # return resolve _.findWhere(ownLists, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
         .catch (err) ->
           reject err
           
