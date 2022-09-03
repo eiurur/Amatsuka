@@ -129,7 +129,7 @@ angular.module "myApp.services"
           ownLists = data.data
           console.log 'lists = ', ownLists
 
-          return resolve _.findWhere data.data, 'name': 'Amatsuka' || id_str: null
+          return resolve _.findWhere(ownLists, 'name': 'Amatsuka') || id_str: null
           # 人のAmatuskaリストをフォローしたとき、そのリストをAmatsukaリストとして扱う場合があるため、full_nameの方を使う。
           # return resolve _.findWhere(ownLists, 'full_name': "@#{AuthService.user.username}/amatsuka") || id_str: null
         .catch (err) ->
