@@ -377,12 +377,9 @@
 .wrapper {
   width: 3em;
   margin: 0 auto;
-  // 中心に移動するために追加。
-  padding-right: 100px;
-
+  padding-right: 100px; // 中心に移動するために追加。
   height: 120px;
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 
