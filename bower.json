@@ -1,19 +1,11 @@
 {
   "name": "amatsuka",
-  "version": "0.8.1",
+  "version": "1.0.0",
   "homepage": "https://github.com/eiurur/Amatsuka",
-  "authors": [
-    "eiurur <eiurur789@gmail.com>"
-  ],
+  "authors": ["eiurur <eiurur789@gmail.com>"],
   "license": "MIT",
   "private": true,
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
+  "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"],
   "dependencies": {
     "lodash": "~2.4.1",
     "moment": "~2.8.3",
