@@ -24,8 +24,8 @@ angular.module "myApp.controllers"
   .then (data) ->
 
     # 人のAmatuskaリストをフォローしたとき、そのリストが一覧に表示されないため、full_nameの方を使う。
-    # l = _.reject data.data, (list) -> list.full_name is "@#{AuthService.user.username}/amatsuka"
-    l = _.reject data.data, (list) -> list.name is "Amatsuka"
+    l = _.reject data.data, (list) -> list.full_name is "@#{AuthService.user.username}/amatsuka"
+    # l = _.reject data.data, (list) -> list.name is "Amatsuka"
 
     $scope.ownList = l or []
 
