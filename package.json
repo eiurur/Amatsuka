@@ -40,7 +40,7 @@
     "express-session": "^1.15.6",
     "jade": "^0.31.2",
     "konfig": "^0.2.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.16",
     "method-override": "^3.0.0",
     "moment": "^2.24.0",
     "mongoose": "^5.0.16",
