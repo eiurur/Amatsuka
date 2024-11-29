@@ -43,7 +43,7 @@
     "lodash": "^4.17.15",
     "method-override": "^3.0.0",
     "moment": "^2.24.0",
-    "mongoose": "^5.0.16",
+    "mongoose": "^5.11.7",
     "morgan": "^1.9.0",
     "mousetrap": "^1.6.1",
     "node-cache": "^4.1.1",
