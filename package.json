@@ -56,7 +56,7 @@
     "request": "^2.83.0",
     "session": "^0.1.0",
     "twit": "^2.2.9",
-    "util": "^0.11.1",
+    "util": "^0.12.4",
     "yakaa": "^1.0.1"
   },
   "devDependencies": {
